@@ -334,42 +334,23 @@ tbody td:first-child { text-align: left; color: var(--ink2); font-size: 0.62rem;
 
     <!-- Chart row 2 -->
     <div class="charts-row">
-      <div class="card">
+      <div class="card" style="grid-column: span 2;">
         <div class="card-header">
-          <div><div class="card-title">Recaudación Total</div><div class="card-sub">Transferencias + cheques + factoring</div></div>
+          <div><div class="card-title">Recaudación vs Compras ENAP</div><div class="card-sub">Transferencias + cheques + factoring vs compras con IVA</div></div>
           <span class="tag tag-yellow">COBROS</span>
         </div>
-        <canvas id="recaudChart" height="100"></canvas>
-      </div>
-      <div class="card">
-        <div class="card-header">
-          <div><div class="card-title">Compras ENAP</div><div class="card-sub">Total con IVA</div></div>
-          <span class="tag tag-red">COMPRAS</span>
-        </div>
-        <canvas id="comprasChart" height="100"></canvas>
+        <canvas id="recaudChart" height="70"></canvas>
+        <canvas id="comprasChart" style="display:none"></canvas>
       </div>
     </div>
 
     <!-- Chart row 3 -->
-    <div class="charts-row-3">
-      <div class="card">
-        <div class="card-header">
-          <div><div class="card-title">Litros</div><div class="card-sub">Real vs Presupuesto</div></div>
-        </div>
-        <canvas id="litrosChart" height="140"></canvas>
+    <div class="card">
+      <div class="card-header">
+        <div><div class="card-title">Litros Vendidos vs Presupuesto</div><div class="card-sub">Real vs meta semanal · con etiquetas</div></div>
+        <span class="tag tag-green">LITROS</span>
       </div>
-      <div class="card">
-        <div class="card-header">
-          <div><div class="card-title">Precio Promedio</div><div class="card-sub">$/litro</div></div>
-        </div>
-        <canvas id="precioChart" height="140"></canvas>
-      </div>
-      <div class="card">
-        <div class="card-header">
-          <div><div class="card-title">Caja Disponible</div><div class="card-sub">Banco Chile + Santander + ENAP</div></div>
-        </div>
-        <canvas id="cajaChart" height="140"></canvas>
-      </div>
+      <canvas id="litrosChart" height="60"></canvas>
     </div>
 
     <!-- Table -->
@@ -560,12 +541,21 @@ function renderKPIs(weeks) {
       : `<span class="delta-down">↓ ${Math.abs(v).toFixed(1)}% vs ant.</span>`;
   };
 
+  // Litros vs Ppto
+  const litrosPct = last.litros && last.litrosPpto ? (last.litros / last.litrosPpto) : null;
+  const litrosPctStr = litrosPct ? (litrosPct*100).toFixed(0)+'%' : '—';
+  const litrosPctDelta = litrosPct
+    ? litrosPct >= 1
+      ? `<span class="delta-up">↑ sobre ppto</span>`
+      : `<span class="delta-down">↓ ${((1-litrosPct)*100).toFixed(0)}% bajo ppto</span>`
+    : '<span class="delta-neutral">—</span>';
+
   const kpis = [
     { label:'Ventas Última Semana', val: fmtM(last.ventas), delta: d('ventas'), accent:'var(--accent)' },
     { label:'Litros Vendidos', val: fmtCLP(last.litros), delta: d('litros'), accent:'var(--accent2)' },
+    { label:'Litros vs Presupuesto', val: litrosPctStr, delta: litrosPctDelta, accent: litrosPct >= 1 ? 'var(--accent2)' : 'var(--red)' },
     { label:'Margen Bruto', val: fmtPct(last.margen), delta: d('margen'), accent:'var(--blue)' },
     { label:'Precio Prom./Litro', val: last.precio ? '$'+Math.round(last.precio).toLocaleString('es-CL') : '—', delta: d('precio'), accent:'var(--yellow)' },
-    { label:'Recaudación', val: fmtM(last.recaud), delta: d('recaud'), accent:'var(--accent)' },
     { label:'Caja Disponible', val: fmtM(last.caja), delta: d('caja'), accent: last.caja > 50e6 ? 'var(--accent2)' : 'var(--red)' },
   ];
 
@@ -627,40 +617,48 @@ function renderCharts(weeks) {
     borderRadius:3,
   }]}, options:{...CD, plugins:{...CD.plugins, tooltip:{...CD.plugins.tooltip, callbacks:{label:(c)=>' '+(c.raw||0).toFixed(2)+'%'}}}, scales:{...CD.scales, y:{...CD.scales.y, ticks:{...CD.scales.y.ticks,callback:(v)=>v+'%'}}}} });
 
-  // Recaudacion
+  // Recaudacion + ENAP line
   mkChart('recaudChart', { type:'bar', data:{ labels:lb, datasets:[
-    { label:'Transferencias', data:weeks.map(w=>w.transf), backgroundColor:'rgba(96,165,250,0.65)', borderRadius:2, stack:'s' },
-    { label:'Cheques', data:weeks.map(w=>w.cheques), backgroundColor:'rgba(163,230,53,0.5)', borderRadius:2, stack:'s' },
-    { label:'Factoring', data:weeks.map(w=>w.factoring), backgroundColor:'rgba(251,191,36,0.5)', borderRadius:2, stack:'s' },
-  ]}, options:{...CD, plugins:{...CD.plugins, legend:{display:true,labels:{color:'#5a6358',font:{family:'IBM Plex Mono',size:9},boxWidth:10}}}, scales:{...CD.scales}} });
+    { label:'Transferencias', data:weeks.map(w=>w.transf), backgroundColor:'rgba(96,165,250,0.65)', borderRadius:2, stack:'s', order:2 },
+    { label:'Cheques', data:weeks.map(w=>w.cheques), backgroundColor:'rgba(163,230,53,0.5)', borderRadius:2, stack:'s', order:2 },
+    { label:'Factoring', data:weeks.map(w=>w.factoring), backgroundColor:'rgba(251,191,36,0.5)', borderRadius:2, stack:'s', order:2 },
+    { label:'Compras ENAP', data:weeks.map(w=>w.comprasEnap), type:'line',
+      borderColor:'#f87171', backgroundColor:'transparent',
+      borderWidth:2.5, pointRadius:3, pointBackgroundColor:'#f87171',
+      fill:false, tension:0.3, order:1 },
+  ]}, options:{...CD,
+    plugins:{...CD.plugins,
+      legend:{display:true,labels:{color:'#5a6358',font:{family:'IBM Plex Mono',size:9},boxWidth:10}},
+      tooltip:{...CD.plugins.tooltip, callbacks:{label:(c)=>` ${c.dataset.label}: $ ${Math.round(c.raw||0).toLocaleString('es-CL')}`}}
+    }
+  }});
 
-  // Compras ENAP
-  mkChart('comprasChart', { type:'line', data:{ labels:lb, datasets:[{
-    data: weeks.map(w=>w.comprasEnap),
-    borderColor:'#f87171', backgroundColor:'rgba(248,113,113,0.07)',
-    borderWidth:2, pointRadius:2, fill:true, tension:0.3
-  }]}, options:{...CD, plugins:{...CD.plugins, tooltip:{...CD.plugins.tooltip, callbacks:{label:(c)=>'$ '+Math.round(c.raw).toLocaleString('es-CL')}}}} });
-
-  // Litros
+  // Litros vs Ppto — con etiquetas de datos
   mkChart('litrosChart', { type:'bar', data:{ labels:lb, datasets:[
-    { label:'Real', data:weeks.map(w=>w.litros), backgroundColor:'rgba(163,230,53,0.65)', borderRadius:2 },
-    { label:'Ppto', data:weeks.map(w=>w.litrosPpto), type:'line', borderColor:'rgba(251,191,36,0.8)', borderWidth:1.5, pointRadius:0, fill:false, tension:0 },
-  ]}, options:{...CD, plugins:{...CD.plugins, legend:{display:true,labels:{color:'#5a6358',font:{family:'IBM Plex Mono',size:9},boxWidth:10}}}} });
-
-  // Precio
-  mkChart('precioChart', { type:'line', data:{ labels:lb, datasets:[{
-    data: weeks.map(w=>w.precio),
-    borderColor:'#fbbf24', backgroundColor:'rgba(251,191,36,0.07)',
-    borderWidth:2, pointRadius:2, fill:true, tension:0.3
-  }]}, options:{...CD, plugins:{...CD.plugins, tooltip:{...CD.plugins.tooltip, callbacks:{label:(c)=>'$'+Math.round(c.raw).toLocaleString('es-CL')+'/L'}}}} });
-
-  // Caja
-  const cajaVals = weeks.map(w=>w.caja);
-  mkChart('cajaChart', { type:'bar', data:{ labels:lb, datasets:[{
-    data: cajaVals,
-    backgroundColor: cajaVals.map(v => !v?'rgba(90,99,88,0.3)': v>=50e6?'rgba(52,211,153,0.65)':'rgba(248,113,113,0.55)'),
-    borderRadius:3,
-  }]}, options:{...CD} });
+    { label:'Real', data:weeks.map(w=>w.litros),
+      backgroundColor: weeks.map(w => w.litros && w.litrosPpto && w.litros >= w.litrosPpto
+        ? 'rgba(163,230,53,0.75)' : 'rgba(248,113,113,0.65)'),
+      borderRadius:3, order:2 },
+    { label:'Presupuesto', data:weeks.map(w=>w.litrosPpto),
+      type:'line', borderColor:'rgba(251,191,36,0.9)', borderWidth:2,
+      pointRadius:0, fill:false, tension:0, order:1, borderDash:[4,3] },
+  ]}, options:{...CD,
+    plugins:{...CD.plugins,
+      legend:{display:true,labels:{color:'#5a6358',font:{family:'IBM Plex Mono',size:9},boxWidth:10}},
+      datalabels: false,
+      tooltip:{...CD.plugins.tooltip, callbacks:{
+        label:(c) => {
+          if (c.dataset.label === 'Real') {
+            const ppto = weeks[c.dataIndex]?.litrosPpto;
+            const pct = ppto ? ((c.raw/ppto)*100).toFixed(0)+'%' : '';
+            return ` ${Math.round(c.raw).toLocaleString('es-CL')} L (${pct} ppto)`;
+          }
+          return ` Ppto: ${Math.round(c.raw||0).toLocaleString('es-CL')} L`;
+        }
+      }}
+    },
+    scales:{...CD.scales, y:{...CD.scales.y, ticks:{...CD.scales.y.ticks, callback:(v)=>v>=1e3?(v/1e3).toFixed(0)+'K':v}}}
+  }});
 }
 
 function renderTable(weeks) {
