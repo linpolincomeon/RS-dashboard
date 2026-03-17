@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard RS</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=IBM+Plex+Mono:wght@300;400;500&display=swap');
+
+:root {
+  --bg: #0d0f0e;
+  --surface: #131615;
+  --surface2: #191c1a;
+  --border: #232824;
+  --ink: #e8ede9;
+  --ink2: #5a6358;
+  --accent: #a3e635;
+  --accent2: #34d399;
+  --red: #f87171;
+  --yellow: #fbbf24;
+  --blue: #60a5fa;
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: 'IBM Plex Mono', monospace;
+  min-height: 100vh;
+}
+
+/* LOADING */
+#loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  gap: 1.5rem;
+}
+
+.loading-logo {
+  font-family: 'Playfair Display', serif;
+  font-size: 2.5rem;
+  font-weight: 900;
+  color: var(--accent);
+  letter-spacing: -1px;
+}
+
+.loading-dots {
+  display: flex; gap: 0.5rem;
+}
+.loading-dots span {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--accent);
+  animation: dot 1.4s infinite ease-in-out;
+}
+.loading-dots span:nth-child(2) { animation-delay: 0.2s; }
+.loading-dots span:nth-child(3) { animation-delay: 0.4s; }
+@keyframes dot { 0%,80%,100%{opacity:0.2;transform:scale(0.8)} 40%{opacity:1;transform:scale(1)} }
+
+.loading-msg { font-size: 0.72rem; color: var(--ink2); letter-spacing: 2px; }
+
+/* HEADER */
+#app { display: none; }
+
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.2rem 2rem;
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  background: rgba(13,15,14,0.95);
+  backdrop-filter: blur(10px);
+  z-index: 100;
+}
+
+.logo {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.4rem;
+  font-weight: 900;
+  color: var(--accent);
+  letter-spacing: -0.5px;
+}
+
+.topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.last-updated {
+  font-size: 0.62rem;
+  color: var(--ink2);
+  letter-spacing: 1px;
+}
+
+.weeks-filter {
+  display: flex;
+  gap: 0.4rem;
+}
+
+.wf-btn {
+  padding: 0.3rem 0.7rem;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--ink2);
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.62rem;
+  cursor: pointer;
+  transition: all 0.15s;
+  letter-spacing: 0.5px;
+}
+.wf-btn:hover { border-color: var(--accent); color: var(--accent); }
+.wf-btn.active { background: var(--accent); border-color: var(--accent); color: #0d0f0e; font-weight: 500; }
+
+.refresh-btn {
+  padding: 0.3rem 0.8rem;
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--ink2);
+  border-radius: 6px;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.62rem;
+  cursor: pointer;
+  transition: all 0.15s;
+  letter-spacing: 1px;
+}
+.refresh-btn:hover { border-color: var(--accent2); color: var(--accent2); }
+
+/* MAIN */
+.main { padding: 1.5rem 2rem; display: grid; gap: 1.5rem; }
+
+/* KPI ROW */
+.kpi-row {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 1rem;
+}
+
+.kpi {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 1rem 1.25rem;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.2s, border-color 0.2s;
+}
+.kpi:hover { transform: translateY(-2px); border-color: var(--accent); }
+.kpi::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: var(--kpi-accent, var(--accent));
+  border-radius: 10px 10px 0 0;
+}
+
+.kpi-label {
+  font-size: 0.58rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--ink2);
+  margin-bottom: 0.5rem;
+}
+
+.kpi-val {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--ink);
+  line-height: 1;
+  margin-bottom: 0.35rem;
+}
+
+.kpi-delta {
+  font-size: 0.62rem;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+.delta-up { color: var(--accent2); }
+.delta-down { color: var(--red); }
+.delta-neutral { color: var(--ink2); }
+
+/* CHARTS ROW */
+.charts-row {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 1.5rem;
+}
+
+.charts-row-3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+}
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 1.25rem;
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+}
+
+.card-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.card-sub {
+  font-size: 0.58rem;
+  color: var(--ink2);
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  margin-top: 0.2rem;
+}
+
+.tag {
+  font-size: 0.58rem;
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+.tag-green { background: rgba(163,230,53,0.12); color: var(--accent); }
+.tag-blue  { background: rgba(96,165,250,0.12); color: var(--blue); }
+.tag-red   { background: rgba(248,113,113,0.12); color: var(--red); }
+.tag-yellow{ background: rgba(251,191,36,0.12); color: var(--yellow); }
+
+/* SEMANA TABLE */
+.table-wrap { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-size: 0.68rem; }
+thead th {
+  color: var(--ink2);
+  font-size: 0.58rem;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  font-weight: 400;
+  padding: 0.5rem 0.75rem;
+  text-align: right;
+  border-bottom: 1px solid var(--border);
+}
+thead th:first-child { text-align: left; }
+tbody tr { border-bottom: 1px solid rgba(255,255,255,0.03); transition: background 0.1s; }
+tbody tr:hover { background: rgba(255,255,255,0.02); }
+tbody td { padding: 0.5rem 0.75rem; text-align: right; }
+tbody td:first-child { text-align: left; color: var(--ink2); font-size: 0.62rem; }
+.pos { color: var(--accent2); }
+.neg { color: var(--red); }
+.neutral { color: var(--ink); }
+
+/* LAST WEEK HIGHLIGHT */
+.last-week-col { background: rgba(163,230,53,0.04); }
+
+/* ERROR */
+.error-msg {
+  text-align: center;
+  padding: 3rem;
+  color: var(--red);
+  font-size: 0.75rem;
+  letter-spacing: 1px;
+}
+
+@media (max-width: 900px) {
+  .kpi-row { grid-template-columns: repeat(3,1fr); }
+  .charts-row, .charts-row-3 { grid-template-columns: 1fr; }
+  .main { padding: 1rem; }
+}
+</style>
+</head>
+<body>
+
+<!-- LOADING -->
+<div id="loading">
+  <div class="loading-logo">RS Dashboard</div>
+  <div class="loading-dots"><span></span><span></span><span></span></div>
+  <div class="loading-msg">CONECTANDO CON GOOGLE SHEETS...</div>
+</div>
+
+<!-- APP -->
+<div id="app">
+  <div class="topbar">
+    <div class="logo">RS Dashboard</div>
+    <div class="topbar-right">
+      <div class="last-updated" id="last-updated">—</div>
+      <div class="weeks-filter">
+        <button class="wf-btn" onclick="setFilter(8,this)">8S</button>
+        <button class="wf-btn active" onclick="setFilter(12,this)">12S</button>
+        <button class="wf-btn" onclick="setFilter(26,this)">26S</button>
+        <button class="wf-btn" onclick="setFilter(0,this)">Todo</button>
+      </div>
+      <button class="refresh-btn" onclick="loadData()">↺ ACTUALIZAR</button>
+    </div>
+  </div>
+
+  <div class="main">
+    <!-- KPIs -->
+    <div class="kpi-row" id="kpi-row"></div>
+
+    <!-- Chart row 1 -->
+    <div class="charts-row">
+      <div class="card">
+        <div class="card-header">
+          <div><div class="card-title">Ventas Semanales</div><div class="card-sub">Total con IVA · CLP</div></div>
+          <span class="tag tag-green">VENTAS</span>
+        </div>
+        <canvas id="salesChart" height="100"></canvas>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <div><div class="card-title">Margen Bruto</div><div class="card-sub">% semanal</div></div>
+          <span class="tag tag-blue">MARGEN</span>
+        </div>
+        <canvas id="marginChart" height="100"></canvas>
+      </div>
+    </div>
+
+    <!-- Chart row 2 -->
+    <div class="charts-row">
+      <div class="card">
+        <div class="card-header">
+          <div><div class="card-title">Recaudación Total</div><div class="card-sub">Transferencias + cheques + factoring</div></div>
+          <span class="tag tag-yellow">COBROS</span>
+        </div>
+        <canvas id="recaudChart" height="100"></canvas>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <div><div class="card-title">Compras ENAP</div><div class="card-sub">Total con IVA</div></div>
+          <span class="tag tag-red">COMPRAS</span>
+        </div>
+        <canvas id="comprasChart" height="100"></canvas>
+      </div>
+    </div>
+
+    <!-- Chart row 3 -->
+    <div class="charts-row-3">
+      <div class="card">
+        <div class="card-header">
+          <div><div class="card-title">Litros</div><div class="card-sub">Real vs Presupuesto</div></div>
+        </div>
+        <canvas id="litrosChart" height="140"></canvas>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <div><div class="card-title">Precio Promedio</div><div class="card-sub">$/litro</div></div>
+        </div>
+        <canvas id="precioChart" height="140"></canvas>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <div><div class="card-title">Caja Disponible</div><div class="card-sub">Banco Chile + Santander + ENAP</div></div>
+        </div>
+        <canvas id="cajaChart" height="140"></canvas>
+      </div>
+    </div>
+
+    <!-- Table -->
+    <div class="card">
+      <div class="card-header">
+        <div><div class="card-title">Resumen Semanal</div><div class="card-sub">Últimas semanas · click para copiar</div></div>
+      </div>
+      <div class="table-wrap">
+        <table id="main-table">
+          <thead>
+            <tr>
+              <th>Semana</th>
+              <th>Ventas $</th>
+              <th>Litros</th>
+              <th>Desv. Ppto</th>
+              <th>Margen</th>
+              <th>Precio/L</th>
+              <th>Recaudación</th>
+              <th>Compras ENAP</th>
+              <th>Caja</th>
+            </tr>
+          </thead>
+          <tbody id="table-body"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const SHEET_ID = '2PACX-1vQIaJPtTTXcbMQv5adP6jlJeQx4YRmMF8c-6vS6nwwmrNpliIKcN7-IDo8GV-5huZeAjm5EYH7Tzudf';
+const CSV_URL = `https://docs.google.com/spreadsheets/d/e/${SHEET_ID}/pub?output=csv`;
+// Proxy para evitar CORS cuando se abre como archivo local
+const PROXY_URL = `https://corsproxy.io/?${encodeURIComponent(CSV_URL)}`;
+
+let allWeeks = [];
+let filterN = 12;
+const charts = {};
+
+// ---- PARSE ----
+function parseCSVRow(row) {
+  const res = []; let cur = '', inQ = false;
+  for (const ch of row) {
+    if (ch === '"') inQ = !inQ;
+    else if (ch === ',' && !inQ) { res.push(cur.trim()); cur = ''; }
+    else cur += ch;
+  }
+  res.push(cur.trim());
+  return res;
+}
+
+function parseNum(v) {
+  if (v == null || v === '' || v === '-') return null;
+  const s = String(v).replace(/"/g,'').replace(/\s/g,'').replace(/\$/g,'');
+  if (s.includes('%')) return parseFloat(s.replace('%','').replace(/\./g,'').replace(',','.')) / 100;
+  const dots = (s.match(/\./g)||[]).length;
+  let n = s;
+  if (dots > 1) n = s.replace(/\./g,'').replace(',','.');
+  else if (dots === 1 && s.includes(',')) n = s.replace('.','').replace(',','.');
+  else if (!s.includes('.') && s.includes(',')) n = s.replace(',','.');
+  return parseFloat(n) || null;
+}
+
+function fmtM(n) { if (!n) return '—'; return '$' + (n/1e6).toFixed(1) + 'M'; }
+function fmtCLP(n) { if (!n) return '—'; return Math.round(n).toLocaleString('es-CL'); }
+function fmtPct(n) { if (!n) return '—'; return (n*100).toFixed(2)+'%'; }
+
+// ---- LOAD ----
+async function loadData() {
+  document.getElementById('loading').style.display = 'flex';
+  document.getElementById('app').style.display = 'none';
+
+  try {
+    // Intenta directo primero, si falla usa proxy
+    let resp;
+    try {
+      resp = await fetch(CSV_URL + '&t=' + Date.now());
+      if (!resp.ok) throw new Error('direct failed');
+    } catch(e) {
+      resp = await fetch(PROXY_URL);
+    }
+    const text = await resp.text();
+    const rows = text.split('\n').map(r => parseCSVRow(r));
+
+    // Find key rows
+    const find = (...terms) => rows.findIndex(r => terms.some(t => (r[0]||'').toLowerCase().includes(t)));
+    const semanaIdx   = find('semana');
+    const ventasIdx   = find('en $');
+    const litrosIdx   = find('litros vendido');
+    const litrosPptoIdx = find('litros presupuesto');
+    const comprasIdx  = find('número de compras');
+    const clientesIdx = find('número de clientes');
+    const desvIdx     = find('desviación');
+    const margenIdx   = find('margen bruto');
+    const precioIdx   = find('precio venta');
+    const cajaIdx     = find('caja disponible');
+    const recaudIdx   = find('recaudacion total', 'recaudación total');
+    const transfIdx   = find('transferencia/depositos chile');
+    const chequesIdx  = find('cheques depositados');
+    const factoringIdx= find('factoring');
+    const comprasEnapIdx = find('compras enap');
+
+    if (semanaIdx < 0) throw new Error('No se encontró la fila Semana');
+
+    const semanaRow = rows[semanaIdx];
+    const weeks = [];
+
+    // Find valid columns (has semana label, skip Average)
+    for (let c = 1; c < semanaRow.length; c++) {
+      const label = (semanaRow[c]||'').trim();
+      if (!label || label.toLowerCase().includes('average') || label.toLowerCase().includes('promedio')) continue;
+
+      const g = (idx) => idx >= 0 ? parseNum(rows[idx]?.[c]) : null;
+
+      const ventas    = g(ventasIdx);
+      const litros    = g(litrosIdx);
+      if (!ventas && !litros) continue; // skip empty cols
+
+      weeks.push({
+        semana:    label,
+        ventas,
+        litros,
+        litrosPpto: g(litrosPptoIdx),
+        nCompras:   g(comprasIdx),
+        nClientes:  g(clientesIdx),
+        desv:       g(desvIdx),
+        margen:     g(margenIdx),
+        precio:     g(precioIdx),
+        caja:       g(cajaIdx),
+        recaud:     g(recaudIdx),
+        transf:     g(transfIdx),
+        cheques:    g(chequesIdx),
+        factoring:  g(factoringIdx),
+        comprasEnap:g(comprasEnapIdx),
+      });
+    }
+
+    allWeeks = weeks;
+    document.getElementById('last-updated').textContent = 'Actualizado: ' + new Date().toLocaleTimeString('es-CL');
+    document.getElementById('loading').style.display = 'none';
+    document.getElementById('app').style.display = 'block';
+    render();
+
+  } catch(e) {
+    document.getElementById('loading').innerHTML = `<div class="error-msg">Error al cargar datos: ${e.message}<br><br><button onclick="loadData()" style="margin-top:1rem;padding:0.5rem 1rem;background:#f87171;color:white;border:none;border-radius:6px;cursor:pointer;">REINTENTAR</button></div>`;
+    console.error(e);
+  }
+}
+
+// ---- FILTER ----
+function setFilter(n, btn) {
+  filterN = n;
+  document.querySelectorAll('.wf-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  render();
+}
+
+function filtered() {
+  if (!filterN) return allWeeks;
+  return allWeeks.slice(-filterN);
+}
+
+// ---- RENDER ----
+function render() {
+  const weeks = filtered();
+  if (!weeks.length) return;
+  renderKPIs(weeks);
+  renderCharts(weeks);
+  renderTable(weeks);
+}
+
+function delta(weeks, key) {
+  const last = weeks[weeks.length-1]?.[key];
+  const prev = weeks[weeks.length-2]?.[key];
+  if (!last || !prev) return null;
+  return ((last-prev)/Math.abs(prev)*100);
+}
+
+function renderKPIs(weeks) {
+  const last = weeks[weeks.length-1];
+  const avg = (key) => { const vals = weeks.map(w=>w[key]).filter(Boolean); return vals.length ? vals.reduce((a,b)=>a+b,0)/vals.length : null; };
+
+  const d = (key) => {
+    const v = delta(weeks, key);
+    if (v==null) return '<span class="delta-neutral">—</span>';
+    return v>=0
+      ? `<span class="delta-up">↑ ${Math.abs(v).toFixed(1)}% vs ant.</span>`
+      : `<span class="delta-down">↓ ${Math.abs(v).toFixed(1)}% vs ant.</span>`;
+  };
+
+  const kpis = [
+    { label:'Ventas Última Semana', val: fmtM(last.ventas), delta: d('ventas'), accent:'var(--accent)' },
+    { label:'Litros Vendidos', val: fmtCLP(last.litros), delta: d('litros'), accent:'var(--accent2)' },
+    { label:'Margen Bruto', val: fmtPct(last.margen), delta: d('margen'), accent:'var(--blue)' },
+    { label:'Precio Prom./Litro', val: last.precio ? '$'+Math.round(last.precio).toLocaleString('es-CL') : '—', delta: d('precio'), accent:'var(--yellow)' },
+    { label:'Recaudación', val: fmtM(last.recaud), delta: d('recaud'), accent:'var(--accent)' },
+    { label:'Caja Disponible', val: fmtM(last.caja), delta: d('caja'), accent: last.caja > 50e6 ? 'var(--accent2)' : 'var(--red)' },
+  ];
+
+  document.getElementById('kpi-row').innerHTML = kpis.map(k => `
+    <div class="kpi" style="--kpi-accent:${k.accent}">
+      <div class="kpi-label">${k.label}</div>
+      <div class="kpi-val">${k.val}</div>
+      <div class="kpi-delta">${k.delta}</div>
+    </div>
+  `).join('');
+}
+
+// Chart defaults
+const CD = {
+  responsive: true,
+  plugins: {
+    legend: { display: false },
+    tooltip: {
+      backgroundColor:'#1a1f1c', borderColor:'#232824', borderWidth:1,
+      titleColor:'#5a6358', bodyColor:'#e8ede9',
+      titleFont:{family:'IBM Plex Mono',size:9},
+      bodyFont:{family:'IBM Plex Mono',size:11}, padding:10,
+    }
+  },
+  scales: {
+    x: { grid:{color:'rgba(255,255,255,0.03)'}, ticks:{color:'#5a6358',font:{family:'IBM Plex Mono',size:9},maxTicksLimit:8,maxRotation:30} },
+    y: { grid:{color:'rgba(255,255,255,0.05)'}, ticks:{color:'#5a6358',font:{family:'IBM Plex Mono',size:9},callback:(v)=>v>=1e6?(v/1e6).toFixed(0)+'M':v>=1e3?(v/1e3).toFixed(0)+'K':v} }
+  }
+};
+
+function mkChart(id, cfg) {
+  if (charts[id]) charts[id].destroy();
+  charts[id] = new Chart(document.getElementById(id).getContext('2d'), cfg);
+}
+
+function labels(weeks) {
+  return weeks.map(w => {
+    const s = w.semana.replace(/\s+/g,'-');
+    // Show just start date
+    return s.split('-')[0] || s.slice(0,8);
+  });
+}
+
+function renderCharts(weeks) {
+  const lb = labels(weeks);
+
+  // Sales
+  mkChart('salesChart', { type:'line', data:{ labels:lb, datasets:[{
+    data: weeks.map(w=>w.ventas),
+    borderColor:'#a3e635', backgroundColor:'rgba(163,230,53,0.07)',
+    borderWidth:2, pointRadius:2, pointHoverRadius:5, fill:true, tension:0.3
+  }]}, options:{...CD, plugins:{...CD.plugins, tooltip:{...CD.plugins.tooltip, callbacks:{label:(c)=>'$ '+Math.round(c.raw).toLocaleString('es-CL')}}}} });
+
+  // Margin
+  const mVals = weeks.map(w=>w.margen ? w.margen*100 : null);
+  mkChart('marginChart', { type:'bar', data:{ labels:lb, datasets:[{
+    data: mVals,
+    backgroundColor: mVals.map(v => v==null?'rgba(90,99,88,0.3)': v>=11?'rgba(52,211,153,0.7)':'rgba(248,113,113,0.6)'),
+    borderRadius:3,
+  }]}, options:{...CD, plugins:{...CD.plugins, tooltip:{...CD.plugins.tooltip, callbacks:{label:(c)=>' '+(c.raw||0).toFixed(2)+'%'}}}, scales:{...CD.scales, y:{...CD.scales.y, ticks:{...CD.scales.y.ticks,callback:(v)=>v+'%'}}}} });
+
+  // Recaudacion
+  mkChart('recaudChart', { type:'bar', data:{ labels:lb, datasets:[
+    { label:'Transferencias', data:weeks.map(w=>w.transf), backgroundColor:'rgba(96,165,250,0.65)', borderRadius:2, stack:'s' },
+    { label:'Cheques', data:weeks.map(w=>w.cheques), backgroundColor:'rgba(163,230,53,0.5)', borderRadius:2, stack:'s' },
+    { label:'Factoring', data:weeks.map(w=>w.factoring), backgroundColor:'rgba(251,191,36,0.5)', borderRadius:2, stack:'s' },
+  ]}, options:{...CD, plugins:{...CD.plugins, legend:{display:true,labels:{color:'#5a6358',font:{family:'IBM Plex Mono',size:9},boxWidth:10}}}, scales:{...CD.scales}} });
+
+  // Compras ENAP
+  mkChart('comprasChart', { type:'line', data:{ labels:lb, datasets:[{
+    data: weeks.map(w=>w.comprasEnap),
+    borderColor:'#f87171', backgroundColor:'rgba(248,113,113,0.07)',
+    borderWidth:2, pointRadius:2, fill:true, tension:0.3
+  }]}, options:{...CD, plugins:{...CD.plugins, tooltip:{...CD.plugins.tooltip, callbacks:{label:(c)=>'$ '+Math.round(c.raw).toLocaleString('es-CL')}}}} });
+
+  // Litros
+  mkChart('litrosChart', { type:'bar', data:{ labels:lb, datasets:[
+    { label:'Real', data:weeks.map(w=>w.litros), backgroundColor:'rgba(163,230,53,0.65)', borderRadius:2 },
+    { label:'Ppto', data:weeks.map(w=>w.litrosPpto), type:'line', borderColor:'rgba(251,191,36,0.8)', borderWidth:1.5, pointRadius:0, fill:false, tension:0 },
+  ]}, options:{...CD, plugins:{...CD.plugins, legend:{display:true,labels:{color:'#5a6358',font:{family:'IBM Plex Mono',size:9},boxWidth:10}}}} });
+
+  // Precio
+  mkChart('precioChart', { type:'line', data:{ labels:lb, datasets:[{
+    data: weeks.map(w=>w.precio),
+    borderColor:'#fbbf24', backgroundColor:'rgba(251,191,36,0.07)',
+    borderWidth:2, pointRadius:2, fill:true, tension:0.3
+  }]}, options:{...CD, plugins:{...CD.plugins, tooltip:{...CD.plugins.tooltip, callbacks:{label:(c)=>'$'+Math.round(c.raw).toLocaleString('es-CL')+'/L'}}}} });
+
+  // Caja
+  const cajaVals = weeks.map(w=>w.caja);
+  mkChart('cajaChart', { type:'bar', data:{ labels:lb, datasets:[{
+    data: cajaVals,
+    backgroundColor: cajaVals.map(v => !v?'rgba(90,99,88,0.3)': v>=50e6?'rgba(52,211,153,0.65)':'rgba(248,113,113,0.55)'),
+    borderRadius:3,
+  }]}, options:{...CD} });
+}
+
+function renderTable(weeks) {
+  const last10 = weeks.slice(-10).reverse();
+  const lastSemana = weeks[weeks.length-1]?.semana;
+  document.getElementById('table-body').innerHTML = last10.map(w => {
+    const isLast = w.semana === lastSemana;
+    const desvClass = !w.desv ? '' : w.desv >= 0.9 ? 'pos' : w.desv < 0.7 ? 'neg' : 'neutral';
+    return `<tr>
+      <td style="${isLast?'color:var(--accent);font-weight:500;':''}">${w.semana}</td>
+      <td class="neutral">${fmtM(w.ventas)}</td>
+      <td class="neutral">${fmtCLP(w.litros)}</td>
+      <td class="${desvClass}">${w.desv ? (w.desv*100).toFixed(0)+'%' : '—'}</td>
+      <td class="${!w.margen?'':'w.margen>=0.11?pos:neg'}">${fmtPct(w.margen)}</td>
+      <td class="neutral">${w.precio ? '$'+Math.round(w.precio).toLocaleString('es-CL') : '—'}</td>
+      <td class="neutral">${fmtM(w.recaud)}</td>
+      <td class="neutral">${fmtM(w.comprasEnap)}</td>
+      <td class="${!w.caja?'':w.caja>=50e6?'pos':'neg'}">${fmtM(w.caja)}</td>
+    </tr>`;
+  }).join('');
+}
+
+// Init
+loadData();
+</script>
+</body>
+</html>
