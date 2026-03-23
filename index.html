@@ -1,4 +1,3 @@
-cat "/Users/paulinevial/Downloads/index (1).html" | pbcopy
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -126,7 +125,6 @@ body {
 }
 .refresh-btn:hover { border-color: var(--accent2); color: var(--accent2); }
 
-/* TABS */
 .tabs {
   display: flex;
   gap: 0;
@@ -233,7 +231,6 @@ tbody td:first-child { text-align: left; color: var(--ink2); font-size: 0.62rem;
 
 .error-msg { text-align: center; padding: 3rem; color: var(--red); font-size: 0.75rem; letter-spacing: 1px; }
 
-/* CRM SPECIFIC */
 .crm-kpi-row {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -357,7 +354,6 @@ tbody td:first-child { text-align: left; color: var(--ink2); font-size: 0.62rem;
     <button class="tab-btn" onclick="switchTab('crm', this)">CRM Pipeline</button>
   </div>
 
-  <!-- VENTAS TAB -->
   <div class="tab-panel active" id="tab-ventas">
     <div class="main">
       <div class="kpi-row" id="kpi-row"></div>
@@ -384,19 +380,18 @@ tbody td:first-child { text-align: left; color: var(--ink2); font-size: 0.62rem;
             <span class="tag tag-yellow">COBROS</span>
           </div>
           <canvas id="recaudChart" height="70"></canvas>
-          <canvas id="comprasChart" style="display:none"></canvas>
         </div>
       </div>
       <div class="card">
         <div class="card-header">
-          <div><div class="card-title">Litros Vendidos vs Presupuesto</div><div class="card-sub">Real vs meta semanal · con etiquetas</div></div>
+          <div><div class="card-title">Litros Vendidos vs Presupuesto</div><div class="card-sub">Real vs meta semanal</div></div>
           <span class="tag tag-green">LITROS</span>
         </div>
         <canvas id="litrosChart" height="60"></canvas>
       </div>
       <div class="card">
         <div class="card-header">
-          <div><div class="card-title">Resumen Semanal</div><div class="card-sub">Últimas semanas · click para copiar</div></div>
+          <div><div class="card-title">Resumen Semanal</div><div class="card-sub">Últimas semanas</div></div>
         </div>
         <div class="table-wrap">
           <table id="main-table">
@@ -413,7 +408,6 @@ tbody td:first-child { text-align: left; color: var(--ink2); font-size: 0.62rem;
     </div>
   </div>
 
-  <!-- CRM TAB -->
   <div class="tab-panel" id="tab-crm">
     <div class="main" id="crm-content">
       <div class="crm-loading">
@@ -434,11 +428,8 @@ const ODOO_DB = 'tomenergy';
 const ODOO_USER = 'made@tomenergy.cl';
 const ODOO_KEY = '7bbfca1bddd30d9816ed9ee1268370c9941e71fe';
 
-let allWeeks = [];
-let filterN = 12;
+let allWeeks = [], filterN = 12, crmLoaded = false, currentTab = 'ventas';
 const charts = {};
-let crmLoaded = false;
-let currentTab = 'ventas';
 
 function switchTab(tab, btn) {
   currentTab = tab;
@@ -446,38 +437,20 @@ function switchTab(tab, btn) {
   btn.classList.add('active');
   document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
   document.getElementById('tab-' + tab).classList.add('active');
-
   const wf = document.getElementById('weeks-filter');
-  if (tab === 'crm') {
-    wf.style.display = 'none';
-    if (!crmLoaded) loadCRM();
-  } else {
-    wf.style.display = 'flex';
-  }
+  if (tab === 'crm') { wf.style.display = 'none'; if (!crmLoaded) loadCRM(); }
+  else wf.style.display = 'flex';
 }
 
 function refreshCurrent() {
-  if (currentTab === 'crm') {
-    crmLoaded = false;
-    loadCRM();
-  } else {
-    loadData();
-  }
+  if (currentTab === 'crm') { crmLoaded = false; loadCRM(); }
+  else loadData();
 }
 
-// ---- ODOO CRM ----
 async function odooCall(model, method, args, kwargs) {
   const resp = await fetch(ODOO_URL + '/web/dataset/call_kw', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      jsonrpc: '2.0', method: 'call', id: 1,
-      params: {
-        model, method,
-        args, kwargs,
-        context: {}
-      }
-    }),
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ jsonrpc:'2.0', method:'call', id:1, params:{ model, method, args, kwargs, context:{} } }),
     credentials: 'include'
   });
   const data = await resp.json();
@@ -487,13 +460,8 @@ async function odooCall(model, method, args, kwargs) {
 
 async function odooAuth() {
   const resp = await fetch(ODOO_URL + '/web/session/authenticate', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    credentials: 'include',
-    body: JSON.stringify({
-      jsonrpc: '2.0', method: 'call', id: 1,
-      params: { db: ODOO_DB, login: ODOO_USER, password: ODOO_KEY }
-    })
+    method: 'POST', headers: { 'Content-Type': 'application/json' }, credentials: 'include',
+    body: JSON.stringify({ jsonrpc:'2.0', method:'call', id:1, params:{ db:ODOO_DB, login:ODOO_USER, password:ODOO_KEY } })
   });
   const data = await resp.json();
   if (!data.result?.uid) throw new Error('Auth failed');
@@ -501,239 +469,106 @@ async function odooAuth() {
 }
 
 async function loadCRM() {
-  document.getElementById('crm-content').innerHTML = `
-    <div class="crm-loading">
-      <div class="loading-dots"><span></span><span></span><span></span></div>
-      <div>CONECTANDO CON ODOO CRM...</div>
-    </div>`;
-
+  document.getElementById('crm-content').innerHTML = `<div class="crm-loading"><div class="loading-dots"><span></span><span></span><span></span></div><div>CONECTANDO CON ODOO CRM...</div></div>`;
   try {
     await odooAuth();
-
-    const leads = await odooCall('crm.lead', 'search_read',
-      [[['type','=','opportunity']]],
-      { fields: ['name','stage_id','user_id','expected_revenue','partner_id'], limit: 500 }
-    );
-
-    const activities = await odooCall('mail.activity', 'search_read',
-      [[['res_model','=','crm.lead']]],
-      { fields: ['user_id','activity_type_id','date_deadline'], limit: 1000 }
-    );
-
+    const leads = await odooCall('crm.lead','search_read',[[['type','=','opportunity']]],{fields:['name','stage_id','user_id','expected_revenue','partner_id'],limit:500});
+    const activities = await odooCall('mail.activity','search_read',[[['res_model','=','crm.lead']]],{fields:['user_id','activity_type_id','date_deadline'],limit:1000});
     crmLoaded = true;
     renderCRM(leads, activities);
-
   } catch(e) {
-    document.getElementById('crm-content').innerHTML = `
-      <div class="crm-loading" style="color:var(--red)">
-        Error conectando con Odoo: ${e.message}<br><br>
-        <button onclick="crmLoaded=false;loadCRM()" style="margin-top:1rem;padding:0.4rem 1rem;background:transparent;color:var(--red);border:1px solid var(--red);border-radius:6px;cursor:pointer;font-family:'IBM Plex Mono',monospace;font-size:0.65rem">REINTENTAR</button>
-      </div>`;
+    document.getElementById('crm-content').innerHTML = `<div class="crm-loading" style="color:var(--red)">Error conectando con Odoo: ${e.message}<br><br><button onclick="crmLoaded=false;loadCRM()" style="margin-top:1rem;padding:0.4rem 1rem;background:transparent;color:var(--red);border:1px solid var(--red);border-radius:6px;cursor:pointer;font-family:'IBM Plex Mono',monospace;font-size:0.65rem">REINTENTAR</button></div>`;
   }
 }
 
 function renderCRM(leads, activities) {
   const stages = ['Ruta','Oportunidad de Negocio','Contactado','Cotizado','No Cerrados','Durmiente','Won','Perdidos'];
-  const stageColors = {
-    'Ruta':'var(--blue)', 'Oportunidad de Negocio':'var(--purple)',
-    'Contactado':'var(--accent2)', 'Cotizado':'var(--orange)',
-    'No Cerrados':'var(--yellow)', 'Durmiente':'var(--ink2)',
-    'Won':'var(--accent)', 'Perdidos':'var(--red)'
-  };
-
-  const byStage = {};
-  stages.forEach(s => byStage[s] = 0);
+  const stageColors = {'Ruta':'var(--blue)','Oportunidad de Negocio':'var(--purple)','Contactado':'var(--accent2)','Cotizado':'var(--orange)','No Cerrados':'var(--yellow)','Durmiente':'var(--ink2)','Won':'var(--accent)','Perdidos':'var(--red)'};
+  const byStage = {}; stages.forEach(s => byStage[s] = 0);
   const byVendor = {};
-
   leads.forEach(l => {
-    const stage = l.stage_id?.[1] || 'Sin etapa';
-    const vendor = l.user_id?.[1] || 'Sin asignar';
-    if (byStage[stage] !== undefined) byStage[stage]++;
-    if (!byVendor[vendor]) byVendor[vendor] = { ...Object.fromEntries(stages.map(s=>[s,0])), total:0 };
-    if (byVendor[vendor][stage] !== undefined) byVendor[vendor][stage]++;
+    const stage = l.stage_id?.[1]||'Sin etapa', vendor = l.user_id?.[1]||'Sin asignar';
+    if (byStage[stage]!==undefined) byStage[stage]++;
+    if (!byVendor[vendor]) byVendor[vendor] = {...Object.fromEntries(stages.map(s=>[s,0])),total:0};
+    if (byVendor[vendor][stage]!==undefined) byVendor[vendor][stage]++;
     byVendor[vendor].total++;
   });
-
   const byVendorAct = {};
-  activities.forEach(a => {
-    const vendor = a.user_id?.[1] || 'Sin asignar';
-    if (!byVendorAct[vendor]) byVendorAct[vendor] = 0;
-    byVendorAct[vendor]++;
-  });
-
-  const total = leads.length;
-  const totalCotizado = byStage['Cotizado'] || 0;
-  const totalWon = byStage['Won'] || 0;
-  const totalNoCerrado = byStage['No Cerrados'] || 0;
-  const totalAct = activities.length;
-  const convRate = totalCotizado > 0 ? Math.round(totalWon / totalCotizado * 100) : 0;
-
-  const initials = name => name.split(' ').slice(0,2).map(w=>w[0]||'').join('').toUpperCase();
-  const avatarColors = ['rgba(96,165,250,0.2)','rgba(52,211,153,0.2)','rgba(251,146,60,0.2)','rgba(167,139,250,0.2)','rgba(163,230,53,0.2)'];
-  const textColors = ['var(--blue)','var(--accent2)','var(--orange)','var(--purple)','var(--accent)'];
-  let colorIdx = 0;
-  const vendorColors = {};
-  Object.keys(byVendor).forEach(v => {
-    vendorColors[v] = { bg: avatarColors[colorIdx % avatarColors.length], color: textColors[colorIdx % textColors.length] };
-    colorIdx++;
-  });
-
-  const maxStage = Math.max(...Object.values(byStage), 1);
-
-  const vendorRows = Object.entries(byVendor)
-    .sort((a,b) => b[1].total - a[1].total)
-    .map(([vendor, data]) => {
-      const vc = vendorColors[vendor] || { bg: avatarColors[0], color: textColors[0] };
-      const cotPill = data['Cotizado'] > 10 ? 'pill-orange' : data['Cotizado'] > 0 ? 'pill-blue' : 'pill-gray';
-      const wonPill = data['Won'] > 3 ? 'pill-green' : data['Won'] > 0 ? 'pill-blue' : 'pill-gray';
-      const perdPill = data['Perdidos'] > 3 ? 'pill-red' : data['Perdidos'] > 0 ? 'pill-orange' : 'pill-gray';
-      return `<tr>
-        <td><div class="vendor-name">
-          <div class="avatar" style="background:${vc.bg};color:${vc.color}">${initials(vendor)}</div>
-          <span style="font-size:0.65rem;color:var(--ink)">${vendor.split(' ').slice(0,2).join(' ')}</span>
-        </div></td>
-        <td><span class="pill pill-blue">${data['Ruta']}</span></td>
-        <td><span class="pill ${cotPill}">${data['Cotizado']}</span></td>
-        <td><span class="pill pill-gray">${data['No Cerrados']}</span></td>
-        <td><span class="pill ${wonPill}">${data['Won']}</span></td>
-        <td><span class="pill ${perdPill}">${data['Perdidos']}</span></td>
-        <td style="color:var(--ink);font-weight:500">${data.total}</td>
-        <td style="color:var(--accent2)">${byVendorAct[vendor] || 0}</td>
-      </tr>`;
-    }).join('');
-
-  const stageBars = stages.map(s => `
-    <div class="stage-bar-wrap">
-      <div class="stage-bar-label">
-        <span>${s}</span>
-        <span>${byStage[s] || 0} ops</span>
-      </div>
-      <div class="bar-track">
-        <div class="bar-fill" style="width:${Math.round((byStage[s]||0)/maxStage*100)}%;background:${stageColors[s]}"></div>
-      </div>
-    </div>`).join('');
-
+  activities.forEach(a => { const v=a.user_id?.[1]||'Sin asignar'; byVendorAct[v]=(byVendorAct[v]||0)+1; });
+  const total=leads.length, totalCotizado=byStage['Cotizado']||0, totalWon=byStage['Won']||0;
+  const totalNoCerrado=byStage['No Cerrados']||0, totalAct=activities.length;
+  const convRate=totalCotizado>0?Math.round(totalWon/totalCotizado*100):0;
+  const initials=name=>name.split(' ').slice(0,2).map(w=>w[0]||'').join('').toUpperCase();
+  const avatarColors=['rgba(96,165,250,0.2)','rgba(52,211,153,0.2)','rgba(251,146,60,0.2)','rgba(167,139,250,0.2)','rgba(163,230,53,0.2)'];
+  const textColors=['var(--blue)','var(--accent2)','var(--orange)','var(--purple)','var(--accent)'];
+  let ci=0; const vc={};
+  Object.keys(byVendor).forEach(v=>{vc[v]={bg:avatarColors[ci%avatarColors.length],color:textColors[ci%textColors.length]};ci++;});
+  const maxStage=Math.max(...Object.values(byStage),1);
+  const vendorRows=Object.entries(byVendor).sort((a,b)=>b[1].total-a[1].total).map(([vendor,data])=>{
+    const c=vc[vendor]||{bg:avatarColors[0],color:textColors[0]};
+    return `<tr><td><div class="vendor-name"><div class="avatar" style="background:${c.bg};color:${c.color}">${initials(vendor)}</div><span style="font-size:0.65rem;color:var(--ink)">${vendor.split(' ').slice(0,2).join(' ')}</span></div></td>
+    <td><span class="pill pill-blue">${data['Ruta']}</span></td>
+    <td><span class="pill ${data['Cotizado']>10?'pill-orange':data['Cotizado']>0?'pill-blue':'pill-gray'}">${data['Cotizado']}</span></td>
+    <td><span class="pill pill-gray">${data['No Cerrados']}</span></td>
+    <td><span class="pill ${data['Won']>3?'pill-green':data['Won']>0?'pill-blue':'pill-gray'}">${data['Won']}</span></td>
+    <td><span class="pill ${data['Perdidos']>3?'pill-red':data['Perdidos']>0?'pill-orange':'pill-gray'}">${data['Perdidos']}</span></td>
+    <td style="color:var(--ink);font-weight:500">${data.total}</td>
+    <td style="color:var(--accent2)">${byVendorAct[vendor]||0}</td></tr>`;
+  }).join('');
+  const stageBars=stages.map(s=>`<div class="stage-bar-wrap"><div class="stage-bar-label"><span>${s}</span><span>${byStage[s]||0} ops</span></div><div class="bar-track"><div class="bar-fill" style="width:${Math.round((byStage[s]||0)/maxStage*100)}%;background:${stageColors[s]}"></div></div></div>`).join('');
   document.getElementById('crm-content').innerHTML = `
     <div class="crm-kpi-row">
-      <div class="kpi" style="--kpi-accent:var(--blue)">
-        <div class="kpi-label">Total oportunidades</div>
-        <div class="kpi-val">${total}</div>
-        <div class="kpi-delta"><span class="delta-neutral">Pipeline activo 2026</span></div>
-      </div>
-      <div class="kpi" style="--kpi-accent:var(--orange)">
-        <div class="kpi-label">Cotizados pendientes</div>
-        <div class="kpi-val">${totalCotizado}</div>
-        <div class="kpi-delta"><span class="${totalCotizado > 30 ? 'delta-down' : 'delta-neutral'}">${Math.round(totalCotizado/total*100)}% del pipeline</span></div>
-      </div>
-      <div class="kpi" style="--kpi-accent:var(--accent)">
-        <div class="kpi-label">Won · conv. rate</div>
-        <div class="kpi-val">${totalWon}</div>
-        <div class="kpi-delta"><span class="${convRate < 15 ? 'delta-down' : 'delta-up'}">${convRate}% cotizado→won</span></div>
-      </div>
-      <div class="kpi" style="--kpi-accent:var(--accent2)">
-        <div class="kpi-label">Actividades pendientes</div>
-        <div class="kpi-val">${totalAct}</div>
-        <div class="kpi-delta"><span class="delta-neutral">En todos los vendedores</span></div>
-      </div>
+      <div class="kpi" style="--kpi-accent:var(--blue)"><div class="kpi-label">Total oportunidades</div><div class="kpi-val">${total}</div><div class="kpi-delta"><span class="delta-neutral">Pipeline activo 2026</span></div></div>
+      <div class="kpi" style="--kpi-accent:var(--orange)"><div class="kpi-label">Cotizados pendientes</div><div class="kpi-val">${totalCotizado}</div><div class="kpi-delta"><span class="${totalCotizado>30?'delta-down':'delta-neutral'}">${Math.round(totalCotizado/total*100)}% del pipeline</span></div></div>
+      <div class="kpi" style="--kpi-accent:var(--accent)"><div class="kpi-label">Won · conv. rate</div><div class="kpi-val">${totalWon}</div><div class="kpi-delta"><span class="${convRate<15?'delta-down':'delta-up'}">${convRate}% cotizado→won</span></div></div>
+      <div class="kpi" style="--kpi-accent:var(--accent2)"><div class="kpi-label">Actividades pendientes</div><div class="kpi-val">${totalAct}</div><div class="kpi-delta"><span class="delta-neutral">En todos los vendedores</span></div></div>
     </div>
-
     <div class="crm-grid">
       <div class="card">
-        <div class="card-header">
-          <div><div class="card-title">Pipeline por vendedor</div><div class="card-sub">Oportunidades activas · live</div></div>
-          <span class="tag tag-purple">CRM LIVE</span>
-        </div>
-        <div class="table-wrap">
-          <table class="crm-table">
-            <thead>
-              <tr>
-                <th style="text-align:left">Vendedor</th>
-                <th>Ruta</th><th>Cotizado</th><th>No cerr.</th>
-                <th>Won</th><th>Perdidos</th><th>Total</th><th>Activid.</th>
-              </tr>
-            </thead>
-            <tbody>${vendorRows}</tbody>
-          </table>
-        </div>
+        <div class="card-header"><div><div class="card-title">Pipeline por vendedor</div><div class="card-sub">Oportunidades activas · live</div></div><span class="tag tag-purple">CRM LIVE</span></div>
+        <div class="table-wrap"><table class="crm-table"><thead><tr><th style="text-align:left">Vendedor</th><th>Ruta</th><th>Cotizado</th><th>No cerr.</th><th>Won</th><th>Perdidos</th><th>Total</th><th>Activid.</th></tr></thead><tbody>${vendorRows}</tbody></table></div>
         <div style="margin-top:1.2rem;padding-top:1rem;border-top:1px solid var(--border)">
           <div class="card-sub" style="margin-bottom:0.8rem">Conversión Cotizado → Won</div>
-          ${Object.entries(byVendor).sort((a,b)=>b[1].total-a[1].total).map(([v, d]) => {
-            const rate = d['Cotizado'] > 0 ? Math.round(d['Won']/d['Cotizado']*100) : 0;
-            const color = rate >= 20 ? 'var(--accent2)' : rate >= 10 ? 'var(--yellow)' : 'var(--red)';
-            return `<div class="conv-row">
-              <div class="conv-label">${v.split(' ')[0]} ${v.split(' ')[1]||''}</div>
-              <div class="conv-track"><div class="conv-fill" style="width:${Math.min(rate*2,100)}%;background:${color}"></div></div>
-              <div class="conv-pct" style="color:${color}">${rate}%</div>
-            </div>`;
-          }).join('')}
-          <div class="conv-row">
-            <div class="conv-label" style="color:var(--accent2)">Meta ideal</div>
-            <div class="conv-track"><div class="conv-fill" style="width:50%;background:var(--accent2)"></div></div>
-            <div class="conv-pct" style="color:var(--accent2)">25%</div>
-          </div>
+          ${Object.entries(byVendor).sort((a,b)=>b[1].total-a[1].total).map(([v,d])=>{const r=d['Cotizado']>0?Math.round(d['Won']/d['Cotizado']*100):0;const col=r>=20?'var(--accent2)':r>=10?'var(--yellow)':'var(--red)';return `<div class="conv-row"><div class="conv-label">${v.split(' ')[0]} ${v.split(' ')[1]||''}</div><div class="conv-track"><div class="conv-fill" style="width:${Math.min(r*2,100)}%;background:${col}"></div></div><div class="conv-pct" style="color:${col}">${r}%</div></div>`;}).join('')}
+          <div class="conv-row"><div class="conv-label" style="color:var(--accent2)">Meta ideal</div><div class="conv-track"><div class="conv-fill" style="width:50%;background:var(--accent2)"></div></div><div class="conv-pct" style="color:var(--accent2)">25%</div></div>
         </div>
       </div>
-
       <div style="display:flex;flex-direction:column;gap:1.5rem">
-        <div class="card">
-          <div class="card-header">
-            <div><div class="card-title">Volumen por etapa</div><div class="card-sub">Todas las oportunidades</div></div>
-            <span class="tag tag-orange">PIPELINE</span>
-          </div>
-          ${stageBars}
-        </div>
-
-        <div class="card">
-          <div class="card-header">
-            <div><div class="card-title">Alertas</div><div class="card-sub">Requieren atención</div></div>
-            <span class="tag tag-red">ALERTAS</span>
-          </div>
-          ${totalCotizado > 30 ? `<div class="alert-box alert-warn">
-            <div class="alert-title">${totalCotizado} oportunidades en Cotizado</div>
-            <div class="alert-desc">Cuello de botella principal. Requiere seguimiento esta semana.</div>
-          </div>` : ''}
-          ${totalNoCerrado > 0 ? `<div class="alert-box alert-danger">
-            <div class="alert-title">${totalNoCerrado} bloqueados por crédito</div>
-            <div class="alert-desc">Coordinar con finanzas para habilitar líneas de crédito.</div>
-          </div>` : ''}
-          <div class="alert-box alert-info">
-            <div class="alert-title">Conversión actual: ${convRate}%</div>
-            <div class="alert-desc">Meta: 25%. ${convRate < 15 ? 'Margen de mejora significativo con seguimiento estructurado.' : 'Buen ritmo, mantener la presión.'}</div>
-          </div>
-          <div class="alert-box alert-ok">
-            <div class="alert-title">Reporte semanal activo</div>
-            <div class="alert-desc">Cada jueves 08:00 AM → made@tomenergy.cl</div>
-          </div>
+        <div class="card"><div class="card-header"><div><div class="card-title">Volumen por etapa</div><div class="card-sub">Todas las oportunidades</div></div><span class="tag tag-orange">PIPELINE</span></div>${stageBars}</div>
+        <div class="card"><div class="card-header"><div><div class="card-title">Alertas</div><div class="card-sub">Requieren atención</div></div><span class="tag tag-red">ALERTAS</span></div>
+          ${totalCotizado>30?`<div class="alert-box alert-warn"><div class="alert-title">${totalCotizado} oportunidades en Cotizado</div><div class="alert-desc">Cuello de botella principal.</div></div>`:''}
+          ${totalNoCerrado>0?`<div class="alert-box alert-danger"><div class="alert-title">${totalNoCerrado} bloqueados por crédito</div><div class="alert-desc">Coordinar con finanzas.</div></div>`:''}
+          <div class="alert-box alert-info"><div class="alert-title">Conversión actual: ${convRate}%</div><div class="alert-desc">Meta: 25%. ${convRate<15?'Margen de mejora significativo.':'Buen ritmo, mantener la presión.'}</div></div>
+          <div class="alert-box alert-ok"><div class="alert-title">Reporte semanal activo</div><div class="alert-desc">Cada jueves 08:00 AM → made@tomenergy.cl</div></div>
         </div>
       </div>
     </div>`;
 }
 
-// ---- GOOGLE SHEETS (original code) ----
+// ---- GOOGLE SHEETS ----
 function parseCSVRow(row) {
-  const res = []; let cur = '', inQ = false;
+  const res=[]; let cur='', inQ=false;
   for (const ch of row) {
-    if (ch === '"') inQ = !inQ;
-    else if (ch === ',' && !inQ) { res.push(cur.trim()); cur = ''; }
-    else cur += ch;
+    if (ch==='"') inQ=!inQ;
+    else if (ch===',' && !inQ) { res.push(cur.trim()); cur=''; }
+    else cur+=ch;
   }
-  res.push(cur.trim());
-  return res;
+  res.push(cur.trim()); return res;
 }
 
 function parseNum(v) {
-  if (v == null || v === '' || v === '-') return null;
-  const s = String(v).replace(/"/g,'').replace(/\s/g,'').replace(/\$/g,'');
+  if (v==null||v===''||v==='-') return null;
+  const s=String(v).replace(/"/g,'').replace(/\s/g,'').replace(/\$/g,'');
   if (s.includes('%')) return parseFloat(s.replace('%','').replace(/\./g,'').replace(',','.')) / 100;
-  const dots = (s.match(/\./g)||[]).length;
-  let n = s;
-  if (dots > 1) n = s.replace(/\./g,'').replace(',','.');
-  else if (dots === 1 && s.includes(',')) n = s.replace('.','').replace(',','.');
-  else if (!s.includes('.') && s.includes(',')) n = s.replace(',','.');
-  return parseFloat(n) || null;
+  const dots=(s.match(/\./g)||[]).length;
+  let n=s;
+  if (dots>1) n=s.replace(/\./g,'').replace(',','.');
+  else if (dots===1&&s.includes(',')) n=s.replace('.','').replace(',','.');
+  else if (!s.includes('.')&&s.includes(',')) n=s.replace(',','.');
+  return parseFloat(n)||null;
 }
 
-function fmtM(n) { if (!n) return '—'; return '$' + (n/1e6).toFixed(1) + 'M'; }
+function fmtM(n) { if (!n) return '—'; return '$'+(n/1e6).toFixed(1)+'M'; }
 function fmtCLP(n) { if (!n) return '—'; return Math.round(n).toLocaleString('es-CL'); }
 function fmtPct(n) { if (!n) return '—'; return (n*100).toFixed(2)+'%'; }
 
@@ -741,19 +576,14 @@ async function loadData() {
   document.getElementById('loading').style.display = 'flex';
   document.getElementById('app').style.display = 'none';
   document.getElementById('loading-msg').textContent = 'CONECTANDO CON GOOGLE SHEETS...';
-
   try {
     let resp;
-    try {
-      resp = await fetch(CSV_URL + '&t=' + Date.now());
-      if (!resp.ok) throw new Error('direct failed');
-    } catch(e) {
-      resp = await fetch(PROXY_URL);
-    }
+    try { resp = await fetch(CSV_URL+'&t='+Date.now()); if (!resp.ok) throw new Error(); }
+    catch(e) { resp = await fetch(PROXY_URL); }
     const text = await resp.text();
     const rows = text.split('\n').map(r => parseCSVRow(r));
-
     const find = (...terms) => rows.findIndex(r => terms.some(t => (r[0]||'').toLowerCase().includes(t)));
+
     const semanaIdx      = find('semana');
     const ventasIdx      = find('en $');
     const litrosIdx      = find('litros vendido');
@@ -764,42 +594,37 @@ async function loadData() {
     const margenIdx      = find('margen bruto');
     const precioIdx      = find('precio venta');
     const cajaIdx        = find('caja disponible');
-    const recaudIdx      = find('recaudacion total', 'recaudación total');
+    const recaudIdx      = find('recaudacion total','recaudación total');
     const transfIdx      = find('transferencia/depositos chile');
-    const chequesIdx     = find('cheques depositados');
+    // ✅ FIX: Lee fila 25 "Total cheques Odoo despues de subir los cheques"
+    const chequesIdx     = find('total cheques odoo despues');
     const factoringIdx   = find('factoring');
     const comprasEnapIdx = find('compras enap');
 
     if (semanaIdx < 0) throw new Error('No se encontró la fila Semana');
-
     const semanaRow = rows[semanaIdx];
     const weeks = [];
-
     for (let c = 1; c < semanaRow.length; c++) {
       const label = (semanaRow[c]||'').trim();
-      if (!label || label.toLowerCase().includes('average') || label.toLowerCase().includes('promedio')) continue;
+      if (!label||label.toLowerCase().includes('average')||label.toLowerCase().includes('promedio')) continue;
       const g = (idx) => idx >= 0 ? parseNum(rows[idx]?.[c]) : null;
-      const ventas = g(ventasIdx);
-      const litros = g(litrosIdx);
+      const ventas=g(ventasIdx), litros=g(litrosIdx);
       if (!ventas && !litros) continue;
       weeks.push({
-        semana: label, ventas, litros,
-        litrosPpto: g(litrosPptoIdx), nCompras: g(comprasIdx), nClientes: g(clientesIdx),
-        desv: g(desvIdx), margen: g(margenIdx), precio: g(precioIdx), caja: g(cajaIdx),
-        recaud: g(recaudIdx), transf: g(transfIdx), cheques: g(chequesIdx),
-        factoring: g(factoringIdx), comprasEnap: g(comprasEnapIdx),
+        semana:label, ventas, litros,
+        litrosPpto:g(litrosPptoIdx), nCompras:g(comprasIdx), nClientes:g(clientesIdx),
+        desv:g(desvIdx), margen:g(margenIdx), precio:g(precioIdx), caja:g(cajaIdx),
+        recaud:g(recaudIdx), transf:g(transfIdx), cheques:g(chequesIdx),
+        factoring:g(factoringIdx), comprasEnap:g(comprasEnapIdx),
       });
     }
-
     allWeeks = weeks;
-    document.getElementById('last-updated').textContent = 'Actualizado: ' + new Date().toLocaleTimeString('es-CL');
+    document.getElementById('last-updated').textContent = 'Actualizado: '+new Date().toLocaleTimeString('es-CL');
     document.getElementById('loading').style.display = 'none';
     document.getElementById('app').style.display = 'block';
     render();
-
   } catch(e) {
     document.getElementById('loading').innerHTML = `<div class="error-msg">Error al cargar datos: ${e.message}<br><br><button onclick="loadData()" style="margin-top:1rem;padding:0.5rem 1rem;background:#f87171;color:white;border:none;border-radius:6px;cursor:pointer;">REINTENTAR</button></div>`;
-    console.error(e);
   }
 }
 
@@ -821,84 +646,64 @@ function render() {
 }
 
 function delta(weeks, key) {
-  const last = weeks[weeks.length-1]?.[key];
-  const prev = weeks[weeks.length-2]?.[key];
-  if (!last || !prev) return null;
+  const last=weeks[weeks.length-1]?.[key], prev=weeks[weeks.length-2]?.[key];
+  if (!last||!prev) return null;
   return ((last-prev)/Math.abs(prev)*100);
 }
 
 function renderKPIs(weeks) {
   const last = weeks[weeks.length-1];
-  const d = (key) => {
-    const v = delta(weeks, key);
-    if (v==null) return '<span class="delta-neutral">—</span>';
-    return v>=0 ? `<span class="delta-up">↑ ${Math.abs(v).toFixed(1)}% vs ant.</span>` : `<span class="delta-down">↓ ${Math.abs(v).toFixed(1)}% vs ant.</span>`;
-  };
-  const litrosPct = last.litros && last.litrosPpto ? (last.litros / last.litrosPpto) : null;
-  const litrosPctStr = litrosPct ? (litrosPct*100).toFixed(0)+'%' : '—';
-  const litrosPctDelta = litrosPct ? litrosPct >= 1 ? `<span class="delta-up">↑ sobre ppto</span>` : `<span class="delta-down">↓ ${((1-litrosPct)*100).toFixed(0)}% bajo ppto</span>` : '<span class="delta-neutral">—</span>';
+  const d = (key) => { const v=delta(weeks,key); if (v==null) return '<span class="delta-neutral">—</span>'; return v>=0?`<span class="delta-up">↑ ${Math.abs(v).toFixed(1)}% vs ant.</span>`:`<span class="delta-down">↓ ${Math.abs(v).toFixed(1)}% vs ant.</span>`; };
+  const litrosPct = last.litros&&last.litrosPpto ? last.litros/last.litrosPpto : null;
   const kpis = [
-    { label:'Ventas Última Semana', val: fmtM(last.ventas), delta: d('ventas'), accent:'var(--accent)' },
-    { label:'Litros Vendidos', val: fmtCLP(last.litros), delta: d('litros'), accent:'var(--accent2)' },
-    { label:'Litros vs Presupuesto', val: litrosPctStr, delta: litrosPctDelta, accent: litrosPct >= 1 ? 'var(--accent2)' : 'var(--red)' },
-    { label:'Margen Bruto', val: fmtPct(last.margen), delta: d('margen'), accent:'var(--blue)' },
-    { label:'Precio Prom./Litro', val: last.precio ? '$'+Math.round(last.precio).toLocaleString('es-CL') : '—', delta: d('precio'), accent:'var(--yellow)' },
-    { label:'Caja Disponible', val: fmtM(last.caja), delta: d('caja'), accent: last.caja > 50e6 ? 'var(--accent2)' : 'var(--red)' },
+    { label:'Ventas Última Semana', val:fmtM(last.ventas), delta:d('ventas'), accent:'var(--accent)' },
+    { label:'Litros Vendidos', val:fmtCLP(last.litros), delta:d('litros'), accent:'var(--accent2)' },
+    { label:'Litros vs Presupuesto', val:litrosPct?(litrosPct*100).toFixed(0)+'%':'—', delta:litrosPct?(litrosPct>=1?`<span class="delta-up">↑ sobre ppto</span>`:`<span class="delta-down">↓ ${((1-litrosPct)*100).toFixed(0)}% bajo ppto</span>`):'<span class="delta-neutral">—</span>', accent:litrosPct>=1?'var(--accent2)':'var(--red)' },
+    { label:'Margen Bruto', val:fmtPct(last.margen), delta:d('margen'), accent:'var(--blue)' },
+    { label:'Precio Prom./Litro', val:last.precio?'$'+Math.round(last.precio).toLocaleString('es-CL'):'—', delta:d('precio'), accent:'var(--yellow)' },
+    { label:'Caja Disponible', val:fmtM(last.caja), delta:d('caja'), accent:last.caja>50e6?'var(--accent2)':'var(--red)' },
   ];
-  document.getElementById('kpi-row').innerHTML = kpis.map(k => `
-    <div class="kpi" style="--kpi-accent:${k.accent}">
-      <div class="kpi-label">${k.label}</div>
-      <div class="kpi-val">${k.val}</div>
-      <div class="kpi-delta">${k.delta}</div>
-    </div>`).join('');
+  document.getElementById('kpi-row').innerHTML = kpis.map(k=>`<div class="kpi" style="--kpi-accent:${k.accent}"><div class="kpi-label">${k.label}</div><div class="kpi-val">${k.val}</div><div class="kpi-delta">${k.delta}</div></div>`).join('');
 }
 
 const CD = {
-  responsive: true,
-  plugins: {
-    legend: { display: false },
-    tooltip: {
-      backgroundColor:'#1a1f1c', borderColor:'#232824', borderWidth:1,
-      titleColor:'#5a6358', bodyColor:'#e8ede9',
-      titleFont:{family:'IBM Plex Mono',size:9}, bodyFont:{family:'IBM Plex Mono',size:11}, padding:10,
-    }
+  responsive:true,
+  plugins:{
+    legend:{display:false},
+    tooltip:{backgroundColor:'#1a1f1c',borderColor:'#232824',borderWidth:1,titleColor:'#5a6358',bodyColor:'#e8ede9',titleFont:{family:'IBM Plex Mono',size:9},bodyFont:{family:'IBM Plex Mono',size:11},padding:10}
   },
-  scales: {
-    x: { grid:{color:'rgba(255,255,255,0.03)'}, ticks:{color:'#5a6358',font:{family:'IBM Plex Mono',size:9},maxTicksLimit:8,maxRotation:30} },
-    y: { grid:{color:'rgba(255,255,255,0.05)'}, ticks:{color:'#5a6358',font:{family:'IBM Plex Mono',size:9},callback:(v)=>v>=1e6?(v/1e6).toFixed(0)+'M':v>=1e3?(v/1e3).toFixed(0)+'K':v} }
+  scales:{
+    x:{grid:{color:'rgba(255,255,255,0.03)'},ticks:{color:'#5a6358',font:{family:'IBM Plex Mono',size:9},maxTicksLimit:8,maxRotation:30}},
+    y:{grid:{color:'rgba(255,255,255,0.05)'},ticks:{color:'#5a6358',font:{family:'IBM Plex Mono',size:9},callback:(v)=>v>=1e6?(v/1e6).toFixed(0)+'M':v>=1e3?(v/1e3).toFixed(0)+'K':v}}
   }
 };
 
-function mkChart(id, cfg) {
-  if (charts[id]) charts[id].destroy();
-  charts[id] = new Chart(document.getElementById(id).getContext('2d'), cfg);
-}
-
-function labels(weeks) { return weeks.map(w => w.semana.replace(/\s+/g,'-').split('-')[0] || w.semana.slice(0,8)); }
+function mkChart(id, cfg) { if (charts[id]) charts[id].destroy(); charts[id] = new Chart(document.getElementById(id).getContext('2d'), cfg); }
+function labels(weeks) { return weeks.map(w=>w.semana.replace(/\s+/g,'-').split('-')[0]||w.semana.slice(0,8)); }
 
 function renderCharts(weeks) {
   const lb = labels(weeks);
-  mkChart('salesChart', { type:'line', data:{ labels:lb, datasets:[{ data:weeks.map(w=>w.ventas), borderColor:'#a3e635', backgroundColor:'rgba(163,230,53,0.07)', borderWidth:2, pointRadius:2, pointHoverRadius:5, fill:true, tension:0.3 }]}, options:{...CD, plugins:{...CD.plugins, tooltip:{...CD.plugins.tooltip, callbacks:{label:(c)=>'$ '+Math.round(c.raw).toLocaleString('es-CL')}}}} });
-  const mVals = weeks.map(w=>w.margen ? w.margen*100 : null);
-  mkChart('marginChart', { type:'bar', data:{ labels:lb, datasets:[{ data:mVals, backgroundColor:mVals.map(v=>v==null?'rgba(90,99,88,0.3)':v>=11?'rgba(52,211,153,0.7)':'rgba(248,113,113,0.6)'), borderRadius:3 }]}, options:{...CD, plugins:{...CD.plugins, tooltip:{...CD.plugins.tooltip, callbacks:{label:(c)=>' '+(c.raw||0).toFixed(2)+'%'}}}, scales:{...CD.scales, y:{...CD.scales.y, ticks:{...CD.scales.y.ticks,callback:(v)=>v+'%'}}}} });
-  mkChart('recaudChart', { type:'bar', data:{ labels:lb, datasets:[
-    { label:'Transferencias', data:weeks.map(w=>w.transf), backgroundColor:'rgba(96,165,250,0.65)', borderRadius:2, stack:'s', order:2 },
-    { label:'Cheques', data:weeks.map(w=>w.cheques), backgroundColor:'rgba(163,230,53,0.5)', borderRadius:2, stack:'s', order:2 },
-    { label:'Factoring', data:weeks.map(w=>w.factoring), backgroundColor:'rgba(251,191,36,0.5)', borderRadius:2, stack:'s', order:2 },
-    { label:'Compras ENAP', data:weeks.map(w=>w.comprasEnap), type:'line', borderColor:'#f87171', backgroundColor:'transparent', borderWidth:2.5, pointRadius:3, pointBackgroundColor:'#f87171', fill:false, tension:0.3, order:1 },
-  ]}, options:{...CD, plugins:{...CD.plugins, legend:{display:true,labels:{color:'#5a6358',font:{family:'IBM Plex Mono',size:9},boxWidth:10}}, tooltip:{...CD.plugins.tooltip, callbacks:{label:(c)=>` ${c.dataset.label}: $ ${Math.round(c.raw||0).toLocaleString('es-CL')}`}}}} });
-  mkChart('litrosChart', { type:'bar', data:{ labels:lb, datasets:[
-    { label:'Real', data:weeks.map(w=>w.litros), backgroundColor:weeks.map(w=>w.litros&&w.litrosPpto&&w.litros>=w.litrosPpto?'rgba(163,230,53,0.75)':'rgba(248,113,113,0.65)'), borderRadius:3, order:2 },
-    { label:'Presupuesto', data:weeks.map(w=>w.litrosPpto), type:'line', borderColor:'rgba(251,191,36,0.9)', borderWidth:2, pointRadius:0, fill:false, tension:0, order:1, borderDash:[4,3] },
-  ]}, options:{...CD, plugins:{...CD.plugins, legend:{display:true,labels:{color:'#5a6358',font:{family:'IBM Plex Mono',size:9},boxWidth:10}}, tooltip:{...CD.plugins.tooltip, callbacks:{label:(c)=>{ if(c.dataset.label==='Real'){const p=weeks[c.dataIndex]?.litrosPpto;const pct=p?((c.raw/p)*100).toFixed(0)+'%':'';return ` ${Math.round(c.raw).toLocaleString('es-CL')} L (${pct} ppto)`;}return ` Ppto: ${Math.round(c.raw||0).toLocaleString('es-CL')} L`;}}}} , scales:{...CD.scales, y:{...CD.scales.y, ticks:{...CD.scales.y.ticks, callback:(v)=>v>=1e3?(v/1e3).toFixed(0)+'K':v}}}} });
+  mkChart('salesChart',{type:'line',data:{labels:lb,datasets:[{data:weeks.map(w=>w.ventas),borderColor:'#a3e635',backgroundColor:'rgba(163,230,53,0.07)',borderWidth:2,pointRadius:2,pointHoverRadius:5,fill:true,tension:0.3}]},options:{...CD,plugins:{...CD.plugins,tooltip:{...CD.plugins.tooltip,callbacks:{label:(c)=>'$ '+Math.round(c.raw).toLocaleString('es-CL')}}}}});
+  const mVals=weeks.map(w=>w.margen?w.margen*100:null);
+  mkChart('marginChart',{type:'bar',data:{labels:lb,datasets:[{data:mVals,backgroundColor:mVals.map(v=>v==null?'rgba(90,99,88,0.3)':v>=11?'rgba(52,211,153,0.7)':'rgba(248,113,113,0.6)'),borderRadius:3}]},options:{...CD,plugins:{...CD.plugins,tooltip:{...CD.plugins.tooltip,callbacks:{label:(c)=>' '+(c.raw||0).toFixed(2)+'%'}}},scales:{...CD.scales,y:{...CD.scales.y,ticks:{...CD.scales.y.ticks,callback:(v)=>v+'%'}}}}});
+  mkChart('recaudChart',{type:'bar',data:{labels:lb,datasets:[
+    {label:'Transferencias',data:weeks.map(w=>w.transf),backgroundColor:'rgba(96,165,250,0.65)',borderRadius:2,stack:'s',order:2},
+    {label:'Cheques',data:weeks.map(w=>w.cheques),backgroundColor:'rgba(163,230,53,0.5)',borderRadius:2,stack:'s',order:2},
+    {label:'Factoring',data:weeks.map(w=>w.factoring),backgroundColor:'rgba(251,191,36,0.5)',borderRadius:2,stack:'s',order:2},
+    {label:'Compras ENAP',data:weeks.map(w=>w.comprasEnap),type:'line',borderColor:'#f87171',backgroundColor:'transparent',borderWidth:2.5,pointRadius:3,pointBackgroundColor:'#f87171',fill:false,tension:0.3,order:1},
+  ]},options:{...CD,plugins:{...CD.plugins,legend:{display:true,labels:{color:'#5a6358',font:{family:'IBM Plex Mono',size:9},boxWidth:10}},tooltip:{...CD.plugins.tooltip,callbacks:{label:(c)=>` ${c.dataset.label}: $ ${Math.round(c.raw||0).toLocaleString('es-CL')}`}}}}});
+  mkChart('litrosChart',{type:'bar',data:{labels:lb,datasets:[
+    {label:'Real',data:weeks.map(w=>w.litros),backgroundColor:weeks.map(w=>w.litros&&w.litrosPpto&&w.litros>=w.litrosPpto?'rgba(163,230,53,0.75)':'rgba(248,113,113,0.65)'),borderRadius:3,order:2},
+    {label:'Presupuesto',data:weeks.map(w=>w.litrosPpto),type:'line',borderColor:'rgba(251,191,36,0.9)',borderWidth:2,pointRadius:0,fill:false,tension:0,order:1,borderDash:[4,3]},
+  ]},options:{...CD,plugins:{...CD.plugins,legend:{display:true,labels:{color:'#5a6358',font:{family:'IBM Plex Mono',size:9},boxWidth:10}},tooltip:{...CD.plugins.tooltip,callbacks:{label:(c)=>{if(c.dataset.label==='Real'){const p=weeks[c.dataIndex]?.litrosPpto;const pct=p?((c.raw/p)*100).toFixed(0)+'%':'';return ` ${Math.round(c.raw).toLocaleString('es-CL')} L (${pct} ppto)`;}return ` Ppto: ${Math.round(c.raw||0).toLocaleString('es-CL')} L`;}}}},scales:{...CD.scales,y:{...CD.scales.y,ticks:{...CD.scales.y.ticks,callback:(v)=>v>=1e3?(v/1e3).toFixed(0)+'K':v}}}}});
 }
 
 function renderTable(weeks) {
-  const last10 = weeks.slice(-10).reverse();
-  const lastSemana = weeks[weeks.length-1]?.semana;
-  document.getElementById('table-body').innerHTML = last10.map(w => {
-    const isLast = w.semana === lastSemana;
-    const desvClass = !w.desv?'':w.desv>=0.9?'pos':w.desv<0.7?'neg':'neutral';
+  const last10=weeks.slice(-10).reverse();
+  const lastSemana=weeks[weeks.length-1]?.semana;
+  document.getElementById('table-body').innerHTML=last10.map(w=>{
+    const isLast=w.semana===lastSemana;
+    const desvClass=!w.desv?'':w.desv>=0.9?'pos':w.desv<0.7?'neg':'neutral';
     return `<tr>
       <td style="${isLast?'color:var(--accent);font-weight:500;':''}">${w.semana}</td>
       <td class="neutral">${fmtM(w.ventas)}</td>
