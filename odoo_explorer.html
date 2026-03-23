@@ -1,1 +1,298 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Odoo API Explorer — TomEnergy</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', sans-serif; background: #0f1117; color: #e2e8f0; min-height: 100vh; padding: 24px; }
+  h1 { color: #60a5fa; font-size: 1.3rem; margin-bottom: 4px; }
+  .sub { color: #64748b; font-size: 0.85rem; margin-bottom: 24px; }
+  .card { background: #1e2130; border: 1px solid #2d3348; border-radius: 12px; padding: 20px; margin-bottom: 16px; }
+  .card h2 { font-size: 0.9rem; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 14px; }
+  label { display: block; font-size: 0.82rem; color: #94a3b8; margin-bottom: 4px; margin-top: 10px; }
+  input { width: 100%; padding: 9px 12px; background: #0f1117; border: 1px solid #2d3348; border-radius: 8px; color: #e2e8f0; font-size: 0.9rem; }
+  input:focus { outline: none; border-color: #60a5fa; }
+  .row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .btn { padding: 10px 20px; border-radius: 8px; border: none; cursor: pointer; font-size: 0.9rem; font-weight: 600; transition: all 0.2s; }
+  .btn-primary { background: #3b82f6; color: white; width: 100%; margin-top: 14px; }
+  .btn-primary:hover { background: #2563eb; }
+  .btn-sm { background: #1e293b; color: #94a3b8; border: 1px solid #2d3348; font-size: 0.8rem; padding: 6px 12px; border-radius: 6px; margin: 4px 4px 4px 0; cursor: pointer; }
+  .btn-sm:hover { background: #334155; color: #e2e8f0; }
+  .status { padding: 10px 14px; border-radius: 8px; font-size: 0.85rem; margin-top: 12px; display: none; }
+  .status.ok { background: #052e16; border: 1px solid #16a34a; color: #86efac; display: block; }
+  .status.err { background: #2d0a0a; border: 1px solid #dc2626; color: #fca5a5; display: block; }
+  .status.loading { background: #0c1a2e; border: 1px solid #1d4ed8; color: #93c5fd; display: block; }
+  pre { background: #0a0d14; border: 1px solid #1e2130; border-radius: 8px; padding: 14px; font-size: 0.78rem; overflow-x: auto; max-height: 400px; overflow-y: auto; color: #a5f3fc; line-height: 1.5; margin-top: 10px; white-space: pre-wrap; word-break: break-word; }
+  .section-title { font-size: 0.8rem; color: #60a5fa; font-weight: 600; margin: 14px 0 8px; }
+  .tabs { display: flex; gap: 8px; margin-bottom: 14px; flex-wrap: wrap; }
+  .tab { padding: 6px 14px; border-radius: 6px; border: 1px solid #2d3348; background: #0f1117; color: #64748b; cursor: pointer; font-size: 0.82rem; }
+  .tab.active { background: #1d4ed8; border-color: #3b82f6; color: white; }
+  #result-count { color: #fbbf24; font-size: 0.82rem; margin-top: 6px; }
+</style>
+</head>
+<body>
 
+<h1>🔌 Odoo API Explorer</h1>
+<p class="sub">TomEnergy — Explorar modelos y datos antes de integrar al dashboard</p>
+
+<div class="card">
+  <h2>🔐 Credenciales</h2>
+  <div class="row">
+    <div>
+      <label>URL Odoo</label>
+      <input id="url" value="https://tomenergy.cl/odoo">
+    </div>
+    <div>
+      <label>Base de datos</label>
+      <input id="db" value="PRODUCCION">
+    </div>
+  </div>
+  <div class="row">
+    <div>
+      <label>Usuario (email)</label>
+      <input id="login" value="p@tomenergy.cl">
+    </div>
+    <div>
+      <label>API Key</label>
+      <input id="apikey" type="password" placeholder="tu_api_key_aqui">
+    </div>
+  </div>
+  <button class="btn btn-primary" onclick="authenticate()">🔑 Autenticar</button>
+  <div id="auth-status" class="status"></div>
+</div>
+
+<div class="card" id="query-card" style="display:none">
+  <h2>📊 Consultas para Reporte Semanal</h2>
+  <div class="tabs">
+    <div class="tab active" onclick="selectTab(this,'facturas')">Facturas/NC</div>
+    <div class="tab" onclick="selectTab(this,'banco')">Banco Chile</div>
+    <div class="tab" onclick="selectTab(this,'enap')">ENAP</div>
+    <div class="tab" onclick="selectTab(this,'campos')">Explorar Campos</div>
+  </div>
+
+  <div id="tab-facturas">
+    <div class="row">
+      <div><label>Desde</label><input type="date" id="fecha-desde"></div>
+      <div><label>Hasta</label><input type="date" id="fecha-hasta"></div>
+    </div>
+    <div class="section-title">Ejecutar consulta</div>
+    <button class="btn-sm" onclick="queryFacturas('out_invoice')">Facturas de venta</button>
+    <button class="btn-sm" onclick="queryFacturas('out_refund')">Notas de crédito</button>
+    <button class="btn-sm" onclick="queryFacturas('both')">Ambas (resumen reporte)</button>
+  </div>
+
+  <div id="tab-banco" style="display:none">
+    <div class="row">
+      <div><label>Desde</label><input type="date" id="banco-desde"></div>
+      <div><label>Hasta</label><input type="date" id="banco-hasta"></div>
+    </div>
+    <div class="section-title">Ejecutar consulta</div>
+    <button class="btn-sm" onclick="queryBanco()">Movimientos bancarios</button>
+    <button class="btn-sm" onclick="queryJournals()">Ver diarios disponibles</button>
+  </div>
+
+  <div id="tab-enap" style="display:none">
+    <div class="row">
+      <div><label>Desde</label><input type="date" id="enap-desde"></div>
+      <div><label>Hasta</label><input type="date" id="enap-hasta"></div>
+    </div>
+    <div class="section-title">Ejecutar consulta</div>
+    <button class="btn-sm" onclick="queryENAP()">Compras ENAP</button>
+    <button class="btn-sm" onclick="queryProveedores()">Ver proveedores</button>
+  </div>
+
+  <div id="tab-campos" style="display:none">
+    <div class="section-title">Explorar campos de un modelo</div>
+    <button class="btn-sm" onclick="exploreFields('account.move')">account.move</button>
+    <button class="btn-sm" onclick="exploreFields('account.move.line')">account.move.line</button>
+    <button class="btn-sm" onclick="exploreFields('account.bank.statement.line')">bank.statement.line</button>
+    <button class="btn-sm" onclick="exploreFields('account.payment')">account.payment</button>
+    <button class="btn-sm" onclick="exploreFields('res.partner')">res.partner</button>
+    <div style="display:flex;gap:8px;margin-top:10px;">
+      <input id="modelo-manual" placeholder="modelo manual ej: account.move" style="flex:1">
+      <button class="btn-sm" onclick="exploreFields(document.getElementById('modelo-manual').value)">Explorar</button>
+    </div>
+  </div>
+
+  <div id="result-count"></div>
+  <div id="query-status" class="status"></div>
+  <pre id="result" style="display:none"></pre>
+</div>
+
+<script>
+let CREDS = {};
+
+function buildUrl(path) {
+  return CREDS.url.replace(/\/$/, '') + path;
+}
+
+async function odooRPC(model, method, args, kwargs = {}) {
+  const res = await fetch(buildUrl('/web/dataset/call_kw'), {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      jsonrpc: '2.0', method: 'call', id: Math.random(),
+      params: { model, method, args, kwargs: { context: { lang: 'es_CL' }, ...kwargs } }
+    })
+  });
+  const data = await res.json();
+  if (data.error) throw new Error(data.error.data?.message || JSON.stringify(data.error));
+  return data.result;
+}
+
+async function authenticate() {
+  const url = document.getElementById('url').value.trim().replace(/\/$/, '');
+  const db = document.getElementById('db').value.trim();
+  const login = document.getElementById('login').value.trim();
+  const apikey = document.getElementById('apikey').value.trim();
+  const st = document.getElementById('auth-status');
+  st.className = 'status loading'; st.textContent = '🔄 Autenticando...';
+  try {
+    const res = await fetch(url + '/web/session/authenticate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        jsonrpc: '2.0', method: 'call', id: 1,
+        params: { db, login, password: apikey }
+      })
+    });
+    const data = await res.json();
+    if (data.error) throw new Error(data.error.data?.message || 'Error de autenticación');
+    if (!data.result?.uid) throw new Error('Credenciales incorrectas o DB no encontrada');
+    CREDS = { url, db, login, apikey };
+    st.className = 'status ok';
+    st.innerHTML = `✅ Conectado como <strong>${data.result.name}</strong> (uid: ${data.result.uid}) · DB: <strong>${db}</strong>`;
+    document.getElementById('query-card').style.display = 'block';
+    const today = new Date(), mon = new Date(today);
+    mon.setDate(today.getDate() - today.getDay() + 1);
+    const fmt = d => d.toISOString().split('T')[0];
+    ['fecha-desde','banco-desde','enap-desde'].forEach(id => document.getElementById(id).value = fmt(mon));
+    ['fecha-hasta','banco-hasta','enap-hasta'].forEach(id => document.getElementById(id).value = fmt(today));
+  } catch(e) {
+    st.className = 'status err'; st.textContent = '❌ ' + e.message;
+  }
+}
+
+function selectTab(el, tab) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  ['facturas','banco','enap','campos'].forEach(t =>
+    document.getElementById('tab-'+t).style.display = t===tab ? 'block' : 'none');
+  document.getElementById('result').style.display = 'none';
+  document.getElementById('result-count').textContent = '';
+  document.getElementById('query-status').style.display = 'none';
+}
+
+function setStatus(msg, type='loading') {
+  const s = document.getElementById('query-status');
+  s.className = 'status '+type; s.textContent = msg;
+}
+function showResult(data, label='') {
+  const pre = document.getElementById('result');
+  pre.style.display = 'block';
+  pre.textContent = JSON.stringify(data, null, 2);
+  if (label) document.getElementById('result-count').textContent = label;
+}
+
+async function queryFacturas(tipo) {
+  const desde = document.getElementById('fecha-desde').value;
+  const hasta = document.getElementById('fecha-hasta').value;
+  if (!desde || !hasta) { setStatus('⚠️ Selecciona fechas','err'); return; }
+  setStatus('🔄 Consultando facturas...');
+  try {
+    const types = tipo === 'both' ? ['out_invoice','out_refund'] : [tipo];
+    const domain = [['move_type','in',types],['state','=','posted'],['invoice_date','>=',desde],['invoice_date','<=',hasta]];
+    const fields = ['name','invoice_date','partner_id','move_type','amount_total','amount_untaxed','invoice_payment_term_id','invoice_line_ids'];
+    const records = await odooRPC('account.move','search_read',[domain],{fields,limit:500});
+    if (tipo === 'both') {
+      const fact = records.filter(r => r.move_type==='out_invoice');
+      const ncs = records.filter(r => r.move_type==='out_refund');
+      const tF = fact.reduce((s,r) => s+r.amount_total, 0);
+      const tNC = ncs.reduce((s,r) => s+r.amount_total, 0);
+      showResult({ periodo:`${desde} → ${hasta}`, n_facturas:fact.length, n_nc:ncs.length,
+        total_facturas:tF, total_nc:tNC, ventas_netas:tF-tNC, registros:records },
+        `📊 ${records.length} docs · Ventas netas: $${(tF-tNC).toLocaleString('es-CL')}`);
+    } else {
+      showResult(records, `📄 ${records.length} registros`);
+    }
+    setStatus('✅ Listo','ok');
+  } catch(e) { setStatus('❌ '+e.message,'err'); }
+}
+
+async function queryBanco() {
+  const desde = document.getElementById('banco-desde').value;
+  const hasta = document.getElementById('banco-hasta').value;
+  if (!desde||!hasta) { setStatus('⚠️ Selecciona fechas','err'); return; }
+  setStatus('🔄 Consultando banco...');
+  try {
+    const domain = [['date','>=',desde],['date','<=',hasta]];
+    const fields = ['date','payment_ref','partner_name','amount','journal_id','transaction_type'];
+    const records = await odooRPC('account.bank.statement.line','search_read',[domain],{fields,limit:500});
+    showResult(records, `🏦 ${records.length} movimientos`);
+    setStatus('✅ Listo','ok');
+  } catch(e) {
+    try {
+      setStatus('🔄 Probando account.payment...');
+      const r2 = await odooRPC('account.payment','search_read',
+        [[['date','>=',desde],['date','<=',hasta],['state','=','posted']]],
+        {fields:['date','name','partner_id','amount','payment_type','journal_id'],limit:500});
+      showResult(r2, `💳 ${r2.length} pagos (account.payment)`);
+      setStatus('✅ Listo','ok');
+    } catch(e2) { setStatus('❌ '+e2.message,'err'); }
+  }
+}
+
+async function queryJournals() {
+  setStatus('🔄 Cargando diarios...');
+  try {
+    const r = await odooRPC('account.journal','search_read',[[]],{fields:['name','type','code','bank_account_id'],limit:50});
+    showResult(r, `📒 ${r.length} diarios`);
+    setStatus('✅ Listo','ok');
+  } catch(e) { setStatus('❌ '+e.message,'err'); }
+}
+
+async function queryENAP() {
+  const desde = document.getElementById('enap-desde').value;
+  const hasta = document.getElementById('enap-hasta').value;
+  if (!desde||!hasta) { setStatus('⚠️ Selecciona fechas','err'); return; }
+  setStatus('🔄 Buscando ENAP...');
+  try {
+    const partners = await odooRPC('res.partner','search_read',[[['name','ilike','enap']]],{fields:['id','name'],limit:10});
+    const ids = partners.map(p => p.id);
+    let domain = [['move_type','=','in_invoice'],['state','=','posted'],['invoice_date','>=',desde],['invoice_date','<=',hasta]];
+    if (ids.length) domain.push(['partner_id','in',ids]);
+    const fields = ['name','invoice_date','partner_id','amount_total','amount_untaxed'];
+    const records = await odooRPC('account.move','search_read',[domain],{fields,limit:100});
+    const total = records.reduce((s,r) => s+r.amount_total, 0);
+    showResult({proveedores:partners.map(p=>p.name), periodo:`${desde}→${hasta}`,
+      n_facturas:records.length, total_con_iva:total, facturas:records},
+      `⛽ ${records.length} facturas · $${total.toLocaleString('es-CL')}`);
+    setStatus('✅ Listo','ok');
+  } catch(e) { setStatus('❌ '+e.message,'err'); }
+}
+
+async function queryProveedores() {
+  setStatus('🔄 Cargando proveedores...');
+  try {
+    const r = await odooRPC('res.partner','search_read',[[['supplier_rank','>',0]]],{fields:['name','vat','supplier_rank'],limit:50});
+    showResult(r, `🏢 ${r.length} proveedores`);
+    setStatus('✅ Listo','ok');
+  } catch(e) { setStatus('❌ '+e.message,'err'); }
+}
+
+async function exploreFields(model) {
+  if (!model) return;
+  setStatus(`🔄 Explorando ${model}...`);
+  try {
+    const fields = await odooRPC(model,'fields_get',[],{attributes:['string','type']});
+    const list = Object.entries(fields).map(([k,v])=>({campo:k,etiqueta:v.string,tipo:v.type}))
+      .sort((a,b)=>a.campo.localeCompare(b.campo));
+    showResult(list, `🔍 ${list.length} campos en ${model}`);
+    setStatus('✅ Listo','ok');
+  } catch(e) { setStatus('❌ '+e.message,'err'); }
+}
+</script>
+</body>
+</html>
