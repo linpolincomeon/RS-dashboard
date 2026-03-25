@@ -3,719 +3,349 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Dashboard RS</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<title>RS Dashboard · TomEnergy</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=IBM+Plex+Mono:wght@300;400;500&display=swap');
-
 :root {
-  --bg: #0d0f0e;
-  --surface: #131615;
-  --surface2: #191c1a;
-  --border: #232824;
-  --ink: #e8ede9;
-  --ink2: #5a6358;
-  --accent: #a3e635;
-  --accent2: #34d399;
-  --red: #f87171;
-  --yellow: #fbbf24;
-  --blue: #60a5fa;
-  --purple: #a78bfa;
-  --orange: #fb923c;
+  --bg:#0f1210; --bg2:rgba(26,31,28,.85); --bg3:rgba(26,31,28,.6);
+  --ink:#e8ede9; --ink2:#8aab7a; --ink3:#7a8a78; --ink4:#5a6358; --ink5:#4a5648; --ink6:#3a4338;
+  --accent:#a3e635; --accent2:#34d399; --blue:#60a5fa; --purple:#a78bfa;
+  --orange:#fb923c; --yellow:#fbbf24; --red:#f87171;
+  --border:rgba(163,230,53,.06); --border2:rgba(163,230,53,.08);
 }
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:'IBM Plex Mono','SF Mono','Fira Code',monospace;padding:14px 11px;min-height:100vh}
+@keyframes fu{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+.fd{animation:fu .3s ease-out forwards}
 
-* { margin:0; padding:0; box-sizing:border-box; }
+/* Tabs & Filters */
+.tabs{display:flex;gap:3px;margin-bottom:12px}
+.tab{background:0;border:1px solid rgba(163,230,53,.1);color:var(--ink4);padding:4px 11px;border-radius:5px;cursor:pointer;font-family:inherit;font-size:8.5px;letter-spacing:.8px;transition:.2s}
+.tab:hover{border-color:rgba(163,230,53,.25);color:var(--ink2)}
+.tab.on{background:rgba(163,230,53,.08);border-color:rgba(163,230,53,.3);color:var(--accent)}
+.filters{display:flex;gap:3px;margin-bottom:9px;align-items:center}
+.wf{background:0;border:1px solid var(--border2);color:var(--ink4);padding:2px 7px;border-radius:4px;cursor:pointer;font-family:inherit;font-size:7.5px;transition:.15s}
+.wf:hover{color:var(--ink2)}.wf.on{background:rgba(163,230,53,.06);color:var(--accent);border-color:rgba(163,230,53,.2)}
 
-body {
-  background: var(--bg);
-  color: var(--ink);
-  font-family: 'IBM Plex Mono', monospace;
-  min-height: 100vh;
-}
+/* Cards */
+.cd{background:var(--bg3);border:1px solid var(--border);border-radius:9px;padding:11px;margin-bottom:8px}
+.kpi-grid{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:11px}
+.kpi{background:var(--bg2);border:1px solid var(--border2);border-radius:9px;padding:11px 13px;flex:1 1 140px;min-width:132px;position:relative;overflow:hidden}
+.kpi-bar{position:absolute;top:0;left:0;right:0;height:2px;opacity:.5}
+.kpi-label{font-size:7.5px;color:var(--ink4);letter-spacing:1px;text-transform:uppercase;margin-bottom:3px}
+.kpi-val{font-size:17px;font-weight:600;color:var(--ink)}
+.kpi-delta{font-size:8px;margin-top:2px}
+.kpi-sub{font-size:7px;margin-top:1px;color:var(--ink5)}
+.up{color:var(--accent2)}.dn{color:var(--red)}
 
-#loading {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: 100vh;
-  gap: 1.5rem;
-}
+/* Grid */
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:11px}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:10px}
+.ct{font-size:9.5px;color:var(--ink2);font-weight:500}
+.cs{font-size:7px;color:var(--ink5);margin-top:1px}
+.tg{font-size:6px;padding:1.5px 5px;border-radius:3px;letter-spacing:.5px;font-weight:500}
 
-.loading-logo {
-  font-family: 'Playfair Display', serif;
-  font-size: 2.5rem;
-  font-weight: 900;
-  color: var(--accent);
-  letter-spacing: -1px;
-}
+/* Section */
+.sc{font-size:7.5px;color:var(--ink4);letter-spacing:1.5px;text-transform:uppercase;margin:13px 0 5px;display:flex;align-items:center;gap:7px}
+.sc::after{content:'';flex:1;height:1px;background:var(--border)}
 
-.loading-dots { display: flex; gap: 0.5rem; }
-.loading-dots span {
-  width: 8px; height: 8px;
-  border-radius: 50%;
-  background: var(--accent);
-  animation: dot 1.4s infinite ease-in-out;
-}
-.loading-dots span:nth-child(2) { animation-delay: 0.2s; }
-.loading-dots span:nth-child(3) { animation-delay: 0.4s; }
-@keyframes dot { 0%,80%,100%{opacity:0.2;transform:scale(0.8)} 40%{opacity:1;transform:scale(1)} }
+/* Table */
+table.t{width:100%;border-collapse:collapse;font-size:8.5px}
+table.t th{text-align:left;color:var(--ink4);font-weight:500;padding:4px 5px;border-bottom:1px solid rgba(163,230,53,.1);text-transform:uppercase;letter-spacing:.4px;font-size:6.5px}
+table.t td{padding:4px 5px;border-bottom:1px solid rgba(255,255,255,.02);color:var(--ink3)}
+table.t tr:hover td{background:rgba(163,230,53,.02)}
 
-.loading-msg { font-size: 0.72rem; color: var(--ink2); letter-spacing: 2px; }
+/* Banks */
+.bank-cards{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px}
+.bank{background:rgba(26,31,28,.75);border:1px solid rgba(96,165,250,.08);border-radius:7px;padding:8px 11px;min-width:110px;flex:1 1 110px}
 
-#app { display: none; }
+/* Loading */
+.loading{display:flex;align-items:center;justify-content:center;height:60vh;flex-direction:column;gap:12px;color:var(--ink4)}
+.loading-dots span{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--accent);margin:0 3px;animation:bounce .6s infinite alternate}
+.loading-dots span:nth-child(2){animation-delay:.2s}
+.loading-dots span:nth-child(3){animation-delay:.4s}
+@keyframes bounce{to{opacity:.3;transform:translateY(-4px)}}
 
-.topbar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 1.2rem 2rem;
-  border-bottom: 1px solid var(--border);
-  position: sticky;
-  top: 0;
-  background: rgba(13,15,14,0.95);
-  backdrop-filter: blur(10px);
-  z-index: 100;
-}
+/* Alert */
+.alert{background:rgba(251,191,36,.05);border:1px solid rgba(251,191,36,.12);border-radius:7px;padding:7px 11px;margin-bottom:8px;font-size:8px;color:var(--yellow)}
 
-.logo {
-  font-family: 'Playfair Display', serif;
-  font-size: 1.4rem;
-  font-weight: 900;
-  color: var(--accent);
-  letter-spacing: -0.5px;
-}
+/* Footer */
+.footer{margin-top:14px;padding:6px 0;border-top:1px solid var(--border);font-size:6.5px;color:var(--ink6);display:flex;justify-content:space-between;flex-wrap:wrap;gap:4px}
 
-.topbar-right {
-  display: flex;
-  align-items: center;
-  gap: 1.5rem;
-}
-
-.last-updated { font-size: 0.62rem; color: var(--ink2); letter-spacing: 1px; }
-
-.weeks-filter { display: flex; gap: 0.4rem; }
-
-.wf-btn {
-  padding: 0.3rem 0.7rem;
-  border-radius: 20px;
-  border: 1px solid var(--border);
-  background: transparent;
-  color: var(--ink2);
-  font-family: 'IBM Plex Mono', monospace;
-  font-size: 0.62rem;
-  cursor: pointer;
-  transition: all 0.15s;
-  letter-spacing: 0.5px;
-}
-.wf-btn:hover { border-color: var(--accent); color: var(--accent); }
-.wf-btn.active { background: var(--accent); border-color: var(--accent); color: #0d0f0e; font-weight: 500; }
-
-.refresh-btn {
-  padding: 0.3rem 0.8rem;
-  background: transparent;
-  border: 1px solid var(--border);
-  color: var(--ink2);
-  border-radius: 6px;
-  font-family: 'IBM Plex Mono', monospace;
-  font-size: 0.62rem;
-  cursor: pointer;
-  transition: all 0.15s;
-  letter-spacing: 1px;
-}
-.refresh-btn:hover { border-color: var(--accent2); color: var(--accent2); }
-
-.tabs {
-  display: flex;
-  gap: 0;
-  border-bottom: 1px solid var(--border);
-  padding: 0 2rem;
-  background: var(--surface);
-}
-
-.tab-btn {
-  padding: 0.7rem 1.2rem;
-  background: transparent;
-  border: none;
-  border-bottom: 2px solid transparent;
-  color: var(--ink2);
-  font-family: 'IBM Plex Mono', monospace;
-  font-size: 0.65rem;
-  letter-spacing: 1.5px;
-  text-transform: uppercase;
-  cursor: pointer;
-  transition: all 0.15s;
-  margin-bottom: -1px;
-}
-.tab-btn:hover { color: var(--ink); }
-.tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
-
-.tab-panel { display: none; }
-.tab-panel.active { display: block; }
-
-.main { padding: 1.5rem 2rem; display: grid; gap: 1.5rem; }
-
-.kpi-row {
-  display: grid;
-  grid-template-columns: repeat(6, 1fr);
-  gap: 1rem;
-}
-
-.kpi {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  padding: 1rem 1.25rem;
-  position: relative;
-  overflow: hidden;
-  transition: transform 0.2s, border-color 0.2s;
-}
-.kpi:hover { transform: translateY(-2px); border-color: var(--accent); }
-.kpi::before {
-  content: '';
-  position: absolute;
-  top: 0; left: 0; right: 0;
-  height: 2px;
-  background: var(--kpi-accent, var(--accent));
-  border-radius: 10px 10px 0 0;
-}
-
-.kpi-label { font-size: 0.58rem; letter-spacing: 2px; text-transform: uppercase; color: var(--ink2); margin-bottom: 0.5rem; }
-.kpi-val { font-family: 'Playfair Display', serif; font-size: 1.5rem; font-weight: 700; color: var(--ink); line-height: 1; margin-bottom: 0.35rem; }
-.kpi-delta { font-size: 0.62rem; display: flex; align-items: center; gap: 0.3rem; }
-.delta-up { color: var(--accent2); }
-.delta-down { color: var(--red); }
-.delta-neutral { color: var(--ink2); }
-
-.charts-row { display: grid; grid-template-columns: 2fr 1fr; gap: 1.5rem; }
-
-.card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  padding: 1.25rem;
-}
-
-.card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem; }
-.card-title { font-family: 'Playfair Display', serif; font-size: 1rem; font-weight: 700; color: var(--ink); }
-.card-sub { font-size: 0.58rem; color: var(--ink2); letter-spacing: 1.5px; text-transform: uppercase; margin-top: 0.2rem; }
-
-.tag { font-size: 0.58rem; padding: 0.2rem 0.5rem; border-radius: 4px; letter-spacing: 1px; text-transform: uppercase; }
-.tag-green { background: rgba(163,230,53,0.12); color: var(--accent); }
-.tag-blue  { background: rgba(96,165,250,0.12); color: var(--blue); }
-.tag-red   { background: rgba(248,113,113,0.12); color: var(--red); }
-.tag-yellow{ background: rgba(251,191,36,0.12); color: var(--yellow); }
-.tag-purple{ background: rgba(167,139,250,0.12); color: var(--purple); }
-.tag-orange{ background: rgba(251,146,60,0.12); color: var(--orange); }
-
-.table-wrap { overflow-x: auto; }
-table { width: 100%; border-collapse: collapse; font-size: 0.68rem; }
-thead th {
-  color: var(--ink2);
-  font-size: 0.58rem;
-  letter-spacing: 1.5px;
-  text-transform: uppercase;
-  font-weight: 400;
-  padding: 0.5rem 0.75rem;
-  text-align: right;
-  border-bottom: 1px solid var(--border);
-}
-thead th:first-child { text-align: left; }
-tbody tr { border-bottom: 1px solid rgba(255,255,255,0.03); transition: background 0.1s; }
-tbody tr:hover { background: rgba(255,255,255,0.02); }
-tbody td { padding: 0.5rem 0.75rem; text-align: right; }
-tbody td:first-child { text-align: left; color: var(--ink2); font-size: 0.62rem; }
-.pos { color: var(--accent2); }
-.neg { color: var(--red); }
-.neutral { color: var(--ink); }
-
-.error-msg { text-align: center; padding: 3rem; color: var(--red); font-size: 0.75rem; letter-spacing: 1px; }
-
-.crm-kpi-row {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 1rem;
-}
-
-.crm-grid { display: grid; grid-template-columns: 1.5fr 1fr; gap: 1.5rem; }
-
-.crm-table { width: 100%; border-collapse: collapse; font-size: 0.68rem; }
-.crm-table thead th {
-  color: var(--ink2);
-  font-size: 0.55rem;
-  letter-spacing: 1.5px;
-  text-transform: uppercase;
-  font-weight: 400;
-  padding: 0.5rem 0.6rem;
-  text-align: center;
-  border-bottom: 1px solid var(--border);
-}
-.crm-table thead th:first-child { text-align: left; }
-.crm-table tbody tr { border-bottom: 1px solid rgba(255,255,255,0.03); transition: background 0.1s; }
-.crm-table tbody tr:hover { background: rgba(255,255,255,0.02); }
-.crm-table tbody td { padding: 0.6rem 0.6rem; text-align: center; color: var(--ink); font-size: 0.68rem; }
-.crm-table tbody td:first-child { text-align: left; }
-
-.vendor-name { display: flex; align-items: center; gap: 0.6rem; }
-.avatar {
-  width: 26px; height: 26px;
-  border-radius: 6px;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 0.55rem; font-weight: 600;
-  flex-shrink: 0;
-  font-family: 'IBM Plex Mono', monospace;
-}
-
-.pill {
-  display: inline-block;
-  font-size: 0.6rem;
-  padding: 0.15rem 0.5rem;
-  border-radius: 20px;
-  font-weight: 500;
-}
-.pill-orange { background: rgba(251,146,60,0.15); color: var(--orange); }
-.pill-green  { background: rgba(52,211,153,0.15); color: var(--accent2); }
-.pill-red    { background: rgba(248,113,113,0.15); color: var(--red); }
-.pill-blue   { background: rgba(96,165,250,0.15); color: var(--blue); }
-.pill-purple { background: rgba(167,139,250,0.15); color: var(--purple); }
-.pill-gray   { background: rgba(90,99,88,0.2); color: var(--ink2); }
-
-.stage-bar-wrap { margin-bottom: 0.9rem; }
-.stage-bar-wrap:last-child { margin-bottom: 0; }
-.stage-bar-label { display: flex; justify-content: space-between; font-size: 0.6rem; color: var(--ink2); margin-bottom: 0.3rem; }
-.stage-bar-label span:last-child { color: var(--ink); font-weight: 500; }
-.bar-track { height: 4px; background: rgba(255,255,255,0.06); border-radius: 99px; overflow: hidden; }
-.bar-fill { height: 100%; border-radius: 99px; }
-
-.alert-box {
-  border-radius: 8px;
-  padding: 0.75rem 1rem;
-  margin-bottom: 0.7rem;
-  border: 1px solid;
-}
-.alert-box:last-child { margin-bottom: 0; }
-.alert-warn  { background: rgba(251,191,36,0.06); border-color: rgba(251,191,36,0.2); }
-.alert-danger{ background: rgba(248,113,113,0.06); border-color: rgba(248,113,113,0.2); }
-.alert-info  { background: rgba(96,165,250,0.06); border-color: rgba(96,165,250,0.2); }
-.alert-ok    { background: rgba(52,211,153,0.06); border-color: rgba(52,211,153,0.2); }
-.alert-title { font-size: 0.68rem; font-weight: 500; margin-bottom: 0.25rem; }
-.alert-warn .alert-title  { color: var(--yellow); }
-.alert-danger .alert-title{ color: var(--red); }
-.alert-info .alert-title  { color: var(--blue); }
-.alert-ok .alert-title    { color: var(--accent2); }
-.alert-desc { font-size: 0.6rem; color: var(--ink2); line-height: 1.5; }
-
-.crm-loading {
-  display: flex; flex-direction: column;
-  align-items: center; justify-content: center;
-  padding: 4rem; gap: 1rem;
-  color: var(--ink2); font-size: 0.68rem; letter-spacing: 1px;
-}
-
-.conv-row { display: flex; align-items: center; gap: 0.8rem; margin-bottom: 0.6rem; }
-.conv-label { font-size: 0.6rem; color: var(--ink2); min-width: 120px; }
-.conv-track { flex: 1; height: 4px; background: rgba(255,255,255,0.06); border-radius: 99px; overflow: hidden; }
-.conv-fill { height: 100%; border-radius: 99px; }
-.conv-pct { font-size: 0.6rem; min-width: 36px; text-align: right; }
-
-@media (max-width: 900px) {
-  .kpi-row { grid-template-columns: repeat(3,1fr); }
-  .crm-kpi-row { grid-template-columns: repeat(2,1fr); }
-  .charts-row, .crm-grid { grid-template-columns: 1fr; }
-  .main { padding: 1rem; }
+/* Responsive */
+@media(max-width:600px){
+  .grid2{grid-template-columns:1fr}
+  .grid3{grid-template-columns:1fr}
+  .kpi{min-width:100%;flex:1 1 100%}
 }
 </style>
 </head>
 <body>
 
-<div id="loading">
-  <div class="loading-logo">RS Dashboard</div>
-  <div class="loading-dots"><span></span><span></span><span></span></div>
-  <div class="loading-msg" id="loading-msg">CONECTANDO CON GOOGLE SHEETS...</div>
+<!-- Header -->
+<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:5px">
+  <div>
+    <div style="font-size:12px;font-weight:600;color:var(--accent);letter-spacing:2px">RS DASHBOARD</div>
+    <div id="subtitle" style="font-size:7.5px;color:var(--ink4);margin-top:1px">CARGANDO...</div>
+  </div>
+  <div class="tabs" id="tabs"></div>
 </div>
+<div class="filters" id="filters"></div>
 
-<div id="app">
-  <div class="topbar">
-    <div class="logo">RS Dashboard</div>
-    <div class="topbar-right">
-      <div class="last-updated" id="last-updated">—</div>
-      <div class="weeks-filter" id="weeks-filter">
-        <button class="wf-btn" onclick="setFilter(8,this)">8S</button>
-        <button class="wf-btn active" onclick="setFilter(12,this)">12S</button>
-        <button class="wf-btn" onclick="setFilter(26,this)">26S</button>
-        <button class="wf-btn" onclick="setFilter(0,this)">Todo</button>
-      </div>
-      <button class="refresh-btn" id="refresh-btn" onclick="refreshCurrent()">↺ ACTUALIZAR</button>
-    </div>
-  </div>
+<!-- Content -->
+<div id="loading" class="loading">
+  <div class="loading-dots"><span></span><span></span><span></span></div>
+  <div>CONECTANDO CON DATOS...</div>
+</div>
+<div id="app" style="display:none"></div>
 
-  <div class="tabs">
-    <button class="tab-btn active" onclick="switchTab('ventas', this)">Ventas & Finanzas</button>
-    <button class="tab-btn" onclick="switchTab('crm', this)">CRM Pipeline</button>
-  </div>
-
-  <div class="tab-panel active" id="tab-ventas">
-    <div class="main">
-      <div class="kpi-row" id="kpi-row"></div>
-      <div class="charts-row">
-        <div class="card">
-          <div class="card-header">
-            <div><div class="card-title">Ventas Semanales</div><div class="card-sub">Total con IVA · CLP</div></div>
-            <span class="tag tag-green">VENTAS</span>
-          </div>
-          <canvas id="salesChart" height="100"></canvas>
-        </div>
-        <div class="card">
-          <div class="card-header">
-            <div><div class="card-title">Margen Bruto</div><div class="card-sub">% semanal</div></div>
-            <span class="tag tag-blue">MARGEN</span>
-          </div>
-          <canvas id="marginChart" height="100"></canvas>
-        </div>
-      </div>
-      <div class="charts-row">
-        <div class="card" style="grid-column: span 2;">
-          <div class="card-header">
-            <div><div class="card-title">Recaudación vs Compras ENAP</div><div class="card-sub">Transferencias + cheques + factoring vs compras con IVA</div></div>
-            <span class="tag tag-yellow">COBROS</span>
-          </div>
-          <canvas id="recaudChart" height="70"></canvas>
-        </div>
-      </div>
-      <div class="card">
-        <div class="card-header">
-          <div><div class="card-title">Litros Vendidos vs Presupuesto</div><div class="card-sub">Real vs meta semanal</div></div>
-          <span class="tag tag-green">LITROS</span>
-        </div>
-        <canvas id="litrosChart" height="60"></canvas>
-      </div>
-      <div class="card">
-        <div class="card-header">
-          <div><div class="card-title">Resumen Semanal</div><div class="card-sub">Últimas semanas</div></div>
-        </div>
-        <div class="table-wrap">
-          <table id="main-table">
-            <thead>
-              <tr>
-                <th>Semana</th><th>Ventas $</th><th>Litros</th><th>Desv. Ppto</th>
-                <th>Margen</th><th>Precio/L</th><th>Recaudación</th><th>Compras ENAP</th><th>Caja</th>
-              </tr>
-            </thead>
-            <tbody id="table-body"></tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="tab-panel" id="tab-crm">
-    <div class="main" id="crm-content">
-      <div class="crm-loading">
-        <div class="loading-dots"><span></span><span></span><span></span></div>
-        <div>CONECTANDO CON ODOO CRM...</div>
-      </div>
-    </div>
-  </div>
+<!-- Footer -->
+<div class="footer">
+  <span>TomEnergy · RS Dashboard · Puerto Varas</span>
+  <span id="footer-source">Odoo PRODUCCION</span>
 </div>
 
 <script>
-const SHEET_ID = '2PACX-1vQIaJPtTTXcbMQv5adP6jlJeQx4YRmMF8c-6vS6nwwmrNpliIKcN7-IDo8GV-5huZeAjm5EYH7Tzudf';
-const CSV_URL = `https://docs.google.com/spreadsheets/d/e/${SHEET_ID}/pub?output=csv`;
-const PROXY_URL = `https://corsproxy.io/?${encodeURIComponent(CSV_URL)}`;
+// ══════════════════════════════════════════
+// RS Dashboard · GitHub Pages Edition
+// Reads from data.json (updated daily via GitHub Action)
+// ══════════════════════════════════════════
 
-const ODOO_URL = 'https://tomenergy.cl';
-const ODOO_DB = 'tomenergy';
-const ODOO_USER = 'made@tomenergy.cl';
-const ODOO_KEY = '7bbfca1bddd30d9816ed9ee1268370c9941e71fe';
+let DATA = null;
+let currentTab = 'ventas';
+let filterN = 12;
 
-let allWeeks = [], filterN = 12, crmLoaded = false, currentTab = 'ventas';
-const charts = {};
+const fM = n => !n && n !== 0 ? '—' : '$' + (n / 1e6).toFixed(1) + 'M';
+const fK = n => !n && n !== 0 ? '—' : Math.round(n / 1000).toLocaleString('es-CL') + 'K';
+const fN = n => !n && n !== 0 ? '—' : Math.round(n).toLocaleString('es-CL');
+const fP = n => !n && n !== 0 ? '—' : (n * 100).toFixed(2) + '%';
+const pD = (c, p) => (!c || !p) ? null : ((c - p) / Math.abs(p)) * 100;
 
-function switchTab(tab, btn) {
-  currentTab = tab;
-  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
-  document.getElementById('tab-' + tab).classList.add('active');
-  const wf = document.getElementById('weeks-filter');
-  if (tab === 'crm') { wf.style.display = 'none'; if (!crmLoaded) loadCRM(); }
-  else wf.style.display = 'flex';
+function deltaHTML(d) {
+  if (d == null) return '';
+  const up = d >= 0;
+  return `<div class="kpi-delta ${up ? 'up' : 'dn'}">${up ? '↑' : '↓'} ${Math.abs(d).toFixed(1)}%</div>`;
 }
 
-function refreshCurrent() {
-  if (currentTab === 'crm') { crmLoaded = false; loadCRM(); }
-  else loadData();
+// ── SVG Generators ──
+function sparkSVG(data, color = '#a3e635', w = 85, h = 26) {
+  if (!data?.length || data.length < 2) return '';
+  const mx = Math.max(...data), mn = Math.min(...data), rg = mx - mn || 1;
+  const pts = data.map((v, i) => `${(i / (data.length - 1)) * w},${h - ((v - mn) / rg) * (h - 5) - 2.5}`).join(' ');
+  const ly = parseFloat(pts.split(' ').pop().split(',')[1]);
+  return `<svg width="${w}" height="${h}" style="display:block;opacity:.8">
+    <polyline points="${pts}" fill="none" stroke="${color}" stroke-width="1.5" stroke-linejoin="round"/>
+    <circle cx="${w}" cy="${ly}" r="2" fill="${color}"/>
+  </svg>`;
 }
 
-async function odooCall(model, method, args, kwargs) {
-  const resp = await fetch(ODOO_URL + '/web/dataset/call_kw', {
-    method: 'POST', headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ jsonrpc:'2.0', method:'call', id:1, params:{ model, method, args, kwargs, context:{} } }),
-    credentials: 'include'
-  });
-  const data = await resp.json();
-  if (data.error) throw new Error(data.error.data?.message || 'Odoo error');
-  return data.result;
-}
-
-async function odooAuth() {
-  const resp = await fetch(ODOO_URL + '/web/session/authenticate', {
-    method: 'POST', headers: { 'Content-Type': 'application/json' }, credentials: 'include',
-    body: JSON.stringify({ jsonrpc:'2.0', method:'call', id:1, params:{ db:ODOO_DB, login:ODOO_USER, password:ODOO_KEY } })
-  });
-  const data = await resp.json();
-  if (!data.result?.uid) throw new Error('Auth failed');
-  return data.result.uid;
-}
-
-async function loadCRM() {
-  document.getElementById('crm-content').innerHTML = `<div class="crm-loading"><div class="loading-dots"><span></span><span></span><span></span></div><div>CONECTANDO CON ODOO CRM...</div></div>`;
-  try {
-    await odooAuth();
-    const leads = await odooCall('crm.lead','search_read',[[['type','=','opportunity']]],{fields:['name','stage_id','user_id','expected_revenue','partner_id'],limit:500});
-    const activities = await odooCall('mail.activity','search_read',[[['res_model','=','crm.lead']]],{fields:['user_id','activity_type_id','date_deadline'],limit:1000});
-    crmLoaded = true;
-    renderCRM(leads, activities);
-  } catch(e) {
-    document.getElementById('crm-content').innerHTML = `<div class="crm-loading" style="color:var(--red)">Error conectando con Odoo: ${e.message}<br><br><button onclick="crmLoaded=false;loadCRM()" style="margin-top:1rem;padding:0.4rem 1rem;background:transparent;color:var(--red);border:1px solid var(--red);border-radius:6px;cursor:pointer;font-family:'IBM Plex Mono',monospace;font-size:0.65rem">REINTENTAR</button></div>`;
-  }
-}
-
-function renderCRM(leads, activities) {
-  const stages = ['Ruta','Oportunidad de Negocio','Contactado','Cotizado','No Cerrados','Durmiente','Won','Perdidos'];
-  const stageColors = {'Ruta':'var(--blue)','Oportunidad de Negocio':'var(--purple)','Contactado':'var(--accent2)','Cotizado':'var(--orange)','No Cerrados':'var(--yellow)','Durmiente':'var(--ink2)','Won':'var(--accent)','Perdidos':'var(--red)'};
-  const byStage = {}; stages.forEach(s => byStage[s] = 0);
-  const byVendor = {};
-  leads.forEach(l => {
-    const stage = l.stage_id?.[1]||'Sin etapa', vendor = l.user_id?.[1]||'Sin asignar';
-    if (byStage[stage]!==undefined) byStage[stage]++;
-    if (!byVendor[vendor]) byVendor[vendor] = {...Object.fromEntries(stages.map(s=>[s,0])),total:0};
-    if (byVendor[vendor][stage]!==undefined) byVendor[vendor][stage]++;
-    byVendor[vendor].total++;
-  });
-  const byVendorAct = {};
-  activities.forEach(a => { const v=a.user_id?.[1]||'Sin asignar'; byVendorAct[v]=(byVendorAct[v]||0)+1; });
-  const total=leads.length, totalCotizado=byStage['Cotizado']||0, totalWon=byStage['Won']||0;
-  const totalNoCerrado=byStage['No Cerrados']||0, totalAct=activities.length;
-  const convRate=totalCotizado>0?Math.round(totalWon/totalCotizado*100):0;
-  const initials=name=>name.split(' ').slice(0,2).map(w=>w[0]||'').join('').toUpperCase();
-  const avatarColors=['rgba(96,165,250,0.2)','rgba(52,211,153,0.2)','rgba(251,146,60,0.2)','rgba(167,139,250,0.2)','rgba(163,230,53,0.2)'];
-  const textColors=['var(--blue)','var(--accent2)','var(--orange)','var(--purple)','var(--accent)'];
-  let ci=0; const vc={};
-  Object.keys(byVendor).forEach(v=>{vc[v]={bg:avatarColors[ci%avatarColors.length],color:textColors[ci%textColors.length]};ci++;});
-  const maxStage=Math.max(...Object.values(byStage),1);
-  const vendorRows=Object.entries(byVendor).sort((a,b)=>b[1].total-a[1].total).map(([vendor,data])=>{
-    const c=vc[vendor]||{bg:avatarColors[0],color:textColors[0]};
-    return `<tr><td><div class="vendor-name"><div class="avatar" style="background:${c.bg};color:${c.color}">${initials(vendor)}</div><span style="font-size:0.65rem;color:var(--ink)">${vendor.split(' ').slice(0,2).join(' ')}</span></div></td>
-    <td><span class="pill pill-blue">${data['Ruta']}</span></td>
-    <td><span class="pill ${data['Cotizado']>10?'pill-orange':data['Cotizado']>0?'pill-blue':'pill-gray'}">${data['Cotizado']}</span></td>
-    <td><span class="pill pill-gray">${data['No Cerrados']}</span></td>
-    <td><span class="pill ${data['Won']>3?'pill-green':data['Won']>0?'pill-blue':'pill-gray'}">${data['Won']}</span></td>
-    <td><span class="pill ${data['Perdidos']>3?'pill-red':data['Perdidos']>0?'pill-orange':'pill-gray'}">${data['Perdidos']}</span></td>
-    <td style="color:var(--ink);font-weight:500">${data.total}</td>
-    <td style="color:var(--accent2)">${byVendorAct[vendor]||0}</td></tr>`;
-  }).join('');
-  const stageBars=stages.map(s=>`<div class="stage-bar-wrap"><div class="stage-bar-label"><span>${s}</span><span>${byStage[s]||0} ops</span></div><div class="bar-track"><div class="bar-fill" style="width:${Math.round((byStage[s]||0)/maxStage*100)}%;background:${stageColors[s]}"></div></div></div>`).join('');
-  document.getElementById('crm-content').innerHTML = `
-    <div class="crm-kpi-row">
-      <div class="kpi" style="--kpi-accent:var(--blue)"><div class="kpi-label">Total oportunidades</div><div class="kpi-val">${total}</div><div class="kpi-delta"><span class="delta-neutral">Pipeline activo 2026</span></div></div>
-      <div class="kpi" style="--kpi-accent:var(--orange)"><div class="kpi-label">Cotizados pendientes</div><div class="kpi-val">${totalCotizado}</div><div class="kpi-delta"><span class="${totalCotizado>30?'delta-down':'delta-neutral'}">${Math.round(totalCotizado/total*100)}% del pipeline</span></div></div>
-      <div class="kpi" style="--kpi-accent:var(--accent)"><div class="kpi-label">Won · conv. rate</div><div class="kpi-val">${totalWon}</div><div class="kpi-delta"><span class="${convRate<15?'delta-down':'delta-up'}">${convRate}% cotizado→won</span></div></div>
-      <div class="kpi" style="--kpi-accent:var(--accent2)"><div class="kpi-label">Actividades pendientes</div><div class="kpi-val">${totalAct}</div><div class="kpi-delta"><span class="delta-neutral">En todos los vendedores</span></div></div>
-    </div>
-    <div class="crm-grid">
-      <div class="card">
-        <div class="card-header"><div><div class="card-title">Pipeline por vendedor</div><div class="card-sub">Oportunidades activas · live</div></div><span class="tag tag-purple">CRM LIVE</span></div>
-        <div class="table-wrap"><table class="crm-table"><thead><tr><th style="text-align:left">Vendedor</th><th>Ruta</th><th>Cotizado</th><th>No cerr.</th><th>Won</th><th>Perdidos</th><th>Total</th><th>Activid.</th></tr></thead><tbody>${vendorRows}</tbody></table></div>
-        <div style="margin-top:1.2rem;padding-top:1rem;border-top:1px solid var(--border)">
-          <div class="card-sub" style="margin-bottom:0.8rem">Conversión Cotizado → Won</div>
-          ${Object.entries(byVendor).sort((a,b)=>b[1].total-a[1].total).map(([v,d])=>{const r=d['Cotizado']>0?Math.round(d['Won']/d['Cotizado']*100):0;const col=r>=20?'var(--accent2)':r>=10?'var(--yellow)':'var(--red)';return `<div class="conv-row"><div class="conv-label">${v.split(' ')[0]} ${v.split(' ')[1]||''}</div><div class="conv-track"><div class="conv-fill" style="width:${Math.min(r*2,100)}%;background:${col}"></div></div><div class="conv-pct" style="color:${col}">${r}%</div></div>`;}).join('')}
-          <div class="conv-row"><div class="conv-label" style="color:var(--accent2)">Meta ideal</div><div class="conv-track"><div class="conv-fill" style="width:50%;background:var(--accent2)"></div></div><div class="conv-pct" style="color:var(--accent2)">25%</div></div>
-        </div>
-      </div>
-      <div style="display:flex;flex-direction:column;gap:1.5rem">
-        <div class="card"><div class="card-header"><div><div class="card-title">Volumen por etapa</div><div class="card-sub">Todas las oportunidades</div></div><span class="tag tag-orange">PIPELINE</span></div>${stageBars}</div>
-        <div class="card"><div class="card-header"><div><div class="card-title">Alertas</div><div class="card-sub">Requieren atención</div></div><span class="tag tag-red">ALERTAS</span></div>
-          ${totalCotizado>30?`<div class="alert-box alert-warn"><div class="alert-title">${totalCotizado} oportunidades en Cotizado</div><div class="alert-desc">Cuello de botella principal.</div></div>`:''}
-          ${totalNoCerrado>0?`<div class="alert-box alert-danger"><div class="alert-title">${totalNoCerrado} bloqueados por crédito</div><div class="alert-desc">Coordinar con finanzas.</div></div>`:''}
-          <div class="alert-box alert-info"><div class="alert-title">Conversión actual: ${convRate}%</div><div class="alert-desc">Meta: 25%. ${convRate<15?'Margen de mejora significativo.':'Buen ritmo, mantener la presión.'}</div></div>
-          <div class="alert-box alert-ok"><div class="alert-title">Reporte semanal activo</div><div class="alert-desc">Cada jueves 08:00 AM → made@tomenergy.cl</div></div>
-        </div>
-      </div>
-    </div>`;
-}
-
-// ---- GOOGLE SHEETS ----
-function parseCSVRow(row) {
-  const res=[]; let cur='', inQ=false;
-  for (const ch of row) {
-    if (ch==='"') inQ=!inQ;
-    else if (ch===',' && !inQ) { res.push(cur.trim()); cur=''; }
-    else cur+=ch;
-  }
-  res.push(cur.trim()); return res;
-}
-
-function parseNum(v) {
-  if (v==null||v===''||v==='-') return null;
-  const s=String(v).replace(/"/g,'').replace(/\s/g,'').replace(/\$/g,'');
-  if (s.includes('%')) return parseFloat(s.replace('%','').replace(/\./g,'').replace(',','.')) / 100;
-  const dots=(s.match(/\./g)||[]).length;
-  let n=s;
-  if (dots>1) n=s.replace(/\./g,'').replace(',','.');
-  else if (dots===1&&s.includes(',')) n=s.replace('.','').replace(',','.');
-  else if (!s.includes('.')&&s.includes(',')) n=s.replace(',','.');
-  return parseFloat(n)||null;
-}
-
-function fmtM(n) { if (!n) return '—'; return '$'+(n/1e6).toFixed(1)+'M'; }
-function fmtCLP(n) { if (!n) return '—'; return Math.round(n).toLocaleString('es-CL'); }
-function fmtPct(n) { if (!n) return '—'; return (n*100).toFixed(2)+'%'; }
-
-async function loadData() {
-  document.getElementById('loading').style.display = 'flex';
-  document.getElementById('app').style.display = 'none';
-  document.getElementById('loading-msg').textContent = 'CONECTANDO CON GOOGLE SHEETS...';
-  try {
-    let resp;
-    try { resp = await fetch(CSV_URL+'&t='+Date.now()); if (!resp.ok) throw new Error(); }
-    catch(e) { resp = await fetch(PROXY_URL); }
-    const text = await resp.text();
-    const rows = text.split('\n').map(r => parseCSVRow(r));
-    const find = (...terms) => rows.findIndex(r => terms.some(t => (r[0]||'').toLowerCase().includes(t)));
-
-    const semanaIdx      = find('semana');
-    const ventasIdx      = find('en $');
-    const litrosIdx      = find('litros vendido');
-    const litrosPptoIdx  = find('litros presupuesto');
-    const comprasIdx     = find('número de compras');
-    const clientesIdx    = find('número de clientes');
-    const desvIdx        = find('desviación');
-    const margenIdx      = find('margen bruto');
-    const precioIdx      = find('precio venta');
-    const cajaIdx        = find('caja disponible');
-    const recaudIdx      = find('recaudacion total','recaudación total');
-    const transfIdx      = find('transferencia/depositos chile');
-    // ✅ FIX: Lee fila 25 "Total cheques Odoo despues de subir los cheques"
-    const chequesIdx     = find('total cheques odoo despues');
-    const factoringIdx   = find('factoring');
-    const comprasEnapIdx = find('compras enap');
-
-    if (semanaIdx < 0) throw new Error('No se encontró la fila Semana');
-    const semanaRow = rows[semanaIdx];
-    const weeks = [];
-    for (let c = 1; c < semanaRow.length; c++) {
-      const label = (semanaRow[c]||'').trim();
-      if (!label||label.toLowerCase().includes('average')||label.toLowerCase().includes('promedio')) continue;
-      const g = (idx) => idx >= 0 ? parseNum(rows[idx]?.[c]) : null;
-      const ventas=g(ventasIdx), litros=g(litrosIdx);
-      if (!ventas && !litros) continue;
-      weeks.push({
-        semana:label, ventas, litros,
-        litrosPpto:g(litrosPptoIdx), nCompras:g(comprasIdx), nClientes:g(clientesIdx),
-        desv:g(desvIdx), margen:g(margenIdx), precio:g(precioIdx), caja:g(cajaIdx),
-        recaud:g(recaudIdx), transf:g(transfIdx), cheques:g(chequesIdx),
-        factoring:g(factoringIdx), comprasEnap:g(comprasEnapIdx),
-      });
+function barsSVG(data, labels, opts = {}) {
+  const { color = 'rgba(163,230,53,.7)', h = 135, colorFn, overlay } = opts;
+  if (!data?.length) return '';
+  const allV = overlay ? [...data, ...overlay] : data;
+  const mx = Math.max(...allV) || 1;
+  const bw = Math.min(20, Math.floor(220 / data.length)), gap = Math.max(1, Math.floor(bw * .2));
+  const tw = data.length * (bw + gap) + 8;
+  let svg = `<div style="overflow-x:auto"><svg width="${Math.max(tw, 150)}" height="${h + 18}" style="display:block">`;
+  [.5, 1].forEach(p => { svg += `<line x1="0" y1="${h * (1 - p)}" x2="${tw}" y2="${h * (1 - p)}" stroke="rgba(255,255,255,.03)" stroke-dasharray="2,3"/>`; });
+  data.forEach((v, i) => {
+    const bh = (v / mx) * h, x = i * (bw + gap) + 4;
+    const c = colorFn ? colorFn(v, i) : color;
+    svg += `<rect x="${x}" y="${h - bh}" width="${bw}" height="${bh}" rx="2" fill="${c}"><title>${fN(v)}</title></rect>`;
+    if (overlay && overlay[i] > 0) {
+      svg += `<line x1="${x - 1}" y1="${h - (overlay[i] / mx) * h}" x2="${x + bw + 1}" y2="${h - (overlay[i] / mx) * h}" stroke="rgba(251,191,36,.8)" stroke-width="1.5" stroke-dasharray="3,2"/>`;
     }
-    allWeeks = weeks;
-    document.getElementById('last-updated').textContent = 'Actualizado: '+new Date().toLocaleTimeString('es-CL');
+    if (labels) svg += `<text x="${x + bw / 2}" y="${h + 11}" text-anchor="middle" fill="#4a5648" style="font-size:6px;font-family:'IBM Plex Mono',monospace">${labels[i]}</text>`;
+  });
+  svg += '</svg></div>';
+  return svg;
+}
+
+// ── Tab Switching ──
+function setupTabs() {
+  const tabs = document.getElementById('tabs');
+  tabs.innerHTML = [
+    { id: 'ventas', label: 'VENTAS' },
+    { id: 'diario', label: 'DIARIO' },
+    { id: 'bancos', label: 'CAJA' },
+  ].map(t => `<button class="tab ${t.id === currentTab ? 'on' : ''}" onclick="switchTab('${t.id}')">${t.label}</button>`).join('');
+
+  const filters = document.getElementById('filters');
+  filters.innerHTML = [4, 8, 12].map(n =>
+    `<button class="wf ${filterN === n ? 'on' : ''}" onclick="setFilter(${n})">${n}S</button>`
+  ).join('') + `<span style="font-size:6.5px;color:#3a4338;margin-left:4px">Sem. actual: ${DATA.weeks[0].label} ${DATA.weeks[0].parcial ? '(parcial)' : ''}</span>`;
+}
+
+function switchTab(t) { currentTab = t; setupTabs(); render(); }
+function setFilter(n) { filterN = n; setupTabs(); render(); }
+
+// ── Render Functions ──
+function render() {
+  const app = document.getElementById('app');
+  if (currentTab === 'ventas') renderVentas(app);
+  else if (currentTab === 'diario') renderDiario(app);
+  else renderBancos(app);
+}
+
+function renderVentas(el) {
+  const weeks = [...DATA.weeks.slice(0, filterN)].reverse();
+  const last = DATA.weeks[0], prev = DATA.weeks[1];
+  const sl = w => w.label.split('-')[0];
+  const desvPpto = last.ppto > 0 ? last.litros / last.ppto : 0;
+
+  let html = '<div class="fd">';
+
+  // KPIs
+  html += '<div class="kpi-grid">';
+  html += kpiHTML('Ventas Semana', fM(last.ventas), pD(last.ventas, prev.ventas), 'var(--accent)', sparkSVG(weeks.map(w => w.ventas)), `${last.facturas} fact · ${last.clientes} clientes`);
+  html += kpiHTML('Litros', fK(last.litros), pD(last.litros, prev.litros), 'var(--accent2)', sparkSVG(weeks.map(w => w.litros), '#34d399'));
+  html += kpiHTML('Litros vs Ppto', `${(desvPpto * 100).toFixed(0)}%`, null, desvPpto >= .8 ? 'var(--accent2)' : desvPpto >= .6 ? 'var(--yellow)' : 'var(--red)', '', `Meta: ${fK(last.ppto)} · Real: ${fK(last.litros)}`);
+  html += kpiHTML('Margen Bruto', fP(last.margin), pD(last.margin, prev.margin), last.margin >= .10 ? 'var(--accent2)' : 'var(--red)', '', 'margin_zone ponderado');
+  html += kpiHTML('$/Litro', '$' + fN(last.precio), pD(last.precio, prev.precio), 'var(--yellow)');
+  html += kpiHTML('Caja', fM(DATA.total_cash), null, DATA.total_cash > 30e6 ? 'var(--accent2)' : 'var(--red)', '', `${DATA.banks.length} cuentas`);
+  html += '</div>';
+
+  // Charts
+  html += '<div class="grid2">';
+  html += chartCard('Ventas Semanales', 'Total con IVA', 'rgba(163,230,53,.1)', 'var(--accent)', 'CLP',
+    barsSVG(weeks.map(w => w.ventas), weeks.map(w => sl(w))));
+  html += chartCard('Litros vs Presupuesto', 'Real vs meta · — = ppto', 'rgba(52,211,153,.1)', 'var(--accent2)', 'LITROS',
+    barsSVG(weeks.map(w => w.litros), weeks.map(w => sl(w)), {
+      overlay: weeks.map(w => w.ppto),
+      colorFn: (v, i) => weeks[i].litros >= weeks[i].ppto ? 'rgba(163,230,53,.7)' : 'rgba(248,113,113,.55)'
+    }) + '<div style="display:flex;gap:10px;margin-top:5px;font-size:6.5px;color:#4a5648"><span><span style="display:inline-block;width:7px;height:7px;background:rgba(163,230,53,.7);border-radius:2px;margin-right:2px;vertical-align:middle"></span>Sobre ppto</span><span><span style="display:inline-block;width:7px;height:7px;background:rgba(248,113,113,.55);border-radius:2px;margin-right:2px;vertical-align:middle"></span>Bajo ppto</span><span><span style="display:inline-block;width:7px;height:2px;background:rgba(251,191,36,.8);margin-right:2px;vertical-align:middle"></span>Presupuesto</span></div>');
+  html += chartCard('Margen Bruto %', 'margin_zone ponderado', 'rgba(96,165,250,.1)', 'var(--blue)', 'MARGEN',
+    barsSVG(weeks.map(w => w.margin * 100), weeks.map(w => sl(w)), {
+      h: 110, colorFn: v => v >= 12 ? 'rgba(52,211,153,.7)' : v >= 10 ? 'rgba(96,165,250,.6)' : 'rgba(248,113,113,.6)'
+    }));
+  html += chartCard('Recaudacion', 'Cheques + transferencias', 'rgba(167,139,250,.1)', 'var(--purple)', 'COBROS',
+    barsSVG(weeks.map(w => w.recaud), weeks.map(w => sl(w)), { color: 'rgba(167,139,250,.6)' }));
+  html += '</div>';
+
+  // Table
+  html += '<div class="sc">Resumen Semanal</div><div class="cd" style="overflow:auto"><table class="t"><thead><tr>';
+  html += '<th>Semana</th><th style="text-align:right">Ventas</th><th style="text-align:right">Litros</th><th style="text-align:right">Ppto</th><th style="text-align:right">Desv.</th><th style="text-align:right">Margen</th><th style="text-align:right">$/L</th><th style="text-align:right">Recaud.</th>';
+  html += '</tr></thead><tbody>';
+  DATA.weeks.slice(0, filterN).forEach((w, i) => {
+    const dv = w.ppto > 0 ? w.litros / w.ppto : 0;
+    const dvC = dv >= .8 ? 'up' : 'dn';
+    const mC = w.margin >= .11 ? 'up' : w.margin >= .09 ? '' : 'dn';
+    html += `<tr>
+      <td style="${i === 0 ? 'color:var(--accent);font-weight:500' : ''}">${w.label}${w.parcial ? ' *' : ''}</td>
+      <td style="text-align:right">${fM(w.ventas)}</td>
+      <td style="text-align:right">${fK(w.litros)}</td>
+      <td style="text-align:right;color:var(--ink4)">${fK(w.ppto)}</td>
+      <td style="text-align:right" class="${dvC}">${(dv * 100).toFixed(0)}%</td>
+      <td style="text-align:right" class="${mC}">${fP(w.margin)}</td>
+      <td style="text-align:right">$${fN(w.precio)}</td>
+      <td style="text-align:right">${fM(w.recaud)}</td>
+    </tr>`;
+  });
+  html += '</tbody></table>';
+  html += '<div style="font-size:6.5px;color:#3a4338;margin-top:5px">* Parcial · Margen = margin_zone ponderado (Odoo)</div></div>';
+  html += '</div>';
+  el.innerHTML = html;
+}
+
+function renderDiario(el) {
+  const daily = DATA.daily;
+  const dailyRev = [...daily].reverse();
+  const avg = daily.length > 0 ? Math.round(daily.reduce((s, d) => s + d.litros, 0) / daily.length) : 0;
+  const maxDay = daily.reduce((a, d) => d.litros > a.litros ? d : a, daily[0] || { litros: 0 });
+
+  let html = '<div class="fd">';
+  html += '<div class="sc">Venta Diaria en Litros · Ultimos dias habiles</div>';
+  html += '<div class="cd">';
+  html += barsSVG(dailyRev.map(d => d.litros), dailyRev.map(d => d.date.replace('mar', 'M').replace('feb', 'F').replace('ene', 'E')), {
+    h: 160,
+    colorFn: (v, i) => {
+      if (v === 0) return 'rgba(255,255,255,.03)';
+      const d = dailyRev[i];
+      if (d.day === 'Lun') return 'rgba(96,165,250,.6)';
+      return v > 50000 ? 'rgba(163,230,53,.7)' : 'rgba(163,230,53,.4)';
+    }
+  });
+  html += '<div style="display:flex;gap:10px;margin-top:6px;font-size:6.5px;color:#4a5648"><span><span style="display:inline-block;width:7px;height:7px;background:rgba(96,165,250,.6);border-radius:2px;margin-right:2px;vertical-align:middle"></span>Lunes</span><span><span style="display:inline-block;width:7px;height:7px;background:rgba(163,230,53,.7);border-radius:2px;margin-right:2px;vertical-align:middle"></span>+50K</span></div>';
+  html += '</div>';
+
+  // Stats
+  html += '<div class="grid3">';
+  html += `<div class="cd"><div style="font-size:7.5px;color:var(--ink4);text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px">Hoy ${daily[0]?.date || ''}</div><div style="font-size:20px;font-weight:600;color:var(--accent)">${fN(daily[0]?.litros || 0)} L</div><div style="font-size:8px;color:var(--ink4);margin-top:2px">Neto: ${fM(daily[0]?.neto || 0)}</div></div>`;
+  html += `<div class="cd"><div style="font-size:7.5px;color:var(--ink4);text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px">Prom. Diario</div><div style="font-size:20px;font-weight:600;color:var(--accent2)">${fN(avg)} L</div><div style="font-size:8px;color:var(--ink4);margin-top:2px">${daily.length} dias habiles</div></div>`;
+  html += `<div class="cd"><div style="font-size:7.5px;color:var(--ink4);text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px">Max Dia</div><div style="font-size:20px;font-weight:600;color:var(--yellow)">${fN(maxDay?.litros || 0)} L</div><div style="font-size:8px;color:var(--ink4);margin-top:2px">${maxDay?.date || ''}</div></div>`;
+  html += '</div>';
+
+  // Table
+  html += '<div class="sc">Detalle Diario</div><div class="cd" style="overflow:auto"><table class="t"><thead><tr><th>Fecha</th><th>Dia</th><th style="text-align:right">Litros</th><th style="text-align:right">Neto</th><th style="text-align:right">$/L</th></tr></thead><tbody>';
+  daily.forEach((d, i) => {
+    const ppl = d.litros > 0 ? Math.round(d.neto / d.litros) : 0;
+    html += `<tr><td style="${i === 0 ? 'color:var(--accent);font-weight:500' : ''}">${d.date}</td><td style="color:${d.day === 'Lun' ? 'var(--blue)' : 'var(--ink4)'}">${d.day}</td><td style="text-align:right">${fN(d.litros)}</td><td style="text-align:right">${fM(d.neto)}</td><td style="text-align:right">$${fN(ppl)}</td></tr>`;
+  });
+  html += '</tbody></table></div></div>';
+  el.innerHTML = html;
+}
+
+function renderBancos(el) {
+  const banks = DATA.banks;
+  const tc = DATA.total_cash;
+
+  let html = '<div class="fd">';
+  html += '<div class="sc">Saldos Actuales</div>';
+  html += `<div style="display:flex;gap:4px;margin-bottom:7px;align-items:baseline"><span style="font-size:7px;color:var(--ink4)">TOTAL:</span><span style="font-size:19px;font-weight:600;color:${tc > 30e6 ? 'var(--accent2)' : 'var(--red)'}">$${fN(tc)}</span></div>`;
+
+  html += '<div class="bank-cards">';
+  banks.forEach(b => {
+    const pct = tc > 0 ? (b.balance / tc * 100) : 0;
+    html += `<div class="bank"><div style="font-size:7px;color:var(--ink4);text-transform:uppercase;letter-spacing:.4px;margin-bottom:2px">${b.name}</div><div style="font-size:13px;font-weight:600;color:${b.balance > 1e6 ? 'var(--accent2)' : b.balance > 0 ? 'var(--yellow)' : 'var(--red)'}">$${fN(b.balance)}</div><div style="margin-top:3px;height:3px;background:rgba(255,255,255,.04);border-radius:2px;overflow:hidden"><div style="height:100%;width:${pct}%;background:${b.balance > 1e6 ? 'var(--accent2)' : 'var(--yellow)'};border-radius:2px"></div></div></div>`;
+  });
+  html += '</div>';
+
+  // Distribution
+  const colors = ['#34d399', '#60a5fa', '#a78bfa', '#fbbf24', '#fb923c', '#f87171'];
+  html += '<div class="cd" style="margin-bottom:10px"><div style="font-size:9.5px;color:var(--ink2);font-weight:500;margin-bottom:7px">Distribucion</div>';
+  banks.forEach((b, i) => {
+    const p = tc > 0 ? b.balance / tc * 100 : 0;
+    html += `<div style="display:flex;align-items:center;gap:5px;margin-bottom:5px"><div style="width:75px;font-size:7.5px;color:var(--ink3);text-align:right;white-space:nowrap">${b.name}</div><div style="flex:1;height:10px;background:rgba(255,255,255,.03);border-radius:3px;overflow:hidden"><div style="height:100%;width:${p}%;background:${colors[i % colors.length]};border-radius:3px"></div></div><div style="width:25px;font-size:7px;color:var(--ink4);text-align:right">${p.toFixed(0)}%</div><div style="width:60px;font-size:7.5px;color:var(--ink2);text-align:right">$${fN(b.balance)}</div></div>`;
+  });
+  html += '</div>';
+
+  // Payments table
+  html += '<div class="sc">Recaudacion Semanal</div><div class="cd" style="overflow:auto"><table class="t"><thead><tr><th>Semana</th><th style="text-align:right">Total</th><th style="text-align:right">Cheques</th></tr></thead><tbody>';
+  DATA.weeks.slice(0, filterN).forEach((w, i) => {
+    html += `<tr><td style="${i === 0 ? 'color:var(--accent);font-weight:500' : ''}">${w.label}</td><td style="text-align:right">${fM(w.recaud)}</td><td style="text-align:right">${w.cheques ? fM(w.cheques) : '—'}</td></tr>`;
+  });
+  html += '</tbody></table></div></div>';
+  el.innerHTML = html;
+}
+
+// ── Helpers ──
+function kpiHTML(label, value, d, accent, spark = '', sub = '') {
+  return `<div class="kpi"><div class="kpi-bar" style="background:${accent}"></div><div style="display:flex;justify-content:space-between;align-items:flex-start"><div><div class="kpi-label">${label}</div><div class="kpi-val">${value}</div>${deltaHTML(d)}${sub ? `<div class="kpi-sub">${sub}</div>` : ''}</div>${spark ? `<div style="margin-top:3px">${spark}</div>` : ''}</div></div>`;
+}
+
+function chartCard(title, subtitle, tagBg, tagColor, tagText, content) {
+  return `<div class="cd"><div style="display:flex;justify-content:space-between;margin-bottom:6px"><div><div class="ct">${title}</div><div class="cs">${subtitle}</div></div><span class="tg" style="background:${tagBg};color:${tagColor}">${tagText}</span></div>${content}</div>`;
+}
+
+// ── Load Data ──
+async function loadData() {
+  try {
+    const resp = await fetch('data.json?t=' + Date.now());
+    if (!resp.ok) throw new Error('data.json not found');
+    DATA = await resp.json();
+
+    const updated = new Date(DATA.updated);
+    document.getElementById('subtitle').textContent = `ODOO PRODUCCION · Actualizado: ${updated.toLocaleDateString('es-CL')} ${updated.toLocaleTimeString('es-CL', { hour: '2-digit', minute: '2-digit' })}`;
+    document.getElementById('footer-source').textContent = `Odoo PRODUCCION · margin_zone · Actualizado ${updated.toLocaleDateString('es-CL')}`;
+
     document.getElementById('loading').style.display = 'none';
     document.getElementById('app').style.display = 'block';
+
+    setupTabs();
     render();
-  } catch(e) {
-    document.getElementById('loading').innerHTML = `<div class="error-msg">Error al cargar datos: ${e.message}<br><br><button onclick="loadData()" style="margin-top:1rem;padding:0.5rem 1rem;background:#f87171;color:white;border:none;border-radius:6px;cursor:pointer;">REINTENTAR</button></div>`;
+  } catch (e) {
+    document.getElementById('loading').innerHTML = `<div style="color:var(--red);text-align:center"><div style="font-size:14px;margin-bottom:8px">⚠</div><div style="font-size:10px">Error cargando data.json</div><div style="font-size:8px;color:var(--ink4);margin-top:4px">${e.message}</div><div style="font-size:7px;color:var(--ink6);margin-top:8px">Ejecuta extract_odoo.py o el GitHub Action para generar los datos</div></div>`;
   }
-}
-
-function setFilter(n, btn) {
-  filterN = n;
-  document.querySelectorAll('.wf-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  render();
-}
-
-function filtered() { return !filterN ? allWeeks : allWeeks.slice(-filterN); }
-
-function render() {
-  const weeks = filtered();
-  if (!weeks.length) return;
-  renderKPIs(weeks);
-  renderCharts(weeks);
-  renderTable(weeks);
-}
-
-function delta(weeks, key) {
-  const last=weeks[weeks.length-1]?.[key], prev=weeks[weeks.length-2]?.[key];
-  if (!last||!prev) return null;
-  return ((last-prev)/Math.abs(prev)*100);
-}
-
-function renderKPIs(weeks) {
-  const last = weeks[weeks.length-1];
-  const d = (key) => { const v=delta(weeks,key); if (v==null) return '<span class="delta-neutral">—</span>'; return v>=0?`<span class="delta-up">↑ ${Math.abs(v).toFixed(1)}% vs ant.</span>`:`<span class="delta-down">↓ ${Math.abs(v).toFixed(1)}% vs ant.</span>`; };
-  const litrosPct = last.litros&&last.litrosPpto ? last.litros/last.litrosPpto : null;
-  const kpis = [
-    { label:'Ventas Última Semana', val:fmtM(last.ventas), delta:d('ventas'), accent:'var(--accent)' },
-    { label:'Litros Vendidos', val:fmtCLP(last.litros), delta:d('litros'), accent:'var(--accent2)' },
-    { label:'Litros vs Presupuesto', val:litrosPct?(litrosPct*100).toFixed(0)+'%':'—', delta:litrosPct?(litrosPct>=1?`<span class="delta-up">↑ sobre ppto</span>`:`<span class="delta-down">↓ ${((1-litrosPct)*100).toFixed(0)}% bajo ppto</span>`):'<span class="delta-neutral">—</span>', accent:litrosPct>=1?'var(--accent2)':'var(--red)' },
-    { label:'Margen Bruto', val:fmtPct(last.margen), delta:d('margen'), accent:'var(--blue)' },
-    { label:'Precio Prom./Litro', val:last.precio?'$'+Math.round(last.precio).toLocaleString('es-CL'):'—', delta:d('precio'), accent:'var(--yellow)' },
-    { label:'Caja Disponible', val:fmtM(last.caja), delta:d('caja'), accent:last.caja>50e6?'var(--accent2)':'var(--red)' },
-  ];
-  document.getElementById('kpi-row').innerHTML = kpis.map(k=>`<div class="kpi" style="--kpi-accent:${k.accent}"><div class="kpi-label">${k.label}</div><div class="kpi-val">${k.val}</div><div class="kpi-delta">${k.delta}</div></div>`).join('');
-}
-
-const CD = {
-  responsive:true,
-  plugins:{
-    legend:{display:false},
-    tooltip:{backgroundColor:'#1a1f1c',borderColor:'#232824',borderWidth:1,titleColor:'#5a6358',bodyColor:'#e8ede9',titleFont:{family:'IBM Plex Mono',size:9},bodyFont:{family:'IBM Plex Mono',size:11},padding:10}
-  },
-  scales:{
-    x:{grid:{color:'rgba(255,255,255,0.03)'},ticks:{color:'#5a6358',font:{family:'IBM Plex Mono',size:9},maxTicksLimit:8,maxRotation:30}},
-    y:{grid:{color:'rgba(255,255,255,0.05)'},ticks:{color:'#5a6358',font:{family:'IBM Plex Mono',size:9},callback:(v)=>v>=1e6?(v/1e6).toFixed(0)+'M':v>=1e3?(v/1e3).toFixed(0)+'K':v}}
-  }
-};
-
-function mkChart(id, cfg) { if (charts[id]) charts[id].destroy(); charts[id] = new Chart(document.getElementById(id).getContext('2d'), cfg); }
-function labels(weeks) { return weeks.map(w=>w.semana.replace(/\s+/g,'-').split('-')[0]||w.semana.slice(0,8)); }
-
-function renderCharts(weeks) {
-  const lb = labels(weeks);
-  mkChart('salesChart',{type:'line',data:{labels:lb,datasets:[{data:weeks.map(w=>w.ventas),borderColor:'#a3e635',backgroundColor:'rgba(163,230,53,0.07)',borderWidth:2,pointRadius:2,pointHoverRadius:5,fill:true,tension:0.3}]},options:{...CD,plugins:{...CD.plugins,tooltip:{...CD.plugins.tooltip,callbacks:{label:(c)=>'$ '+Math.round(c.raw).toLocaleString('es-CL')}}}}});
-  const mVals=weeks.map(w=>w.margen?w.margen*100:null);
-  mkChart('marginChart',{type:'bar',data:{labels:lb,datasets:[{data:mVals,backgroundColor:mVals.map(v=>v==null?'rgba(90,99,88,0.3)':v>=11?'rgba(52,211,153,0.7)':'rgba(248,113,113,0.6)'),borderRadius:3}]},options:{...CD,plugins:{...CD.plugins,tooltip:{...CD.plugins.tooltip,callbacks:{label:(c)=>' '+(c.raw||0).toFixed(2)+'%'}}},scales:{...CD.scales,y:{...CD.scales.y,ticks:{...CD.scales.y.ticks,callback:(v)=>v+'%'}}}}});
-  mkChart('recaudChart',{type:'bar',data:{labels:lb,datasets:[
-    {label:'Transferencias',data:weeks.map(w=>w.transf),backgroundColor:'rgba(96,165,250,0.65)',borderRadius:2,stack:'s',order:2},
-    {label:'Cheques',data:weeks.map(w=>w.cheques),backgroundColor:'rgba(163,230,53,0.5)',borderRadius:2,stack:'s',order:2},
-    {label:'Factoring',data:weeks.map(w=>w.factoring),backgroundColor:'rgba(251,191,36,0.5)',borderRadius:2,stack:'s',order:2},
-    {label:'Compras ENAP',data:weeks.map(w=>w.comprasEnap),type:'line',borderColor:'#f87171',backgroundColor:'transparent',borderWidth:2.5,pointRadius:3,pointBackgroundColor:'#f87171',fill:false,tension:0.3,order:1},
-  ]},options:{...CD,plugins:{...CD.plugins,legend:{display:true,labels:{color:'#5a6358',font:{family:'IBM Plex Mono',size:9},boxWidth:10}},tooltip:{...CD.plugins.tooltip,callbacks:{label:(c)=>` ${c.dataset.label}: $ ${Math.round(c.raw||0).toLocaleString('es-CL')}`}}}}});
-  mkChart('litrosChart',{type:'bar',data:{labels:lb,datasets:[
-    {label:'Real',data:weeks.map(w=>w.litros),backgroundColor:weeks.map(w=>w.litros&&w.litrosPpto&&w.litros>=w.litrosPpto?'rgba(163,230,53,0.75)':'rgba(248,113,113,0.65)'),borderRadius:3,order:2},
-    {label:'Presupuesto',data:weeks.map(w=>w.litrosPpto),type:'line',borderColor:'rgba(251,191,36,0.9)',borderWidth:2,pointRadius:0,fill:false,tension:0,order:1,borderDash:[4,3]},
-  ]},options:{...CD,plugins:{...CD.plugins,legend:{display:true,labels:{color:'#5a6358',font:{family:'IBM Plex Mono',size:9},boxWidth:10}},tooltip:{...CD.plugins.tooltip,callbacks:{label:(c)=>{if(c.dataset.label==='Real'){const p=weeks[c.dataIndex]?.litrosPpto;const pct=p?((c.raw/p)*100).toFixed(0)+'%':'';return ` ${Math.round(c.raw).toLocaleString('es-CL')} L (${pct} ppto)`;}return ` Ppto: ${Math.round(c.raw||0).toLocaleString('es-CL')} L`;}}}},scales:{...CD.scales,y:{...CD.scales.y,ticks:{...CD.scales.y.ticks,callback:(v)=>v>=1e3?(v/1e3).toFixed(0)+'K':v}}}}});
-}
-
-function renderTable(weeks) {
-  const last10=weeks.slice(-10).reverse();
-  const lastSemana=weeks[weeks.length-1]?.semana;
-  document.getElementById('table-body').innerHTML=last10.map(w=>{
-    const isLast=w.semana===lastSemana;
-    const desvClass=!w.desv?'':w.desv>=0.9?'pos':w.desv<0.7?'neg':'neutral';
-    return `<tr>
-      <td style="${isLast?'color:var(--accent);font-weight:500;':''}">${w.semana}</td>
-      <td class="neutral">${fmtM(w.ventas)}</td>
-      <td class="neutral">${fmtCLP(w.litros)}</td>
-      <td class="${desvClass}">${w.desv?(w.desv*100).toFixed(0)+'%':'—'}</td>
-      <td class="${!w.margen?'':w.margen>=0.11?'pos':'neg'}">${fmtPct(w.margen)}</td>
-      <td class="neutral">${w.precio?'$'+Math.round(w.precio).toLocaleString('es-CL'):'—'}</td>
-      <td class="neutral">${fmtM(w.recaud)}</td>
-      <td class="neutral">${fmtM(w.comprasEnap)}</td>
-      <td class="${!w.caja?'':w.caja>=50e6?'pos':'neg'}">${fmtM(w.caja)}</td>
-    </tr>`;
-  }).join('');
 }
 
 loadData();
