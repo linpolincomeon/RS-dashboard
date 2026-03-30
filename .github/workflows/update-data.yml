@@ -15,10 +15,10 @@ jobs:
           python-version: '3.12'
       - name: Extract data from Odoo
         env:
-          ODOO_URL: https://tomenergy.cl
+          ODOO_URL: https://tomenergy.cl/odoo
           ODOO_DB: PRODUCCION
-          ODOO_USER: made@tomenergy.cl
-          ODOO_KEY: ${{ secrets.ODOO_KEY }}
+          ODOO_USER: p@tomenergy.cl
+          ODOO_KEY: ${{ f4188f3cbe069a9f5ce60325fa17a2c5333176d1 }}
         run: python extract_odoo.py
       - name: Commit and push
         run: |
