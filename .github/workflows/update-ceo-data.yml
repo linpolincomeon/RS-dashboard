@@ -1,0 +1,39 @@
+name: Update CEO Dashboard Data
+
+on:
+  schedule:
+    - cron: '0 11,15,19,23 * * *'   # 4x daily: 8am, 12pm, 4pm, 8pm Chile time (UTC-3)
+  workflow_dispatch:                  # Manual trigger
+
+permissions:
+  contents: write
+
+jobs:
+  update-data:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install requests
+
+      - name: Fetch Odoo data and generate JSON
+        env:
+          ODOO_URL: ${{ secrets.ODOO_URL }}
+          ODOO_DB: ${{ secrets.ODOO_DB }}
+          ODOO_USER: ${{ secrets.ODOO_USER }}
+          ODOO_PASSWORD: ${{ secrets.ODOO_PASSWORD }}
+        run: python fetch_ceo_data.py
+
+      - name: Commit and push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add ceo-data.json
+          git diff --cached --quiet || git commit -m "Update CEO data $(date -u +'%Y-%m-%d %H:%M UTC')"
+          git push
