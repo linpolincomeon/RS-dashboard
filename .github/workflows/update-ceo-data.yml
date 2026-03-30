@@ -28,7 +28,7 @@ jobs:
           ODOO_DB: ${{ secrets.ODOO_DB }}
           ODOO_USER: ${{ secrets.ODOO_USER }}
           ODOO_PASSWORD: ${{ secrets.ODOO_PASSWORD }}
-        run: python fetch_ceo_data.py
+        run: python extract_ceo.py
 
       - name: Commit and push
         run: |
