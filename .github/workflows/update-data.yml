@@ -18,7 +18,7 @@ jobs:
           ODOO_URL: https://tomenergy.cl/odoo
           ODOO_DB: PRODUCCION
           ODOO_USER: p@tomenergy.cl
-          ODOO_KEY: ${{ f4188f3cbe069a9f5ce60325fa17a2c5333176d1 }}
+          ODOO_KEY: ${{ secrets.ODOO_KEY }}
         run: python extract_odoo.py
       - name: Commit and push
         run: |
