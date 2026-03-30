@@ -21,7 +21,7 @@ from datetime import datetime, timedelta
 # ══════════════════════════════════════════
 # CONFIGURATION — update these or set env vars
 # ══════════════════════════════════════════
-ODOO_URL = os.environ.get("ODOO_URL", "https://tomenergy.cl")
+ODOO_URL = os.environ.get("ODOO_URL", "https://tomenergy.cl/odoo")
 ODOO_DB = os.environ.get("ODOO_DB", "PRODUCCION")
 ODOO_USER = os.environ.get("ODOO_USER", "p@tomenergy.cl")
 ODOO_KEY = os.environ.get("ODOO_KEY", "f4188f3cbe069a9f5ce60325fa17a2c5333176d1")
