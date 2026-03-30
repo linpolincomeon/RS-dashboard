@@ -182,7 +182,44 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(-
       if(!r.ok) throw new Error('HTTP '+r.status);
       return r.json();
     })
-    .then(function(D){
+    .then(function(raw){
+      // Adapt nested JSON to flat structure expected by dashboard
+      var s = raw.sales || {};
+      var t = s.totals || {};
+      var D = {
+        generated_at: raw.updated ? raw.updated.replace('T',' ').substring(0,16) : '?',
+        summary: {
+          total_revenue: t.rev||0, total_margin: t.margin||0, total_orders: t.orders||0,
+          this_month: t.this_month||'', this_month_revenue: t.tm_rev||0,
+          this_month_orders: t.tm_orders||0, this_month_margin: t.tm_margin||0,
+          active_clients: t.active_clients||0, customer_count: t.total_customers||0
+        },
+        monthly: (s.monthly||[]).map(function(m){
+          return {month:m.month, revenue:m.rev, margin:m.margin, orders:m.orders};
+        }),
+        zones: (s.zones||[]).map(function(z){
+          return {zone:z.zone, revenue:z.rev, margin:z.margin, orders:z.orders};
+        }),
+        top_clients: (s.top_clients||[]).map(function(c){
+          return {name:c.name, revenue:c.rev, margin:c.margin, orders:c.orders, margin_pct:c.margin_pct};
+        }),
+        receivables: {
+          total_due: (raw.receivables||{}).total_due||0,
+          current: (raw.receivables||{}).current||0,
+          overdue: (raw.receivables||{}).overdue||0,
+          open_invoices: (raw.receivables||{}).open_invoices||0,
+          aging: {
+            "0_30": ((raw.receivables||{}).aging||{})["0-30"]||0,
+            "31_60": ((raw.receivables||{}).aging||{})["31-60"]||0,
+            "61_90": ((raw.receivables||{}).aging||{})["61-90"]||0,
+            "90_plus": ((raw.receivables||{}).aging||{})["90+"]||0
+          },
+          top_debtors: (raw.receivables||{}).top_debtors||[]
+        },
+        pipeline: ((raw.crm||{}).by_stage||[]).map(function(s){
+          return {stage:s.stage, count:s.count, revenue:0};
+        })
+      };
       document.getElementById('loading').style.display='none';
       document.getElementById('main').style.display='block';
       document.getElementById('timestamp').textContent='Datos: '+D.generated_at;
