@@ -25,7 +25,6 @@ ODOO_URL = os.environ.get("ODOO_URL", "https://tomenergy.cl/odoo")
 ODOO_DB = os.environ.get("ODOO_DB", "PRODUCCION")
 ODOO_USER = os.environ.get("ODOO_USER", "p@tomenergy.cl")
 ODOO_KEY = os.environ.get("ODOO_KEY", "f4188f3cbe069a9f5ce60325fa17a2c5333176d1")
-
 # Weekly budget for litros (from Sheets "meta venta")
 WEEKLY_BUDGET = {
     "2026-01": 266438,  # January weekly
