@@ -198,6 +198,42 @@ def extract_weekly(models, uid):
     return results
 
 
+# ── DAILY SALES (last 16 business days) ──
+def extract_daily(models, uid):
+    print("Extracting daily sales (16 business days)...")
+    results = []
+    days_es = ["Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"]
+    count = 0
+    d = 0
+    while count < 16:
+        dt = datetime.now() - timedelta(days=d)
+        d += 1
+        if dt.weekday() >= 5:  # skip weekends
+            continue
+        date_str = dt.strftime("%Y-%m-%d")
+
+        lines = sr(models, uid, "account.move.line", [
+            ["move_id.move_type", "=", "out_invoice"],
+            ["move_id.state", "=", "posted"],
+            ["move_id.invoice_date", "=", date_str],
+            ["display_type", "=", "product"],
+        ], ["quantity", "price_subtotal"], 1000)
+
+        litros = round(sum(l["quantity"] for l in lines))
+        neto = round(sum(l["price_subtotal"] for l in lines))
+
+        results.append({
+            "date": dt.strftime("%d%b").lower(),
+            "day": days_es[dt.weekday()],
+            "litros": litros,
+            "neto": neto,
+        })
+        count += 1
+        print(f"  {date_str} ({days_es[dt.weekday()]}): {litros}L")
+
+    return results
+
+
 # ── BANK BALANCES ──
 def extract_bank_balances(models, uid):
     print("Extracting bank balances...")
@@ -288,6 +324,7 @@ def main():
     models, uid = connect()
 
     weekly = extract_weekly(models, uid)
+    daily = extract_daily(models, uid)
     banks = extract_bank_balances(models, uid)
     total_cash = sum(b["balance"] for b in banks)
     receivables = extract_receivables(models, uid)
@@ -296,6 +333,7 @@ def main():
     data = {
         "updated": datetime.now().isoformat(),
         "weeks": weekly,
+        "daily": daily,
         "banks": banks,
         "total_cash": total_cash,
         "receivables": receivables,

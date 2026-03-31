@@ -186,6 +186,15 @@ function renderVentas(){
   h+='<div class="chart-card"><div class="chart-title">Recaudación vs Compras ENAP <span class="badge">CLP</span></div><div class="chart-wrap"><canvas id="cRecaud"></canvas></div></div>';
   h+='</div>';
 
+  // Daily sales chart
+  const dy=D.daily||[];
+  if(dy.length>0){
+    const dRev=[...dy].reverse();
+    h+='<div class="chart-row" style="grid-template-columns:1fr;margin-top:1rem">';
+    h+='<div class="chart-card"><div class="chart-title">Venta diaria en litros <span class="badge">Últimos 16 días hábiles</span></div><div class="chart-wrap"><canvas id="cDaily"></canvas></div></div>';
+    h+='</div>';
+  }
+
   h+='<div class="section-label">Resumen semanal</div>';
   h+='<div class="table-card"><table><thead><tr>';
   h+='<th>Semana</th><th class="r">Ventas</th><th class="r">Litros</th><th class="r">Ppto</th><th class="r">Desv.</th><th class="r">Margen</th><th class="r">$/L</th><th class="r">Recaud.</th><th class="r">Compras</th>';
@@ -230,6 +239,18 @@ function renderVentas(){
       {label:'Recaudación',data:wk.map(w=>Math.round(w.recaud/1e6)),backgroundColor:C.purple+'55',borderRadius:5},
       {label:'Compras ENAP',data:wk.map(w=>Math.round((w.compras_enap||0)/1e6)),type:'line',borderColor:C.red,backgroundColor:'transparent',pointRadius:2,pointBackgroundColor:C.red,borderWidth:2,tension:.3}
     ]},options:co(tC,gC,v=>'$'+v+'M')});
+
+  // Daily chart
+  const dy=D.daily||[];
+  if(dy.length>0){
+    const dRev=[...dy].reverse();
+    const dLabels=dRev.map(d=>d.date+' '+d.day);
+    dc('cD');charts.cD=new Chart(document.getElementById('cDaily'),{type:'bar',
+      data:{labels:dLabels,datasets:[{data:dRev.map(d=>d.litros),
+        backgroundColor:dRev.map(d=>d.day==='Lun'?C.blue+'88':d.litros>50000?C.accent+'77':C.accent+'44'),
+        borderRadius:5}]},
+      options:co(tC,gC,v=>fK(v))});
+  }
 }
 
 // ── COBRANZA ──
