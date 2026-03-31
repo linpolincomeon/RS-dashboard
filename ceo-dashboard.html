@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>TomEnergy — CEO Dashboard</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><text y='14' font-size='14'>🔥</text></svg>">
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -17,53 +17,82 @@
   --green:#0f6e56;--green-light:#e1f5ee;
   --amber:#854f0b;--amber-light:#faeeda;
   --red:#a32d2d;--red-light:#fcebeb;
+  --purple:#6b3fa0;--purple-light:#f3edfc;
   --border:#e5e4df;--border2:#d3d1c7;
   --radius:10px;--radius-lg:14px;
 }
 body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(--text);line-height:1.5}
-.container{max-width:1280px;margin:0 auto;padding:2rem 2.5rem 4rem}
-.header{display:flex;align-items:center;justify-content:space-between;margin-bottom:2rem;padding-bottom:1.25rem;border-bottom:1px solid var(--border)}
-.header h1{font-size:22px;font-weight:500;letter-spacing:-0.02em}
-.header h1 b{color:var(--accent);font-weight:600}
-.hdr-r{display:flex;align-items:center;gap:14px}
-.hdr-r .ts{font-size:12px;color:var(--text3)}
-.btn{font-family:inherit;font-size:13px;font-weight:500;padding:8px 18px;border:1px solid var(--border2);border-radius:var(--radius);background:var(--surface);color:var(--text);cursor:pointer;transition:all .15s}
+.container{max-width:1320px;margin:0 auto;padding:1.5rem 2rem 3rem}
+
+/* Header */
+.header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;padding-bottom:1rem;border-bottom:1px solid var(--border);flex-wrap:wrap;gap:10px}
+.header h1{font-size:20px;font-weight:500;letter-spacing:-0.02em}
+.header h1 b{color:var(--accent);font-weight:700}
+.hdr-r{display:flex;align-items:center;gap:12px}
+.ts{font-size:11px;color:var(--text3)}
+.btn{font-family:inherit;font-size:12px;font-weight:500;padding:6px 16px;border:1px solid var(--border2);border-radius:var(--radius);background:var(--surface);color:var(--text);cursor:pointer;transition:all .15s}
 .btn:hover{background:var(--surface2)}
 
-.tabs{display:flex;gap:4px;margin-bottom:2rem;background:var(--surface2);padding:4px;border-radius:var(--radius);width:fit-content}
-.tab{font-family:inherit;font-size:13px;font-weight:400;padding:7px 20px;border:none;border-radius:8px;background:transparent;color:var(--text2);cursor:pointer;transition:all .15s}
-.tab.active{background:var(--surface);color:var(--text);font-weight:500;box-shadow:0 1px 3px rgba(0,0,0,.06)}
+/* Tabs */
+.tabs{display:flex;gap:3px;margin-bottom:.75rem;background:var(--surface2);padding:3px;border-radius:var(--radius);width:fit-content}
+.tab{font-family:inherit;font-size:12px;font-weight:400;padding:6px 18px;border:none;border-radius:8px;background:transparent;color:var(--text2);cursor:pointer;transition:all .15s}
+.tab.active{background:var(--surface);color:var(--text);font-weight:600;box-shadow:0 1px 3px rgba(0,0,0,.06)}
 
-.kpi-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin-bottom:2rem}
-.kpi{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1.25rem 1.5rem;position:relative;overflow:hidden}
+/* Week filter */
+.filters{display:flex;gap:4px;margin-bottom:1.25rem;align-items:center}
+.wf{font-family:inherit;font-size:11px;font-weight:500;padding:4px 12px;border:1px solid var(--border);border-radius:6px;background:var(--surface);color:var(--text3);cursor:pointer;transition:.15s}
+.wf:hover{color:var(--text2);border-color:var(--border2)}
+.wf.on{background:var(--accent-light);color:var(--accent);border-color:var(--accent);font-weight:600}
+.fl{font-size:11px;color:var(--text3);margin-left:8px}
+
+/* KPIs */
+.kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-bottom:1.5rem}
+.kpi{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1rem 1.25rem;position:relative;overflow:hidden}
 .kpi::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
-.kpi.blue::before{background:var(--blue)}.kpi.green::before{background:var(--green)}.kpi.amber::before{background:var(--amber)}.kpi.red::before{background:var(--accent)}
-.kpi-label{font-size:12px;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px}
-.kpi-val{font-size:28px;font-weight:600;letter-spacing:-0.03em;line-height:1.1}
-.kpi-sub{font-size:12px;color:var(--text2);margin-top:6px}
-.kpi-sub.danger{color:var(--red)}.kpi-sub.success{color:var(--green)}
+.kpi.c-accent::before{background:var(--accent)}
+.kpi.c-blue::before{background:var(--blue)}
+.kpi.c-green::before{background:var(--green)}
+.kpi.c-amber::before{background:var(--amber)}
+.kpi.c-red::before{background:var(--red)}
+.kpi.c-purple::before{background:var(--purple)}
+.kpi-label{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px;font-weight:500}
+.kpi-val{font-size:26px;font-weight:700;letter-spacing:-0.03em;line-height:1.1}
+.kpi-delta{font-size:11px;margin-top:4px;font-weight:500}
+.kpi-delta.up{color:var(--green)}.kpi-delta.dn{color:var(--red)}
+.kpi-sub{font-size:11px;color:var(--text3);margin-top:4px}
 
-.chart-row{display:grid;gap:20px;margin-bottom:2rem}
+/* Charts */
+.chart-row{display:grid;gap:16px;margin-bottom:1.5rem}
 .chart-row.two{grid-template-columns:1fr 1fr}
-.chart-row.full{grid-template-columns:1fr}
-.chart-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1.5rem}
-.chart-title{font-size:14px;font-weight:500;margin-bottom:1rem;display:flex;align-items:center;justify-content:space-between}
-.badge{font-size:11px;font-weight:400;color:var(--text3);background:var(--surface2);padding:3px 10px;border-radius:20px}
-.chart-wrap{position:relative;width:100%}
+.chart-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1.25rem}
+.chart-title{font-size:13px;font-weight:600;margin-bottom:.75rem;display:flex;align-items:center;justify-content:space-between}
+.badge{font-size:10px;font-weight:500;color:var(--text3);background:var(--surface2);padding:2px 10px;border-radius:20px}
+.chart-wrap{position:relative;height:240px}
 
+/* Table */
+.section-label{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin:1.5rem 0 .5rem;font-weight:600}
+.table-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1rem;overflow:auto}
+table{width:100%;border-collapse:collapse;font-size:12px}
+th{text-align:left;color:var(--text3);font-weight:600;padding:6px 8px;border-bottom:2px solid var(--border);font-size:10px;text-transform:uppercase;letter-spacing:.04em}
+td{padding:6px 8px;border-bottom:1px solid var(--surface2);color:var(--text2)}
+tr:hover td{background:rgba(200,54,14,.02)}
+.r{text-align:right}
+.hi{color:var(--text);font-weight:600}
+.ok{color:var(--green)}.bad{color:var(--red)}
+.note{font-size:10px;color:var(--text3);margin-top:6px}
+
+/* Panels */
 .panel{display:none}.panel.active{display:block}
-.loading{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:50vh;gap:16px}
-.loading h3{font-size:18px;font-weight:500;color:var(--text2)}
-.spinner{width:32px;height:32px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite}
+.loading{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:50vh;gap:14px}
+.loading h3{font-size:16px;font-weight:500;color:var(--text2)}
+.spinner{width:28px;height:28px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
-.err-box{background:var(--red-light);border:1px solid #f0c1c1;border-radius:var(--radius);padding:1.5rem;text-align:center;margin:3rem auto;max-width:500px}
-.err-box h4{font-size:16px;font-weight:500;color:var(--red);margin-bottom:8px}
-.err-box p{font-size:13px;color:var(--text2)}
+.footer{margin-top:2rem;padding:8px 0;border-top:1px solid var(--border);font-size:10px;color:var(--text3);display:flex;justify-content:space-between}
 
-@media(max-width:900px){
+@media(max-width:800px){
   .kpi-grid{grid-template-columns:repeat(2,1fr)}
   .chart-row.two{grid-template-columns:1fr}
-  .container{padding:1.5rem 1rem}
+  .container{padding:1rem}
 }
 </style>
 </head>
@@ -77,293 +106,221 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(-
     </div>
   </header>
 
-  <div id="loading" class="loading">
-    <div class="spinner"></div>
-    <h3>Cargando datos...</h3>
-  </div>
+  <div id="loading" class="loading"><div class="spinner"></div><h3>Cargando datos...</h3></div>
 
   <div id="main" style="display:none">
-    <div class="tabs">
-      <button class="tab active" data-t="ventas">Ventas</button>
-      <button class="tab" data-t="cobranza">Cobranza</button>
-      <button class="tab" data-t="clientes">Clientes</button>
-      <button class="tab" data-t="crm">CRM</button>
-    </div>
+    <div class="tabs" id="tabs"></div>
+    <div class="filters" id="filters"></div>
 
-    <div class="panel active" id="p-ventas">
-      <div class="kpi-grid" id="kV"></div>
-      <div class="chart-row full">
-        <div class="chart-card">
-          <div class="chart-title">Venta neta mensual + margen <span class="badge" id="period"></span></div>
-          <div class="chart-wrap" style="height:320px"><canvas id="cMonth"></canvas></div>
-        </div>
-      </div>
-      <div class="chart-row two" style="margin-top:20px">
-        <div class="chart-card">
-          <div class="chart-title">Venta por zona</div>
-          <div class="chart-wrap" style="height:280px"><canvas id="cZone"></canvas></div>
-        </div>
-        <div class="chart-card">
-          <div class="chart-title">Órdenes por zona</div>
-          <div class="chart-wrap" style="height:280px"><canvas id="cZoneOrd"></canvas></div>
-        </div>
-      </div>
-    </div>
-
-    <div class="panel" id="p-cobranza">
-      <div class="kpi-grid" id="kC"></div>
-      <div class="chart-row two">
-        <div class="chart-card">
-          <div class="chart-title">Aging cuentas por cobrar</div>
-          <div class="chart-wrap" style="height:280px"><canvas id="cAging"></canvas></div>
-        </div>
-        <div class="chart-card">
-          <div class="chart-title">Top deudores (CLP millones)</div>
-          <div class="chart-wrap" style="height:280px"><canvas id="cDebt"></canvas></div>
-        </div>
-      </div>
-    </div>
-
-    <div class="panel" id="p-clientes">
-      <div class="kpi-grid" id="kCl"></div>
-      <div class="chart-row full">
-        <div class="chart-card">
-          <div class="chart-title">Top 20 clientes por venta neta (CLP millones)</div>
-          <div class="chart-wrap" style="height:600px"><canvas id="cTopCli"></canvas></div>
-        </div>
-      </div>
-    </div>
-
-    <div class="panel" id="p-crm">
-      <div class="kpi-grid" id="kCRM"></div>
-      <div class="chart-row full">
-        <div class="chart-card">
-          <div class="chart-title">Pipeline por etapa</div>
-          <div class="chart-wrap" style="height:320px"><canvas id="cPipe"></canvas></div>
-        </div>
-      </div>
-    </div>
+    <div class="panel active" id="p-ventas"></div>
+    <div class="panel" id="p-cobranza"></div>
+    <div class="panel" id="p-crm"></div>
+    <div class="panel" id="p-caja"></div>
   </div>
 </div>
+<div class="container"><div class="footer"><span>TomEnergy · CEO Dashboard</span><span id="ftr"></span></div></div>
 
 <script>
-(function(){
-  var C = {
-    blue:'#1a5fb4', blueL:'#85B7EB', purple:'#534AB7',
-    teal:'#1D9E75', coral:'#D85A30', amber:'#BA7517',
-    red:'#E24B4A', pink:'#D4537E', gray:'#888780', green:'#639922'
-  };
-  var ZC = [C.blue, C.purple, C.coral, C.teal, C.amber, C.pink, C.gray, C.green];
-  var gC = 'rgba(0,0,0,0.05)', tC = '#6b6a65';
-  var charts = {};
+let D=null, curTab='ventas', fN=16;
+const charts={};
+const C={accent:'#c8360e',blue:'#1a5fb4',green:'#0f6e56',amber:'#854f0b',red:'#a32d2d',purple:'#6b3fa0',teal:'#0f7b6c'};
 
-  function fM(v){ return '$' + Math.round(v/1e6).toLocaleString('es-CL') + 'M'; }
-  function fP(v){ return v.toFixed(1) + '%'; }
-  function mL(ym){
-    var p=ym.split('-'), n=['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
-    return n[parseInt(p[1])-1]+' '+p[0].slice(2);
+const fM=n=>!n&&n!==0?'—':'$'+(n/1e6).toFixed(1)+'M';
+const fK=n=>!n&&n!==0?'—':Math.round(n/1000).toLocaleString('es-CL')+'K';
+const fNum=n=>!n&&n!==0?'—':Math.round(n).toLocaleString('es-CL');
+const fP=n=>!n&&n!==0?'—':(n*100).toFixed(1)+'%';
+const pD=(c,p)=>(!c||!p)?null:((c-p)/Math.abs(p))*100;
+const dH=d=>{if(d==null)return'';const u=d>=0;return`<div class="kpi-delta ${u?'up':'dn'}">${u?'▲':'▼'} ${Math.abs(d).toFixed(1)}%</div>`};
+
+function setupTabs(){
+  const tabDefs=[['ventas','Ventas'],['cobranza','Cobranza'],['crm','CRM'],['caja','Caja']];
+  document.getElementById('tabs').innerHTML=tabDefs.map(([k,l])=>
+    `<button class="tab ${k===curTab?'active':''}" onclick="switchTab('${k}')">${l}</button>`
+  ).join('');
+  if(curTab==='ventas'||curTab==='caja'){
+    const w0=D.weeks[0];
+    document.getElementById('filters').innerHTML=[4,8,16].map(n=>
+      `<button class="wf ${fN===n?'on':''}" onclick="setFilter(${n})">${n}S</button>`
+    ).join('')+`<span class="fl">${w0.label}${w0.parcial?' (parcial)':''} · Jue→Mié</span>`;
+  } else {
+    document.getElementById('filters').innerHTML='';
   }
-  function trunc(s,n){ return s.length>n ? s.substring(0,n)+'…' : s; }
+}
+function switchTab(t){
+  curTab=t;
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.getElementById('p-'+t).classList.add('active');
+  setupTabs();render();
+}
+function setFilter(n){fN=n;render()}
 
-  // Tabs
-  document.querySelectorAll('.tab').forEach(function(t){
-    t.addEventListener('click', function(){
-      document.querySelectorAll('.tab').forEach(function(x){x.classList.remove('active');});
-      document.querySelectorAll('.panel').forEach(function(x){x.classList.remove('active');});
-      t.classList.add('active');
-      document.getElementById('p-'+t.dataset.t).classList.add('active');
-      Object.values(charts).forEach(function(c){if(c&&c.resize)c.resize();});
-    });
+function render(){
+  if(curTab==='ventas') renderVentas();
+  else if(curTab==='cobranza') renderCobranza();
+  else if(curTab==='crm') renderCRM();
+  else renderCaja();
+  setupTabs();
+}
+
+// ── VENTAS ──
+function renderVentas(){
+  const el=document.getElementById('p-ventas');
+  const wk=[...D.weeks.slice(0,fN)].reverse();
+  const last=D.weeks[0], prev=D.weeks[1]||last;
+  const dv=last.ppto>0?last.litros/last.ppto:0;
+
+  let h='<div class="kpi-grid">';
+  h+=kpi('Venta Semana',fM(last.ventas),pD(last.ventas,prev.ventas),'c-accent',`${last.facturas} fact · ${last.clientes} cli`);
+  h+=kpi('Litros',fK(last.litros),pD(last.litros,prev.litros),'c-blue',`$${fNum(last.precio)}/L neto`);
+  h+=kpi('Litros vs Ppto',(dv*100).toFixed(0)+'%',null,dv>=.8?'c-green':dv>=.6?'c-amber':'c-red',`Meta: ${fK(last.ppto)} · Real: ${fK(last.litros)}`);
+  h+=kpi('Margen Bruto',fP(last.margin),pD(last.margin,prev.margin),last.margin>=.10?'c-green':'c-red','margin_zone ponderado');
+  h+=kpi('Recaudación',fM(last.recaud),pD(last.recaud,prev.recaud||1),'c-purple',`Cheques: ${fM(last.cheques)}`);
+  h+=kpi('Caja Total',fM(D.total_cash),null,D.total_cash>30e6?'c-green':'c-red',`${D.banks.length} cuentas`);
+  h+='</div>';
+
+  h+='<div class="chart-row two">';
+  h+='<div class="chart-card"><div class="chart-title">Litros por semana <span class="badge">Jue→Mié</span></div><div class="chart-wrap"><canvas id="cLitros"></canvas></div></div>';
+  h+='<div class="chart-card"><div class="chart-title">Litros vs Presupuesto <span class="badge">Real vs Meta</span></div><div class="chart-wrap"><canvas id="cPpto"></canvas></div></div>';
+  h+='</div><div class="chart-row two">';
+  h+='<div class="chart-card"><div class="chart-title">Margen bruto % <span class="badge">margin_zone</span></div><div class="chart-wrap"><canvas id="cMargin"></canvas></div></div>';
+  h+='<div class="chart-card"><div class="chart-title">Recaudación vs Compras ENAP <span class="badge">CLP</span></div><div class="chart-wrap"><canvas id="cRecaud"></canvas></div></div>';
+  h+='</div>';
+
+  h+='<div class="section-label">Resumen semanal</div>';
+  h+='<div class="table-card"><table><thead><tr>';
+  h+='<th>Semana</th><th class="r">Ventas</th><th class="r">Litros</th><th class="r">Ppto</th><th class="r">Desv.</th><th class="r">Margen</th><th class="r">$/L</th><th class="r">Recaud.</th><th class="r">Compras</th>';
+  h+='</tr></thead><tbody>';
+  D.weeks.slice(0,fN).forEach((w,i)=>{
+    const dv2=w.ppto>0?w.litros/w.ppto:0;
+    const first=i===0;
+    h+=`<tr><td class="${first?'hi':''}">${w.label}${w.parcial?' *':''}</td>`;
+    h+=`<td class="r">${fM(w.ventas)}</td>`;
+    h+=`<td class="r">${fK(w.litros)}</td>`;
+    h+=`<td class="r" style="color:var(--text3)">${fK(w.ppto)}</td>`;
+    h+=`<td class="r ${dv2>=.8?'ok':'bad'}">${(dv2*100).toFixed(0)}%</td>`;
+    h+=`<td class="r ${w.margin>=.10?'ok':''}">${fP(w.margin)}</td>`;
+    h+=`<td class="r">$${fNum(w.precio)}</td>`;
+    h+=`<td class="r">${fM(w.recaud)}</td>`;
+    h+=`<td class="r">${fM(w.compras_enap||0)}</td></tr>`;
   });
+  h+='</tbody></table><div class="note">* Parcial · Margen = margin_zone (Odoo) · NC descontadas · Semana comercial Jue→Mié</div></div>';
+  el.innerHTML=h;
 
-  // Load data
-  fetch('ceo-data.json?t='+Date.now())
-    .then(function(r){
-      if(!r.ok) throw new Error('HTTP '+r.status);
-      return r.json();
-    })
-    .then(function(raw){
-      // Adapt nested JSON to flat structure expected by dashboard
-      var s = raw.sales || {};
-      var t = s.totals || {};
-      var D = {
-        generated_at: raw.updated ? raw.updated.replace('T',' ').substring(0,16) : '?',
-        summary: {
-          total_revenue: t.rev||0, total_margin: t.margin||0, total_orders: t.orders||0,
-          this_month: t.this_month||'', this_month_revenue: t.tm_rev||0,
-          this_month_orders: t.tm_orders||0, this_month_margin: t.tm_margin||0,
-          active_clients: t.active_clients||0, customer_count: t.total_customers||0
-        },
-        monthly: (s.monthly||[]).map(function(m){
-          return {month:m.month, revenue:m.rev, margin:m.margin, orders:m.orders};
-        }),
-        zones: (s.zones||[]).map(function(z){
-          return {zone:z.zone, revenue:z.rev, margin:z.margin, orders:z.orders};
-        }),
-        top_clients: (s.top_clients||[]).map(function(c){
-          return {name:c.name, revenue:c.rev, margin:c.margin, orders:c.orders, margin_pct:c.margin_pct};
-        }),
-        receivables: {
-          total_due: (raw.receivables||{}).total_due||0,
-          current: (raw.receivables||{}).current||0,
-          overdue: (raw.receivables||{}).overdue||0,
-          open_invoices: (raw.receivables||{}).open_invoices||0,
-          aging: {
-            "0_30": ((raw.receivables||{}).aging||{})["0-30"]||0,
-            "31_60": ((raw.receivables||{}).aging||{})["31-60"]||0,
-            "61_90": ((raw.receivables||{}).aging||{})["61-90"]||0,
-            "90_plus": ((raw.receivables||{}).aging||{})["90+"]||0
-          },
-          top_debtors: (raw.receivables||{}).top_debtors||[]
-        },
-        pipeline: ((raw.crm||{}).by_stage||[]).map(function(s){
-          return {stage:s.stage, count:s.count, revenue:0};
-        })
-      };
-      document.getElementById('loading').style.display='none';
-      document.getElementById('main').style.display='block';
-      document.getElementById('timestamp').textContent='Datos: '+D.generated_at;
-      render(D);
-    })
-    .catch(function(e){
-      document.getElementById('loading').innerHTML=
-        '<div class="err-box"><h4>Error al cargar datos</h4><p>'+e.message+'</p><p style="margin-top:8px;font-size:12px">Verifica que ceo-data.json existe en el repo.</p></div>';
-    });
+  // Charts
+  const labels=wk.map(w=>w.label.split('-')[0]);
+  const gC='rgba(0,0,0,.04)', tC='#9c9b96';
 
-  function render(D){
-    renderVentas(D);
-    renderCobranza(D);
-    renderClientes(D);
-    renderCRM(D);
+  dc('cL');charts.cL=new Chart(document.getElementById('cLitros'),{type:'bar',
+    data:{labels,datasets:[{data:wk.map(w=>w.litros),backgroundColor:wk.map((_,i)=>i===wk.length-1?C.accent+'cc':C.accent+'44'),borderRadius:5}]},
+    options:co(tC,gC,v=>fK(v))});
+
+  dc('cP');charts.cP=new Chart(document.getElementById('cPpto'),{type:'bar',
+    data:{labels,datasets:[
+      {label:'Real',data:wk.map(w=>w.litros),backgroundColor:wk.map(w=>w.litros>=w.ppto?C.green+'88':C.red+'66'),borderRadius:5},
+      {label:'Presupuesto',data:wk.map(w=>w.ppto),type:'line',borderColor:C.amber,backgroundColor:'transparent',pointRadius:0,borderWidth:2,borderDash:[5,3],tension:0}
+    ]},options:co(tC,gC,v=>fK(v))});
+
+  dc('cM');charts.cM=new Chart(document.getElementById('cMargin'),{type:'bar',
+    data:{labels,datasets:[{data:wk.map(w=>+(w.margin*100).toFixed(2)),
+      backgroundColor:wk.map(w=>w.margin>=.12?C.green+'88':w.margin>=.10?C.blue+'66':C.red+'66'),borderRadius:5}]},
+    options:co(tC,gC,v=>v.toFixed(1)+'%')});
+
+  dc('cR');charts.cR=new Chart(document.getElementById('cRecaud'),{type:'bar',
+    data:{labels,datasets:[
+      {label:'Recaudación',data:wk.map(w=>Math.round(w.recaud/1e6)),backgroundColor:C.purple+'55',borderRadius:5},
+      {label:'Compras ENAP',data:wk.map(w=>Math.round((w.compras_enap||0)/1e6)),type:'line',borderColor:C.red,backgroundColor:'transparent',pointRadius:2,pointBackgroundColor:C.red,borderWidth:2,tension:.3}
+    ]},options:co(tC,gC,v=>'$'+v+'M')});
+}
+
+// ── COBRANZA ──
+function renderCobranza(){
+  const el=document.getElementById('p-cobranza');
+  const r=D.receivables;
+  if(!r){el.innerHTML='<div class="chart-card" style="text-align:center;padding:3rem;color:var(--text3)">Sin datos de cobranza</div>';return}
+  const pO=r.total_due>0?(r.overdue/r.total_due*100):0;
+  let h='<div class="kpi-grid">';
+  h+=kpi('Total por Cobrar',fM(r.total_due),null,'c-blue',r.open_invoices+' facturas');
+  h+=kpi('Al Día',fM(r.current),null,'c-green',(100-pO).toFixed(1)+'% del total');
+  h+=kpi('Vencido',fM(r.overdue),null,'c-red',pO.toFixed(1)+'% del total');
+  h+=kpi('Vencido 90+',fM(r.aging["90+"]||0),null,'c-amber','Cobranza crítica');
+  h+='</div>';
+  h+='<div class="section-label">Top Deudores</div><div class="table-card"><table><thead><tr><th>Cliente</th><th class="r">Monto Pendiente</th></tr></thead><tbody>';
+  (r.top_debtors||[]).forEach(d=>{h+=`<tr><td>${d.name}</td><td class="r bad">${fM(d.amount)}</td></tr>`});
+  h+='</tbody></table></div>';
+  el.innerHTML=h;
+}
+
+// ── CRM ──
+function renderCRM(){
+  const el=document.getElementById('p-crm');
+  const crm=D.crm;
+  if(!crm){el.innerHTML='<div class="chart-card" style="text-align:center;padding:3rem;color:var(--text3)">Sin datos CRM</div>';return}
+  let h='<div class="kpi-grid">';
+  h+=kpi('Total Leads',''+crm.total,null,'c-blue','Pipeline completo');
+  h+=kpi('Abiertos',''+crm.open,null,'c-green','Activos');
+  h+=kpi('Ganados',''+crm.won,null,'c-accent','Won');
+  h+=kpi('Nuevos 30d',''+crm.new_30d,null,'c-amber','Último mes');
+  h+='</div>';
+  h+='<div class="section-label">Pipeline por Etapa</div><div class="chart-card">';
+  const stages=crm.by_stage||[];
+  const mx=Math.max(...stages.map(s=>s.count),1);
+  const colors=[C.blue,C.purple,C.green,C.amber,C.accent,C.teal,C.red];
+  stages.forEach((s,i)=>{
+    const pct=Math.round(s.count/mx*100);
+    h+=`<div style="margin-bottom:10px"><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:var(--text2)">${s.stage}</span><span style="color:var(--text3);font-weight:600">${s.count}</span></div><div style="height:10px;background:var(--surface2);border-radius:5px;overflow:hidden"><div style="height:100%;width:${pct}%;background:${colors[i%colors.length]};border-radius:5px;transition:width .3s"></div></div></div>`;
+  });
+  h+='</div>';
+  el.innerHTML=h;
+}
+
+// ── CAJA ──
+function renderCaja(){
+  const el=document.getElementById('p-caja');
+  const bk=D.banks||[],tc=D.total_cash||0;
+  let h=`<div class="kpi-grid"><div class="kpi c-green" style="grid-column:1/-1"><div class="kpi-label">Saldo Total</div><div class="kpi-val" style="font-size:32px">\$${fNum(tc)}</div><div class="kpi-sub">${bk.length} cuentas</div></div></div>`;
+  h+='<div class="section-label">Saldos por Cuenta</div><div class="chart-card">';
+  bk.forEach(b=>{
+    const p=tc>0?(b.balance/tc*100):0;
+    h+=`<div style="display:flex;align-items:center;gap:8px;margin-bottom:10px"><div style="width:120px;font-size:12px;color:var(--text2);text-align:right;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${b.name}</div><div style="flex:1;height:10px;background:var(--surface2);border-radius:5px;overflow:hidden"><div style="height:100%;width:${p}%;background:${b.balance>1e6?C.green:C.amber};border-radius:5px"></div></div><div style="width:90px;font-size:12px;font-weight:600;color:var(--text);text-align:right">\$${fNum(b.balance)}</div></div>`;
+  });
+  h+='</div>';
+  h+='<div class="section-label">Recaudación Semanal</div><div class="table-card"><table><thead><tr><th>Semana</th><th class="r">Recaud.</th><th class="r">Cheques</th><th class="r">Compras ENAP</th></tr></thead><tbody>';
+  D.weeks.slice(0,fN).forEach((w,i)=>{
+    h+=`<tr><td class="${i===0?'hi':''}">${w.label}</td><td class="r">${fM(w.recaud)}</td><td class="r">${w.cheques?fM(w.cheques):'—'}</td><td class="r">${fM(w.compras_enap||0)}</td></tr>`;
+  });
+  h+='</tbody></table></div>';
+  el.innerHTML=h;
+}
+
+// ── HELPERS ──
+function kpi(label,val,delta,cls,sub){
+  return `<div class="kpi ${cls}"><div class="kpi-label">${label}</div><div class="kpi-val">${val}</div>${dH(delta)}${sub?`<div class="kpi-sub">${sub}</div>`:''}</div>`;
+}
+function co(tC,gC,fmt){
+  return{responsive:true,maintainAspectRatio:false,
+    plugins:{legend:{display:false},tooltip:{titleFont:{family:'DM Sans'},bodyFont:{family:'DM Sans'},backgroundColor:'#1a1a18',cornerRadius:8,padding:10}},
+    scales:{x:{ticks:{color:tC,font:{size:9,family:'DM Sans'},maxRotation:50},grid:{display:false}},
+            y:{ticks:{color:tC,font:{size:9,family:'DM Sans'},callback:v=>fmt(v)},grid:{color:gC}}}};
+}
+function dc(k){if(charts[k]){charts[k].destroy();delete charts[k]}}
+
+// ── LOAD ──
+async function loadData(){
+  try{
+    const r=await fetch('ceo-data.json?t='+Date.now());
+    if(!r.ok) throw new Error('HTTP '+r.status);
+    D=await r.json();
+    const u=new Date(D.updated);
+    document.getElementById('timestamp').textContent=u.toLocaleDateString('es-CL')+' '+u.toLocaleTimeString('es-CL',{hour:'2-digit',minute:'2-digit'});
+    document.getElementById('ftr').textContent=`Odoo PRODUCCION · margin_zone · NC descontadas · ${u.toLocaleDateString('es-CL')}`;
+    document.getElementById('loading').style.display='none';
+    document.getElementById('main').style.display='block';
+    setupTabs();render();
+  }catch(e){
+    document.getElementById('loading').innerHTML=`<div style="color:var(--red);text-align:center"><h3 style="font-size:16px;margin-bottom:8px">Error al cargar datos</h3><p style="font-size:12px;color:var(--text3)">${e.message}</p></div>`;
   }
-
-  function renderVentas(D){
-    var s=D.summary, mo=D.monthly;
-    var mP = s.total_revenue>0 ? (s.total_margin/s.total_revenue*100) : 0;
-    var tmP = s.this_month_revenue>0 ? (s.this_month_margin/s.this_month_revenue*100) : 0;
-    var ticket = s.total_orders>0 ? s.total_revenue/s.total_orders : 0;
-
-    document.getElementById('kV').innerHTML=
-      '<div class="kpi blue"><div class="kpi-label">Venta neta total</div><div class="kpi-val">'+fM(s.total_revenue)+'</div><div class="kpi-sub">'+s.total_orders.toLocaleString('es-CL')+' órdenes</div></div>'+
-      '<div class="kpi green"><div class="kpi-label">Mes actual ('+mL(s.this_month)+')</div><div class="kpi-val">'+fM(s.this_month_revenue)+'</div><div class="kpi-sub">'+s.this_month_orders+' órdenes</div></div>'+
-      '<div class="kpi amber"><div class="kpi-label">Margen promedio</div><div class="kpi-val">'+fP(mP)+'</div><div class="kpi-sub">Mes actual: '+fP(tmP)+'</div></div>'+
-      '<div class="kpi red"><div class="kpi-label">Ticket promedio</div><div class="kpi-val">'+fM(ticket)+'</div><div class="kpi-sub">Neto por orden</div></div>';
-
-    var labels=mo.map(function(x){return mL(x.month);}),
-        revD=mo.map(function(x){return Math.round(x.revenue/1e6);}),
-        marD=mo.map(function(x){return Math.round(x.margin/1e6);}),
-        ordD=mo.map(function(x){return x.orders;});
-    document.getElementById('period').textContent=labels[0]+' — '+labels[labels.length-1];
-
-    if(charts.mon)charts.mon.destroy();
-    charts.mon=new Chart(document.getElementById('cMonth'),{
-      type:'bar',
-      data:{labels:labels,datasets:[
-        {label:'Venta neta',data:revD,backgroundColor:revD.map(function(v,i){return i===revD.length-1?C.blue:C.blueL;}),borderRadius:5,order:2},
-        {label:'Margen',data:marD,type:'line',borderColor:C.teal,backgroundColor:'transparent',pointBackgroundColor:C.teal,pointRadius:3,borderWidth:2.5,tension:.35,yAxisID:'y1',order:1}
-      ]},
-      options:{responsive:true,maintainAspectRatio:false,
-        plugins:{legend:{display:false},tooltip:{callbacks:{label:function(ctx){return ctx.dataset.label==='Margen'?'Margen: $'+ctx.parsed.y+'M':'Neto: $'+ctx.parsed.y+'M ('+ordD[ctx.dataIndex]+' órd)';}}}},
-        scales:{x:{ticks:{color:tC,autoSkip:false,maxRotation:45},grid:{display:false}},y:{ticks:{color:tC,callback:function(v){return '$'+v+'M';}},grid:{color:gC}},y1:{position:'right',ticks:{color:C.teal,callback:function(v){return '$'+v+'M';}},grid:{display:false}}}}
-    });
-
-    // Zones
-    var z=D.zones, zL=z.map(function(x){return x.zone;}), zR=z.map(function(x){return Math.round(x.revenue/1e6);}), zO=z.map(function(x){return x.orders;});
-
-    if(charts.zone)charts.zone.destroy();
-    charts.zone=new Chart(document.getElementById('cZone'),{
-      type:'doughnut',data:{labels:zL,datasets:[{data:zR,backgroundColor:ZC.slice(0,zL.length),borderWidth:0}]},
-      options:{responsive:true,maintainAspectRatio:false,cutout:'55%',
-        plugins:{legend:{position:'right',labels:{font:{size:12},color:tC,boxWidth:12,padding:8}},tooltip:{callbacks:{label:function(ctx){return ctx.label+': $'+ctx.parsed.toLocaleString('es-CL')+'M';}}}}}
-    });
-
-    if(charts.zOrd)charts.zOrd.destroy();
-    charts.zOrd=new Chart(document.getElementById('cZoneOrd'),{
-      type:'bar',data:{labels:zL,datasets:[{data:zO,backgroundColor:ZC.slice(0,zL.length),borderRadius:5}]},
-      options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:tC},grid:{display:false}},y:{ticks:{color:tC},grid:{color:gC}}}}
-    });
-  }
-
-  function renderCobranza(D){
-    var r=D.receivables;
-    var pO = r.total_due>0 ? (r.overdue/r.total_due*100) : 0;
-
-    document.getElementById('kC').innerHTML=
-      '<div class="kpi blue"><div class="kpi-label">Total por cobrar</div><div class="kpi-val">'+fM(r.total_due)+'</div><div class="kpi-sub">'+r.open_invoices+' facturas abiertas</div></div>'+
-      '<div class="kpi green"><div class="kpi-label">Al día</div><div class="kpi-val">'+fM(r.current)+'</div><div class="kpi-sub success">'+fP(100-pO)+' del total</div></div>'+
-      '<div class="kpi red"><div class="kpi-label">Vencido</div><div class="kpi-val">'+fM(r.overdue)+'</div><div class="kpi-sub danger">'+fP(pO)+' del total</div></div>'+
-      '<div class="kpi amber"><div class="kpi-label">Vencido 90+ días</div><div class="kpi-val">'+fM(r.aging["90_plus"])+'</div><div class="kpi-sub danger">Cobranza crítica</div></div>';
-
-    var aL=['Al día','0-30 días','31-60 días','61-90 días','90+ días'];
-    var aV=[Math.round(r.current/1e6),Math.round(r.aging["0_30"]/1e6),Math.round(r.aging["31_60"]/1e6),Math.round(r.aging["61_90"]/1e6),Math.round(r.aging["90_plus"]/1e6)];
-    var aC=[C.teal,C.amber,C.coral,C.red,'#791F1F'];
-
-    if(charts.aging)charts.aging.destroy();
-    charts.aging=new Chart(document.getElementById('cAging'),{
-      type:'doughnut',data:{labels:aL,datasets:[{data:aV,backgroundColor:aC,borderWidth:0}]},
-      options:{responsive:true,maintainAspectRatio:false,cutout:'55%',
-        plugins:{legend:{position:'right',labels:{font:{size:12},color:tC,boxWidth:12,padding:8}},tooltip:{callbacks:{label:function(ctx){return ctx.label+': $'+ctx.parsed+'M';}}}}}
-    });
-
-    var td=r.top_debtors.slice(0,15);
-    var dN=td.map(function(x){return trunc(x.name,35);}), dA=td.map(function(x){return Math.round(x.amount/1e6);});
-
-    if(charts.debt)charts.debt.destroy();
-    charts.debt=new Chart(document.getElementById('cDebt'),{
-      type:'bar',data:{labels:dN,datasets:[{data:dA,backgroundColor:dA.map(function(v){return v>=15?C.red:v>=10?C.coral:C.amber;}),borderRadius:4}]},
-      options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,
-        plugins:{legend:{display:false}},
-        scales:{x:{ticks:{color:tC,callback:function(v){return '$'+v+'M';}},grid:{color:gC}},y:{ticks:{color:tC,font:{size:10}},grid:{display:false}}}}
-    });
-  }
-
-  function renderClientes(D){
-    var s=D.summary, tc=D.top_clients;
-    var avgO = s.active_clients>0 ? s.total_orders/s.active_clients : 0;
-
-    document.getElementById('kCl').innerHTML=
-      '<div class="kpi blue"><div class="kpi-label">Clientes activos</div><div class="kpi-val">'+s.active_clients+'</div><div class="kpi-sub">Con órdenes en el periodo</div></div>'+
-      '<div class="kpi green"><div class="kpi-label">Total en sistema</div><div class="kpi-val">'+s.customer_count.toLocaleString('es-CL')+'</div><div class="kpi-sub">Registrados en Odoo</div></div>'+
-      '<div class="kpi amber"><div class="kpi-label">Promedio órd/cliente</div><div class="kpi-val">'+avgO.toFixed(1)+'</div><div class="kpi-sub">Últimos 13 meses</div></div>'+
-      '<div class="kpi red"><div class="kpi-label">Top 1 cliente</div><div class="kpi-val">'+fM(tc[0].revenue)+'</div><div class="kpi-sub">'+trunc(tc[0].name,30)+'</div></div>';
-
-    var cN=tc.map(function(x){return trunc(x.name,40);}), cR=tc.map(function(x){return Math.round(x.revenue/1e6);});
-
-    if(charts.topC)charts.topC.destroy();
-    charts.topC=new Chart(document.getElementById('cTopCli'),{
-      type:'bar',data:{labels:cN,datasets:[{data:cR,backgroundColor:C.purple,borderRadius:4}]},
-      options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,
-        plugins:{legend:{display:false},tooltip:{callbacks:{label:function(ctx){return '$'+ctx.parsed.x+'M neto — '+tc[ctx.dataIndex].orders+' órdenes';}}}},
-        scales:{x:{ticks:{color:tC,callback:function(v){return '$'+v+'M';}},grid:{color:gC}},y:{ticks:{color:tC,font:{size:11}},grid:{display:false}}}}
-    });
-  }
-
-  function renderCRM(D){
-    var pl=D.pipeline||[];
-    var totalLeads=0, totalRev=0;
-    pl.forEach(function(x){totalLeads+=x.count; totalRev+=x.revenue;});
-
-    document.getElementById('kCRM').innerHTML=
-      '<div class="kpi blue"><div class="kpi-label">Oportunidades totales</div><div class="kpi-val">'+totalLeads+'</div><div class="kpi-sub">En pipeline</div></div>'+
-      '<div class="kpi green"><div class="kpi-label">Ingreso esperado</div><div class="kpi-val">'+fM(totalRev)+'</div><div class="kpi-sub">Suma de pipeline</div></div>'+
-      '<div class="kpi amber"><div class="kpi-label">Etapas</div><div class="kpi-val">'+pl.length+'</div><div class="kpi-sub">Etapas con oportunidades</div></div>'+
-      '<div class="kpi red"><div class="kpi-label">Ticket promedio</div><div class="kpi-val">'+(totalLeads>0?fM(totalRev/totalLeads):'$0M')+'</div><div class="kpi-sub">Por oportunidad</div></div>';
-
-    var pL=pl.map(function(x){return x.stage;}), pC=pl.map(function(x){return x.count;}), pR=pl.map(function(x){return Math.round(x.revenue/1e6);});
-
-    if(charts.pipe)charts.pipe.destroy();
-    charts.pipe=new Chart(document.getElementById('cPipe'),{
-      type:'bar',
-      data:{labels:pL,datasets:[
-        {label:'Oportunidades',data:pC,backgroundColor:C.purple,borderRadius:5,yAxisID:'y'},
-        {label:'Ingreso esperado',data:pR,type:'line',borderColor:C.teal,backgroundColor:'transparent',pointBackgroundColor:C.teal,pointRadius:4,borderWidth:2.5,tension:.3,yAxisID:'y1'}
-      ]},
-      options:{responsive:true,maintainAspectRatio:false,
-        plugins:{legend:{display:false},tooltip:{callbacks:{label:function(ctx){return ctx.dataset.label==='Ingreso esperado'?'Esperado: $'+ctx.parsed.y+'M':ctx.parsed.y+' oportunidades';}}}},
-        scales:{x:{ticks:{color:tC,maxRotation:45},grid:{display:false}},y:{ticks:{color:tC},grid:{color:gC}},y1:{position:'right',ticks:{color:C.teal,callback:function(v){return '$'+v+'M';}},grid:{display:false}}}}
-    });
-  }
-})();
+}
+loadData();
 </script>
 </body>
 </html>

@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """
 CEO Dashboard — Odoo Data Extractor
-Same auth pattern as extract_odoo.py. Outputs ceo-data.json.
+Extracts weekly (Thu-Wed) + receivables + CRM data.
+Outputs ceo-data.json for the static dashboard on GitHub Pages.
 """
 import xmlrpc.client
 import json
@@ -12,6 +13,23 @@ ODOO_URL = os.environ.get("ODOO_URL", "https://tomenergy.cl")
 ODOO_DB = os.environ.get("ODOO_DB", "PRODUCCION")
 ODOO_USER = os.environ.get("ODOO_USER", "p@tomenergy.cl")
 ODOO_KEY = os.environ.get("ODOO_KEY", "f4188f3cbe069a9f5ce60325fa17a2c5333176d1")
+
+# Weekly budget in litros (monthly / 4)
+WEEKLY_BUDGET = {
+    "2025-01": 159285, "2025-02": 161493, "2025-03": 168496,
+    "2025-04": 211569, "2025-05": 150215, "2025-06": 112982,
+    "2025-07": 179067, "2025-08": 182676, "2025-09": 184083,
+    "2025-10": 214286, "2025-11": 207258, "2025-12": 212548,
+    "2026-01": 266438, "2026-02": 272593, "2026-03": 283811,
+    "2026-04": 326422, "2026-05": 258823, "2026-06": 216688,
+    "2026-07": 276926, "2026-08": 271233, "2026-09": 263225,
+    "2026-10": 338728, "2026-11": 348706, "2026-12": 438672,
+}
+
+
+def get_week_budget(start_date_str):
+    key = start_date_str[:7]
+    return WEEKLY_BUDGET.get(key, 270000)
 
 
 def connect():
@@ -46,69 +64,166 @@ def s_count(models, uid, model, domain):
     return models.execute_kw(ODOO_DB, uid, ODOO_KEY, model, "search_count", [domain])
 
 
-def extract_sales(models, uid):
-    print("Extracting sale orders (13 months)...")
-    cutoff = (datetime.now() - timedelta(days=400)).strftime("%Y-%m-%d")
-    orders = fetch_all(models, uid, "sale.order",
-        [["state", "in", ["sale", "done"]], ["date_order", ">=", cutoff]],
-        ["date_order", "amount_untaxed", "amount_total", "margin", "delivery_zone_id", "partner_id"])
-    print(f"  {len(orders)} orders")
+# ── Week ranges: Thursday to Wednesday ──
+def get_week_ranges(n_weeks=16):
+    today = datetime.now()
+    days_since_thu = (today.weekday() - 3) % 7
+    this_thu = today - timedelta(days=days_since_thu)
+    this_thu = this_thu.replace(hour=0, minute=0, second=0, microsecond=0)
 
-    now = datetime.now()
-    this_month = f"{now.year}-{now.month:02d}"
-    by_month, by_zone, by_client = {}, {}, {}
-    tot_rev = tot_margin = tot_orders = tm_rev = tm_orders = tm_margin = 0
-
-    for o in orders:
-        m = o["date_order"][:7]
-        zone = o["delivery_zone_id"][1] if o["delivery_zone_id"] else "Sin Zona"
-        client = o["partner_id"][1] if o["partner_id"] else "N/A"
-        cid = o["partner_id"][0] if o["partner_id"] else 0
-        rev = o["amount_untaxed"] or 0
-        mar = o["margin"] or 0
-
-        by_month.setdefault(m, {"r": 0, "m": 0, "c": 0})
-        by_month[m]["r"] += rev; by_month[m]["m"] += mar; by_month[m]["c"] += 1
-
-        by_zone.setdefault(zone, {"r": 0, "m": 0, "c": 0})
-        by_zone[zone]["r"] += rev; by_zone[zone]["m"] += mar; by_zone[zone]["c"] += 1
-
-        k = f"{cid}|{client}"
-        by_client.setdefault(k, {"name": client, "r": 0, "m": 0, "c": 0})
-        by_client[k]["r"] += rev; by_client[k]["m"] += mar; by_client[k]["c"] += 1
-
-        tot_rev += rev; tot_margin += mar; tot_orders += 1
-        if m == this_month:
-            tm_rev += rev; tm_orders += 1; tm_margin += mar
-
-    monthly = [{"month": m, "rev": round(d["r"]), "margin": round(d["m"]), "orders": d["c"],
-                "margin_pct": round(d["m"]/d["r"]*100, 1) if d["r"] > 0 else 0}
-               for m, d in sorted(by_month.items())]
-
-    zones = [{"zone": z, "rev": round(d["r"]), "margin": round(d["m"]), "orders": d["c"]}
-             for z, d in sorted(by_zone.items(), key=lambda x: -x[1]["r"]) if z != "Sin Zona" or d["c"] >= 5]
-
-    top_clients = sorted(by_client.values(), key=lambda x: -x["r"])[:25]
-    clients = [{"name": c["name"], "rev": round(c["r"]), "margin": round(c["m"]), "orders": c["c"],
-                "margin_pct": round(c["m"]/c["r"]*100, 1) if c["r"] > 0 else 0} for c in top_clients]
-
-    active = len(by_client)
-    total_cust = s_count(models, uid, "res.partner", [["customer_rank", ">", 0]])
-
-    return {
-        "monthly": monthly, "zones": zones, "top_clients": clients,
-        "totals": {
-            "rev": round(tot_rev), "margin": round(tot_margin), "orders": tot_orders,
-            "margin_pct": round(tot_margin/tot_rev*100, 1) if tot_rev > 0 else 0,
-            "this_month": this_month, "tm_rev": round(tm_rev), "tm_orders": tm_orders,
-            "tm_margin": round(tm_margin), "tm_margin_pct": round(tm_margin/tm_rev*100, 1) if tm_rev > 0 else 0,
-            "active_clients": active, "total_customers": total_cust,
-            "avg_ticket": round(tot_rev/tot_orders) if tot_orders > 0 else 0,
-            "avg_orders_per_client": round(tot_orders/active, 1) if active > 0 else 0
-        }
-    }
+    weeks = []
+    for w in range(n_weeks):
+        start = this_thu - timedelta(weeks=w)
+        end = start + timedelta(days=6)
+        label = f"{start.strftime('%d%b')}-{end.strftime('%d%b')}".lower()
+        weeks.append({"start": start.strftime("%Y-%m-%d"),
+                       "end": end.strftime("%Y-%m-%d"),
+                       "label": label})
+    return weeks
 
 
+# ── WEEKLY EXTRACTION ──
+def extract_weekly(models, uid):
+    print("Extracting weekly data (16 weeks, Thu-Wed)...")
+    weeks = get_week_ranges(16)
+    results = []
+
+    for i, wd in enumerate(weeks):
+        print(f"  Week {i+1}/16: {wd['label']}...", end=" ")
+
+        # Customer invoices
+        invoices = sr(models, uid, "account.move", [
+            ["move_type", "=", "out_invoice"],
+            ["state", "=", "posted"],
+            ["invoice_date", ">=", wd["start"]],
+            ["invoice_date", "<=", wd["end"]],
+        ], ["amount_total", "amount_untaxed", "margin_zone", "partner_id"])
+
+        # Credit notes to subtract
+        refunds = sr(models, uid, "account.move", [
+            ["move_type", "=", "out_refund"],
+            ["state", "=", "posted"],
+            ["invoice_date", ">=", wd["start"]],
+            ["invoice_date", "<=", wd["end"]],
+        ], ["amount_total", "amount_untaxed"])
+
+        ventas = sum(x["amount_total"] for x in invoices) - sum(r["amount_total"] for r in refunds)
+        neto = sum(x["amount_untaxed"] for x in invoices) - sum(r["amount_untaxed"] for r in refunds)
+        clientes = len(set(x["partner_id"][0] for x in invoices if x["partner_id"]))
+
+        # Weighted average margin_zone
+        sum_mn, sum_n = 0, 0
+        for inv in invoices:
+            mz = inv.get("margin_zone") or 0
+            au = inv.get("amount_untaxed") or 0
+            if mz and au > 0:
+                sum_mn += mz * au
+                sum_n += au
+        margin = sum_mn / sum_n if sum_n > 0 else 0
+
+        # Invoice lines for litros
+        lines = sr(models, uid, "account.move.line", [
+            ["move_id.move_type", "=", "out_invoice"],
+            ["move_id.state", "=", "posted"],
+            ["move_id.invoice_date", ">=", wd["start"]],
+            ["move_id.invoice_date", "<=", wd["end"]],
+            ["display_type", "=", "product"],
+        ], ["quantity", "price_subtotal"], 5000)
+
+        # Refund lines to subtract
+        ref_lines = sr(models, uid, "account.move.line", [
+            ["move_id.move_type", "=", "out_refund"],
+            ["move_id.state", "=", "posted"],
+            ["move_id.invoice_date", ">=", wd["start"]],
+            ["move_id.invoice_date", "<=", wd["end"]],
+            ["display_type", "=", "product"],
+        ], ["quantity", "price_subtotal"], 2000)
+
+        litros = round(sum(l["quantity"] for l in lines) - sum(l["quantity"] for l in ref_lines))
+        neto_lineas = sum(l["price_subtotal"] for l in lines) - sum(l["price_subtotal"] for l in ref_lines)
+        precio = round(neto_lineas / litros) if litros > 0 else 0
+
+        # Payments received
+        payments = sr(models, uid, "account.payment", [
+            ["payment_type", "=", "inbound"],
+            ["state", "not in", ["draft", "cancel"]],
+            ["date", ">=", wd["start"]],
+            ["date", "<=", wd["end"]],
+        ], ["amount", "journal_id"], 1000)
+
+        cheques, transf, factoring = 0, 0, 0
+        for p in payments:
+            j = (p["journal_id"][1] if p["journal_id"] else "").lower()
+            if "cheque" in j:
+                cheques += p["amount"]
+            elif "factoring" in j:
+                factoring += p["amount"]
+            else:
+                transf += p["amount"]
+        recaud = sum(p["amount"] for p in payments)
+
+        # Vendor bills (compras ENAP)
+        compras = sr(models, uid, "account.move", [
+            ["move_type", "=", "in_invoice"],
+            ["state", "=", "posted"],
+            ["invoice_date", ">=", wd["start"]],
+            ["invoice_date", "<=", wd["end"]],
+        ], ["amount_total"], 500)
+        compras_enap = sum(c["amount_total"] for c in compras)
+
+        ppto = get_week_budget(wd["start"])
+
+        results.append({
+            "label": wd["label"],
+            "start": wd["start"],
+            "end": wd["end"],
+            "ventas": round(ventas),
+            "neto": round(neto),
+            "litros": litros,
+            "precio": precio,
+            "margin": round(margin, 5),
+            "facturas": len(invoices),
+            "nc": len(refunds),
+            "clientes": clientes,
+            "recaud": round(recaud),
+            "cheques": round(cheques),
+            "transf": round(transf),
+            "factoring": round(factoring),
+            "compras_enap": round(compras_enap),
+            "ppto": ppto,
+            "parcial": i == 0,
+        })
+        print(f"{len(invoices)} fact, {litros}L, margin {margin:.2%}")
+
+    return results
+
+
+# ── BANK BALANCES ──
+def extract_bank_balances(models, uid):
+    print("Extracting bank balances...")
+    journals = sr(models, uid, "account.journal", [
+        ["type", "in", ["bank", "cash"]],
+    ], ["name", "type", "default_account_id"])
+
+    account_ids = [j["default_account_id"][0] for j in journals if j["default_account_id"]]
+
+    balances = models.execute_kw(
+        ODOO_DB, uid, ODOO_KEY,
+        "account.move.line", "read_group",
+        [[["account_id", "in", account_ids], ["parent_state", "=", "posted"]]],
+        {"fields": ["balance:sum"], "groupby": ["account_id"], "lazy": True}
+    )
+
+    results = []
+    for b in balances:
+        name = b["account_id"][1] if b["account_id"] else "Unknown"
+        clean_name = name.split(" ", 2)[-1] if "." in name.split(" ")[0] else name
+        results.append({"name": clean_name, "balance": round(b["balance"])})
+
+    return sorted(results, key=lambda x: -x["balance"])
+
+
+# ── RECEIVABLES ──
 def extract_receivables(models, uid):
     print("Extracting accounts receivable...")
     invoices = fetch_all(models, uid, "account.move",
@@ -148,6 +263,7 @@ def extract_receivables(models, uid):
     }
 
 
+# ── CRM ──
 def extract_crm(models, uid):
     print("Extracting CRM pipeline...")
     total = s_count(models, uid, "crm.lead", [])
@@ -158,26 +274,38 @@ def extract_crm(models, uid):
 
     stages = sr(models, uid, "crm.stage", [], ["name", "sequence"], limit=20)
     by_stage = []
-    for s in sorted(stages, key=lambda x: x.get("sequence", 0)):
-        c = s_count(models, uid, "crm.lead", [["stage_id", "=", s["id"]], ["active", "=", True]])
+    for stg in sorted(stages, key=lambda x: x.get("sequence", 0)):
+        c = s_count(models, uid, "crm.lead", [["stage_id", "=", stg["id"]], ["active", "=", True]])
         if c > 0:
-            by_stage.append({"stage": s["name"], "count": c})
+            by_stage.append({"stage": stg["name"], "count": c})
 
     return {"total": total, "open": open_l, "won": won, "new_30d": new_30, "by_stage": by_stage}
 
 
+# ── MAIN ──
 def main():
     print("=== CEO Dashboard · Odoo Extraction ===")
     models, uid = connect()
-    sales = extract_sales(models, uid)
+
+    weekly = extract_weekly(models, uid)
+    banks = extract_bank_balances(models, uid)
+    total_cash = sum(b["balance"] for b in banks)
     receivables = extract_receivables(models, uid)
     crm = extract_crm(models, uid)
 
-    data = {"updated": datetime.now().isoformat(), "sales": sales, "receivables": receivables, "crm": crm}
+    data = {
+        "updated": datetime.now().isoformat(),
+        "weeks": weekly,
+        "banks": banks,
+        "total_cash": total_cash,
+        "receivables": receivables,
+        "crm": crm,
+    }
+
     path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "ceo-data.json")
     with open(path, "w", encoding="utf-8") as f:
         json.dump(data, f, ensure_ascii=False, indent=2)
-    print(f"\nceo-data.json written OK")
+    print(f"\nceo-data.json written OK ({len(weekly)} weeks, {len(banks)} banks)")
 
 
 if __name__ == "__main__":
