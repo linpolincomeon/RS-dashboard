@@ -1,23 +1,23 @@
 {
-  "updated": "2026-04-01T00:04:37.783931",
+  "updated": "2026-04-01T12:50:37.753822",
   "weeks": [
     {
       "label": "26mar-01apr",
       "start": "2026-03-26",
       "end": "2026-04-01",
-      "ventas": 210778780,
-      "neto": 172535857,
-      "litros": 144332,
-      "precio": 1195,
-      "margin": 0.0172,
-      "facturas": 92,
-      "nc": 4,
-      "clientes": 74,
+      "ventas": 210994937,
+      "neto": 172462350,
+      "litros": 147232,
+      "precio": 1171,
+      "margin": 0.01983,
+      "facturas": 96,
+      "nc": 5,
+      "clientes": 76,
       "recaud": 9482998,
       "cheques": 9482998,
       "transf": 0,
       "factoring": 0,
-      "compras_enap": 121033153,
+      "compras_enap": 142605473,
       "ppto": 283811,
       "parcial": true
     },
@@ -326,8 +326,8 @@
     {
       "date": "01apr",
       "day": "Mié",
-      "litros": 0,
-      "neto": 0
+      "litros": 2901,
+      "neto": 3765034
     },
     {
       "date": "31mar",
@@ -422,16 +422,16 @@
   ],
   "banks": [
     {
-      "name": "DE CHILE",
-      "balance": 66942898
-    },
-    {
       "name": "ITAU",
       "balance": 9666494
     },
     {
       "name": "ESTADO",
       "balance": 8309411
+    },
+    {
+      "name": "DE CHILE",
+      "balance": 8081354
     },
     {
       "name": "CAJA",
@@ -450,15 +450,15 @@
       "balance": -1527896
     }
   ],
-  "total_cash": 88203930,
+  "total_cash": 29342386,
   "receivables": {
-    "open_invoices": 389,
-    "total_due": 634141274,
-    "current": 552321921,
-    "overdue": 81819353,
-    "pct_overdue": 12.9,
+    "open_invoices": 385,
+    "total_due": 628101959,
+    "current": 550708678,
+    "overdue": 77393281,
+    "pct_overdue": 12.3,
     "aging": {
-      "0-30": 67928292,
+      "0-30": 63502220,
       "31-60": 2925498,
       "61-90": 4159564,
       "90+": 6805999
@@ -473,20 +473,20 @@
         "amount": 31147443
       },
       {
-        "name": "SERVICIOS AGRICOLAS HERNANDEZ LIMITADA",
-        "amount": 17842500
-      },
-      {
         "name": "SAMUEL BUDINICH SPA",
         "amount": 15202885
       },
       {
         "name": "INGENERIA Y CONSTRUCCIONES FEBLANCA SPA",
-        "amount": 14749697
+        "amount": 13862297
       },
       {
         "name": "AGRICOLA AGROBOSQUES SAN ISIDRO S.A.",
-        "amount": 14077000
+        "amount": 13743000
+      },
+      {
+        "name": "SERVICIOS AGRICOLAS HERNANDEZ LIMITADA",
+        "amount": 13275000
       },
       {
         "name": "SOC AGRICOLA GRANJA SAN RAFAEL LIMITADA",
@@ -517,6 +517,10 @@
         "amount": 9737421
       },
       {
+        "name": "TRANSPORTE SANTA ELENITA SPA",
+        "amount": 9633850
+      },
+      {
         "name": "FORESTAL PUIHUA SPA",
         "amount": 9104699
       },
@@ -533,10 +537,6 @@
         "amount": 8499700
       },
       {
-        "name": "TRANSPORTE SANTA ELENITA SPA",
-        "amount": 8165051
-      },
-      {
         "name": "AGROSERVICIOS JR SPA",
         "amount": 8144001
       },
@@ -548,8 +548,8 @@
   },
   "crm": {
     "total": 1369,
-    "open": 1152,
-    "won": 214,
+    "open": 1155,
+    "won": 211,
     "new_30d": 72,
     "by_stage": [
       {
@@ -578,11 +578,11 @@
       },
       {
         "stage": "Durmiente",
-        "count": 185
+        "count": 188
       },
       {
         "stage": "Won",
-        "count": 214
+        "count": 211
       }
     ]
   }
