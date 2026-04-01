@@ -187,9 +187,8 @@ function renderVentas(){
   h+='</div>';
 
   // Daily sales chart
-  const dy=D.daily||[];
-  if(dy.length>0){
-    const dRev=[...dy].reverse();
+  const dyData=D.daily||[];
+  if(dyData.length>0){
     h+='<div class="chart-row" style="grid-template-columns:1fr;margin-top:1rem">';
     h+='<div class="chart-card"><div class="chart-title">Venta diaria en litros <span class="badge">Últimos 16 días hábiles</span></div><div class="chart-wrap"><canvas id="cDaily"></canvas></div></div>';
     h+='</div>';
