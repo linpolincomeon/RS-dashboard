@@ -1,18 +1,18 @@
 {
-  "updated": "2026-04-02T00:01:36.949577",
+  "updated": "2026-04-02T14:41:51.775516",
   "weeks": [
     {
       "label": "02apr-08apr",
       "start": "2026-04-02",
       "end": "2026-04-08",
-      "ventas": 0,
-      "neto": 0,
-      "litros": 0,
-      "precio": 0,
-      "margin": 0,
-      "facturas": 0,
+      "ventas": 28247699,
+      "neto": 22307884,
+      "litros": 18430,
+      "precio": 1210,
+      "margin": 0.08719,
+      "facturas": 8,
       "nc": 0,
-      "clientes": 0,
+      "clientes": 8,
       "recaud": 0,
       "cheques": 0,
       "transf": 0,
@@ -37,7 +37,7 @@
       "cheques": 9482998,
       "transf": 0,
       "factoring": 0,
-      "compras_enap": 143154336,
+      "compras_enap": 187023048,
       "ppto": 283811,
       "parcial": false
     },
@@ -326,8 +326,8 @@
     {
       "date": "02apr",
       "day": "Jue",
-      "litros": 0,
-      "neto": 0
+      "litros": 18430,
+      "neto": 22307884
     },
     {
       "date": "01apr",
@@ -423,7 +423,7 @@
   "banks": [
     {
       "name": "DE CHILE",
-      "balance": 28451356
+      "balance": 54502316
     },
     {
       "name": "ITAU",
@@ -450,27 +450,27 @@
       "balance": -838790
     }
   ],
-  "total_cash": 62401494,
+  "total_cash": 88452454,
   "receivables": {
-    "open_invoices": 395,
-    "total_due": 662689784,
-    "current": 575093346,
-    "overdue": 87596438,
-    "pct_overdue": 13.2,
+    "open_invoices": 354,
+    "total_due": 601228322,
+    "current": 523171883,
+    "overdue": 78056439,
+    "pct_overdue": 13.0,
     "aging": {
-      "0-30": 73705377,
+      "0-30": 64165378,
       "31-60": 2925498,
       "61-90": 4159564,
       "90+": 6805999
     },
     "top_debtors": [
       {
-        "name": "JOSE RODRIGO ORMAZABAL VIDAL",
-        "amount": 36512943
+        "name": "MAQUINARIAS Y ARIDOS SAN PEDRO SPA.",
+        "amount": 37432481
       },
       {
-        "name": "MAQUINARIAS Y ARIDOS SAN PEDRO SPA.",
-        "amount": 33148501
+        "name": "JOSE RODRIGO ORMAZABAL VIDAL",
+        "amount": 36512943
       },
       {
         "name": "AGRICOLA AGROBOSQUES SAN ISIDRO S.A.",
@@ -481,16 +481,16 @@
         "amount": 15202885
       },
       {
-        "name": "INGENERIA Y CONSTRUCCIONES FEBLANCA SPA",
-        "amount": 15045497
+        "name": "SOC AGRICOLA GRANJA SAN RAFAEL LIMITADA",
+        "amount": 13698801
       },
       {
         "name": "SERVICIOS AGRICOLAS HERNANDEZ LIMITADA",
         "amount": 13275000
       },
       {
-        "name": "SOC AGRICOLA GRANJA SAN RAFAEL LIMITADA",
-        "amount": 12213121
+        "name": "INGENERIA Y CONSTRUCCIONES FEBLANCA SPA",
+        "amount": 12805497
       },
       {
         "name": "AGRICOLA MANUEL BARRERA E.I.R.L.",
@@ -501,10 +501,6 @@
         "amount": 11424000
       },
       {
-        "name": "SEMILLAS TUNICHE LTDA",
-        "amount": 11018064
-      },
-      {
         "name": "VICTOR FAVIO VILCHES MARDONES",
         "amount": 10824001
       },
@@ -513,8 +509,8 @@
         "amount": 10720800
       },
       {
-        "name": "PATRICIO VISCAY ALBORNOZ",
-        "amount": 9737421
+        "name": "CIA AGRICOLA Y FORESTAL EL ALAMO LIMITADA",
+        "amount": 10429999
       },
       {
         "name": "TRANSPORTE SANTA ELENITA SPA",
@@ -533,8 +529,8 @@
         "amount": 8704062
       },
       {
-        "name": "AGRICOLA TERRANDES S A",
-        "amount": 8508500
+        "name": "PATRICIO VISCAY ALBORNOZ",
+        "amount": 8585921
       },
       {
         "name": "AGRICOLA LO BELTRAN LIMITADA",
@@ -543,18 +539,22 @@
       {
         "name": "AGROSERVICIOS JR SPA",
         "amount": 8144001
+      },
+      {
+        "name": "AGRÍCOLA LA RIGADA SPA",
+        "amount": 7644000
       }
     ]
   },
   "crm": {
-    "total": 1374,
-    "open": 1156,
-    "won": 215,
-    "new_30d": 78,
+    "total": 1371,
+    "open": 1151,
+    "won": 218,
+    "new_30d": 76,
     "by_stage": [
       {
         "stage": "Perdidos",
-        "count": 464
+        "count": 462
       },
       {
         "stage": "No Cerrados",
@@ -566,23 +566,23 @@
       },
       {
         "stage": "Oportunidad de Negocio",
-        "count": 106
+        "count": 103
       },
       {
         "stage": "Contactado",
-        "count": 79
+        "count": 80
       },
       {
         "stage": "Cotizado",
-        "count": 271
+        "count": 272
       },
       {
         "stage": "Durmiente",
-        "count": 190
+        "count": 188
       },
       {
         "stage": "Won",
-        "count": 215
+        "count": 218
       }
     ]
   }
