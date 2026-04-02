@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TomEnergy — CRM Semanal</title>
+<style>
+:root {
+  --orange:#E8451A; --green:#3a7d3a; --yellow:#b8860b;
+  --bg:#f5f4f0; --white:#ffffff; --border:#e8e6e0;
+  --ink:#1a1a1a; --ink2:#888; --ink3:#bbb;
+  --red:#c0392b; --blue:#1a5fa8;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:14px;min-height:100vh;}
+
+.topbar{background:var(--white);border-bottom:1px solid var(--border);padding:0 28px;height:56px;display:flex;align-items:center;justify-content:space-between;}
+.logo{font-size:18px;font-weight:700;color:var(--orange);letter-spacing:-0.3px;}
+.logo span{color:var(--ink);}
+.topbar-right{display:flex;align-items:center;gap:16px;}
+.week-badge{font-size:12px;color:var(--ink2);background:var(--bg);border:1px solid var(--border);padding:4px 12px;border-radius:20px;}
+.refresh-btn{font-size:12px;color:var(--orange);background:transparent;border:1px solid var(--orange);padding:6px 14px;border-radius:6px;cursor:pointer;font-weight:600;}
+.refresh-btn:hover{background:var(--orange);color:#fff;}
+
+.main{padding:24px 28px;max-width:1200px;margin:0 auto;}
+
+.sample-bar{background:#fef9e7;border:1px solid #f0d060;border-radius:8px;padding:8px 16px;font-size:12px;color:var(--yellow);margin-bottom:20px;display:none;}
+
+.section-title{font-size:11px;font-weight:600;color:var(--ink3);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;}
+.section-title span{font-size:11px;color:var(--ink2);letter-spacing:0;text-transform:none;font-weight:400;}
+
+/* KPI strip */
+.kpi-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:28px;}
+.kpi{background:var(--white);border:1px solid var(--border);border-radius:10px;padding:16px 18px;}
+.kpi-label{font-size:10px;color:var(--ink2);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px;}
+.kpi-value{font-size:24px;font-weight:700;color:var(--ink);}
+.kpi-delta{font-size:11px;margin-top:5px;font-weight:600;}
+.delta-up{color:var(--green);}
+.delta-down{color:var(--red);}
+.delta-flat{color:var(--ink3);}
+
+/* Rep cards */
+.rep-card{background:var(--white);border:1px solid var(--border);border-radius:10px;overflow:hidden;margin-bottom:12px;}
+.rep-header{padding:16px 20px;display:flex;align-items:center;gap:14px;cursor:pointer;user-select:none;}
+.rep-header:hover{background:#fafaf8;}
+.rep-avatar{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;flex-shrink:0;}
+.rep-info{flex:1;min-width:0;}
+.rep-name{font-size:14px;font-weight:600;color:var(--ink);}
+.rep-role{font-size:11px;color:var(--ink3);margin-top:2px;}
+.status-pill{font-size:10px;font-weight:700;padding:3px 10px;border-radius:20px;letter-spacing:0.5px;}
+.pill-green{background:#eaf4ea;color:var(--green);border:1px solid #c3e6c3;}
+.pill-yellow{background:#fef9e7;color:var(--yellow);border:1px solid #f0d060;}
+.pill-red{background:#fdecea;color:var(--red);border:1px solid #f5b7b1;}
+.rep-stat-group{display:flex;gap:28px;align-items:center;}
+.rep-stat{text-align:right;}
+.rep-stat-val{font-size:18px;font-weight:700;}
+.rep-stat-lbl{font-size:10px;color:var(--ink3);margin-top:1px;}
+.chevron{font-size:12px;color:var(--ink3);margin-left:6px;transition:transform 0.2s;}
+.chevron.open{transform:rotate(180deg);}
+
+.rep-body{display:none;border-top:1px solid var(--border);background:#fafaf8;padding:20px;}
+.rep-body.open{display:block;}
+
+.metrics-row{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px;}
+.metric-mini{background:var(--white);border:1px solid var(--border);border-radius:8px;padding:12px 14px;}
+.metric-mini-lbl{font-size:10px;color:var(--ink2);letter-spacing:0.5px;text-transform:uppercase;margin-bottom:6px;}
+.metric-mini-val{font-size:20px;font-weight:700;}
+.metric-mini-delta{font-size:10px;margin-top:4px;font-weight:600;}
+
+.detail-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;}
+.detail-card{background:var(--white);border:1px solid var(--border);border-radius:8px;padding:14px 16px;}
+.detail-card-title{font-size:10px;color:var(--ink2);letter-spacing:1px;text-transform:uppercase;margin-bottom:12px;}
+
+.act-bar-row{display:flex;align-items:center;gap:8px;margin-bottom:8px;}
+.act-bar-label{font-size:11px;color:var(--ink2);width:68px;flex-shrink:0;}
+.act-bar-track{flex:1;height:5px;background:var(--border);border-radius:99px;overflow:hidden;}
+.act-bar-fill{height:100%;border-radius:99px;}
+.act-bar-val{font-size:12px;font-weight:700;min-width:18px;text-align:right;}
+
+.note-item{padding:8px 0;border-bottom:1px solid var(--border);}
+.note-item:last-child{border-bottom:none;padding-bottom:0;}
+.note-meta{font-size:10px;color:var(--ink3);margin-bottom:3px;}
+.note-text{font-size:12px;color:var(--ink);line-height:1.5;}
+
+.changes-card{background:var(--white);border:1px solid var(--border);border-radius:8px;padding:14px 16px;margin-top:12px;}
+.change-row{display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid var(--border);font-size:12px;}
+.change-row:last-child{border-bottom:none;}
+.arrow{color:var(--orange);font-weight:700;}
+
+/* Monthly progress ring */
+.ring-wrap{display:flex;align-items:center;gap:16px;padding:12px 0;}
+.ring-label-group{flex:1;}
+.ring-title{font-size:10px;color:var(--ink2);letter-spacing:0.5px;text-transform:uppercase;margin-bottom:4px;}
+.ring-val{font-size:20px;font-weight:700;}
+.ring-sub{font-size:11px;color:var(--ink3);margin-top:3px;}
+.progress-bar-track{height:6px;background:var(--border);border-radius:99px;overflow:hidden;margin-top:8px;}
+.progress-bar-fill{height:100%;border-radius:99px;transition:width 0.5s;}
+
+/* Stale table */
+.stale-table{width:100%;border-collapse:collapse;font-size:13px;background:var(--white);border-radius:10px;overflow:hidden;border:1px solid var(--border);}
+.stale-table th{font-size:10px;font-weight:600;color:var(--ink2);letter-spacing:1px;text-transform:uppercase;padding:10px 14px;text-align:left;border-bottom:1px solid var(--border);background:#fafaf8;}
+.stale-table td{padding:10px 14px;border-bottom:1px solid #f0eeea;}
+.stale-table tr:last-child td{border-bottom:none;}
+.stale-table tr:hover td{background:#fafaf8;}
+.badge{display:inline-block;font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px;letter-spacing:0.3px;}
+.badge-crit{background:#fdecea;color:var(--red);border:1px solid #f5b7b1;}
+.badge-warn{background:#fef9e7;color:var(--yellow);border:1px solid #f0d060;}
+.badge-ok{background:#eaf4ea;color:var(--green);border:1px solid #c3e6c3;}
+
+.loading{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px;gap:16px;color:var(--ink2);font-size:13px;}
+.spinner{width:28px;height:28px;border:2px solid var(--border);border-top:2px solid var(--orange);border-radius:50%;animation:spin 0.8s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+.no-activity{font-size:12px;color:var(--red);padding:8px 0;}
+
+@media(max-width:800px){
+  .kpi-strip,.metrics-row{grid-template-columns:repeat(2,1fr);}
+  .detail-row{grid-template-columns:1fr;}
+  .rep-stat-group{gap:16px;}
+  .main{padding:16px;}
+}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="logo">TomEnergy <span>CRM Semanal</span></div>
+  <div class="topbar-right">
+    <div class="week-badge" id="week-badge">Cargando semana...</div>
+    <button class="refresh-btn" onclick="loadAll()">↻ Actualizar</button>
+  </div>
+</div>
+
+<div class="main">
+  <div id="loading" class="loading">
+    <div class="spinner"></div>
+    <span>Conectando con Odoo...</span>
+  </div>
+  <div id="content" style="display:none">
+    <div class="sample-bar" id="sample-bar">Datos de muestra — habilitar Odoo MCP para datos reales</div>
+
+    <!-- Q1 KPIs -->
+    <div class="section-title">Resumen semana comercial <span id="week-compare-label"></span></div>
+    <div class="kpi-strip" id="kpi-strip"></div>
+
+    <!-- Rep cards -->
+    <div class="section-title" style="margin-top:8px">Por ejecutivo <span>Clic para expandir detalle</span></div>
+    <div id="rep-cards"></div>
+
+    <!-- Stagnant -->
+    <div class="section-title" style="margin-top:8px">Oportunidades sin movimiento esta semana <span id="stale-count"></span></div>
+    <table class="stale-table">
+      <thead><tr>
+        <th>Cliente</th><th>Etapa</th><th>Ejecutivo</th><th>Días sin mover</th><th>Valor est.</th><th>Estado</th>
+      </tr></thead>
+      <tbody id="stale-body"></tbody>
+    </table>
+  </div>
+</div>
+
+<script>
+const ANTHROPIC = 'https://api.anthropic.com/v1/messages';
+const ODOO_MCP  = 'https://tomenergy.cl/odoo';
+
+const LITER_TARGETS = {
+  'Toro González Sebastian': 500000,
+  'Garrido Cisterna Juan Manuel': 350000,
+  'De Trenqualye Merino Andre Jean': 180000,
+  'Vial Comber Pauline': 120000,
+  'Comber Sigall Pauline': 80000,
+};
+const REP_COLORS = ['#E8451A','#1a5fa8','#3a7d3a','#7c4daa','#b8860b'];
+
+function getWeeks() {
+  const now = new Date();
+  const dow = now.getDay();
+  const dtt = dow >= 4 ? dow - 4 : dow + 3;
+  const thu = new Date(now); thu.setDate(now.getDate() - dtt); thu.setHours(0,0,0,0);
+  const wed = new Date(thu); wed.setDate(thu.getDate() + 6);
+  const lThu = new Date(thu); lThu.setDate(thu.getDate() - 7);
+  const lWed = new Date(thu); lWed.setDate(thu.getDate() - 1);
+  const f = d => d.toLocaleDateString('es-CL',{day:'2-digit',month:'short'});
+  return {
+    cur:  { s: thu,  e: wed,  label: f(thu)+' → '+f(wed),  iso_s: thu.toISOString().slice(0,10), iso_e: wed.toISOString().slice(0,10) },
+    prev: { s: lThu, e: lWed, label: f(lThu)+' → '+f(lWed), iso_s: lThu.toISOString().slice(0,10), iso_e: lWed.toISOString().slice(0,10) }
+  };
+}
+
+const ini = n => (n||'?').split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
+const fmtL = n => { if(!n) return '0 L'; if(n>=1e6) return (n/1e6).toFixed(2)+'M L'; if(n>=1e3) return Math.round(n/1e3)+'K L'; return Math.round(n)+' L'; };
+const fmtPct = (a,b) => { if(!b) return ''; const d=Math.round(((a-b)/b)*100); return `<span class="${d>=0?'delta-up':'delta-down'}">${d>=0?'↑':'↓'}${Math.abs(d)}% vs sem. ant.</span>`; };
+
+const SYS = `Access Odoo MCP at tomenergy.cl. Fetch:
+1. mail.activity: completed activities for TWO specific date ranges. Fields: user_id, activity_type_id, date_deadline, res_name, note, state.
+2. crm.lead: all opportunities. Fields: id, name, stage_id, user_id, expected_revenue, write_date, probability, type, active.
+3. account.move.line: invoiced Diesel b1 for this month grouped by salesperson.
+Return ONLY JSON no markdown:
+{
+  "cur": {
+    "acts": [{"rep":"Toro González Sebastian","type":"Llamada","client":"Cliente A","note":"Visitado, acordó 8K L.","date":"2026-04-01"}],
+    "changes": [{"rep":"Toro González Sebastian","client":"Cliente B","from":"Cotizado","to":"Won","date":"2026-04-01"}],
+    "liters": [{"rep":"Toro González Sebastian","liters":92000}]
+  },
+  "prev": {
+    "acts": [{"rep":"Toro González Sebastian","type":"Llamada","client":"Cliente C","note":"No contesta.","date":"2026-03-25"}],
+    "liters": [{"rep":"Toro González Sebastian","liters":78000}]
+  },
+  "month_liters": [{"rep":"Toro González Sebastian","liters":320000}],
+  "stale_opps": [{"id":1,"name":"Cliente X","stage":"Cotizado","rep":"Toro González Sebastian","revenue":50000,"days_stale":14}],
+  "is_sample": false
+}
+Only human activities not automatic. is_sample:true if Odoo unavailable.`;
+
+async function loadAll() {
+  document.getElementById('loading').style.display='flex';
+  document.getElementById('content').style.display='none';
+
+  const W = getWeeks();
+  document.getElementById('week-badge').textContent = W.cur.label;
+  document.getElementById('week-compare-label').textContent = W.cur.label + '  vs  ' + W.prev.label;
+
+  let d;
+  try {
+    const r = await fetch(ANTHROPIC, {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({
+        model:'claude-sonnet-4-20250514', max_tokens:1000, system:SYS,
+        messages:[{role:'user',content:`Current week: ${W.cur.iso_s} to ${W.cur.iso_e}. Previous week: ${W.prev.iso_s} to ${W.prev.iso_e}.`}],
+        mcp_servers:[{type:'url',url:ODOO_MCP,name:'odoo'}]
+      })
+    });
+    const j = await r.json();
+    const txt = (j.content||[]).filter(b=>b.type==='text').map(b=>b.text).join('');
+    d = JSON.parse(txt.replace(/```json|```/g,'').trim());
+  } catch(e) {
+    d = makeSample();
+  }
+  render(d);
+}
+
+function makeSample() {
+  const R = ['Toro González Sebastian','Garrido Cisterna Juan Manuel','De Trenqualye Merino Andre Jean','Vial Comber Pauline'];
+  const T = ['Llamada','Visita','Llamada','Nota','Llamada','Visita'];
+  const N = ['Visitado. Acordó pedido 8K L.','Sin respuesta, 2do intento.','Interesado. Solicita cotización.','Cotización enviada, espera aprob.','Confirma 15K L semana siguiente.','No encontré a nadie.'];
+  const mk = (rep,n) => Array.from({length:n},(_,i)=>({rep,type:T[i%T.length],client:`Cliente ${rep.slice(0,3).replace(' ','')}${i+1}`,note:N[i%N.length],date:'2026-04-01'}));
+  return {
+    is_sample:true,
+    cur:{
+      acts:[...mk(R[0],8),...mk(R[1],5),...mk(R[2],2),...mk(R[3],0)],
+      changes:[{rep:R[0],client:'Agrosuper',from:'Cotizado',to:'Won',date:'2026-04-01'},{rep:R[1],client:'Frigorífico XYZ',from:'Ruta',to:'Cotizado',date:'2026-04-02'}],
+      liters:[{rep:R[0],liters:92000},{rep:R[1],liters:61000},{rep:R[2],liters:18000},{rep:R[3],liters:0}]
+    },
+    prev:{
+      acts:[...mk(R[0],6),...mk(R[1],7),...mk(R[2],4),...mk(R[3],1)],
+      liters:[{rep:R[0],liters:78000},{rep:R[1],liters:70000},{rep:R[2],liters:25000},{rep:R[3],liters:5000}]
+    },
+    month_liters:[{rep:R[0],liters:320000},{rep:R[1],liters:210000},{rep:R[2],liters:72000},{rep:R[3],liters:15000}],
+    stale_opps:[
+      {id:1,name:'Minera Los Andes',stage:'Cotizado',rep:R[0],revenue:180000,days_stale:21},
+      {id:2,name:'Transportes Sur',stage:'No Cerrados',rep:R[1],revenue:95000,days_stale:18},
+      {id:3,name:'Agrícola Valle',stage:'Cotizado',rep:R[0],revenue:67000,days_stale:14},
+      {id:4,name:'Constructora Norte',stage:'Ruta',rep:R[2],revenue:45000,days_stale:9},
+      {id:5,name:'Pesquera Costa',stage:'Cotizado',rep:R[1],revenue:120000,days_stale:12},
+    ]
+  };
+}
+
+function render(d) {
+  if (d.is_sample) document.getElementById('sample-bar').style.display='block';
+
+  const reps = [...new Set([
+    ...(d.cur.acts||[]).map(a=>a.rep),
+    ...(d.cur.liters||[]).map(l=>l.rep),
+    ...(d.month_liters||[]).map(l=>l.rep),
+  ])].filter(Boolean);
+
+  const totalCurActs = (d.cur.acts||[]).length;
+  const totalPrevActs = (d.prev.acts||[]).length;
+  const totalCurL = (d.cur.liters||[]).reduce((s,l)=>s+(l.liters||0),0);
+  const totalPrevL = (d.prev.liters||[]).reduce((s,l)=>s+(l.liters||0),0);
+  const totalWon = (d.cur.changes||[]).filter(c=>c.to==='Won').length;
+  const efficiency = totalCurActs > 0 ? Math.round(totalCurL/totalCurActs) : 0;
+
+  document.getElementById('kpi-strip').innerHTML = [
+    {lbl:'Actividades equipo', val:totalCurActs, delta:fmtPct(totalCurActs,totalPrevActs), col:'var(--orange)'},
+    {lbl:'Litros facturados', val:fmtL(totalCurL), delta:fmtPct(totalCurL,totalPrevL), col:'var(--ink)'},
+    {lbl:'Won esta semana', val:totalWon, delta:'', col:'var(--green)'},
+    {lbl:'Litros / actividad', val:fmtL(efficiency), delta:'', col:'var(--blue)'},
+  ].map(k=>`<div class="kpi"><div class="kpi-label">${k.lbl}</div><div class="kpi-value" style="color:${k.col}">${k.val}</div><div class="kpi-delta">${k.delta}</div></div>`).join('');
+
+  document.getElementById('rep-cards').innerHTML = reps.map((rep,i) => buildRepCard(rep, d, i)).join('');
+
+  const stale = (d.stale_opps||[]).sort((a,b)=>b.days_stale-a.days_stale);
+  document.getElementById('stale-count').textContent = stale.length + ' oportunidades';
+  document.getElementById('stale-body').innerHTML = stale.map(o=>{
+    const cls = o.days_stale>14 ? 'badge-crit' : o.days_stale>7 ? 'badge-warn' : 'badge-ok';
+    const txt = o.days_stale>14 ? 'CRÍTICO' : o.days_stale>7 ? 'REVISAR' : 'SEGUIMIENTO';
+    const sc = {'Cotizado':'var(--yellow)','No Cerrados':'var(--orange)','Ruta':'var(--blue)','Won':'var(--green)','Durmiente':'var(--ink3)'};
+    return `<tr>
+      <td style="font-weight:600">${o.name}</td>
+      <td style="color:${sc[o.stage]||'var(--ink2)'};">${o.stage}</td>
+      <td style="color:var(--ink2)">${(o.rep||'').split(' ').slice(0,2).join(' ')}</td>
+      <td style="font-weight:700;color:${o.days_stale>14?'var(--red)':'var(--yellow)'}">${o.days_stale}d</td>
+      <td>${o.revenue?'$'+(o.revenue/1e3).toFixed(0)+'K':'—'}</td>
+      <td><span class="badge ${cls}">${txt}</span></td>
+    </tr>`;
+  }).join('');
+
+  document.getElementById('loading').style.display='none';
+  document.getElementById('content').style.display='block';
+}
+
+function buildRepCard(rep, d, idx) {
+  const color = REP_COLORS[idx % REP_COLORS.length];
+  const curActs = (d.cur.acts||[]).filter(a=>a.rep===rep);
+  const prevActs = (d.prev.acts||[]).filter(a=>a.rep===rep);
+  const curL = (d.cur.liters||[]).find(l=>l.rep===rep)?.liters||0;
+  const prevL = (d.prev.liters||[]).find(l=>l.rep===rep)?.liters||0;
+  const curWon = (d.cur.changes||[]).filter(c=>c.rep===rep&&c.to==='Won').length;
+  const prevWon = 0;
+  const monthL = (d.month_liters||[]).find(l=>l.rep===rep)?.liters||0;
+  const target = LITER_TARGETS[rep]||300000;
+  const monthPct = Math.min(100,Math.round((monthL/target)*100));
+  const calls = curActs.filter(a=>a.type&&(a.type.includes('Llam')||a.type.toLowerCase().includes('call'))).length;
+  const visits = curActs.filter(a=>a.type&&(a.type.includes('Visit')||a.type.includes('Reun'))).length;
+  const other = curActs.length - calls - visits;
+  const changes = (d.cur.changes||[]).filter(c=>c.rep===rep);
+
+  const statusCls = curActs.length >= 5 ? 'pill-green' : curActs.length >= 2 ? 'pill-yellow' : 'pill-red';
+  const statusTxt = curActs.length >= 5 ? 'ACTIVO' : curActs.length >= 2 ? 'BAJO' : 'INACTIVO';
+  const ringCol = monthPct>=80?'var(--green)':monthPct>=50?'var(--yellow)':'var(--red)';
+  const id = 'rep_' + idx;
+
+  const lastNotes = curActs.length > 0
+    ? curActs.slice(-3).reverse().map(a=>`<div class="note-item"><div class="note-meta">${a.client} · ${a.type}</div><div class="note-text">${a.note}</div></div>`).join('')
+    : '<div class="no-activity">Sin actividades registradas esta semana</div>';
+
+  const changeRows = changes.length > 0
+    ? `<div class="changes-card"><div class="detail-card-title">Cambios de etapa esta semana</div>${changes.map(c=>`<div class="change-row"><span style="font-weight:600">${c.client}</span><span style="color:var(--ink3)">${c.from}</span><span class="arrow">→</span><span style="color:${c.to==='Won'?'var(--green)':'var(--ink)'}; font-weight:600">${c.to}</span></div>`).join('')}</div>` : '';
+
+  return `<div class="rep-card" id="${id}-card">
+    <div class="rep-header" onclick="toggle('${id}')">
+      <div class="rep-avatar" style="background:${color}18;color:${color}">${ini(rep)}</div>
+      <div class="rep-info">
+        <div class="rep-name">${rep.split(' ').slice(0,2).join(' ')}</div>
+        <div class="rep-role">${rep.split(' ').slice(2).join(' ')}</div>
+      </div>
+      <span class="status-pill ${statusCls}">${statusTxt}</span>
+      <div class="rep-stat-group">
+        <div class="rep-stat">
+          <div class="rep-stat-val" style="color:${color}">${curActs.length}</div>
+          <div class="rep-stat-lbl">actividades</div>
+        </div>
+        <div class="rep-stat">
+          <div class="rep-stat-val" style="color:var(--ink)">${fmtL(curL)}</div>
+          <div class="rep-stat-lbl">litros sem.</div>
+        </div>
+        <div class="rep-stat">
+          <div class="rep-stat-val" style="color:${ringCol}">${monthPct}%</div>
+          <div class="rep-stat-lbl">meta mes</div>
+        </div>
+      </div>
+      <span class="chevron" id="${id}-chev">▼</span>
+    </div>
+    <div class="rep-body" id="${id}-body">
+      <div class="metrics-row">
+        ${[
+          {lbl:'Actividades',val:curActs.length,d:fmtPct(curActs.length,prevActs.length),col:color},
+          {lbl:'Litros esta sem.',val:fmtL(curL),d:fmtPct(curL,prevL),col:'var(--ink)'},
+          {lbl:'Won esta sem.',val:curWon,d:'',col:'var(--green)'},
+          {lbl:'Meta mensual',val:monthPct+'%',sub:fmtL(monthL)+' / '+fmtL(target),col:ringCol},
+        ].map(s=>`<div class="metric-mini"><div class="metric-mini-lbl">${s.lbl}</div><div class="metric-mini-val" style="color:${s.col}">${s.val}</div>${s.sub?`<div style="font-size:11px;color:var(--ink3);margin-top:3px">${s.sub}</div>`:''}<div class="metric-mini-delta">${s.d||''}</div></div>`).join('')}
+      </div>
+      <div class="detail-row">
+        <div class="detail-card">
+          <div class="detail-card-title">Desglose actividades</div>
+          ${[['Llamadas',calls,color],['Visitas',visits,'var(--green)'],['Otras',other,'var(--ink3)']].map(([lbl,val,c])=>`
+            <div class="act-bar-row">
+              <span class="act-bar-label">${lbl}</span>
+              <div class="act-bar-track"><div class="act-bar-fill" style="width:${curActs.length>0?Math.round(val/curActs.length*100):0}%;background:${c}"></div></div>
+              <span class="act-bar-val" style="color:${c}">${val}</span>
+            </div>`).join('')}
+        </div>
+        <div class="detail-card">
+          <div class="detail-card-title">Últimas notas</div>
+          ${lastNotes}
+        </div>
+      </div>
+      ${changeRows}
+    </div>
+  </div>`;
+}
+
+function toggle(id) {
+  const body = document.getElementById(id+'-body');
+  const chev = document.getElementById(id+'-chev');
+  const open = body.classList.toggle('open');
+  chev.classList.toggle('open', open);
+}
+
+loadAll();
+</script>
+</body>
+</html>
