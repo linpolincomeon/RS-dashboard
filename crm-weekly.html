@@ -7,530 +7,134 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
-:root {
-  --bg: #0a0a0a;
-  --surface: #111111;
-  --surface2: #1a1a1a;
-  --border: #2a2a2a;
-  --text: #e8e8e8;
-  --text-dim: #888;
-  --orange: #E8451A;
-  --green: #C8D9A0;
-  --yellow: #F5C842;
-  --lime: #b8ff00;
-  --cyan: #00ffcc;
-  --red: #ff4444;
-  --font-mono: 'JetBrains Mono', monospace;
-  --font-display: 'Space Grotesk', sans-serif;
-}
-
-* { margin: 0; padding: 0; box-sizing: border-box; }
-
-body {
-  background: var(--bg);
-  color: var(--text);
-  font-family: var(--font-mono);
-  font-size: 13px;
-  line-height: 1.5;
-  min-height: 100vh;
-}
-
-/* ── LOGIN SCREEN ── */
-#login-screen {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 100vh;
-  background: var(--bg);
-}
-
-.login-box {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 40px;
-  width: 380px;
-  max-width: 90vw;
-}
-
-.login-box h1 {
-  font-family: var(--font-display);
-  font-size: 22px;
-  font-weight: 700;
-  color: var(--orange);
-  margin-bottom: 4px;
-}
-
-.login-box .subtitle {
-  color: var(--text-dim);
-  font-size: 12px;
-  margin-bottom: 28px;
-}
-
-.login-box label {
-  display: block;
-  color: var(--text-dim);
-  font-size: 11px;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  margin-bottom: 6px;
-}
-
-.login-box input {
-  width: 100%;
-  background: var(--bg);
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  padding: 10px 14px;
-  color: var(--text);
-  font-family: var(--font-mono);
-  font-size: 13px;
-  margin-bottom: 18px;
-  outline: none;
-  transition: border-color 0.2s;
-}
-
-.login-box input:focus {
-  border-color: var(--orange);
-}
-
-.login-box button {
-  width: 100%;
-  background: var(--orange);
-  color: #fff;
-  border: none;
-  border-radius: 6px;
-  padding: 12px;
-  font-family: var(--font-mono);
-  font-size: 13px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: opacity 0.2s;
-}
-
-.login-box button:hover { opacity: 0.9; }
-.login-box button:disabled { opacity: 0.5; cursor: wait; }
-
-.login-error {
-  color: var(--red);
-  font-size: 12px;
-  margin-top: 12px;
-  display: none;
-}
-
-.login-info {
-  color: var(--text-dim);
-  font-size: 11px;
-  margin-top: 16px;
-  text-align: center;
-  line-height: 1.6;
-}
-
-.login-info .lock { color: var(--green); }
-
-/* ── DASHBOARD ── */
-#dashboard { display: none; }
-
-.topbar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 16px 24px;
-  border-bottom: 1px solid var(--border);
-  background: var(--surface);
-  position: sticky;
-  top: 0;
-  z-index: 100;
-}
-
-.topbar-left {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-}
-
-.topbar h1 {
-  font-family: var(--font-display);
-  font-size: 18px;
-  font-weight: 700;
-  color: var(--orange);
-}
-
-.topbar .week-label {
-  color: var(--text-dim);
-  font-size: 12px;
-}
-
-.topbar-right {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.btn {
-  background: var(--surface2);
-  border: 1px solid var(--border);
-  color: var(--text);
-  padding: 7px 14px;
-  border-radius: 6px;
-  font-family: var(--font-mono);
-  font-size: 12px;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.btn:hover { border-color: var(--orange); }
-.btn-sm { padding: 5px 10px; font-size: 11px; }
-.btn-logout { color: var(--text-dim); }
-
-.status-dot {
-  width: 8px; height: 8px;
-  border-radius: 50%;
-  display: inline-block;
-  margin-right: 6px;
-}
-.status-dot.live { background: var(--green); animation: pulse 2s infinite; }
-.status-dot.error { background: var(--red); }
-
-@keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.4; }
-}
-
-.main-content { padding: 24px; max-width: 1400px; margin: 0 auto; }
-
-/* ── LOADING ── */
-#loading-overlay {
-  display: none;
-  position: fixed;
-  inset: 0;
-  background: rgba(10,10,10,0.9);
-  z-index: 200;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 16px;
-}
-
-#loading-overlay.active { display: flex; }
-
-.spinner {
-  width: 36px; height: 36px;
-  border: 3px solid var(--border);
-  border-top-color: var(--orange);
-  border-radius: 50%;
-  animation: spin 0.8s linear infinite;
-}
-
-@keyframes spin { to { transform: rotate(360deg); } }
-
-#loading-text { color: var(--text-dim); font-size: 13px; }
-
-/* ── SUMMARY CARDS ── */
-.summary-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 16px;
-  margin-bottom: 32px;
-}
-
-.summary-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  padding: 20px;
-  position: relative;
-  overflow: hidden;
-}
-
-.summary-card::before {
-  content: '';
-  position: absolute;
-  top: 0; left: 0; right: 0;
-  height: 3px;
-}
-
-.summary-card.orange::before { background: var(--orange); }
-.summary-card.green::before { background: var(--green); }
-.summary-card.yellow::before { background: var(--yellow); }
-.summary-card.cyan::before { background: var(--cyan); }
-.summary-card.lime::before { background: var(--lime); }
-
-.summary-card .label {
-  color: var(--text-dim);
-  font-size: 11px;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  margin-bottom: 8px;
-}
-
-.summary-card .value {
-  font-family: var(--font-display);
-  font-size: 28px;
-  font-weight: 700;
-}
-
-.summary-card .detail {
-  color: var(--text-dim);
-  font-size: 11px;
-  margin-top: 4px;
-}
-
-/* ── SECTION ── */
-.section {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  margin-bottom: 24px;
-  overflow: hidden;
-}
-
-.section-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 16px 20px;
-  border-bottom: 1px solid var(--border);
-}
-
-.section-header h2 {
-  font-family: var(--font-display);
-  font-size: 15px;
-  font-weight: 600;
-}
-
-.section-body { padding: 20px; }
-
-/* ── PIPELINE TABLE ── */
-.pipeline-table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-.pipeline-table th {
-  text-align: left;
-  color: var(--text-dim);
-  font-size: 11px;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  padding: 8px 12px;
-  border-bottom: 1px solid var(--border);
-  font-weight: 600;
-}
-
-.pipeline-table td {
-  padding: 10px 12px;
-  border-bottom: 1px solid var(--border);
-  font-size: 12px;
-  vertical-align: middle;
-}
-
-.pipeline-table tr:last-child td { border-bottom: none; }
-.pipeline-table tr:hover td { background: rgba(255,255,255,0.02); }
-
-.stage-badge {
-  display: inline-block;
-  padding: 3px 10px;
-  border-radius: 4px;
-  font-size: 11px;
-  font-weight: 600;
-  white-space: nowrap;
-}
-
-.stage-oportunidad { background: rgba(232,69,26,0.2); color: var(--orange); }
-.stage-contactado { background: rgba(245,200,66,0.2); color: var(--yellow); }
-.stage-ruta { background: rgba(0,255,204,0.15); color: var(--cyan); }
-.stage-cotizado { background: rgba(200,217,160,0.2); color: var(--green); }
-.stage-won { background: rgba(184,255,0,0.2); color: var(--lime); }
-.stage-durmiente { background: rgba(136,136,136,0.2); color: var(--text-dim); }
-.stage-perdido { background: rgba(255,68,68,0.2); color: var(--red); }
-
-.exec-name {
-  font-weight: 600;
-  color: var(--text);
-}
-
-.litros-value {
-  font-weight: 600;
-  color: var(--lime);
-}
-
-.days-old { color: var(--text-dim); }
-.days-warning { color: var(--yellow); font-weight: 600; }
-.days-danger { color: var(--red); font-weight: 600; }
-
-/* ── EXECUTIVE SUMMARY ── */
-.exec-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 16px;
-}
-
-.exec-card {
-  background: var(--bg);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 16px;
-}
-
-.exec-card-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 12px;
-}
-
-.exec-card-header .name {
-  font-family: var(--font-display);
-  font-weight: 600;
-  font-size: 14px;
-}
-
-.exec-card-header .count {
-  font-size: 11px;
-  color: var(--text-dim);
-}
-
-.exec-stats {
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  gap: 8px;
-}
-
-.exec-stat {
-  text-align: center;
-  padding: 8px;
-  background: var(--surface);
-  border-radius: 6px;
-}
-
-.exec-stat .num {
-  font-family: var(--font-display);
-  font-size: 18px;
-  font-weight: 700;
-}
-
-.exec-stat .lbl {
-  font-size: 10px;
-  color: var(--text-dim);
-  text-transform: uppercase;
-  margin-top: 2px;
-}
-
-/* ── ACTIVITY LOG ── */
-.activity-item {
-  display: flex;
-  gap: 12px;
-  padding: 10px 0;
-  border-bottom: 1px solid var(--border);
-  font-size: 12px;
-}
-
-.activity-item:last-child { border-bottom: none; }
-
-.activity-date {
-  color: var(--text-dim);
-  white-space: nowrap;
-  min-width: 80px;
-}
-
-.activity-desc { flex: 1; }
-.activity-exec { color: var(--orange); font-weight: 600; }
-
-/* ── ERROR BANNER ── */
-.error-banner {
-  background: rgba(255,68,68,0.1);
-  border: 1px solid rgba(255,68,68,0.3);
-  color: var(--red);
-  padding: 12px 20px;
-  border-radius: 8px;
-  margin-bottom: 20px;
-  font-size: 12px;
-  display: none;
-}
-
-.error-banner.active { display: block; }
-
-/* ── NO DATA ── */
-.no-data {
-  text-align: center;
-  padding: 40px;
-  color: var(--text-dim);
-}
-
-/* ── RESPONSIVE ── */
-@media (max-width: 768px) {
-  .topbar { flex-direction: column; gap: 12px; padding: 12px 16px; }
-  .main-content { padding: 16px; }
-  .summary-grid { grid-template-columns: 1fr 1fr; }
-  .exec-grid { grid-template-columns: 1fr; }
-  .pipeline-table { font-size: 11px; }
-  .pipeline-table th, .pipeline-table td { padding: 6px 8px; }
-}
+:root{--bg:#0a0a0a;--surface:#111;--surface2:#1a1a1a;--border:#2a2a2a;--text:#e8e8e8;--text-dim:#888;--orange:#E8451A;--green:#C8D9A0;--yellow:#F5C842;--lime:#b8ff00;--cyan:#00ffcc;--red:#ff4444;--font-mono:'JetBrains Mono',monospace;--font-display:'Space Grotesk',sans-serif}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--text);font-family:var(--font-mono);font-size:13px;line-height:1.5;min-height:100vh}
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:16px 24px;border-bottom:1px solid var(--border);background:var(--surface);position:sticky;top:0;z-index:100}
+.topbar-left{display:flex;align-items:center;gap:16px}
+.topbar h1{font-family:var(--font-display);font-size:18px;font-weight:700;color:var(--orange)}
+.topbar .week-label{color:var(--text-dim);font-size:12px}
+.topbar-right{display:flex;align-items:center;gap:12px}
+.btn{background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:7px 14px;border-radius:6px;font-family:var(--font-mono);font-size:12px;cursor:pointer;transition:all .2s;text-decoration:none}
+.btn:hover{border-color:var(--orange)}
+.status-dot{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:6px}
+.status-dot.live{background:var(--green);animation:pulse 2s infinite}
+.status-dot.error{background:var(--red)}
+.status-dot.loading{background:var(--yellow);animation:pulse 1s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.main-content{padding:24px;max-width:1400px;margin:0 auto}
+
+/* Loading */
+#loading{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:80px 20px;gap:16px}
+.spinner{width:36px;height:36px;border:3px solid var(--border);border-top-color:var(--orange);border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* Cards */
+.summary-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-bottom:32px}
+.summary-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:20px;position:relative;overflow:hidden}
+.summary-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+.summary-card.orange::before{background:var(--orange)}.summary-card.green::before{background:var(--green)}
+.summary-card.yellow::before{background:var(--yellow)}.summary-card.cyan::before{background:var(--cyan)}
+.summary-card.lime::before{background:var(--lime)}
+.summary-card .label{color:var(--text-dim);font-size:11px;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px}
+.summary-card .value{font-family:var(--font-display);font-size:28px;font-weight:700}
+.summary-card .detail{color:var(--text-dim);font-size:11px;margin-top:4px}
+
+/* Sections */
+.section{background:var(--surface);border:1px solid var(--border);border-radius:10px;margin-bottom:24px;overflow:hidden}
+.section-header{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--border)}
+.section-header h2{font-family:var(--font-display);font-size:15px;font-weight:600}
+.section-body{padding:20px}
+
+/* Funnel */
+.funnel{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:24px}
+.funnel-step{flex:1;min-width:120px;text-align:center;padding:14px 10px;border-radius:8px;position:relative}
+.funnel-step .count{font-family:var(--font-display);font-size:24px;font-weight:700;display:block}
+.funnel-step .fname{font-size:11px;text-transform:uppercase;letter-spacing:.3px;margin-top:4px;display:block}
+.funnel-step.oportunidad{background:rgba(232,69,26,.15);color:var(--orange)}
+.funnel-step.contactado{background:rgba(245,200,66,.15);color:var(--yellow)}
+.funnel-step.ruta{background:rgba(0,255,204,.12);color:var(--cyan)}
+.funnel-step.cotizado{background:rgba(200,217,160,.15);color:var(--green)}
+
+/* Tables */
+.pipeline-table{width:100%;border-collapse:collapse}
+.pipeline-table th{text-align:left;color:var(--text-dim);font-size:11px;text-transform:uppercase;letter-spacing:.5px;padding:8px 12px;border-bottom:1px solid var(--border);font-weight:600}
+.pipeline-table td{padding:10px 12px;border-bottom:1px solid var(--border);font-size:12px;vertical-align:middle}
+.pipeline-table tr:last-child td{border-bottom:none}
+.pipeline-table tr:hover td{background:rgba(255,255,255,.02)}
+.stage-badge{display:inline-block;padding:3px 10px;border-radius:4px;font-size:11px;font-weight:600;white-space:nowrap}
+.stage-oportunidad{background:rgba(232,69,26,.2);color:var(--orange)}
+.stage-contactado{background:rgba(245,200,66,.2);color:var(--yellow)}
+.stage-ruta{background:rgba(0,255,204,.15);color:var(--cyan)}
+.stage-cotizado{background:rgba(200,217,160,.2);color:var(--green)}
+.stage-won{background:rgba(184,255,0,.2);color:var(--lime)}
+.stage-durmiente{background:rgba(136,136,136,.2);color:var(--text-dim)}
+.stage-perdido{background:rgba(255,68,68,.2);color:var(--red)}
+.exec-name{font-weight:600;color:var(--text)}.litros-value{font-weight:600;color:var(--lime)}
+.days-old{color:var(--text-dim)}.days-warning{color:var(--yellow);font-weight:600}.days-danger{color:var(--red);font-weight:600}
+
+/* Exec cards */
+.exec-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px}
+.exec-card{background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:16px}
+.exec-card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.exec-card-header .name{font-family:var(--font-display);font-weight:600;font-size:14px}
+.exec-card-header .count{font-size:11px;color:var(--text-dim)}
+.exec-stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+.exec-stat{text-align:center;padding:8px;background:var(--surface);border-radius:6px}
+.exec-stat .num{font-family:var(--font-display);font-size:18px;font-weight:700}
+.exec-stat .lbl{font-size:10px;color:var(--text-dim);text-transform:uppercase;margin-top:2px}
+
+/* Activity */
+.activity-item{display:flex;gap:12px;padding:10px 0;border-bottom:1px solid var(--border);font-size:12px}
+.activity-item:last-child{border-bottom:none}
+.activity-date{color:var(--text-dim);white-space:nowrap;min-width:80px}
+.activity-desc{flex:1}.activity-exec{color:var(--orange);font-weight:600;white-space:nowrap}
+
+/* Misc */
+.error-banner{background:rgba(255,68,68,.1);border:1px solid rgba(255,68,68,.3);color:var(--red);padding:12px 20px;border-radius:8px;margin-bottom:20px;font-size:12px;display:none}
+.error-banner.active{display:block}
+.no-data{text-align:center;padding:40px;color:var(--text-dim)}
+.updated-info{color:var(--text-dim);font-size:11px}
+
+@media(max-width:768px){.topbar{flex-direction:column;gap:12px;padding:12px 16px}.main-content{padding:16px}.summary-grid{grid-template-columns:1fr 1fr}.exec-grid{grid-template-columns:1fr}.pipeline-table{font-size:11px}.pipeline-table th,.pipeline-table td{padding:6px 8px}.funnel{flex-direction:column}}
 </style>
 </head>
 <body>
 
-<!-- ══════════ LOGIN SCREEN ══════════ -->
-<div id="login-screen">
-  <div class="login-box">
+<div class="topbar">
+  <div class="topbar-left">
     <h1>TomEnergy CRM</h1>
-    <div class="subtitle">Conectar a Odoo · Datos en vivo</div>
-    
-    <label>Usuario Odoo</label>
-    <input type="text" id="login-user" value="p@tomenergy.cl" placeholder="usuario@tomenergy.cl">
-    
-    <label>Contraseña</label>
-    <input type="password" id="login-pass" placeholder="Tu contraseña de Odoo">
-    
-    <button id="login-btn" onclick="doLogin()">Conectar</button>
-    
-    <div class="login-error" id="login-error"></div>
-    <div class="login-info">
-      <span class="lock">🔒</span> Conexión directa a <b>tomenergy.cl</b><br>
-      Credenciales no se almacenan — solo en tu sesión
-    </div>
+    <span class="week-label" id="week-label">—</span>
+  </div>
+  <div class="topbar-right">
+    <span style="font-size:12px;color:var(--text-dim)">
+      <span class="status-dot loading" id="status-dot"></span>
+      <span id="status-text">Cargando...</span>
+    </span>
+    <button class="btn" onclick="loadData()">↻ Actualizar</button>
+    <a class="btn" href="index.html">← Dashboard RS</a>
   </div>
 </div>
 
-<!-- ══════════ LOADING OVERLAY ══════════ -->
-<div id="loading-overlay">
-  <div class="spinner"></div>
-  <div id="loading-text">Conectando con Odoo...</div>
-</div>
+<div class="main-content">
+  <div class="error-banner" id="error-banner"></div>
 
-<!-- ══════════ DASHBOARD ══════════ -->
-<div id="dashboard">
-  
-  <div class="topbar">
-    <div class="topbar-left">
-      <h1>TomEnergy CRM</h1>
-      <span class="week-label" id="week-label">—</span>
-    </div>
-    <div class="topbar-right">
-      <span style="font-size:12px;color:var(--text-dim)">
-        <span class="status-dot live" id="status-dot"></span>
-        <span id="status-text">Odoo en vivo</span>
-      </span>
-      <button class="btn" onclick="refreshData()">↻ Actualizar</button>
-      <button class="btn btn-logout" onclick="doLogout()">Salir</button>
-    </div>
+  <div id="loading">
+    <div class="spinner"></div>
+    <span style="color:var(--text-dim)">Cargando datos CRM...</span>
   </div>
 
-  <div class="main-content">
-    <div class="error-banner" id="error-banner"></div>
-
+  <div id="content" style="display:none">
     <!-- Summary Cards -->
     <div class="summary-grid" id="summary-cards"></div>
 
-    <!-- Executive Summary -->
+    <!-- Funnel -->
+    <div class="funnel" id="funnel"></div>
+
+    <!-- Executives -->
     <div class="section">
-      <div class="section-header">
-        <h2>Resumen por Ejecutivo</h2>
-      </div>
-      <div class="section-body">
-        <div class="exec-grid" id="exec-grid"></div>
-      </div>
+      <div class="section-header"><h2>Resumen por Ejecutivo</h2></div>
+      <div class="section-body"><div class="exec-grid" id="exec-grid"></div></div>
     </div>
 
     <!-- Pipeline -->
@@ -540,618 +144,142 @@ body {
         <span style="font-size:12px;color:var(--text-dim)" id="pipeline-count">—</span>
       </div>
       <div class="section-body" style="padding:0;overflow-x:auto">
-        <table class="pipeline-table" id="pipeline-table">
-          <thead>
-            <tr>
-              <th>Cliente</th>
-              <th>Etapa</th>
-              <th>Ejecutivo</th>
-              <th>Litros Est.</th>
-              <th>Días en etapa</th>
-              <th>Último contacto</th>
-              <th>Origen</th>
-            </tr>
-          </thead>
+        <table class="pipeline-table">
+          <thead><tr><th>Cliente</th><th>Etapa</th><th>Ejecutivo</th><th>Valor Est.</th><th>Días en etapa</th><th>Último mov.</th><th>Origen</th></tr></thead>
           <tbody id="pipeline-body"></tbody>
         </table>
       </div>
     </div>
 
-    <!-- Stale Opportunities -->
+    <!-- Stale -->
     <div class="section">
       <div class="section-header">
-        <h2>⚠ Oportunidades sin Movimiento (>7 días)</h2>
+        <h2>⚠ Sin Movimiento (&gt;7 días)</h2>
         <span style="font-size:12px;color:var(--text-dim)" id="stale-count">—</span>
       </div>
       <div class="section-body" style="padding:0;overflow-x:auto">
-        <table class="pipeline-table" id="stale-table">
-          <thead>
-            <tr>
-              <th>Cliente</th>
-              <th>Etapa</th>
-              <th>Ejecutivo</th>
-              <th>Litros Est.</th>
-              <th>Días sin mover</th>
-              <th>Acción sugerida</th>
-            </tr>
-          </thead>
+        <table class="pipeline-table">
+          <thead><tr><th>Cliente</th><th>Etapa</th><th>Ejecutivo</th><th>Valor Est.</th><th>Días sin mover</th><th>Acción sugerida</th></tr></thead>
           <tbody id="stale-body"></tbody>
         </table>
       </div>
     </div>
 
-    <!-- Recent Activities -->
+    <!-- Activities -->
     <div class="section">
-      <div class="section-header">
-        <h2>Actividades Recientes</h2>
-      </div>
-      <div class="section-body" id="activity-log"></div>
+      <div class="section-header"><h2>Actividades Pendientes</h2></div>
+      <div class="section-body" id="activities-log"></div>
     </div>
 
+    <!-- Messages -->
+    <div class="section">
+      <div class="section-header"><h2>Notas y Mensajes Recientes</h2></div>
+      <div class="section-body" id="messages-log"></div>
+    </div>
   </div>
 </div>
 
 <script>
-// ═══════════════════════════════════════════
-// ODOO JSON-RPC CLIENT (Browser-native)
-// ═══════════════════════════════════════════
+let D = null; // global data
 
-const ODOO_URL = 'https://tomenergy.cl';
-const ODOO_DB = 'PRODUCCION';
-
-let odooUid = null;
-let odooPass = null;
-let odooUser = null;
-let rpcId = 0;
-
-// ── JSON-RPC call wrapper ──
-async function jsonRpc(service, method, args) {
-  rpcId++;
-  const payload = {
-    jsonrpc: '2.0',
-    method: 'call',
-    params: { service, method, args },
-    id: rpcId
-  };
-  const resp = await fetch(`${ODOO_URL}/jsonrpc`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(payload)
-  });
-  const data = await resp.json();
-  if (data.error) {
-    console.error('Odoo RPC Error:', data.error);
-    throw new Error(data.error.data?.message || data.error.message || 'Odoo RPC error');
-  }
-  return data.result;
-}
-
-// ── Authenticate ──
-async function authenticate(user, pass) {
-  const uid = await jsonRpc('common', 'authenticate', [ODOO_DB, user, pass, {}]);
-  if (!uid) throw new Error('Credenciales inválidas');
-  return uid;
-}
-
-// ── Execute model method ──
-async function execute(model, method, args = [], kwargs = {}) {
-  return jsonRpc('object', 'execute_kw', [
-    ODOO_DB, odooUid, odooPass, model, method, args, kwargs
-  ]);
-}
-
-// ── Search + Read helper ──
-async function searchRead(model, domain = [], fields = [], opts = {}) {
-  return execute(model, 'search_read', [domain], {
-    fields,
-    limit: opts.limit || 500,
-    offset: opts.offset || 0,
-    order: opts.order || 'id desc'
-  });
-}
-
-// ═══════════════════════════════════════════
-// ENAP COMMERCIAL WEEK
-// ═══════════════════════════════════════════
-
-function getEnapWeek(date = new Date()) {
-  // ENAP week: Thursday to Wednesday
-  const d = new Date(date);
-  const day = d.getDay(); // 0=Sun
-  // Start of current ENAP week = most recent Thursday
-  const diffToThursday = (day >= 4) ? (day - 4) : (day + 3);
-  const weekStart = new Date(d);
-  weekStart.setDate(d.getDate() - diffToThursday);
-  weekStart.setHours(0, 0, 0, 0);
-
-  const weekEnd = new Date(weekStart);
-  weekEnd.setDate(weekStart.getDate() + 6);
-  weekEnd.setHours(23, 59, 59, 999);
-
-  const fmt = (dt) => dt.toLocaleDateString('es-CL', { day: '2-digit', month: 'short' });
-  return {
-    start: weekStart,
-    end: weekEnd,
-    label: `Semana ENAP: ${fmt(weekStart)} – ${fmt(weekEnd)}`,
-    startStr: weekStart.toISOString().split('T')[0],
-    endStr: weekEnd.toISOString().split('T')[0]
-  };
-}
-
-// ═══════════════════════════════════════════
-// LOGIN / LOGOUT
-// ═══════════════════════════════════════════
-
-async function doLogin() {
-  const userInput = document.getElementById('login-user');
-  const passInput = document.getElementById('login-pass');
-  const btn = document.getElementById('login-btn');
-  const errDiv = document.getElementById('login-error');
-
-  btn.disabled = true;
-  btn.textContent = 'Conectando...';
-  errDiv.style.display = 'none';
+async function loadData() {
+  const dot = document.getElementById('status-dot');
+  const stxt = document.getElementById('status-text');
+  dot.className = 'status-dot loading';
+  stxt.textContent = 'Cargando...';
 
   try {
-    odooUser = userInput.value.trim();
-    odooPass = passInput.value;
-    odooUid = await authenticate(odooUser, odooPass);
-
-    document.getElementById('login-screen').style.display = 'none';
-    document.getElementById('dashboard').style.display = 'block';
-    
-    await refreshData();
-  } catch (e) {
-    errDiv.textContent = e.message || 'Error de conexión';
-    errDiv.style.display = 'block';
-    odooUid = null;
-    odooPass = null;
-  } finally {
-    btn.disabled = false;
-    btn.textContent = 'Conectar';
-  }
-}
-
-function doLogout() {
-  odooUid = null;
-  odooPass = null;
-  odooUser = null;
-  document.getElementById('dashboard').style.display = 'none';
-  document.getElementById('login-screen').style.display = 'flex';
-  document.getElementById('login-pass').value = '';
-}
-
-// Enter key on password field
-document.getElementById('login-pass').addEventListener('keydown', (e) => {
-  if (e.key === 'Enter') doLogin();
-});
-
-// ═══════════════════════════════════════════
-// DATA FETCHING
-// ═══════════════════════════════════════════
-
-async function refreshData() {
-  const overlay = document.getElementById('loading-overlay');
-  const loadingText = document.getElementById('loading-text');
-  overlay.classList.add('active');
-
-  try {
-    loadingText.textContent = 'Cargando pipeline CRM...';
-
-    // 1. Get CRM stages
-    const stages = await searchRead('crm.stage', [], ['id', 'name', 'sequence'], { order: 'sequence asc', limit: 50 });
-    const stageMap = {};
-    stages.forEach(s => { stageMap[s.id] = s.name; });
-
-    loadingText.textContent = 'Cargando oportunidades...';
-
-    // 2. Get ALL active leads/opportunities
-    // We get both active and won/lost for a full picture
-    const fields = [
-      'id', 'name', 'stage_id', 'user_id', 'partner_id',
-      'expected_revenue', 'create_date', 'date_last_stage_update',
-      'write_date', 'active', 'probability',
-      'date_deadline', 'priority', 'type'
-    ];
-
-    // Try to get custom fields if they exist
-    const allFields = [...fields];
-    let hasCustomFields = false;
-    try {
-      const modelFields = await execute('crm.lead', 'fields_get', [], { attributes: ['string', 'type'] });
-      if (modelFields['x_litros_estimados']) {
-        allFields.push('x_litros_estimados');
-        hasCustomFields = true;
-      }
-      if (modelFields['x_tipo_contacto']) allFields.push('x_tipo_contacto');
-      if (modelFields['x_origen_oportunidad']) allFields.push('x_origen_oportunidad');
-    } catch (e) {
-      console.log('Custom fields not available:', e.message);
-    }
-
-    // Active opportunities
-    const activeLeads = await searchRead('crm.lead', 
-      [['active', '=', true], ['type', '=', 'opportunity']],
-      allFields,
-      { limit: 1000, order: 'date_last_stage_update desc' }
-    );
-
-    // Also try to get leads (not just opportunities)
-    let allLeads = [...activeLeads];
-    try {
-      const leads = await searchRead('crm.lead',
-        [['active', '=', true], ['type', '=', 'lead']],
-        allFields,
-        { limit: 500, order: 'create_date desc' }
-      );
-      allLeads = [...allLeads, ...leads];
-    } catch (e) {
-      // type field might not distinguish, that's fine
-    }
-
-    loadingText.textContent = 'Cargando actividades...';
-
-    // 3. Get recent activities/log notes  
-    let activities = [];
-    try {
-      activities = await searchRead('mail.activity',
-        [['res_model', '=', 'crm.lead']],
-        ['id', 'res_id', 'res_name', 'activity_type_id', 'user_id', 'date_deadline', 'summary', 'state'],
-        { limit: 100, order: 'date_deadline desc' }
-      );
-    } catch (e) {
-      console.log('Could not fetch activities:', e.message);
-    }
-
-    // 4. Get recent messages/notes on CRM leads (stage changes, notes)
-    let recentMessages = [];
-    try {
-      const leadIds = allLeads.slice(0, 100).map(l => l.id);
-      if (leadIds.length > 0) {
-        recentMessages = await searchRead('mail.message',
-          [
-            ['model', '=', 'crm.lead'],
-            ['res_id', 'in', leadIds],
-            ['message_type', 'in', ['comment', 'notification']],
-            ['date', '>=', getEnapWeek().startStr]
-          ],
-          ['id', 'res_id', 'date', 'body', 'author_id', 'subtype_id', 'tracking_value_ids'],
-          { limit: 200, order: 'date desc' }
-        );
-      }
-    } catch (e) {
-      console.log('Could not fetch messages:', e.message);
-    }
-
-    loadingText.textContent = 'Procesando datos...';
-
-    // 5. Get salespeople (users)
-    const userIds = [...new Set(allLeads.map(l => l.user_id && l.user_id[0]).filter(Boolean))];
-    let usersMap = {};
-    if (userIds.length > 0) {
-      const users = await searchRead('res.users', [['id', 'in', userIds]], ['id', 'name'], { limit: 50 });
-      users.forEach(u => { usersMap[u.id] = u.name; });
-    }
-
-    // Render everything
-    renderDashboard(allLeads, stageMap, usersMap, activities, recentMessages, hasCustomFields);
-
-    document.getElementById('status-dot').className = 'status-dot live';
-    document.getElementById('status-text').textContent = 'Odoo en vivo';
+    const r = await fetch('crm-data.json?t=' + Date.now());
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    D = await r.json();
+    render();
+    document.getElementById('loading').style.display = 'none';
+    document.getElementById('content').style.display = 'block';
+    dot.className = 'status-dot live';
+    const upd = new Date(D.updated);
+    stxt.textContent = `Datos: ${upd.toLocaleDateString('es-CL', {day:'2-digit',month:'short'})} ${upd.toLocaleTimeString('es-CL',{hour:'2-digit',minute:'2-digit'})}`;
     document.getElementById('error-banner').classList.remove('active');
-
   } catch (e) {
-    console.error('Data refresh error:', e);
-    document.getElementById('error-banner').textContent = `Error: ${e.message}`;
+    console.error(e);
+    dot.className = 'status-dot error';
+    stxt.textContent = 'Error';
+    document.getElementById('error-banner').textContent = 'Error cargando crm-data.json: ' + e.message + '. Ejecuta el workflow "Update CRM Dashboard Data" en GitHub Actions.';
     document.getElementById('error-banner').classList.add('active');
-    document.getElementById('status-dot').className = 'status-dot error';
-    document.getElementById('status-text').textContent = 'Error';
-  } finally {
-    overlay.classList.remove('active');
+    document.getElementById('loading').innerHTML = '<div class="no-data">No se encontró crm-data.json<br><br>Sube <b>extract_crm.py</b> y <b>update-crm-data.yml</b> al repo,<br>luego ejecuta el workflow manualmente.</div>';
   }
 }
 
-// ═══════════════════════════════════════════
-// RENDERING
-// ═══════════════════════════════════════════
+function render() {
+  const s = D.summary;
+  const isL = D.has_litros;
+  const fV = isL ? fmtL : fmtC;
+  const fS = isL ? fmtLs : fmtCs;
+  const uL = isL ? 'Litros' : 'Valor';
+  const vL = isL ? 'Litros Estimados' : 'Valor Estimado';
 
-function renderDashboard(leads, stageMap, usersMap, activities, messages, hasCustomFields) {
-  const week = getEnapWeek();
-  document.getElementById('week-label').textContent = week.label;
+  // Week label
+  document.getElementById('week-label').textContent = D.week ? `Semana ENAP: ${D.week.label}` : '';
 
-  // ── Classify stages ──
-  const stageClasses = {};
-  Object.entries(stageMap).forEach(([id, name]) => {
-    const n = name.toLowerCase();
-    if (n.includes('oportunidad') || n.includes('new') || n.includes('nuev')) stageClasses[id] = 'oportunidad';
-    else if (n.includes('contactado') || n.includes('contact')) stageClasses[id] = 'contactado';
-    else if (n.includes('ruta') || n.includes('visit')) stageClasses[id] = 'ruta';
-    else if (n.includes('cotizad') || n.includes('propuesta') || n.includes('quot')) stageClasses[id] = 'cotizado';
-    else if (n.includes('won') || n.includes('ganad')) stageClasses[id] = 'won';
-    else if (n.includes('perdid') || n.includes('lost')) stageClasses[id] = 'perdido';
-    else if (n.includes('durmiente') || n.includes('dormant')) stageClasses[id] = 'durmiente';
-    else stageClasses[id] = 'oportunidad';
-  });
+  // Summary cards
+  document.getElementById('summary-cards').innerHTML =
+    card('orange', 'Oportunidades Activas', s.active, s.new_this_week + ' nuevas esta semana') +
+    card('green', 'Movimientos Semana', s.moved_this_week, 'cambios de etapa') +
+    card('yellow', '⚠ Estancadas >7d', s.stale_7d, 'requieren atención') +
+    card('cyan', vL, fV(s.total_value), 'pipeline activo') +
+    card('lime', 'Ganadas', s.won, 'cerradas exitosamente');
 
-  // ── Summary cards ──
-  const now = new Date();
-  const weekStart = week.start;
-  
-  const totalActive = leads.length;
-  const createdThisWeek = leads.filter(l => new Date(l.create_date) >= weekStart).length;
-  
-  // Won this week
-  const wonLeads = leads.filter(l => {
-    const stgName = (stageMap[l.stage_id?.[0]] || '').toLowerCase();
-    return stgName.includes('won') || stgName.includes('ganad');
-  });
-  
-  // Moved this week
-  const movedThisWeek = leads.filter(l => {
-    const lastUpdate = new Date(l.date_last_stage_update || l.write_date);
-    return lastUpdate >= weekStart;
-  }).length;
+  // Funnel
+  document.getElementById('funnel').innerHTML = (D.funnel || []).map(f =>
+    `<div class="funnel-step ${f.class}"><span class="count">${f.count}</span><span class="fname">${H(f.stage)}</span></div>`
+  ).join('');
 
-  // Stale > 7 days
-  const staleLeads = leads.filter(l => {
-    const stgName = (stageMap[l.stage_id?.[0]] || '').toLowerCase();
-    if (stgName.includes('won') || stgName.includes('ganad') || stgName.includes('perdid') || stgName.includes('lost')) return false;
-    const lastUpdate = new Date(l.date_last_stage_update || l.write_date);
-    const daysSince = Math.floor((now - lastUpdate) / 86400000);
-    return daysSince > 7;
-  });
+  // Executives
+  document.getElementById('exec-grid').innerHTML = (D.executives || []).filter(e => e.total > 0).map(e => `
+    <div class="exec-card"><div class="exec-card-header"><span class="name">${H(e.name)}</span><span class="count">${e.total} opp</span></div>
+    <div class="exec-stats">
+      <div class="exec-stat"><div class="num" style="color:var(--green)">${e.moved}</div><div class="lbl">Movidas</div></div>
+      <div class="exec-stat"><div class="num" style="color:${e.stale ? 'var(--red)' : 'var(--text-dim)'}">${e.stale}</div><div class="lbl">Estancadas</div></div>
+      <div class="exec-stat"><div class="num" style="color:var(--lime)">${fS(e.value)}</div><div class="lbl">${uL}</div></div>
+    </div></div>`).join('') || '<div class="no-data">Sin datos de ejecutivos</div>';
 
-  // Total estimated litros
-  const totalLitros = leads.reduce((sum, l) => {
-    const litros = hasCustomFields ? (l.x_litros_estimados || 0) : (l.expected_revenue || 0);
-    return sum + litros;
-  }, 0);
+  // Pipeline
+  const pl = D.pipeline || [];
+  document.getElementById('pipeline-count').textContent = pl.length + ' oportunidades';
+  document.getElementById('pipeline-body').innerHTML = pl.length ? pl.map(l => {
+    const d = l.days_in_stage;
+    const dc = d > 14 ? 'days-danger' : d > 7 ? 'days-warning' : 'days-old';
+    return `<tr><td class="exec-name">${H(l.name)}</td><td><span class="stage-badge stage-${l.stage_class}">${H(l.stage)}</span></td><td>${H(l.exec)}</td><td class="litros-value">${fV(l.value)}</td><td><span class="${dc}">${d}d</span></td><td>${l.last_update||'—'}</td><td>${H(l.origin)}</td></tr>`;
+  }).join('') : '<tr><td colspan="7" class="no-data">Sin oportunidades activas</td></tr>';
 
-  const cardsHTML = `
-    <div class="summary-card orange">
-      <div class="label">Oportunidades Activas</div>
-      <div class="value">${totalActive}</div>
-      <div class="detail">${createdThisWeek} nuevas esta semana</div>
-    </div>
-    <div class="summary-card green">
-      <div class="label">Movimientos esta Semana</div>
-      <div class="value">${movedThisWeek}</div>
-      <div class="detail">cambios de etapa</div>
-    </div>
-    <div class="summary-card yellow">
-      <div class="label">⚠ Sin Movimiento >7d</div>
-      <div class="value">${staleLeads.length}</div>
-      <div class="detail">requieren atención</div>
-    </div>
-    <div class="summary-card cyan">
-      <div class="label">${hasCustomFields ? 'Litros Estimados' : 'Valor Estimado'}</div>
-      <div class="value">${hasCustomFields ? formatLitros(totalLitros) : formatCurrency(totalLitros)}</div>
-      <div class="detail">pipeline activo</div>
-    </div>
-    <div class="summary-card lime">
-      <div class="label">Ganadas</div>
-      <div class="value">${wonLeads.length}</div>
-      <div class="detail">oportunidades cerradas</div>
-    </div>
-  `;
-  document.getElementById('summary-cards').innerHTML = cardsHTML;
+  // Stale
+  const st = D.stale || [];
+  document.getElementById('stale-count').textContent = st.length + ' oportunidades';
+  document.getElementById('stale-body').innerHTML = st.length ? st.map(l =>
+    `<tr><td class="exec-name">${H(l.name)}</td><td><span class="stage-badge stage-${l.stage_class}">${H(l.stage)}</span></td><td>${H(l.exec)}</td><td class="litros-value">${fV(l.value)}</td><td><span class="days-danger">${l.days_in_stage}d</span></td><td style="color:var(--yellow)">${l.action||'Contactar'}</td></tr>`
+  ).join('') : '<tr><td colspan="6" class="no-data">✅ Todo el pipeline tiene movimiento reciente</td></tr>';
 
-  // ── Executive summary ──
-  const execData = {};
-  leads.forEach(l => {
-    const uid = l.user_id ? l.user_id[0] : 0;
-    const name = l.user_id ? l.user_id[1] : 'Sin asignar';
-    if (!execData[uid]) execData[uid] = { name, total: 0, moved: 0, stale: 0, litros: 0 };
-    execData[uid].total++;
-    
-    const lastUpdate = new Date(l.date_last_stage_update || l.write_date);
-    if (lastUpdate >= weekStart) execData[uid].moved++;
-    
-    const daysSince = Math.floor((now - lastUpdate) / 86400000);
-    const stgName = (stageMap[l.stage_id?.[0]] || '').toLowerCase();
-    if (daysSince > 7 && !stgName.includes('won') && !stgName.includes('ganad') && !stgName.includes('perdid')) {
-      execData[uid].stale++;
-    }
+  // Activities
+  const acts = D.activities || [];
+  document.getElementById('activities-log').innerHTML = acts.length ? acts.map(a =>
+    `<div class="activity-item"><span class="activity-date">${a.date||'—'}</span><span class="activity-exec">${H(a.who)}</span><span class="activity-desc">${H(a.type)}: ${H(a.summary)} — <i>${H(a.lead)}</i></span></div>`
+  ).join('') : '<div class="no-data">Sin actividades pendientes</div>';
 
-    execData[uid].litros += hasCustomFields ? (l.x_litros_estimados || 0) : (l.expected_revenue || 0);
-  });
-
-  const execGrid = document.getElementById('exec-grid');
-  execGrid.innerHTML = Object.values(execData)
-    .sort((a, b) => b.total - a.total)
-    .map(exec => `
-      <div class="exec-card">
-        <div class="exec-card-header">
-          <span class="name">${exec.name}</span>
-          <span class="count">${exec.total} opp</span>
-        </div>
-        <div class="exec-stats">
-          <div class="exec-stat">
-            <div class="num" style="color:var(--green)">${exec.moved}</div>
-            <div class="lbl">Movidas</div>
-          </div>
-          <div class="exec-stat">
-            <div class="num" style="color:${exec.stale > 0 ? 'var(--red)' : 'var(--text-dim)'}">${exec.stale}</div>
-            <div class="lbl">Estancadas</div>
-          </div>
-          <div class="exec-stat">
-            <div class="num" style="color:var(--lime)">${hasCustomFields ? formatLitrosShort(exec.litros) : formatCurrencyShort(exec.litros)}</div>
-            <div class="lbl">${hasCustomFields ? 'Litros' : 'Valor'}</div>
-          </div>
-        </div>
-      </div>
-    `).join('');
-
-  // ── Pipeline table ──
-  const pipelineLeads = leads.filter(l => {
-    const stgName = (stageMap[l.stage_id?.[0]] || '').toLowerCase();
-    return !stgName.includes('perdid') && !stgName.includes('lost');
-  });
-  
-  document.getElementById('pipeline-count').textContent = `${pipelineLeads.length} oportunidades`;
-
-  const pipeBody = document.getElementById('pipeline-body');
-  if (pipelineLeads.length === 0) {
-    pipeBody.innerHTML = '<tr><td colspan="7" class="no-data">No hay oportunidades en el pipeline</td></tr>';
-  } else {
-    pipeBody.innerHTML = pipelineLeads.slice(0, 100).map(l => {
-      const stageId = l.stage_id ? l.stage_id[0] : null;
-      const stageName = l.stage_id ? l.stage_id[1] : '—';
-      const stageClass = stageClasses[stageId] || 'oportunidad';
-      const execName = l.user_id ? l.user_id[1] : 'Sin asignar';
-      const partner = l.partner_id ? l.partner_id[1] : l.name;
-      const litros = hasCustomFields ? (l.x_litros_estimados || 0) : (l.expected_revenue || 0);
-      
-      const lastUpdate = new Date(l.date_last_stage_update || l.write_date);
-      const daysInStage = Math.floor((now - lastUpdate) / 86400000);
-      const daysClass = daysInStage > 14 ? 'days-danger' : daysInStage > 7 ? 'days-warning' : 'days-old';
-
-      const lastContact = l.write_date ? formatDate(l.write_date) : '—';
-      const origen = l.x_origen_oportunidad || '—';
-
-      return `<tr>
-        <td><span class="exec-name">${escapeHtml(partner)}</span></td>
-        <td><span class="stage-badge stage-${stageClass}">${escapeHtml(stageName)}</span></td>
-        <td>${escapeHtml(execName)}</td>
-        <td class="litros-value">${hasCustomFields ? formatLitros(litros) : formatCurrency(litros)}</td>
-        <td><span class="${daysClass}">${daysInStage}d</span></td>
-        <td>${lastContact}</td>
-        <td>${escapeHtml(origen)}</td>
-      </tr>`;
-    }).join('');
-  }
-
-  // ── Stale table ──
-  document.getElementById('stale-count').textContent = `${staleLeads.length} oportunidades`;
-
-  const staleBody = document.getElementById('stale-body');
-  if (staleLeads.length === 0) {
-    staleBody.innerHTML = '<tr><td colspan="6" class="no-data">✅ Todas las oportunidades activas tienen movimiento reciente</td></tr>';
-  } else {
-    staleBody.innerHTML = staleLeads
-      .sort((a, b) => {
-        const dA = Math.floor((now - new Date(a.date_last_stage_update || a.write_date)) / 86400000);
-        const dB = Math.floor((now - new Date(b.date_last_stage_update || b.write_date)) / 86400000);
-        return dB - dA;
-      })
-      .slice(0, 50)
-      .map(l => {
-        const stageId = l.stage_id ? l.stage_id[0] : null;
-        const stageName = l.stage_id ? l.stage_id[1] : '—';
-        const stageClass = stageClasses[stageId] || 'oportunidad';
-        const execName = l.user_id ? l.user_id[1] : 'Sin asignar';
-        const partner = l.partner_id ? l.partner_id[1] : l.name;
-        const litros = hasCustomFields ? (l.x_litros_estimados || 0) : (l.expected_revenue || 0);
-        
-        const lastUpdate = new Date(l.date_last_stage_update || l.write_date);
-        const daysStale = Math.floor((now - lastUpdate) / 86400000);
-        
-        let action = 'Contactar';
-        if (stageClass === 'oportunidad') action = 'Llamar o enviar mail';
-        else if (stageClass === 'contactado') action = 'Agendar visita (Ruta)';
-        else if (stageClass === 'ruta') action = 'Enviar cotización';
-        else if (stageClass === 'cotizado') action = 'Seguimiento de cotización';
-
-        return `<tr>
-          <td><span class="exec-name">${escapeHtml(partner)}</span></td>
-          <td><span class="stage-badge stage-${stageClass}">${escapeHtml(stageName)}</span></td>
-          <td>${escapeHtml(execName)}</td>
-          <td class="litros-value">${hasCustomFields ? formatLitros(litros) : formatCurrency(litros)}</td>
-          <td><span class="days-danger">${daysStale}d</span></td>
-          <td style="color:var(--yellow)">${action}</td>
-        </tr>`;
-      }).join('');
-  }
-
-  // ── Activities ──
-  const actLog = document.getElementById('activity-log');
-  if (messages.length === 0 && activities.length === 0) {
-    actLog.innerHTML = '<div class="no-data">Sin actividades registradas esta semana</div>';
-  } else {
-    // Combine and show recent activity
-    const items = [];
-    
-    messages.forEach(m => {
-      const body = stripHtml(m.body || '');
-      if (!body || body.length < 3) return;
-      items.push({
-        date: m.date,
-        author: m.author_id ? m.author_id[1] : '—',
-        desc: body.substring(0, 150)
-      });
-    });
-
-    activities.forEach(a => {
-      items.push({
-        date: a.date_deadline,
-        author: a.user_id ? a.user_id[1] : '—',
-        desc: `${a.activity_type_id ? a.activity_type_id[1] : 'Actividad'}: ${a.summary || a.res_name || ''}`
-      });
-    });
-
-    items.sort((a, b) => new Date(b.date) - new Date(a.date));
-
-    if (items.length === 0) {
-      actLog.innerHTML = '<div class="no-data">Sin actividades registradas esta semana</div>';
-    } else {
-      actLog.innerHTML = items.slice(0, 30).map(item => `
-        <div class="activity-item">
-          <span class="activity-date">${formatDate(item.date)}</span>
-          <span class="activity-exec">${escapeHtml(item.author)}</span>
-          <span class="activity-desc">${escapeHtml(item.desc)}</span>
-        </div>
-      `).join('');
-    }
-  }
+  // Messages
+  const msgs = D.messages || [];
+  document.getElementById('messages-log').innerHTML = msgs.length ? msgs.map(m =>
+    `<div class="activity-item"><span class="activity-date">${m.date||'—'}</span><span class="activity-exec">${H(m.who)}</span><span class="activity-desc">${H(m.desc)}</span></div>`
+  ).join('') : '<div class="no-data">Sin mensajes esta semana</div>';
 }
 
-// ═══════════════════════════════════════════
-// UTILS
-// ═══════════════════════════════════════════
+function card(c, lbl, val, det) { return `<div class="summary-card ${c}"><div class="label">${lbl}</div><div class="value">${val}</div><div class="detail">${det}</div></div>`; }
+function fmtL(n) { return n ? Math.round(n).toLocaleString('es-CL') + ' L' : '0 L'; }
+function fmtLs(n) { if (!n) return '0'; if (n >= 1e6) return (n/1e6).toFixed(1)+'M'; if (n >= 1e3) return Math.round(n/1e3)+'k'; return ''+Math.round(n); }
+function fmtC(n) { return n ? '$'+Math.round(n).toLocaleString('es-CL') : '$0'; }
+function fmtCs(n) { if (!n) return '$0'; if (n >= 1e6) return '$'+(n/1e6).toFixed(1)+'M'; if (n >= 1e3) return '$'+Math.round(n/1e3)+'k'; return '$'+Math.round(n); }
+function H(s) { if (!s) return ''; const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
 
-function formatLitros(n) {
-  if (!n) return '0 L';
-  return Math.round(n).toLocaleString('es-CL') + ' L';
-}
-
-function formatLitrosShort(n) {
-  if (!n) return '0';
-  if (n >= 1000000) return (n / 1000000).toFixed(1) + 'M';
-  if (n >= 1000) return Math.round(n / 1000) + 'k';
-  return Math.round(n).toString();
-}
-
-function formatCurrency(n) {
-  if (!n) return '$0';
-  return '$' + Math.round(n).toLocaleString('es-CL');
-}
-
-function formatCurrencyShort(n) {
-  if (!n) return '$0';
-  if (n >= 1000000) return '$' + (n / 1000000).toFixed(1) + 'M';
-  if (n >= 1000) return '$' + Math.round(n / 1000) + 'k';
-  return '$' + Math.round(n);
-}
-
-function formatDate(dateStr) {
-  if (!dateStr) return '—';
-  const d = new Date(dateStr);
-  return d.toLocaleDateString('es-CL', { day: '2-digit', month: 'short' });
-}
-
-function escapeHtml(str) {
-  if (!str) return '';
-  const div = document.createElement('div');
-  div.textContent = str;
-  return div.innerHTML;
-}
-
-function stripHtml(html) {
-  const tmp = document.createElement('div');
-  tmp.innerHTML = html;
-  return tmp.textContent || tmp.innerText || '';
-}
+// Boot
+loadData();
 </script>
-
 </body>
 </html>
