@@ -1,25 +1,45 @@
 {
-  "updated": "2026-04-01T21:11:30.074241",
+  "updated": "2026-04-02T00:01:36.949577",
   "weeks": [
+    {
+      "label": "02apr-08apr",
+      "start": "2026-04-02",
+      "end": "2026-04-08",
+      "ventas": 0,
+      "neto": 0,
+      "litros": 0,
+      "precio": 0,
+      "margin": 0,
+      "facturas": 0,
+      "nc": 0,
+      "clientes": 0,
+      "recaud": 0,
+      "cheques": 0,
+      "transf": 0,
+      "factoring": 0,
+      "compras_enap": 0,
+      "ppto": 326422,
+      "parcial": true
+    },
     {
       "label": "26mar-01apr",
       "start": "2026-03-26",
       "end": "2026-04-01",
-      "ventas": 256795875,
-      "neto": 208325089,
-      "litros": 177108,
+      "ventas": 264348963,
+      "neto": 214230898,
+      "litros": 182130,
       "precio": 1176,
-      "margin": 0.03098,
-      "facturas": 114,
+      "margin": 0.03201,
+      "facturas": 116,
       "nc": 9,
-      "clientes": 85,
+      "clientes": 86,
       "recaud": 9482998,
       "cheques": 9482998,
       "transf": 0,
       "factoring": 0,
       "compras_enap": 143154336,
       "ppto": 283811,
-      "parcial": true
+      "parcial": false
     },
     {
       "label": "19mar-25mar",
@@ -300,34 +320,20 @@
       "compras_enap": 173750364,
       "ppto": 212548,
       "parcial": false
-    },
-    {
-      "label": "11dec-17dec",
-      "start": "2025-12-11",
-      "end": "2025-12-17",
-      "ventas": 277618016,
-      "neto": 202134888,
-      "litros": 287609,
-      "precio": 703,
-      "margin": 0.10694,
-      "facturas": 161,
-      "nc": 1,
-      "clientes": 124,
-      "recaud": 31040005,
-      "cheques": 31040005,
-      "transf": 0,
-      "factoring": 0,
-      "compras_enap": 238282623,
-      "ppto": 212548,
-      "parcial": false
     }
   ],
   "daily": [
     {
+      "date": "02apr",
+      "day": "Jue",
+      "litros": 0,
+      "neto": 0
+    },
+    {
       "date": "01apr",
       "day": "Mié",
-      "litros": 34421,
-      "neto": 41763100
+      "litros": 37803,
+      "neto": 45740290
     },
     {
       "date": "31mar",
@@ -412,12 +418,6 @@
       "day": "Jue",
       "litros": 52165,
       "neto": 41467687
-    },
-    {
-      "date": "11mar",
-      "day": "Mié",
-      "litros": 42670,
-      "neto": 29921586
     }
   ],
   "banks": [
@@ -452,13 +452,13 @@
   ],
   "total_cash": 62401494,
   "receivables": {
-    "open_invoices": 394,
-    "total_due": 657603256,
-    "current": 593000975,
-    "overdue": 64602281,
-    "pct_overdue": 9.8,
+    "open_invoices": 395,
+    "total_due": 662689784,
+    "current": 575093346,
+    "overdue": 87596438,
+    "pct_overdue": 13.2,
     "aging": {
-      "0-30": 50711220,
+      "0-30": 73705377,
       "31-60": 2925498,
       "61-90": 4159564,
       "90+": 6805999
@@ -547,8 +547,8 @@
     ]
   },
   "crm": {
-    "total": 1373,
-    "open": 1155,
+    "total": 1374,
+    "open": 1156,
     "won": 215,
     "new_30d": 78,
     "by_stage": [
@@ -578,7 +578,7 @@
       },
       {
         "stage": "Durmiente",
-        "count": 189
+        "count": 190
       },
       {
         "stage": "Won",
