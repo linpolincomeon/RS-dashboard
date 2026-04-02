@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TomEnergy — CRM Semanal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  /* TomEnergy Institutional */
+  --tom-orange: #E8451A;
+  --tom-orange-light: #FF6B3D;
+  --tom-orange-dim: rgba(232,69,26,0.12);
+  --tom-green: #C8D9A0;
+  --tom-green-dim: rgba(200,217,160,0.15);
+  --tom-yellow: #F5C842;
+  --tom-yellow-dim: rgba(245,200,66,0.12);
+
+  /* Neutral palette */
+  --bg: #FAFAF8;
+  --surface: #FFFFFF;
+  --surface2: #F3F2EF;
+  --border: #E5E3DE;
+  --border-strong: #D0CEC8;
+  --text: #1A1A18;
+  --text-mid: #4A4A46;
+  --text-dim: #8A8A84;
+
+  /* Semantic */
+  --accent: var(--tom-orange);
+  --success: #3D8B37;
+  --success-dim: rgba(61,139,55,0.1);
+  --warning: var(--tom-yellow);
+  --warning-dim: var(--tom-yellow-dim);
+  --danger: #C43025;
+  --danger-dim: rgba(196,48,37,0.08);
+  --info: #2B7A9E;
+  --info-dim: rgba(43,122,158,0.1);
+
+  /* Fonts */
+  --font-body: 'DM Sans', -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { background: var(--bg); color: var(--text); font-family: var(--font-body); font-size: 14px; line-height: 1.5; min-height: 100vh; }
+
+/* ── TOPBAR ── */
+.topbar {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 28px;
+  background: var(--surface);
+  border-bottom: 2px solid var(--tom-orange);
+  position: sticky; top: 0; z-index: 100;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+}
+.topbar-left { display: flex; align-items: center; gap: 20px; }
+.topbar-logo {
+  display: flex; align-items: center; gap: 10px;
+}
+.topbar-logo .dot {
+  width: 28px; height: 28px; border-radius: 6px;
+  background: var(--tom-orange);
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 700; font-size: 14px; color: #fff;
+}
+.topbar-logo h1 {
+  font-size: 17px; font-weight: 700; color: var(--text);
+  letter-spacing: -0.3px;
+}
+.topbar-logo h1 span { color: var(--tom-orange); }
+.week-label {
+  color: var(--text-dim); font-size: 13px;
+  padding: 4px 12px; background: var(--surface2); border-radius: 6px;
+}
+.topbar-right { display: flex; align-items: center; gap: 10px; }
+.btn {
+  background: var(--surface); border: 1px solid var(--border);
+  color: var(--text-mid); padding: 7px 14px; border-radius: 8px;
+  font-family: var(--font-body); font-size: 13px; font-weight: 500;
+  cursor: pointer; transition: all 0.15s; text-decoration: none;
+  display: inline-flex; align-items: center; gap: 6px;
+}
+.btn:hover { border-color: var(--tom-orange); color: var(--tom-orange); }
+.btn-primary { background: var(--tom-orange); color: #fff; border-color: var(--tom-orange); }
+.btn-primary:hover { background: var(--tom-orange-light); color: #fff; }
+.status-pill {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 12px; color: var(--text-dim);
+  padding: 5px 12px; background: var(--surface2); border-radius: 20px;
+}
+.status-dot { width: 7px; height: 7px; border-radius: 50%; }
+.status-dot.live { background: var(--success); animation: pulse 2s infinite; }
+.status-dot.error { background: var(--danger); }
+.status-dot.loading { background: var(--tom-yellow); animation: pulse 1s infinite; }
+@keyframes pulse { 0%,100% { opacity:1 } 50% { opacity:.35 } }
+
+/* ── MAIN ── */
+.main-content { padding: 28px; max-width: 1400px; margin: 0 auto; }
+
+/* ── LOADING ── */
+#loading { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 100px 20px; gap: 16px; }
+.spinner { width: 32px; height: 32px; border: 3px solid var(--border); border-top-color: var(--tom-orange); border-radius: 50%; animation: spin .7s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg) } }
+
+/* ── SUMMARY CARDS ── */
+.summary-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; margin-bottom: 28px; }
+.summary-card {
+  background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
+  padding: 20px; position: relative; overflow: hidden; transition: box-shadow 0.15s;
+}
+.summary-card:hover { box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+.summary-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; }
+.summary-card.c-orange::before { background: var(--tom-orange); }
+.summary-card.c-green::before { background: var(--tom-green); }
+.summary-card.c-yellow::before { background: var(--tom-yellow); }
+.summary-card.c-info::before { background: var(--info); }
+.summary-card.c-success::before { background: var(--success); }
+.summary-card .label { color: var(--text-dim); font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.4px; margin-bottom: 8px; }
+.summary-card .value { font-size: 30px; font-weight: 700; letter-spacing: -1px; color: var(--text); }
+.summary-card .detail { color: var(--text-dim); font-size: 12px; margin-top: 4px; }
+
+/* ── FUNNEL ── */
+.funnel { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 28px; }
+.funnel-step {
+  flex: 1; min-width: 110px; text-align: center;
+  padding: 16px 10px; border-radius: 10px; border: 1px solid var(--border);
+  background: var(--surface); transition: transform 0.15s;
+}
+.funnel-step:hover { transform: translateY(-2px); }
+.funnel-step .count { font-size: 26px; font-weight: 700; display: block; letter-spacing: -0.5px; }
+.funnel-step .fname { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.3px; margin-top: 4px; display: block; }
+.funnel-step.oportunidad { border-color: var(--tom-orange); }
+.funnel-step.oportunidad .count { color: var(--tom-orange); }
+.funnel-step.contactado { border-color: var(--tom-yellow); }
+.funnel-step.contactado .count { color: #C9A500; }
+.funnel-step.ruta { border-color: var(--info); }
+.funnel-step.ruta .count { color: var(--info); }
+.funnel-step.cotizado { border-color: var(--tom-green); }
+.funnel-step.cotizado .count { color: #6B8C3F; }
+.funnel-step.durmiente { border-color: var(--border-strong); }
+.funnel-step.durmiente .count { color: var(--text-dim); }
+
+.funnel-arrow { display: flex; align-items: center; color: var(--border-strong); font-size: 18px; padding: 0 2px; }
+
+/* ── SECTIONS ── */
+.section {
+  background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
+  margin-bottom: 24px; overflow: hidden;
+}
+.section-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 16px 22px; border-bottom: 1px solid var(--border);
+}
+.section-header h2 { font-size: 15px; font-weight: 700; letter-spacing: -0.2px; }
+.section-body { padding: 22px; }
+
+/* ── TABLES ── */
+.pipeline-table { width: 100%; border-collapse: collapse; }
+.pipeline-table th {
+  text-align: left; color: var(--text-dim); font-size: 11px; font-weight: 600;
+  text-transform: uppercase; letter-spacing: 0.5px;
+  padding: 10px 14px; border-bottom: 2px solid var(--border); background: var(--surface2);
+}
+.pipeline-table td { padding: 11px 14px; border-bottom: 1px solid var(--border); font-size: 13px; }
+.pipeline-table tr:last-child td { border-bottom: none; }
+.pipeline-table tr:hover td { background: var(--surface2); }
+.pipeline-table tbody tr { transition: background 0.1s; }
+
+.stage-badge {
+  display: inline-block; padding: 3px 10px; border-radius: 6px;
+  font-size: 11px; font-weight: 600; white-space: nowrap;
+}
+.stage-oportunidad { background: var(--tom-orange-dim); color: var(--tom-orange); }
+.stage-contactado { background: var(--tom-yellow-dim); color: #A68B00; }
+.stage-ruta { background: var(--info-dim); color: var(--info); }
+.stage-cotizado { background: var(--tom-green-dim); color: #5A7A32; }
+.stage-won { background: var(--success-dim); color: var(--success); }
+.stage-durmiente { background: var(--surface2); color: var(--text-dim); }
+.stage-perdido { background: var(--danger-dim); color: var(--danger); }
+
+.client-name { font-weight: 600; color: var(--text); }
+.val-col { font-family: var(--font-mono); font-weight: 600; font-size: 12px; color: var(--text); }
+.days-ok { color: var(--text-dim); font-family: var(--font-mono); font-size: 12px; }
+.days-warn { color: #A68B00; font-weight: 600; font-family: var(--font-mono); font-size: 12px; }
+.days-bad { color: var(--danger); font-weight: 600; font-family: var(--font-mono); font-size: 12px; }
+
+/* ── EXEC CARDS ── */
+.exec-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 14px; }
+.exec-card {
+  border: 1px solid var(--border); border-radius: 10px; padding: 18px;
+  background: var(--surface); transition: box-shadow 0.15s;
+}
+.exec-card:hover { box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+.exec-card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+.exec-card-header .name { font-weight: 700; font-size: 14px; letter-spacing: -0.2px; }
+.exec-card-header .count { font-size: 12px; color: var(--text-dim); font-weight: 500; }
+.exec-stats { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+.exec-stat {
+  text-align: center; padding: 10px 6px; background: var(--surface2); border-radius: 8px;
+}
+.exec-stat .num { font-size: 20px; font-weight: 700; letter-spacing: -0.5px; }
+.exec-stat .lbl { font-size: 10px; font-weight: 600; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.3px; margin-top: 2px; }
+
+/* ── ACTIVITY ── */
+.activity-item {
+  display: flex; gap: 14px; padding: 10px 0;
+  border-bottom: 1px solid var(--border); font-size: 13px;
+}
+.activity-item:last-child { border-bottom: none; }
+.activity-date { color: var(--text-dim); white-space: nowrap; min-width: 75px; font-family: var(--font-mono); font-size: 12px; }
+.activity-exec { color: var(--tom-orange); font-weight: 600; white-space: nowrap; }
+.activity-desc { flex: 1; color: var(--text-mid); }
+
+/* ── MISC ── */
+.error-banner {
+  background: var(--danger-dim); border: 1px solid rgba(196,48,37,0.2);
+  color: var(--danger); padding: 12px 20px; border-radius: 10px;
+  margin-bottom: 20px; font-size: 13px; display: none;
+}
+.error-banner.active { display: block; }
+.no-data { text-align: center; padding: 40px; color: var(--text-dim); }
+
+@media (max-width: 768px) {
+  .topbar { flex-direction: column; gap: 12px; padding: 12px 16px; }
+  .main-content { padding: 16px; }
+  .summary-grid { grid-template-columns: 1fr 1fr; }
+  .exec-grid { grid-template-columns: 1fr; }
+  .pipeline-table th, .pipeline-table td { padding: 8px 10px; font-size: 12px; }
+  .funnel { flex-direction: column; }
+  .funnel-arrow { display: none; }
+}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-left">
+    <div class="topbar-logo">
+      <div class="dot">T</div>
+      <h1>Tom<span>Energy</span> CRM</h1>
+    </div>
+    <span class="week-label" id="week-label">—</span>
+  </div>
+  <div class="topbar-right">
+    <div class="status-pill">
+      <span class="status-dot loading" id="status-dot"></span>
+      <span id="status-text">Cargando...</span>
+    </div>
+    <button class="btn" onclick="loadData()">↻ Actualizar</button>
+    <a class="btn" href="ceo-dashboard.html">CEO Dashboard</a>
+    <a class="btn" href="index.html">RS Dashboard</a>
+  </div>
+</div>
+
+<div class="main-content">
+  <div class="error-banner" id="error-banner"></div>
+
+  <div id="loading">
+    <div class="spinner"></div>
+    <span style="color:var(--text-dim)">Cargando datos CRM...</span>
+  </div>
+
+  <div id="content" style="display:none">
+    <div class="summary-grid" id="summary-cards"></div>
+    <div class="funnel" id="funnel"></div>
+
+    <div class="section">
+      <div class="section-header"><h2>Resumen por Ejecutivo</h2></div>
+      <div class="section-body"><div class="exec-grid" id="exec-grid"></div></div>
+    </div>
+
+    <div class="section">
+      <div class="section-header">
+        <h2>Pipeline CRM — Oportunidades Activas</h2>
+        <span style="font-size:12px;color:var(--text-dim)" id="pipeline-count">—</span>
+      </div>
+      <div class="section-body" style="padding:0;overflow-x:auto">
+        <table class="pipeline-table">
+          <thead><tr><th>Cliente</th><th>Etapa</th><th>Ejecutivo</th><th>Valor Est.</th><th>Días en etapa</th><th>Último mov.</th><th>Origen</th></tr></thead>
+          <tbody id="pipeline-body"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-header">
+        <h2>⚠ Sin Movimiento (+7 días)</h2>
+        <span style="font-size:12px;color:var(--text-dim)" id="stale-count">—</span>
+      </div>
+      <div class="section-body" style="padding:0;overflow-x:auto">
+        <table class="pipeline-table">
+          <thead><tr><th>Cliente</th><th>Etapa</th><th>Ejecutivo</th><th>Valor Est.</th><th>Días</th><th>Acción sugerida</th></tr></thead>
+          <tbody id="stale-body"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-header"><h2>Actividades Pendientes</h2></div>
+      <div class="section-body" id="activities-log"></div>
+    </div>
+
+    <div class="section">
+      <div class="section-header"><h2>Notas y Mensajes Recientes</h2></div>
+      <div class="section-body" id="messages-log"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+let D = null;
+
+async function loadData() {
+  const dot = document.getElementById('status-dot');
+  const stxt = document.getElementById('status-text');
+  dot.className = 'status-dot loading'; stxt.textContent = 'Cargando...';
+  try {
+    const r = await fetch('crm-data.json?t=' + Date.now());
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    D = await r.json();
+    render();
+    document.getElementById('loading').style.display = 'none';
+    document.getElementById('content').style.display = 'block';
+    dot.className = 'status-dot live';
+    const upd = new Date(D.updated);
+    stxt.textContent = upd.toLocaleDateString('es-CL',{day:'2-digit',month:'short'}) + ' ' + upd.toLocaleTimeString('es-CL',{hour:'2-digit',minute:'2-digit'});
+    document.getElementById('error-banner').classList.remove('active');
+  } catch (e) {
+    dot.className = 'status-dot error'; stxt.textContent = 'Error';
+    document.getElementById('error-banner').textContent = 'Error cargando crm-data.json: ' + e.message;
+    document.getElementById('error-banner').classList.add('active');
+    document.getElementById('loading').innerHTML = '<div class="no-data">No se encontró crm-data.json<br><br>Ejecuta el workflow <b>"Update CRM Dashboard Data"</b> en GitHub Actions.</div>';
+  }
+}
+
+function render() {
+  const s = D.summary, isL = D.has_litros;
+  const fV = isL ? fmtL : fmtC, fS = isL ? fmtLs : fmtCs;
+  const uL = isL ? 'Litros' : 'Valor', vL = isL ? 'Litros Estimados' : 'Valor Estimado';
+
+  document.getElementById('week-label').textContent = D.week ? 'Semana ENAP: ' + D.week.label : '';
+
+  // Summary
+  document.getElementById('summary-cards').innerHTML =
+    card('c-orange', 'Oportunidades Activas', s.active, s.new_this_week + ' nuevas esta semana') +
+    card('c-green', 'Movimientos Semana', s.moved_this_week, 'cambios de etapa') +
+    card('c-yellow', '⚠ Estancadas +7d', s.stale_7d, 'requieren atención') +
+    card('c-info', vL, fV(s.total_value), 'pipeline activo') +
+    card('c-success', 'Ganadas', s.won, 'cerradas exitosamente');
+
+  // Funnel - deduplicate by class, keep order
+  const seen = new Set();
+  const uniqueFunnel = (D.funnel || []).filter(f => {
+    if (seen.has(f.class)) return false;
+    seen.add(f.class); return true;
+  });
+  // Sum counts for duplicate classes
+  const funnelMap = {};
+  (D.funnel || []).forEach(f => {
+    if (!funnelMap[f.class]) funnelMap[f.class] = { ...f, count: 0 };
+    funnelMap[f.class].count += f.count;
+  });
+  const orderedClasses = ['oportunidad','contactado','ruta','cotizado','durmiente'];
+  const funnelItems = orderedClasses.map(c => funnelMap[c]).filter(Boolean);
+
+  document.getElementById('funnel').innerHTML = funnelItems.map((f, i) => {
+    const arrow = i < funnelItems.length - 1 ? '<div class="funnel-arrow">›</div>' : '';
+    return `<div class="funnel-step ${f.class}"><span class="count">${f.count}</span><span class="fname">${H(f.stage)}</span></div>${arrow}`;
+  }).join('');
+
+  // Executives
+  document.getElementById('exec-grid').innerHTML = (D.executives || []).filter(e => e.total > 0).map(e => `
+    <div class="exec-card"><div class="exec-card-header"><span class="name">${H(e.name)}</span><span class="count">${e.total} opp</span></div>
+    <div class="exec-stats">
+      <div class="exec-stat"><div class="num" style="color:var(--success)">${e.moved}</div><div class="lbl">Movidas</div></div>
+      <div class="exec-stat"><div class="num" style="color:${e.stale ? 'var(--danger)' : 'var(--text-dim)'}">${e.stale}</div><div class="lbl">Estancadas</div></div>
+      <div class="exec-stat"><div class="num" style="color:var(--tom-orange)">${fS(e.value)}</div><div class="lbl">${uL}</div></div>
+    </div></div>`).join('') || '<div class="no-data">Sin datos</div>';
+
+  // Pipeline
+  const pl = D.pipeline || [];
+  document.getElementById('pipeline-count').textContent = pl.length + ' oportunidades';
+  document.getElementById('pipeline-body').innerHTML = pl.length ? pl.map(l => {
+    const d = l.days_in_stage, dc = d > 14 ? 'days-bad' : d > 7 ? 'days-warn' : 'days-ok';
+    return `<tr><td class="client-name">${H(l.name)}</td><td><span class="stage-badge stage-${l.stage_class}">${H(l.stage)}</span></td><td>${H(l.exec)}</td><td class="val-col">${fV(l.value)}</td><td><span class="${dc}">${d}d</span></td><td style="font-family:var(--font-mono);font-size:12px;color:var(--text-dim)">${l.last_update||'—'}</td><td>${H(l.origin)}</td></tr>`;
+  }).join('') : '<tr><td colspan="7" class="no-data">Sin oportunidades activas</td></tr>';
+
+  // Stale
+  const st = D.stale || [];
+  document.getElementById('stale-count').textContent = st.length + ' oportunidades';
+  document.getElementById('stale-body').innerHTML = st.length ? st.map(l =>
+    `<tr><td class="client-name">${H(l.name)}</td><td><span class="stage-badge stage-${l.stage_class}">${H(l.stage)}</span></td><td>${H(l.exec)}</td><td class="val-col">${fV(l.value)}</td><td><span class="days-bad">${l.days_in_stage}d</span></td><td style="color:#A68B00;font-weight:600;font-size:12px">${l.action||'Contactar'}</td></tr>`
+  ).join('') : '<tr><td colspan="6" class="no-data">✅ Todo el pipeline tiene movimiento reciente</td></tr>';
+
+  // Activities
+  const acts = D.activities || [];
+  document.getElementById('activities-log').innerHTML = acts.length ? acts.map(a =>
+    `<div class="activity-item"><span class="activity-date">${a.date||'—'}</span><span class="activity-exec">${H(a.who)}</span><span class="activity-desc">${H(a.type)}: ${H(a.summary)} — <em>${H(a.lead)}</em></span></div>`
+  ).join('') : '<div class="no-data">Sin actividades pendientes</div>';
+
+  // Messages
+  const msgs = D.messages || [];
+  document.getElementById('messages-log').innerHTML = msgs.length ? msgs.map(m =>
+    `<div class="activity-item"><span class="activity-date">${m.date||'—'}</span><span class="activity-exec">${H(m.who)}</span><span class="activity-desc">${H(m.desc)}</span></div>`
+  ).join('') : '<div class="no-data">Sin mensajes esta semana</div>';
+}
+
+function card(c, lbl, val, det) { return `<div class="summary-card ${c}"><div class="label">${lbl}</div><div class="value">${val}</div><div class="detail">${det}</div></div>`; }
+function fmtL(n) { return n ? Math.round(n).toLocaleString('es-CL') + ' L' : '0 L'; }
+function fmtLs(n) { if (!n) return '0'; if (n>=1e6) return (n/1e6).toFixed(1)+'M'; if (n>=1e3) return Math.round(n/1e3)+'k'; return ''+Math.round(n); }
+function fmtC(n) { return n ? '$'+Math.round(n).toLocaleString('es-CL') : '$0'; }
+function fmtCs(n) { if (!n) return '$0'; if (n>=1e6) return '$'+(n/1e6).toFixed(1)+'M'; if (n>=1e3) return '$'+Math.round(n/1e3)+'k'; return '$'+Math.round(n); }
+function H(s) { if (!s) return ''; const d=document.createElement('div'); d.textContent=s; return d.innerHTML; }
+
+loadData();
+</script>
+</body>
+</html>
