@@ -1,18 +1,18 @@
 {
-  "updated": "2026-04-02T19:00:27.024689",
+  "updated": "2026-04-04T00:01:33.999147",
   "weeks": [
     {
       "label": "02apr-08apr",
       "start": "2026-04-02",
       "end": "2026-04-08",
-      "ventas": 37197607,
-      "neto": 29386141,
-      "litros": 24217,
-      "precio": 1213,
-      "margin": 0.09104,
-      "facturas": 14,
-      "nc": 1,
-      "clientes": 13,
+      "ventas": 41816608,
+      "neto": 33138340,
+      "litros": 28617,
+      "precio": 1158,
+      "margin": 0.04096,
+      "facturas": 16,
+      "nc": 2,
+      "clientes": 15,
       "recaud": 0,
       "cheques": 0,
       "transf": 0,
@@ -324,10 +324,16 @@
   ],
   "daily": [
     {
+      "date": "03apr",
+      "day": "Vie",
+      "litros": 0,
+      "neto": 0
+    },
+    {
       "date": "02apr",
       "day": "Jue",
-      "litros": 24218,
-      "neto": 29449985
+      "litros": 28718,
+      "neto": 33314300
     },
     {
       "date": "01apr",
@@ -412,12 +418,6 @@
       "day": "Vie",
       "litros": 37530,
       "neto": 32584977
-    },
-    {
-      "date": "12mar",
-      "day": "Jue",
-      "litros": 52165,
-      "neto": 41467687
     }
   ],
   "banks": [
@@ -452,16 +452,16 @@
   ],
   "total_cash": 114138535,
   "receivables": {
-    "open_invoices": 352,
-    "total_due": 595008948,
-    "current": 519683891,
-    "overdue": 75325057,
-    "pct_overdue": 12.7,
+    "open_invoices": 354,
+    "total_due": 599627949,
+    "current": 498941208,
+    "overdue": 100686741,
+    "pct_overdue": 16.8,
     "aging": {
-      "0-30": 61433996,
+      "0-30": 86795680,
       "31-60": 2925498,
-      "61-90": 4159564,
-      "90+": 6805999
+      "61-90": 1744565,
+      "90+": 9220998
     },
     "top_debtors": [
       {
@@ -473,16 +473,16 @@
         "amount": 36512943
       },
       {
+        "name": "SAMUEL BUDINICH SPA",
+        "amount": 19110885
+      },
+      {
         "name": "SOC AGRICOLA GRANJA SAN RAFAEL LIMITADA",
         "amount": 16394249
       },
       {
         "name": "AGRICOLA AGROBOSQUES SAN ISIDRO S.A.",
         "amount": 15758998
-      },
-      {
-        "name": "SAMUEL BUDINICH SPA",
-        "amount": 15202885
       },
       {
         "name": "SERVICIOS AGRICOLAS HERNANDEZ LIMITADA",
@@ -522,7 +522,7 @@
       },
       {
         "name": "JOSE EDGARDO RAMON MEZA BANADOS",
-        "amount": 8704062
+        "amount": 8607062
       },
       {
         "name": "PATRICIO VISCAY ALBORNOZ",
@@ -548,7 +548,7 @@
   },
   "crm": {
     "total": 1371,
-    "open": 1150,
+    "open": 1151,
     "won": 219,
     "new_30d": 76,
     "by_stage": [
@@ -578,7 +578,7 @@
       },
       {
         "stage": "Durmiente",
-        "count": 187
+        "count": 188
       },
       {
         "stage": "Won",
