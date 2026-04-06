@@ -1,23 +1,23 @@
 {
-  "updated": "2026-04-04T00:01:33.999147",
+  "updated": "2026-04-06T14:17:13.304631",
   "weeks": [
     {
       "label": "02apr-08apr",
       "start": "2026-04-02",
       "end": "2026-04-08",
-      "ventas": 41816608,
-      "neto": 33138340,
-      "litros": 28617,
-      "precio": 1158,
-      "margin": 0.04096,
-      "facturas": 16,
+      "ventas": 46586608,
+      "neto": 37080936,
+      "litros": 31617,
+      "precio": 1173,
+      "margin": 0.0496,
+      "facturas": 17,
       "nc": 2,
-      "clientes": 15,
+      "clientes": 16,
       "recaud": 0,
       "cheques": 0,
       "transf": 0,
       "factoring": 0,
-      "compras_enap": 0,
+      "compras_enap": 41969026,
       "ppto": 326422,
       "parcial": true
     },
@@ -324,6 +324,12 @@
   ],
   "daily": [
     {
+      "date": "06apr",
+      "day": "Lun",
+      "litros": 3000,
+      "neto": 3942596
+    },
+    {
       "date": "03apr",
       "day": "Vie",
       "litros": 0,
@@ -412,18 +418,12 @@
       "day": "Lun",
       "litros": 18000,
       "neto": 15862478
-    },
-    {
-      "date": "13mar",
-      "day": "Vie",
-      "litros": 37530,
-      "neto": 32584977
     }
   ],
   "banks": [
     {
       "name": "DE CHILE",
-      "balance": 80188397
+      "balance": 35628382
     },
     {
       "name": "ITAU",
@@ -450,17 +450,17 @@
       "balance": -838790
     }
   ],
-  "total_cash": 114138535,
+  "total_cash": 69578520,
   "receivables": {
-    "open_invoices": 354,
-    "total_due": 599627949,
-    "current": 498941208,
-    "overdue": 100686741,
-    "pct_overdue": 16.8,
+    "open_invoices": 345,
+    "total_due": 592753308,
+    "current": 490476506,
+    "overdue": 102276802,
+    "pct_overdue": 17.3,
     "aging": {
-      "0-30": 86795680,
-      "31-60": 2925498,
-      "61-90": 1744565,
+      "0-30": 87537642,
+      "31-60": 1776099,
+      "61-90": 3742063,
       "90+": 9220998
     },
     "top_debtors": [
@@ -470,7 +470,7 @@
       },
       {
         "name": "JOSE RODRIGO ORMAZABAL VIDAL",
-        "amount": 36512943
+        "amount": 34654503
       },
       {
         "name": "SAMUEL BUDINICH SPA",
@@ -548,13 +548,13 @@
   },
   "crm": {
     "total": 1371,
-    "open": 1151,
-    "won": 219,
-    "new_30d": 76,
+    "open": 1153,
+    "won": 217,
+    "new_30d": 70,
     "by_stage": [
       {
         "stage": "Perdidos",
-        "count": 464
+        "count": 463
       },
       {
         "stage": "No Cerrados",
@@ -574,15 +574,15 @@
       },
       {
         "stage": "Cotizado",
-        "count": 270
+        "count": 271
       },
       {
         "stage": "Durmiente",
-        "count": 188
+        "count": 190
       },
       {
         "stage": "Won",
-        "count": 219
+        "count": 217
       }
     ]
   }
