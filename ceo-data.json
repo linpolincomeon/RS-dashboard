@@ -1,23 +1,23 @@
 {
-  "updated": "2026-04-06T14:24:32.046340",
+  "updated": "2026-04-06T17:34:07.302026",
   "weeks": [
     {
       "label": "02apr-08apr",
       "start": "2026-04-02",
       "end": "2026-04-08",
-      "ventas": 46586608,
-      "neto": 37080936,
-      "litros": 31617,
-      "precio": 1173,
-      "margin": 0.0496,
-      "facturas": 17,
+      "ventas": 79297180,
+      "neto": 64096249,
+      "litros": 53160,
+      "precio": 1206,
+      "margin": 0.06249,
+      "facturas": 29,
       "nc": 2,
-      "clientes": 16,
+      "clientes": 25,
       "recaud": 0,
       "cheques": 0,
       "transf": 0,
       "factoring": 0,
-      "compras_enap": 41969026,
+      "compras_enap": 42008011,
       "ppto": 326422,
       "parcial": true
     },
@@ -326,8 +326,8 @@
     {
       "date": "06apr",
       "day": "Lun",
-      "litros": 3000,
-      "neto": 3942596
+      "litros": 24543,
+      "neto": 30957909
     },
     {
       "date": "03apr",
@@ -452,45 +452,53 @@
   ],
   "total_cash": 69578520,
   "receivables": {
-    "open_invoices": 345,
-    "total_due": 592753308,
-    "current": 490476506,
-    "overdue": 102276802,
-    "pct_overdue": 17.3,
+    "open_invoices": 355,
+    "total_due": 624026480,
+    "current": 523187078,
+    "overdue": 100839402,
+    "pct_overdue": 16.2,
     "aging": {
-      "0-30": 87537642,
+      "0-30": 86100242,
       "31-60": 1776099,
       "61-90": 3742063,
       "90+": 9220998
     },
     "top_debtors": [
       {
+        "name": "JOSE RODRIGO ORMAZABAL VIDAL",
+        "amount": 39166503
+      },
+      {
         "name": "MAQUINARIAS Y ARIDOS SAN PEDRO SPA.",
         "amount": 37432481
       },
       {
-        "name": "JOSE RODRIGO ORMAZABAL VIDAL",
-        "amount": 34654503
+        "name": "SOC AGRICOLA GRANJA SAN RAFAEL LIMITADA",
+        "amount": 19123049
       },
       {
         "name": "SAMUEL BUDINICH SPA",
         "amount": 19110885
       },
       {
-        "name": "SOC AGRICOLA GRANJA SAN RAFAEL LIMITADA",
-        "amount": 16394249
+        "name": "INGENERIA Y CONSTRUCCIONES FEBLANCA SPA",
+        "amount": 17415397
       },
       {
         "name": "AGRICOLA AGROBOSQUES SAN ISIDRO S.A.",
         "amount": 15758998
       },
       {
+        "name": "FORESTAL PUIHUA SPA",
+        "amount": 13769700
+      },
+      {
         "name": "SERVICIOS AGRICOLAS HERNANDEZ LIMITADA",
         "amount": 13275000
       },
       {
-        "name": "INGENERIA Y CONSTRUCCIONES FEBLANCA SPA",
-        "amount": 12805497
+        "name": "EMPRESAS TUCAPEL S A",
+        "amount": 11979360
       },
       {
         "name": "AGRICOLA MANUEL BARRERA E.I.R.L.",
@@ -511,10 +519,6 @@
       {
         "name": "TRANSPORTE SANTA ELENITA SPA",
         "amount": 9633850
-      },
-      {
-        "name": "FORESTAL PUIHUA SPA",
-        "amount": 9104699
       },
       {
         "name": "SOC. DE TRANSPORTES TRACMAVI LTDA.",
@@ -539,22 +543,18 @@
       {
         "name": "AGRÍCOLA LA RIGADA SPA",
         "amount": 7644000
-      },
-      {
-        "name": "VICTOR JOAQUIN ACEVEDO ACUNA",
-        "amount": 7619300
       }
     ]
   },
   "crm": {
     "total": 1371,
-    "open": 1153,
-    "won": 217,
+    "open": 1152,
+    "won": 218,
     "new_30d": 70,
     "by_stage": [
       {
         "stage": "Perdidos",
-        "count": 463
+        "count": 464
       },
       {
         "stage": "No Cerrados",
@@ -574,15 +574,15 @@
       },
       {
         "stage": "Cotizado",
-        "count": 271
+        "count": 270
       },
       {
         "stage": "Durmiente",
-        "count": 190
+        "count": 189
       },
       {
         "stage": "Won",
-        "count": 217
+        "count": 218
       }
     ]
   }
