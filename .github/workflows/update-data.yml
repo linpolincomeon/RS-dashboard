@@ -2,17 +2,24 @@ name: Update Dashboard Data
 
 on:
   schedule:
-    - cron: '0 10 * * 1-6'
+    - cron: '20 11,15,19,23 * * 1-6'   # 4x daily offset by 20min, Mon-Sat
   workflow_dispatch:
+
+permissions:
+  contents: write
 
 jobs:
   extract:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+
       - name: Extract data from Odoo
         env:
           ODOO_URL: https://tomenergy.cl/odoo
@@ -20,10 +27,13 @@ jobs:
           ODOO_USER: p@tomenergy.cl
           ODOO_KEY: ${{ secrets.ODOO_KEY }}
         run: python extract_odoo.py
+
       - name: Commit and push
         run: |
           git config user.name "RS Dashboard Bot"
           git config user.email "dashboard@tomenergy.cl"
           git add data.json
-          git diff --staged --quiet || git commit -m "Update dashboard data"
+          git diff --staged --quiet && echo "No changes" && exit 0
+          git commit -m "Update dashboard data $(date -u +'%Y-%m-%d %H:%M UTC')"
+          git pull --rebase origin main
           git push

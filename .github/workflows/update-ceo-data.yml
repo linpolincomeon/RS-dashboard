@@ -2,8 +2,8 @@ name: Update CEO Dashboard Data
 
 on:
   schedule:
-    - cron: '0 11,15,19,23 * * *'   # 4x daily: 8am, 12pm, 4pm, 8pm Chile time (UTC-3)
-  workflow_dispatch:                  # Manual trigger
+    - cron: '10 11,15,19,23 * * *'   # 4x daily offset by 10min vs CRM (8:10am, 12:10pm, 4:10pm, 8:10pm Chile)
+  workflow_dispatch:
 
 permissions:
   contents: write
@@ -13,6 +13,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -23,7 +25,11 @@ jobs:
         run: pip install requests
 
       - name: Fetch Odoo data and generate JSON
-        
+        env:
+          ODOO_URL: https://tomenergy.cl
+          ODOO_DB: PRODUCCION
+          ODOO_USER: ${{ secrets.ODOO_USER || 'p@tomenergy.cl' }}
+          ODOO_KEY: ${{ secrets.ODOO_KEY }}
         run: python extract_ceo.py
 
       - name: Commit and push
@@ -31,5 +37,7 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add ceo-data.json
-          git diff --cached --quiet || git commit -m "Update CEO data $(date -u +'%Y-%m-%d %H:%M UTC')"
+          git diff --cached --quiet && echo "No changes" && exit 0
+          git commit -m "Update CEO data $(date -u +'%Y-%m-%d %H:%M UTC')"
+          git pull --rebase origin main
           git push
