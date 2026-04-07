@@ -124,8 +124,8 @@ tr:hover td{background:#fafaf8}
 
 <script>
 let D=null;
-const ALLOWED_VENDORS=['Toro González Sebastian Enrique','Comber Sigall Pauline','De Trenqualye Merino Andre Jean','Vial Comber Pauline','Fernando Jullian','TomEnergy'];
-const isAllowed=n=>ALLOWED_VENDORS.some(a=>n&&n.toLowerCase().includes(a.split(' ')[0].toLowerCase()));
+const ALLOWED_VENDORS=new Set(['toro gonzález sebastian enrique','comber sigall pauline','de trenqualye merino andre jean','vial comber pauline','fernando jullian','tomenergy']);
+const isAllowed=n=>n&&ALLOWED_VENDORS.has(n.toLowerCase().trim());
 
 document.getElementById('tabBar').addEventListener('click',e=>{
   const t=e.target.closest('.tab');if(!t)return;
@@ -335,22 +335,24 @@ function renderVendedor(){
   users.forEach(u=>{
     const g=VG[u]||{},lt=(T.litros_by_user||{})[u]||0,vn=(T.venta_by_user||{})[u]||0;
     const fLeads=((st.leads||{}).by_user||{})[u]||0;
+    const fContacto=((st.contacto||{}).by_user||{})[u]||0;
     const fQuotes=((st.cotizacion||{}).by_user||{})[u]||0;
     const fClose=((st.cierre||{}).by_user||{})[u]||0;
     const fNewCl=((nc.by_user)||{})[u]||0;
     const metrics=[
-      {lbl:'Leads semana',val:fLeads,goal:g.leads_semana||5},
-      {lbl:'Cotizaciones semana',val:fQuotes,goal:g.cotizaciones_semana||3},
-      {lbl:'Cierres semana',val:fClose,goal:1},
+      {lbl:'Oportunidades semana',val:fLeads,goal:g.leads_semana||15},
+      {lbl:'Contactos efectivos',val:fContacto,goal:g.contactos_semana||10},
+      {lbl:'Cotizaciones semana',val:fQuotes,goal:g.cotizaciones_semana||8},
       {lbl:'Clientes nuevos mes',val:fNewCl,goal:g.clientes_nuevos_mes||2},
-      {lbl:'Litros mes',val:lt,goal:g.litros_mes||1,fmt:fL},
-      {lbl:'Venta neta mes',val:vn,goal:g.presupuesto_venta||1,fmt:fC},
+      {lbl:'Litros mes',val:lt,goal:g.litros_mes||0,fmt:fL,skip0:true},
+      {lbl:'Venta neta mes',val:vn,goal:g.presupuesto_venta||0,fmt:fC,skip0:true},
     ];
-    const overall=Math.round(metrics.reduce((s,m)=>s+Math.min((m.val/m.goal)*100,100),0)/metrics.length);
+    const scored=metrics.filter(m=>!m.skip0||m.goal>0);
+    const overall=scored.length?Math.round(scored.reduce((s,m)=>s+Math.min((m.val/Math.max(m.goal,1))*100,100),0)/scored.length):0;
     const oc=clr(overall,80);
     h+=`<div class="vcard"><div class="vh"><div class="vn">${H(u)}</div><span class="tag ${tagC(oc)}">${overall}% global</span></div>`;
-    metrics.forEach(m=>{
-      const p=Math.min(pct(m.val,m.goal),100),c=clr(m.val,m.goal);
+    metrics.filter(m=>!m.skip0||m.goal>0).forEach(m=>{
+      const p=Math.min(pct(m.val,Math.max(m.goal,1)),100),c=clr(m.val,Math.max(m.goal,1));
       const disp=m.fmt?m.fmt(m.val):m.val,gDisp=m.fmt?m.fmt(m.goal):m.goal;
       h+=`<div class="vm"><span class="ml">${m.lbl}</span><span class="mv"><span style="color:${barC(c)}">${disp}</span><small>/ ${gDisp}</small><span class="minibar"><span class="minibar-f" style="width:${p}%;background:${barC(c)}"></span></span></span></div>`;
     });

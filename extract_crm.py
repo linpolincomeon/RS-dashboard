@@ -659,8 +659,9 @@ def main():
         users.discard("Sin asignar")
         for u in sorted(users):
             vendor_goals[u] = {
-                "litros_mes": 0, "presupuesto_venta": 0, "margen_min": 10,
-                "leads_semana": 5, "cotizaciones_semana": 3, "clientes_nuevos_mes": 2,
+                "litros_mes": 0, "presupuesto_venta": 0, "margen_min": 0,
+                "leads_semana": 15, "cotizaciones_semana": 8, "contactos_semana": 10,
+                "clientes_nuevos_mes": 2, "retencion_90d": 90,
             }
         with open(goals_path, "w", encoding="utf-8") as f:
             json.dump(vendor_goals, f, ensure_ascii=False, indent=2)
