@@ -499,9 +499,13 @@ def extract_funnel_data(models, uid):
 # ==============================================================
 # PART 3: SALES KPIs (monthly)
 # ==============================================================
-def extract_sales_data(models, uid):
-    print("\nExtracting sales KPIs...")
-    m_start, m_end = get_month_range()
+def extract_sales_data(models, uid, custom_start=None, custom_end=None, label_override=None):
+    if custom_start and custom_end:
+        m_start, m_end = custom_start, custom_end
+    else:
+        m_start, m_end = get_month_range()
+    lbl = label_override or m_start.strftime("%B %Y")
+    print(f"\nExtracting sales KPIs ({lbl})...")
     print(f"  Mes: {fmt(m_start)} -> {fmt(m_end)}")
 
     # Facturas (with margin)
@@ -656,7 +660,7 @@ def extract_sales_data(models, uid):
     print(f"  Clientes nuevos: {new_cl_count}")
 
     return {
-        "month_label": m_start.strftime("%B %Y"),
+        "month_label": lbl,
         "month_start": fmt(m_start),
         "month_end": fmt(m_end),
         "totals": {
@@ -848,8 +852,14 @@ def main():
     # Part 2: Funnel comercial
     funnel_weeks = extract_funnel_data(models, uid)
 
-    # Part 3: Sales KPIs
+    # Part 3: Sales KPIs (current month)
     ventas = extract_sales_data(models, uid)
+
+    # Part 3b: Sales KPIs (previous month = cierre mes vencido)
+    today = datetime.now().date()
+    prev_m_end = today.replace(day=1) - timedelta(days=1)
+    prev_m_start = prev_m_end.replace(day=1)
+    ventas_prev = extract_sales_data(models, uid, prev_m_start, prev_m_end, prev_m_start.strftime("%B %Y"))
 
     # Part 4: Churn & Rescue
     churn = extract_churn_data(models, uid)
@@ -900,6 +910,7 @@ def main():
         # New fields
         "funnel_weeks": funnel_weeks,
         "ventas": ventas,
+        "ventas_prev": ventas_prev,
         "churn": churn,
         "vendor_goals": vendor_goals,
         "company_goals": {
