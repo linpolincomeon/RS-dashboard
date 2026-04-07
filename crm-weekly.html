@@ -67,6 +67,7 @@ tr:hover td{background:#fafaf8}
 .chart-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:24px}
 .ccrd{background:var(--card);border-radius:12px;padding:16px;box-shadow:0 1px 3px rgba(0,0,0,.04)}
 .ccrd h3{font-size:13px;font-weight:600;color:var(--dim);margin-bottom:10px}
+.ccrd canvas{max-height:250px}
 .act{display:flex;gap:10px;padding:8px 0;border-bottom:1px solid #f5f5f5;font-size:12px}
 .act:last-child{border-bottom:none}
 .act-d{color:var(--dim);white-space:nowrap;min-width:70px}
@@ -123,6 +124,8 @@ tr:hover td{background:#fafaf8}
 
 <script>
 let D=null;
+const ALLOWED_VENDORS=['Toro González Sebastian Enrique','Comber Sigall Pauline','De Trenqualye Merino Andre Jean','Vial Comber Pauline','Fernando Jullian','TomEnergy'];
+const isAllowed=n=>ALLOWED_VENDORS.some(a=>n&&n.toLowerCase().includes(a.split(' ')[0].toLowerCase()));
 
 document.getElementById('tabBar').addEventListener('click',e=>{
   const t=e.target.closest('.tab');if(!t)return;
@@ -198,7 +201,7 @@ function renderPipeline(){
 
   const uL=isL?'Litros':'Valor';
   h+=`<div class="sec"><div class="sec-h"><h2>Resumen por Ejecutivo</h2></div><div class="sec-b"><div class="exec-grid">`;
-  (D.executives||[]).filter(e=>e.total>0).forEach(e=>{
+  (D.executives||[]).filter(e=>e.total>0&&isAllowed(e.name)).forEach(e=>{
     h+=`<div class="ecard"><div class="eh"><span class="en">${H(e.name)}</span><span style="font-size:12px;color:var(--dim)">${e.total} opp</span></div>
     <div class="estats">
       <div class="estat"><div class="n" style="color:var(--green)">${e.moved}</div><div class="l">Movidas</div></div>
@@ -294,7 +297,7 @@ function renderVentas(){
   </div>`;
   h+=`<div class="chart-row"><div class="ccrd"><h3>Litros por Vendedor</h3><canvas id="cLitros" height="220"></canvas></div><div class="ccrd"><h3>Venta Semanal</h3><canvas id="cVSem" height="220"></canvas></div></div>`;
 
-  const users=Object.keys({...(T.litros_by_user||{}), ...(T.venta_by_user||{})}).filter(u=>u!=='Sin asignar');
+  const users=Object.keys({...(T.litros_by_user||{}), ...(T.venta_by_user||{})}).filter(u=>u!=='Sin asignar'&&isAllowed(u));
   if(users.length){
     h+=`<div class="sec"><div class="sec-h"><h2>Resumen Mensual</h2></div><div class="sec-b" style="padding:0;overflow-x:auto"><table><thead><tr><th>Vendedor</th><th>Litros</th><th>Meta Lt</th><th>%</th><th>Venta Neta</th><th>Meta $</th><th>%</th></tr></thead><tbody>`;
     users.forEach(u=>{
@@ -325,7 +328,7 @@ function renderVendedor(){
   const fw=D.funnel_weeks||[],cw=fw.find(w=>w.is_current)||fw[0];
   const V=D.ventas||{},T=V.totals||{},nc=V.new_clients||{},VG=D.vendor_goals||{};
   const st=cw?cw.stages:{};
-  const users=Object.keys(VG).filter(u=>u!=='Sin asignar');
+  const users=Object.keys(VG).filter(u=>u!=='Sin asignar'&&isAllowed(u));
   if(!users.length){document.getElementById('p-vendedor').innerHTML='<div class="nodata">Sin datos. Edita vendor-goals.json</div>';return}
 
   let h='<div class="exec-grid">';
