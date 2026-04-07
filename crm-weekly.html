@@ -336,7 +336,7 @@ function renderChurn(){
     ${mkKpi('c-green','👥 Clientes Activos',S.active||0,'últimos 90 días')}
     ${mkKpi('c-red','😴 Durmientes',S.dormant||0,'sin compra dentro de su ciclo')}
     ${mkKpi('c-yellow','🔄 Rescatados',S.rescued||0,'volvieron a comprar')}
-    ${mkKpi('c-red','📉 Churn Rate',(S.churn_pct||0)+'%','durmientes / total',S.dormant||0,S.total_clients||1)}
+    ${mkKpi('c-red','📉 Churn Rate',(S.churn_pct||0)+'%',(S.dormant||0)+' / '+(S.prev_month_clients||'?')+' clientes mes ant.',S.dormant||0,S.prev_month_clients||1)}
     ${mkKpi('c-green','🏆 Tasa Rescate',(S.rescue_pct||0)+'%','rescatados / (durmientes+rescatados)',S.rescued||0,Math.max((S.dormant||0)+(S.rescued||0),1))}
   </div>`;
 
