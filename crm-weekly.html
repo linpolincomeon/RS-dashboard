@@ -248,7 +248,7 @@ function renderFunnel(){
   const st=cw.stages,fg=D.funnel_goals||{};
   const STG=[
     {key:'leads',icon:'🎯',c:'c-red'},{key:'contacto',icon:'📞',c:'c-yellow'},
-    {key:'cotizacion',icon:'📄',c:'c-blue'},{key:'seguimiento',icon:'🔄',c:'c-green'},
+    {key:'cotizacion',icon:'📄',c:'c-blue'},{key:'seguimiento',icon:'📨',c:'c-green'},
     {key:'cierre',icon:'🤝',c:'c-green'},{key:'retencion',icon:'♻️',c:'c-blue'}
   ];
   let h='<div class="kpi-row">';
@@ -294,12 +294,14 @@ function renderFunnel(){
 function renderVentas(){
   const V=D.ventas||{},T=V.totals||{},nc=V.new_clients||{},VG=D.vendor_goals||{},CG=D.company_goals||{};
   const ltGoal=CG.litros_mes||0;
+  const mrActual=T.margin_retail_pct||0, mvActual=T.margin_volume_pct||0;
+  const mrGoal=CG.margen_retail||12, mvGoal=CG.margen_volumen||9;
   let h=`<div class="kpi-row">
     ${mkKpi('c-red','⛽ Litros Mes',fL(T.total_litros||0),ltGoal?'Meta: '+fL(ltGoal)+' ('+pct(T.total_litros||0,ltGoal)+'%)':'',T.total_litros||0,ltGoal||1)}
     ${mkKpi('c-green','💰 Venta Neta',fC(T.total_venta_neta||0),`${T.invoice_count||0} facturas · ${T.nc_count||0} NC`)}
     ${mkKpi('c-blue','🆕 Clientes Nuevos',nc.count||0,'primera factura del mes')}
-    ${mkKpi('c-yellow','📊 Margen Retail',CG.margen_retail?CG.margen_retail+'%':'—','meta mínima litros nuevos')}
-    ${mkKpi('c-yellow','📊 Margen Volumen',CG.margen_volumen?CG.margen_volumen+'%':'—','meta mínima litros nuevos')}
+    ${mkKpi(mrActual>=mrGoal?'c-green':'c-red','📊 Margen Retail',mrActual+'%','Meta: '+mrGoal+'% · '+fC(T.retail_venta||0),mrActual,mrGoal)}
+    ${mkKpi(mvActual>=mvGoal?'c-green':'c-red','📊 Margen Volumen',mvActual+'%','Meta: '+mvGoal+'% · '+fC(T.volume_venta||0),mvActual,mvGoal)}
   </div>`;
   h+=`<div class="chart-row"><div class="ccrd"><h3>Litros por Vendedor</h3><canvas id="cLitros" height="220"></canvas></div><div class="ccrd"><h3>Venta Semanal</h3><canvas id="cVSem" height="220"></canvas></div></div>`;
 

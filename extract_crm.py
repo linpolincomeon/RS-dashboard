@@ -403,18 +403,18 @@ def extract_funnel_data(models, uid):
                 "fecha": (q.get("create_date") or "")[:10],
             })
 
-        # 4. Seguimiento
-        followup_pct = 0
+        # 4. Seguimiento: cotizaciones enviadas manualmente (state=sent) / total cotizaciones
+        sent_count = 0
         if quote_count:
             try:
-                fu = s_count(models, uid, "mail.message", [
-                    ["date", ">=", fdt_s(ws)],
-                    ["date", "<=", fdt_e(we)],
-                    ["model", "=", "sale.order"],
+                sent_count = s_count(models, uid, "sale.order", [
+                    ["create_date", ">=", fdt_s(ws)],
+                    ["create_date", "<=", fdt_e(we)],
+                    ["state", "=", "sent"],
                 ])
-                followup_pct = min(round((fu / max(quote_count, 1)) * 100), 100)
             except:
                 pass
+        followup_pct = min(round((sent_count / max(quote_count, 1)) * 100), 100) if quote_count else 0
 
         # 5. Cierres (nuevos clientes)
         close_orders = sr(models, uid, "sale.order", [
@@ -504,21 +504,42 @@ def extract_sales_data(models, uid):
     m_start, m_end = get_month_range()
     print(f"  Mes: {fmt(m_start)} -> {fmt(m_end)}")
 
-    # Facturas
+    # Facturas (with margin)
     invoices = sr(models, uid, "account.move", [
         ["move_type", "=", "out_invoice"],
         ["state", "=", "posted"],
         ["invoice_date", ">=", fmt(m_start)],
         ["invoice_date", "<=", fmt(m_end)],
-    ], ["name", "partner_id", "invoice_user_id", "amount_untaxed", "invoice_date"], limit=2000)
+    ], ["name", "partner_id", "invoice_user_id", "amount_untaxed", "invoice_date", "margin_zone"], limit=2000)
 
     inv_ids = [i["id"] for i in invoices]
     inv_user_map = {i["id"]: safe_name(i.get("invoice_user_id")) for i in invoices}
+    inv_margin_map = {i["id"]: i.get("margin_zone", 0) or 0 for i in invoices}
+
+    # Get volume client flag from partners
+    partner_ids = list(set(safe_id(i.get("partner_id")) for i in invoices if safe_id(i.get("partner_id"))))
+    volume_partners = set()
+    if partner_ids:
+        for i in range(0, len(partner_ids), 200):
+            chunk = partner_ids[i:i+200]
+            partners = sr(models, uid, "res.partner", [
+                ["id", "in", chunk],
+            ], ["id", "is_volume_client"], limit=200)
+            for p in partners:
+                if p.get("is_volume_client"):
+                    volume_partners.add(p["id"])
+    inv_partner_map = {i["id"]: safe_id(i.get("partner_id")) for i in invoices}
 
     litros_by_user = defaultdict(float)
     venta_by_user = defaultdict(float)
     total_litros = 0
     total_venta = 0
+
+    # Margin tracking by segment
+    retail_venta = 0
+    retail_costo = 0
+    volume_venta = 0
+    volume_costo = 0
 
     if inv_ids:
         lines = sr(models, uid, "account.move.line", [
@@ -531,10 +552,26 @@ def extract_sales_data(models, uid):
             qty = ln.get("quantity", 0)
             sub = ln.get("price_subtotal", 0)
             user = inv_user_map.get(mid, "Sin asignar")
+            margin = inv_margin_map.get(mid, 0)
+            pid = inv_partner_map.get(mid)
+            is_vol = pid in volume_partners
+
             litros_by_user[user] += qty
             venta_by_user[user] += sub
             total_litros += qty
             total_venta += sub
+
+            if is_vol:
+                volume_venta += sub
+                volume_costo += sub * (1 - margin) if margin else sub
+            else:
+                retail_venta += sub
+                retail_costo += sub * (1 - margin) if margin else sub
+
+    margin_retail_pct = round(((retail_venta - retail_costo) / retail_venta) * 100, 2) if retail_venta > 0 else 0
+    margin_volume_pct = round(((volume_venta - volume_costo) / volume_venta) * 100, 2) if volume_venta > 0 else 0
+
+    print(f"  Margen Retail: {margin_retail_pct}% | Margen Volumen: {margin_volume_pct}%")
 
     # NC (restar)
     ncs = sr(models, uid, "account.move", [
@@ -629,6 +666,10 @@ def extract_sales_data(models, uid):
             "nc_count": len(ncs),
             "litros_by_user": {k: round(v) for k, v in litros_by_user.items()},
             "venta_by_user": {k: round(v) for k, v in venta_by_user.items()},
+            "margin_retail_pct": margin_retail_pct,
+            "margin_volume_pct": margin_volume_pct,
+            "retail_venta": round(retail_venta),
+            "volume_venta": round(volume_venta),
         },
         "new_clients": {"count": new_cl_count, "by_user": dict(new_cl_by_user)},
         "weekly": list(reversed(weekly_sales)),
@@ -871,7 +912,7 @@ def main():
             "leads": {"goal": 15, "label": "Leads", "freq": "semanal"},
             "contacto": {"goal": 10, "label": "Contacto Efectivo", "freq": "semanal"},
             "cotizacion": {"goal": 8, "label": "Cotizacion", "freq": "semanal"},
-            "seguimiento": {"goal": 100, "label": "Seguimiento 48h", "unit": "%", "freq": "semanal"},
+            "seguimiento": {"goal": 100, "label": "Cotiz. Enviadas", "unit": "%", "freq": "semanal"},
             "cierre": {"goal": 2, "label": "Cierre", "freq": "semanal"},
             "retencion": {"goal": 90, "label": "Retencion 90d", "unit": "%", "freq": "mensual"},
         },
