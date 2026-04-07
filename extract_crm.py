@@ -13,7 +13,7 @@ import json
 import os
 import re
 from datetime import datetime, timedelta
-from collections import defaultdict
+from collections import defaultdict, Counter
 
 ODOO_URL = os.environ.get("ODOO_URL", "https://tomenergy.cl")
 ODOO_DB = os.environ.get("ODOO_DB", "PRODUCCION")
@@ -440,47 +440,33 @@ def extract_funnel_data(models, uid):
         })
 
     # 6. Retencion 90d (solo semana actual)
+    # Definición: de los clientes que compraron en los últimos 90 días,
+    # ¿qué % compró al menos 2 veces?
     wk0 = get_enap_week(0)
     wed_date = wk0["wed"]
     lookback_start = wed_date - timedelta(days=90)
-    lookback_end = wed_date - timedelta(days=1)
 
-    first_orders = sr(models, uid, "sale.order", [
+    all_orders_90d = sr(models, uid, "sale.order", [
         ["date_order", ">=", fdt_s(lookback_start)],
-        ["date_order", "<=", fdt_e(lookback_end)],
+        ["date_order", "<=", fdt_e(wed_date)],
         ["state", "=", "sale"],
-    ], ["partner_id", "date_order"], limit=500)
+    ], ["partner_id"], limit=5000)
 
-    partner_first = {}
-    for o in first_orders:
+    # Count orders per partner
+    partner_order_count = Counter()
+    for o in all_orders_90d:
         pid = safe_id(o.get("partner_id"))
-        if pid and pid not in partner_first:
-            prev = s_count(models, uid, "sale.order", [
-                ["partner_id", "=", pid],
-                ["state", "=", "sale"],
-                ["date_order", "<", fdt_s(lookback_start)],
-            ])
-            if prev == 0:
-                partner_first[pid] = safe_name(o.get("partner_id"))
+        if pid:
+            partner_order_count[pid] += 1
 
-    retained = []
-    for pid, name in partner_first.items():
-        second = s_count(models, uid, "sale.order", [
-            ["partner_id", "=", pid],
-            ["state", "=", "sale"],
-            ["date_order", ">", fdt_e(lookback_end)],
-            ["date_order", "<=", fdt_e(wed_date)],
-        ])
-        if second > 0:
-            retained.append(name)
-
-    ret_total = len(partner_first)
-    ret_pct = round((len(retained) / ret_total) * 100) if ret_total > 0 else 0
-    print(f"  Retencion 90d: {ret_pct}% ({len(retained)}/{ret_total})")
+    ret_total = len(partner_order_count)  # unique clients who bought
+    retained_ids = {pid for pid, cnt in partner_order_count.items() if cnt >= 2}
+    ret_pct = round((len(retained_ids) / ret_total) * 100) if ret_total > 0 else 0
+    print(f"  Retencion 90d: {ret_pct}% ({len(retained_ids)}/{ret_total} clientes con 2+ compras)")
 
     weeks_data[0]["stages"]["retencion"] = {
         "value": ret_pct, "goal": 90, "unit": "%",
-        "total_evaluated": ret_total, "retained": retained,
+        "total_evaluated": ret_total, "retained_count": len(retained_ids),
     }
 
     return weeks_data
