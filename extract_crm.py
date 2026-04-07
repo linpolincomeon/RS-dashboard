@@ -636,172 +636,161 @@ def extract_sales_data(models, uid):
 
 
 # ==============================================================
-# PART 4: CHURN & RESCUE (based on invoicing, not CRM)
+# PART 4: CHURN & RESCUE (CRM stages + invoicing)
 # ==============================================================
-LOST_THRESHOLD_DAYS = 270  # 9 months = perdido
+LOST_THRESHOLD_DAYS = 270  # 9 months
 
 def extract_churn_data(models, uid):
     """
-    Client classification by invoicing:
-      - Activo: within expected purchase cycle
-      - Durmiente: exceeded dormancy threshold but < 9 months
-        (freq < 30d → dormant if > freq*1.5, freq >= 30d → dormant if > freq*1.3)
-      - Perdido: no invoice in 9+ months (270 days)
-      - Rescatado: was dormant/lost but invoiced again this month
-
-    Churn % = Perdidos este mes / Clientes Actuales mes anterior
+    Uses CRM lead stages (Durmiente / Perdidos) as source of truth,
+    enriched with invoicing data for frequency and volume.
+    
+    Churn % = Perdidos nuevos este mes / Clientes Actuales mes anterior
+    Rescue: split between ejecutivo (perdidos) and fidelización (durmientes)
     """
     print("\nExtracting Churn & Rescue data...")
     today = datetime.now().date()
-    three_months_ago = today - timedelta(days=90)
-    twelve_months_ago = today - timedelta(days=365)  # need full history for lost detection
 
-    # Get all posted invoices for last 12 months
-    all_inv = sr(models, uid, "account.move", [
+    # 1. Get all CRM leads in Durmiente and Perdidos stages
+    stages = sr(models, uid, "crm.stage", [], ["name"], limit=50)
+    stage_map = {s["id"]: s["name"] for s in stages}
+    durmiente_ids = [sid for sid, name in stage_map.items() if "durmiente" in name.lower()]
+    perdido_ids = [sid for sid, name in stage_map.items() if "perdido" in name.lower() or "no cerrado" in name.lower()]
+
+    print(f"  Stage IDs — Durmiente: {durmiente_ids}, Perdidos: {perdido_ids}")
+
+    # Get durmiente leads
+    durmiente_leads = sr(models, uid, "crm.lead", [
+        ["stage_id", "in", durmiente_ids],
+        ["active", "=", True],
+    ], ["partner_id", "user_id", "partner_name", "write_date", "create_date"], limit=5000)
+
+    # Get perdido leads
+    perdido_leads = sr(models, uid, "crm.lead", [
+        ["stage_id", "in", perdido_ids],
+        ["active", "=", True],
+    ], ["partner_id", "user_id", "partner_name", "write_date", "create_date"], limit=5000)
+
+    print(f"  CRM: {len(durmiente_leads)} durmientes, {len(perdido_leads)} perdidos")
+
+    # 2. Get active clients (invoiced this month or last month)
+    month_start = today.replace(day=1)
+    prev_month_end = month_start - timedelta(days=1)
+    prev_month_start = prev_month_end.replace(day=1)
+    two_months_ago = prev_month_start - timedelta(days=1)
+    two_months_start = two_months_ago.replace(day=1)
+
+    curr_inv = sr(models, uid, "account.move", [
         ["move_type", "=", "out_invoice"],
         ["state", "=", "posted"],
-        ["invoice_date", ">=", fmt(twelve_months_ago)],
+        ["invoice_date", ">=", fmt(month_start)],
         ["invoice_date", "<=", fmt(today)],
-    ], ["partner_id", "invoice_date", "invoice_user_id"], limit=20000, order="invoice_date asc")
+    ], ["partner_id", "invoice_user_id"], limit=10000)
 
-    # Group invoices by partner
-    partner_invoices = defaultdict(list)
-    partner_user = {}
-    partner_names = {}
-    for inv in all_inv:
-        pid = safe_id(inv.get("partner_id"))
-        if not pid:
-            continue
-        inv_date = inv.get("invoice_date", "")
-        if inv_date:
-            partner_invoices[pid].append(inv_date)
-        u = safe_name(inv.get("invoice_user_id"))
-        if u and u != "Sin asignar":
-            partner_user[pid] = u
-        if pid not in partner_names:
-            partner_names[pid] = safe_name(inv.get("partner_id"))
-
-    # Classify each partner
-    active_clients = []
-    dormant_clients = []
-    lost_clients = []
-    rescued_clients = []
-
-    # Current month boundaries (for detecting "rescued this month")
-    month_start = today.replace(day=1)
-
-    for pid, dates in partner_invoices.items():
-        last_date = datetime.strptime(dates[-1], "%Y-%m-%d").date()
-        days_since = (today - last_date).days
-        has_invoice_this_month = any(d >= fmt(month_start) for d in dates)
-
-        # Calculate avg frequency from last 3 months of data
-        avg_freq = 0
-        if len(dates) >= 2:
-            recent_dates = [d for d in dates if d >= fmt(three_months_ago)]
-            calc_dates = recent_dates if len(recent_dates) >= 2 else dates
-            intervals = []
-            for i in range(1, len(calc_dates)):
-                d1 = datetime.strptime(calc_dates[i-1], "%Y-%m-%d").date()
-                d2 = datetime.strptime(calc_dates[i], "%Y-%m-%d").date()
-                diff = (d2 - d1).days
-                if diff > 0:
-                    intervals.append(diff)
-            avg_freq = sum(intervals) / len(intervals) if intervals else 0
-
-        # Dormancy threshold
-        if avg_freq > 0:
-            threshold = avg_freq * 1.5 if avg_freq < 30 else avg_freq * 1.3
-        else:
-            threshold = 45
-
-        client_data = {
-            "id": pid,
-            "name": partner_names.get(pid, "?"),
-            "user": partner_user.get(pid, "Sin asignar"),
-            "avg_freq": round(avg_freq),
-            "days_since": days_since,
-            "threshold": round(threshold),
-            "last_date": dates[-1],
-            "invoices_12m": len(dates),
-            "status": "",
-        }
-
-        # Classification
-        if days_since >= LOST_THRESHOLD_DAYS:
-            # Perdido: 9+ months without invoice
-            if has_invoice_this_month:
-                client_data["status"] = "rescatado"
-                rescued_clients.append(client_data)
-            else:
-                client_data["status"] = "perdido"
-                lost_clients.append(client_data)
-        elif days_since > threshold:
-            # Durmiente: exceeded cycle but < 9 months
-            if has_invoice_this_month and days_since > threshold * 2:
-                # Was deeply dormant but came back this month
-                client_data["status"] = "rescatado"
-                rescued_clients.append(client_data)
-            else:
-                client_data["status"] = "durmiente"
-                dormant_clients.append(client_data)
-        else:
-            client_data["status"] = "activo"
-            active_clients.append(client_data)
-
-    # Sort by days_since descending
-    lost_clients.sort(key=lambda x: -x["days_since"])
-    dormant_clients.sort(key=lambda x: -x["days_since"])
-
-    # Count "newly lost this month" = clients whose 270th day falls within current month
-    newly_lost = [c for c in lost_clients
-                  if c["days_since"] >= LOST_THRESHOLD_DAYS
-                  and c["days_since"] < LOST_THRESHOLD_DAYS + 30]
-
-    # Clients actuales mes anterior (for churn denominator)
-    prev_month_end = today.replace(day=1) - timedelta(days=1)
-    prev_month_start = prev_month_end.replace(day=1)
     prev_inv = sr(models, uid, "account.move", [
         ["move_type", "=", "out_invoice"],
         ["state", "=", "posted"],
         ["invoice_date", ">=", fmt(prev_month_start)],
         ["invoice_date", "<=", fmt(prev_month_end)],
     ], ["partner_id"], limit=10000)
-    prev_month_clients = len(set(safe_id(i.get("partner_id")) for i in prev_inv if safe_id(i.get("partner_id"))))
 
-    # Churn % = perdidos este mes / clientes actuales mes anterior
-    churn_pct = round((len(newly_lost) / prev_month_clients) * 100, 1) if prev_month_clients > 0 else 0
-    rescue_pct = round((len(rescued_clients) / max(len(dormant_clients) + len(lost_clients) + len(rescued_clients), 1)) * 100)
+    curr_month_partners = set(safe_id(i.get("partner_id")) for i in curr_inv if safe_id(i.get("partner_id")))
+    prev_month_partners = set(safe_id(i.get("partner_id")) for i in prev_inv if safe_id(i.get("partner_id")))
+    prev_month_clients = len(prev_month_partners)
 
-    # Aggregate by salesperson
-    by_user = {"active": Counter(), "dormant": Counter(), "lost": Counter(), "rescued": Counter()}
-    for c in active_clients: by_user["active"][c["user"]] += 1
-    for c in dormant_clients: by_user["dormant"][c["user"]] += 1
-    for c in lost_clients: by_user["lost"][c["user"]] += 1
-    for c in rescued_clients: by_user["rescued"][c["user"]] += 1
+    # 3. Build durmiente list with details
+    dormant_list = []
+    dormant_by_user = Counter()
+    rescued_dormant_list = []
+    rescued_dormant_by_user = Counter()
 
-    print(f"  Clientes activos: {len(active_clients)}")
-    print(f"  Durmientes: {len(dormant_clients)}")
-    print(f"  Perdidos (9m+): {len(lost_clients)} (nuevos este mes: {len(newly_lost)})")
-    print(f"  Rescatados: {len(rescued_clients)}")
+    for lead in durmiente_leads:
+        pid = safe_id(lead.get("partner_id"))
+        user = safe_name(lead.get("user_id"))
+        name = safe_name(lead.get("partner_id")) or lead.get("partner_name", "?")
+        write_date = (lead.get("write_date") or "")[:10]
+
+        # Check if this dormant client invoiced this month (= rescued by fidelización)
+        if pid and pid in curr_month_partners:
+            rescued_dormant_list.append({
+                "name": name, "user": user, "last_update": write_date,
+            })
+            rescued_dormant_by_user[user] += 1
+        else:
+            dormant_list.append({
+                "name": name, "user": user, "last_update": write_date,
+            })
+            dormant_by_user[user] += 1
+
+    # 4. Build perdido list with details
+    lost_list = []
+    lost_by_user = Counter()
+    rescued_lost_list = []
+    rescued_lost_by_user = Counter()
+
+    # "Newly lost this month" = perdido leads updated this month
+    newly_lost = 0
+
+    for lead in perdido_leads:
+        pid = safe_id(lead.get("partner_id"))
+        user = safe_name(lead.get("user_id"))
+        name = safe_name(lead.get("partner_id")) or lead.get("partner_name", "?")
+        write_date = (lead.get("write_date") or "")[:10]
+
+        # Check if moved to perdido this month
+        if write_date >= fmt(month_start):
+            newly_lost += 1
+
+        # Check if this lost client invoiced this month (= rescued by ejecutivo, counts as new)
+        if pid and pid in curr_month_partners:
+            rescued_lost_list.append({
+                "name": name, "user": user, "last_update": write_date,
+            })
+            rescued_lost_by_user[user] += 1
+        else:
+            lost_list.append({
+                "name": name, "user": user, "last_update": write_date,
+            })
+            lost_by_user[user] += 1
+
+    # 5. Active clients count (from invoicing)
+    active_count = len(curr_month_partners | prev_month_partners)
+
+    # 6. Churn = perdidos nuevos este mes / clientes actuales mes anterior
+    churn_pct = round((newly_lost / prev_month_clients) * 100, 1) if prev_month_clients > 0 else 0
+    total_rescued = len(rescued_dormant_list) + len(rescued_lost_list)
+    total_at_risk = len(dormant_list) + len(lost_list) + total_rescued
+    rescue_pct = round((total_rescued / max(total_at_risk, 1)) * 100)
+
+    print(f"  Activos (2 meses): {active_count}")
+    print(f"  Durmientes CRM: {len(dormant_list)} (+{len(rescued_dormant_list)} rescatados)")
+    print(f"  Perdidos CRM: {len(lost_list)} (+{len(rescued_lost_list)} rescatados)")
+    print(f"  Nuevos perdidos este mes: {newly_lost}")
     print(f"  Clientes mes anterior: {prev_month_clients}")
-    print(f"  Churn rate: {churn_pct}% ({len(newly_lost)}/{prev_month_clients})")
+    print(f"  Churn: {churn_pct}% ({newly_lost}/{prev_month_clients})")
 
     return {
         "summary": {
-            "active": len(active_clients),
-            "dormant": len(dormant_clients),
-            "lost": len(lost_clients),
-            "newly_lost": len(newly_lost),
-            "rescued": len(rescued_clients),
+            "active": active_count,
+            "dormant": len(dormant_list),
+            "lost": len(lost_list),
+            "newly_lost": newly_lost,
+            "rescued_dormant": len(rescued_dormant_list),
+            "rescued_lost": len(rescued_lost_list),
             "prev_month_clients": prev_month_clients,
             "churn_pct": churn_pct,
             "rescue_pct": rescue_pct,
         },
-        "by_user": {k: dict(v) for k, v in by_user.items()},
-        "dormant_list": dormant_clients[:50],
-        "lost_list": lost_clients[:30],
-        "rescued_list": rescued_clients[:20],
+        "by_user": {
+            "dormant": dict(dormant_by_user),
+            "lost": dict(lost_by_user),
+            "rescued_dormant": dict(rescued_dormant_by_user),
+            "rescued_lost": dict(rescued_lost_by_user),
+        },
+        "dormant_list": dormant_list[:50],
+        "lost_list": lost_list[:30],
+        "rescued_dormant_list": rescued_dormant_list[:20],
+        "rescued_lost_list": rescued_lost_list[:20],
     }
 
 
@@ -850,6 +839,10 @@ def main():
             json.dump(vendor_goals, f, ensure_ascii=False, indent=2)
         print(f"\nvendor-goals.json CREATED with template — edit targets manually!")
 
+    # Patch April 2026 targets
+    if "Toro González Sebastian Enrique" in vendor_goals:
+        vendor_goals["Toro González Sebastian Enrique"]["litros_mes"] = 200000
+
     # Merge everything into one JSON
     data = {
         "updated": datetime.now().isoformat(),
@@ -868,6 +861,12 @@ def main():
         "ventas": ventas,
         "churn": churn,
         "vendor_goals": vendor_goals,
+        "company_goals": {
+            "litros_mes": 1305689,
+            "margen_retail": 12.0,
+            "margen_volumen": 9.0,
+            "month": "abril 2026",
+        },
         "funnel_goals": {
             "leads": {"goal": 15, "label": "Leads", "freq": "semanal"},
             "contacto": {"goal": 10, "label": "Contacto Efectivo", "freq": "semanal"},
