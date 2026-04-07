@@ -1,18 +1,18 @@
 {
-  "updated": "2026-04-07T16:00:11.504301",
+  "updated": "2026-04-07T19:26:35.842353",
   "weeks": [
     {
       "label": "02apr-08apr",
       "start": "2026-04-02",
       "end": "2026-04-08",
-      "ventas": 120852772,
-      "neto": 98367154,
-      "litros": 79775,
-      "precio": 1233,
-      "margin": 0.07634,
-      "facturas": 48,
+      "ventas": 138047676,
+      "neto": 112574040,
+      "litros": 90835,
+      "precio": 1239,
+      "margin": 0.07924,
+      "facturas": 59,
       "nc": 2,
-      "clientes": 40,
+      "clientes": 48,
       "recaud": 0,
       "cheques": 0,
       "transf": 0,
@@ -326,8 +326,8 @@
     {
       "date": "07apr",
       "day": "Mar",
-      "litros": 12660,
-      "neto": 16417311
+      "litros": 23720,
+      "neto": 30624197
     },
     {
       "date": "06apr",
@@ -422,6 +422,10 @@
   ],
   "banks": [
     {
+      "name": "DE CHILE",
+      "balance": 66332494
+    },
+    {
       "name": "SANTANDER",
       "balance": 25238563
     },
@@ -432,10 +436,6 @@
     {
       "name": "ESTADO",
       "balance": 10309411
-    },
-    {
-      "name": "DE CHILE",
-      "balance": 10254866
     },
     {
       "name": "BCI",
@@ -450,17 +450,17 @@
       "balance": -838790
     }
   ],
-  "total_cash": 66747133,
+  "total_cash": 122824761,
   "receivables": {
-    "open_invoices": 360,
-    "total_due": 653545328,
-    "current": 560296379,
-    "overdue": 93248949,
-    "pct_overdue": 14.3,
+    "open_invoices": 367,
+    "total_due": 666056467,
+    "current": 575357015,
+    "overdue": 90699452,
+    "pct_overdue": 13.6,
     "aging": {
       "0-30": 78509789,
-      "31-60": 1776099,
-      "61-90": 1997498,
+      "31-60": 1224100,
+      "61-90": 0,
       "90+": 10965563
     },
     "top_debtors": [
@@ -477,16 +477,16 @@
         "amount": 22342885
       },
       {
+        "name": "AGRICOLA AGROBOSQUES SAN ISIDRO S.A.",
+        "amount": 19157998
+      },
+      {
         "name": "SOC AGRICOLA GRANJA SAN RAFAEL LIMITADA",
         "amount": 19123049
       },
       {
-        "name": "AGRICOLA AGROBOSQUES SAN ISIDRO S.A.",
-        "amount": 17612997
-      },
-      {
         "name": "INGENERIA Y CONSTRUCCIONES FEBLANCA SPA",
-        "amount": 17415397
+        "amount": 18894397
       },
       {
         "name": "FORESTAL PUIHUA SPA",
@@ -548,8 +548,8 @@
   },
   "crm": {
     "total": 1371,
-    "open": 1151,
-    "won": 219,
+    "open": 1150,
+    "won": 220,
     "new_30d": 70,
     "by_stage": [
       {
@@ -574,7 +574,7 @@
       },
       {
         "stage": "Cotizado",
-        "count": 267
+        "count": 266
       },
       {
         "stage": "Durmiente",
@@ -582,7 +582,7 @@
       },
       {
         "stage": "Won",
-        "count": 219
+        "count": 220
       }
     ]
   }
