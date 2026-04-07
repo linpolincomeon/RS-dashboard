@@ -612,6 +612,170 @@ def extract_sales_data(models, uid):
 
 
 # ==============================================================
+# PART 4: CHURN & RESCUE (based on invoicing, not CRM)
+# ==============================================================
+def extract_churn_data(models, uid):
+    """
+    Durmiente (by invoicing):
+      - Calculate avg purchase frequency over last 3 months
+      - If avg freq < 30 days: dormant if last purchase > freq * 1.5
+      - If avg freq >= 30 days: dormant if last purchase > freq * 1.3
+    Churn = dormant client who never came back
+    Rescue = dormant client who invoiced again
+    """
+    print("\nExtracting Churn & Rescue data...")
+    today = datetime.now().date()
+    three_months_ago = today - timedelta(days=90)
+    six_months_ago = today - timedelta(days=180)  # need 6 months to calc 3-month frequency
+
+    # Get all posted invoices for last 6 months to calculate frequency
+    all_inv = sr(models, uid, "account.move", [
+        ["move_type", "=", "out_invoice"],
+        ["state", "=", "posted"],
+        ["invoice_date", ">=", fmt(six_months_ago)],
+        ["invoice_date", "<=", fmt(today)],
+    ], ["partner_id", "invoice_date", "invoice_user_id"], limit=10000, order="invoice_date asc")
+
+    # Group invoices by partner
+    partner_invoices = defaultdict(list)
+    partner_user = {}  # last known salesperson
+    for inv in all_inv:
+        pid = safe_id(inv.get("partner_id"))
+        if not pid:
+            continue
+        inv_date = inv.get("invoice_date", "")
+        if inv_date:
+            partner_invoices[pid].append(inv_date)
+        u = safe_name(inv.get("invoice_user_id"))
+        if u and u != "Sin asignar":
+            partner_user[pid] = u
+
+    # Get partner names
+    partner_names = {}
+    for inv in all_inv:
+        pid = safe_id(inv.get("partner_id"))
+        if pid and pid not in partner_names:
+            partner_names[pid] = safe_name(inv.get("partner_id"))
+
+    # Classify each partner
+    active_clients = []
+    dormant_clients = []
+    rescued_clients = []
+
+    for pid, dates in partner_invoices.items():
+        if len(dates) < 2:
+            # Only 1 invoice ever in 6 months — check if within 3-month window
+            last_date = datetime.strptime(dates[-1], "%Y-%m-%d").date()
+            days_since = (today - last_date).days
+            if days_since > 45:  # single-purchase client, conservative threshold
+                dormant_clients.append({
+                    "id": pid,
+                    "name": partner_names.get(pid, "?"),
+                    "user": partner_user.get(pid, "Sin asignar"),
+                    "avg_freq": 0,
+                    "days_since": days_since,
+                    "last_date": dates[-1],
+                    "invoices_6m": 1,
+                })
+            continue
+
+        # Calculate intervals between purchases (using 3-month window for frequency)
+        recent_dates = [d for d in dates if d >= fmt(three_months_ago)]
+        if len(recent_dates) >= 2:
+            intervals = []
+            for i in range(1, len(recent_dates)):
+                d1 = datetime.strptime(recent_dates[i-1], "%Y-%m-%d").date()
+                d2 = datetime.strptime(recent_dates[i], "%Y-%m-%d").date()
+                intervals.append((d2 - d1).days)
+            avg_freq = sum(intervals) / len(intervals) if intervals else 0
+        else:
+            # Less than 2 invoices in 3 months — use all 6-month data
+            intervals = []
+            for i in range(1, len(dates)):
+                d1 = datetime.strptime(dates[i-1], "%Y-%m-%d").date()
+                d2 = datetime.strptime(dates[i], "%Y-%m-%d").date()
+                intervals.append((d2 - d1).days)
+            avg_freq = sum(intervals) / len(intervals) if intervals else 0
+
+        last_date = datetime.strptime(dates[-1], "%Y-%m-%d").date()
+        days_since = (today - last_date).days
+
+        # Apply dormancy rule
+        if avg_freq > 0:
+            if avg_freq < 30:
+                threshold = avg_freq * 1.5
+            else:
+                threshold = avg_freq * 1.3
+        else:
+            threshold = 45  # fallback
+
+        is_dormant = days_since > threshold
+
+        client_data = {
+            "id": pid,
+            "name": partner_names.get(pid, "?"),
+            "user": partner_user.get(pid, "Sin asignar"),
+            "avg_freq": round(avg_freq),
+            "days_since": days_since,
+            "threshold": round(threshold),
+            "last_date": dates[-1],
+            "invoices_6m": len(dates),
+        }
+
+        if is_dormant:
+            # Check if they were dormant before but came back (rescued)
+            # = they crossed the threshold at some point but have a recent invoice
+            if days_since <= 30 and len(dates) >= 3:
+                # Recently purchased but was dormant before — this is a rescue
+                rescued_clients.append(client_data)
+            else:
+                dormant_clients.append(client_data)
+        else:
+            active_clients.append(client_data)
+
+    # Sort dormants by days_since descending
+    dormant_clients.sort(key=lambda x: -x["days_since"])
+
+    # Aggregate by salesperson
+    dormant_by_user = Counter()
+    rescued_by_user = Counter()
+    active_by_user = Counter()
+    for c in dormant_clients:
+        dormant_by_user[c["user"]] += 1
+    for c in rescued_clients:
+        rescued_by_user[c["user"]] += 1
+    for c in active_clients:
+        active_by_user[c["user"]] += 1
+
+    total_with_history = len(active_clients) + len(dormant_clients) + len(rescued_clients)
+    churn_pct = round((len(dormant_clients) / total_with_history) * 100) if total_with_history > 0 else 0
+    rescue_pct = round((len(rescued_clients) / max(len(dormant_clients) + len(rescued_clients), 1)) * 100)
+
+    print(f"  Clientes activos: {len(active_clients)}")
+    print(f"  Durmientes: {len(dormant_clients)}")
+    print(f"  Rescatados: {len(rescued_clients)}")
+    print(f"  Churn rate: {churn_pct}%")
+
+    return {
+        "summary": {
+            "total_clients": total_with_history,
+            "active": len(active_clients),
+            "dormant": len(dormant_clients),
+            "rescued": len(rescued_clients),
+            "churn_pct": churn_pct,
+            "rescue_pct": rescue_pct,
+        },
+        "by_user": {
+            "dormant": dict(dormant_by_user),
+            "rescued": dict(rescued_by_user),
+            "active": dict(active_by_user),
+        },
+        "dormant_list": dormant_clients[:50],  # top 50 for the table
+        "rescued_list": rescued_clients[:20],
+    }
+
+
+# ==============================================================
 # MAIN
 # ==============================================================
 def main():
@@ -626,6 +790,9 @@ def main():
 
     # Part 3: Sales KPIs
     ventas = extract_sales_data(models, uid)
+
+    # Part 4: Churn & Rescue
+    churn = extract_churn_data(models, uid)
 
     # Load or create vendor goals
     goals_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "vendor-goals.json")
@@ -669,6 +836,7 @@ def main():
         # New fields
         "funnel_weeks": funnel_weeks,
         "ventas": ventas,
+        "churn": churn,
         "vendor_goals": vendor_goals,
         "funnel_goals": {
             "leads": {"goal": 15, "label": "Leads", "freq": "semanal"},
