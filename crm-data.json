@@ -1,5 +1,5 @@
 {
-  "updated": "2026-04-07T18:45:09.106058",
+  "updated": "2026-04-07T18:57:40.262102",
   "week": {
     "start": "2026-04-02",
     "end": "2026-04-08",
@@ -4578,18 +4578,18 @@
     "month_start": "2026-04-01",
     "month_end": "2026-04-30",
     "totals": {
-      "total_litros": 125372,
-      "total_venta_neta": 149913568,
-      "invoice_count": 79,
+      "total_litros": 127872,
+      "total_venta_neta": 153095284,
+      "invoice_count": 82,
       "nc_count": 7,
       "litros_by_user": {
+        "TomEnergy": 79158,
         "Toro González Sebastian Enrique": 42914,
-        "TomEnergy": 76658,
         "Comber Sigall Pauline": 5800
       },
       "venta_by_user": {
+        "TomEnergy": 97103724,
         "Toro González Sebastian Enrique": 48919236,
-        "TomEnergy": 93922008,
         "Comber Sigall Pauline": 7072324
       }
     },
@@ -4608,23 +4608,23 @@
       },
       {
         "label": "2/4-8/4",
-        "litros": 87676,
-        "venta_neta": 108575880
+        "litros": 90176,
+        "venta_neta": 111757596
       }
     ]
   },
   "churn": {
     "summary": {
       "total_clients": 391,
-      "active": 222,
-      "dormant": 128,
+      "active": 223,
+      "dormant": 127,
       "rescued": 41,
-      "churn_pct": 33,
+      "churn_pct": 32,
       "rescue_pct": 24
     },
     "by_user": {
       "dormant": {
-        "TomEnergy": 91,
+        "TomEnergy": 90,
         "Toro González Sebastian Enrique": 21,
         "GARRIDO CISTERNA JUAN MANUEL": 10,
         "Vanessa Vazquez": 2,
@@ -4637,7 +4637,7 @@
         "Toro González Sebastian Enrique": 4
       },
       "active": {
-        "TomEnergy": 193,
+        "TomEnergy": 194,
         "Comber Sigall Pauline": 11,
         "Toro González Sebastian Enrique": 18
       }
@@ -4680,19 +4680,9 @@
         "invoices_6m": 1
       },
       {
-        "id": 5103,
-        "name": "ISMAEL DE LA CRUZ VERGARA CISTERNA",
+        "id": 5323,
+        "name": "SOCIEDAD AGRICOLA GRANT Y GAETE LIMITADA",
         "user": "TomEnergy",
-        "avg_freq": 0,
-        "days_since": 169,
-        "threshold": 45,
-        "last_date": "2025-10-20",
-        "invoices_6m": 2
-      },
-      {
-        "id": 7625,
-        "name": "OCTAVIO SEGUNDO ORTEGA VILLALOBOS",
-        "user": "GARRIDO CISTERNA JUAN MANUEL",
         "avg_freq": 0,
         "days_since": 169,
         "last_date": "2025-10-20",
@@ -4708,9 +4698,9 @@
         "invoices_6m": 1
       },
       {
-        "id": 5323,
-        "name": "SOCIEDAD AGRICOLA GRANT Y GAETE LIMITADA",
-        "user": "TomEnergy",
+        "id": 7625,
+        "name": "OCTAVIO SEGUNDO ORTEGA VILLALOBOS",
+        "user": "GARRIDO CISTERNA JUAN MANUEL",
         "avg_freq": 0,
         "days_since": 169,
         "last_date": "2025-10-20",
@@ -4724,6 +4714,16 @@
         "days_since": 169,
         "last_date": "2025-10-20",
         "invoices_6m": 1
+      },
+      {
+        "id": 5103,
+        "name": "ISMAEL DE LA CRUZ VERGARA CISTERNA",
+        "user": "TomEnergy",
+        "avg_freq": 0,
+        "days_since": 169,
+        "threshold": 45,
+        "last_date": "2025-10-20",
+        "invoices_6m": 2
       },
       {
         "id": 7268,
@@ -4790,8 +4790,8 @@
         "invoices_6m": 1
       },
       {
-        "id": 5148,
-        "name": "JULIO CESAR ROJAS CORTES",
+        "id": 5348,
+        "name": "SOCIEDAD COMERCIAL Y TRANSPORTE VENEGAS Y ROJAS LTDA",
         "user": "TomEnergy",
         "avg_freq": 0,
         "days_since": 155,
@@ -4799,8 +4799,8 @@
         "invoices_6m": 1
       },
       {
-        "id": 5348,
-        "name": "SOCIEDAD COMERCIAL Y TRANSPORTE VENEGAS Y ROJAS LTDA",
+        "id": 5148,
+        "name": "JULIO CESAR ROJAS CORTES",
         "user": "TomEnergy",
         "avg_freq": 0,
         "days_since": 155,
@@ -5028,18 +5028,18 @@
         "invoices_6m": 5
       },
       {
-        "id": 7488,
-        "name": "EL ESTRIBILLO SPA",
-        "user": "Toro González Sebastian Enrique",
+        "id": 4912,
+        "name": "AGRÍCOLA ISJ LIMITADA",
+        "user": "TomEnergy",
         "avg_freq": 0,
         "days_since": 119,
         "last_date": "2025-12-09",
         "invoices_6m": 1
       },
       {
-        "id": 4912,
-        "name": "AGRÍCOLA ISJ LIMITADA",
-        "user": "TomEnergy",
+        "id": 7488,
+        "name": "EL ESTRIBILLO SPA",
+        "user": "Toro González Sebastian Enrique",
         "avg_freq": 0,
         "days_since": 119,
         "last_date": "2025-12-09",
@@ -5118,16 +5118,6 @@
     ],
     "rescued_list": [
       {
-        "id": 6127,
-        "name": "AGRÍCOLA KUNAKO SPA",
-        "user": "TomEnergy",
-        "avg_freq": 10,
-        "days_since": 26,
-        "threshold": 14,
-        "last_date": "2026-03-12",
-        "invoices_6m": 9
-      },
-      {
         "id": 4918,
         "name": "AGRICOLA SAN BENITO DE BUREO S.P.A.",
         "user": "TomEnergy",
@@ -5138,54 +5128,14 @@
         "invoices_6m": 9
       },
       {
-        "id": 5210,
-        "name": "JOSE EDGARDO RAMON MEZA BANADOS",
+        "id": 6127,
+        "name": "AGRÍCOLA KUNAKO SPA",
         "user": "TomEnergy",
-        "avg_freq": 3,
-        "days_since": 7,
-        "threshold": 5,
-        "last_date": "2026-03-31",
-        "invoices_6m": 39
-      },
-      {
-        "id": 6328,
-        "name": "PAROT HERMANOS SPA",
-        "user": "TomEnergy",
-        "avg_freq": 4,
-        "days_since": 22,
-        "threshold": 7,
-        "last_date": "2026-03-16",
-        "invoices_6m": 46
-      },
-      {
-        "id": 5191,
-        "name": "MAQUINARIAS Y ARIDOS SAN PEDRO SPA.",
-        "user": "TomEnergy",
-        "avg_freq": 2,
-        "days_since": 5,
-        "threshold": 4,
-        "last_date": "2026-04-02",
-        "invoices_6m": 70
-      },
-      {
-        "id": 4886,
-        "name": "HUGO PATRICIO CATALAN ZAVALLA",
-        "user": "TomEnergy",
-        "avg_freq": 5,
+        "avg_freq": 10,
         "days_since": 26,
-        "threshold": 7,
+        "threshold": 14,
         "last_date": "2026-03-12",
         "invoices_6m": 9
-      },
-      {
-        "id": 5335,
-        "name": "SOCIEDAD AGRICOLA Y GANADERA CERRO ALEGRE LIMITADA",
-        "user": "TomEnergy",
-        "avg_freq": 8,
-        "days_since": 21,
-        "threshold": 13,
-        "last_date": "2026-03-17",
-        "invoices_6m": 18
       },
       {
         "id": 4931,
@@ -5198,6 +5148,26 @@
         "invoices_6m": 11
       },
       {
+        "id": 5191,
+        "name": "MAQUINARIAS Y ARIDOS SAN PEDRO SPA.",
+        "user": "TomEnergy",
+        "avg_freq": 2,
+        "days_since": 5,
+        "threshold": 4,
+        "last_date": "2026-04-02",
+        "invoices_6m": 70
+      },
+      {
+        "id": 6328,
+        "name": "PAROT HERMANOS SPA",
+        "user": "TomEnergy",
+        "avg_freq": 4,
+        "days_since": 22,
+        "threshold": 7,
+        "last_date": "2026-03-16",
+        "invoices_6m": 46
+      },
+      {
         "id": 6261,
         "name": "TRANSPORTE Y SERVICIO HERRERA Y CIA LTDA",
         "user": "TomEnergy",
@@ -5206,6 +5176,36 @@
         "threshold": 14,
         "last_date": "2026-03-23",
         "invoices_6m": 17
+      },
+      {
+        "id": 5335,
+        "name": "SOCIEDAD AGRICOLA Y GANADERA CERRO ALEGRE LIMITADA",
+        "user": "TomEnergy",
+        "avg_freq": 8,
+        "days_since": 21,
+        "threshold": 13,
+        "last_date": "2026-03-17",
+        "invoices_6m": 18
+      },
+      {
+        "id": 5210,
+        "name": "JOSE EDGARDO RAMON MEZA BANADOS",
+        "user": "TomEnergy",
+        "avg_freq": 3,
+        "days_since": 7,
+        "threshold": 5,
+        "last_date": "2026-03-31",
+        "invoices_6m": 39
+      },
+      {
+        "id": 4886,
+        "name": "HUGO PATRICIO CATALAN ZAVALLA",
+        "user": "TomEnergy",
+        "avg_freq": 5,
+        "days_since": 26,
+        "threshold": 7,
+        "last_date": "2026-03-12",
+        "invoices_6m": 9
       },
       {
         "id": 4938,
@@ -5228,16 +5228,6 @@
         "invoices_6m": 11
       },
       {
-        "id": 4854,
-        "name": "AGRICOLA SANTA CAROLINA SPA",
-        "user": "TomEnergy",
-        "avg_freq": 11,
-        "days_since": 20,
-        "threshold": 16,
-        "last_date": "2026-03-18",
-        "invoices_6m": 7
-      },
-      {
         "id": 5264,
         "name": "RODRIGO VALDERRAMA LABRA",
         "user": "TomEnergy",
@@ -5246,6 +5236,16 @@
         "threshold": 20,
         "last_date": "2026-03-13",
         "invoices_6m": 16
+      },
+      {
+        "id": 4854,
+        "name": "AGRICOLA SANTA CAROLINA SPA",
+        "user": "TomEnergy",
+        "avg_freq": 11,
+        "days_since": 20,
+        "threshold": 16,
+        "last_date": "2026-03-18",
+        "invoices_6m": 7
       },
       {
         "id": 4864,
@@ -5258,14 +5258,14 @@
         "invoices_6m": 180
       },
       {
-        "id": 5293,
-        "name": "SERVICIOS REVIVA SPA",
+        "id": 4814,
+        "name": "AGRICOLA LA SORPRESA SPA",
         "user": "TomEnergy",
-        "avg_freq": 6,
-        "days_since": 14,
+        "avg_freq": 7,
+        "days_since": 29,
         "threshold": 10,
-        "last_date": "2026-03-24",
-        "invoices_6m": 24
+        "last_date": "2026-03-09",
+        "invoices_6m": 16
       },
       {
         "id": 4822,
@@ -5278,14 +5278,14 @@
         "invoices_6m": 15
       },
       {
-        "id": 4814,
-        "name": "AGRICOLA LA SORPRESA SPA",
+        "id": 5293,
+        "name": "SERVICIOS REVIVA SPA",
         "user": "TomEnergy",
-        "avg_freq": 7,
-        "days_since": 29,
+        "avg_freq": 6,
+        "days_since": 14,
         "threshold": 10,
-        "last_date": "2026-03-09",
-        "invoices_6m": 16
+        "last_date": "2026-03-24",
+        "invoices_6m": 24
       },
       {
         "id": 4770,
