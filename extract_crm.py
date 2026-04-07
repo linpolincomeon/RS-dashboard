@@ -336,22 +336,46 @@ def extract_funnel_data(models, uid):
                 "fecha": (l.get("create_date") or "")[:10],
             })
 
-        # 2. Contactos
-        contact_count = None
+        # 2. Contactos efectivos (notes, emails, whatsapp, calls on crm.lead)
+        contact_count = 0
+        contacts_by_user = defaultdict(int)
         try:
-            contact_count = s_count(models, uid, "mail.message", [
+            contact_msgs = sr(models, uid, "mail.message", [
                 ["date", ">=", fdt_s(ws)],
                 ["date", "<=", fdt_e(we)],
                 ["model", "=", "crm.lead"],
-                ["message_type", "=", "notification"],
-            ])
+                ["message_type", "in", ["comment", "email", "notification", "sms"]],
+            ], ["res_id"], limit=2000)
+            contact_count = len(contact_msgs)
+
+            # Map lead IDs to their assigned salesperson
+            lead_ids = list(set(m.get("res_id") for m in contact_msgs if m.get("res_id")))
+            if lead_ids:
+                # Chunk to avoid timeout
+                lead_user_map = {}
+                for i in range(0, len(lead_ids), 200):
+                    chunk = lead_ids[i:i+200]
+                    leads_info = sr(models, uid, "crm.lead", [
+                        ["id", "in", chunk],
+                    ], ["id", "user_id"], limit=200)
+                    for li in leads_info:
+                        lead_user_map[li["id"]] = safe_name(li.get("user_id"))
+
+                for m in contact_msgs:
+                    rid = m.get("res_id")
+                    u = lead_user_map.get(rid, "Sin asignar")
+                    contacts_by_user[u] += 1
         except:
             try:
-                contact_count = s_count(models, uid, "mail.activity", [
+                acts = sr(models, uid, "mail.activity", [
                     ["date_deadline", ">=", ws],
                     ["date_deadline", "<=", we],
                     ["res_model", "=", "crm.lead"],
-                ])
+                ], ["user_id"], limit=2000)
+                contact_count = len(acts)
+                for a in acts:
+                    u = safe_name(a.get("user_id"))
+                    contacts_by_user[u] += 1
             except:
                 pass
 
@@ -432,7 +456,7 @@ def extract_funnel_data(models, uid):
             "is_current": offset == 0,
             "stages": {
                 "leads":       {"value": lead_count, "goal": 15, "by_user": dict(leads_by_user), "detail": lead_rows},
-                "contacto":    {"value": contact_count, "goal": 10},
+                "contacto":    {"value": contact_count, "goal": 10, "by_user": dict(contacts_by_user)},
                 "cotizacion":  {"value": quote_count, "goal": 8, "by_user": dict(quotes_by_user), "detail": quote_rows},
                 "seguimiento": {"value": followup_pct, "goal": 100, "unit": "%"},
                 "cierre":      {"value": close_count, "goal": 2, "by_user": dict(close_by_user), "detail": close_detail},
@@ -748,13 +772,26 @@ def extract_churn_data(models, uid):
         active_by_user[c["user"]] += 1
 
     total_with_history = len(active_clients) + len(dormant_clients) + len(rescued_clients)
-    churn_pct = round((len(dormant_clients) / total_with_history) * 100) if total_with_history > 0 else 0
+
+    # Churn = durmientes / clientes que compraron el mes anterior
+    prev_month_end = today.replace(day=1) - timedelta(days=1)
+    prev_month_start = prev_month_end.replace(day=1)
+    prev_inv = sr(models, uid, "account.move", [
+        ["move_type", "=", "out_invoice"],
+        ["state", "=", "posted"],
+        ["invoice_date", ">=", fmt(prev_month_start)],
+        ["invoice_date", "<=", fmt(prev_month_end)],
+    ], ["partner_id"], limit=10000)
+    prev_clients = len(set(safe_id(i.get("partner_id")) for i in prev_inv if safe_id(i.get("partner_id"))))
+
+    churn_pct = round((len(dormant_clients) / prev_clients) * 100) if prev_clients > 0 else 0
     rescue_pct = round((len(rescued_clients) / max(len(dormant_clients) + len(rescued_clients), 1)) * 100)
 
     print(f"  Clientes activos: {len(active_clients)}")
     print(f"  Durmientes: {len(dormant_clients)}")
     print(f"  Rescatados: {len(rescued_clients)}")
-    print(f"  Churn rate: {churn_pct}%")
+    print(f"  Clientes mes anterior: {prev_clients}")
+    print(f"  Churn rate: {churn_pct}% ({len(dormant_clients)}/{prev_clients})")
 
     return {
         "summary": {
@@ -762,6 +799,7 @@ def extract_churn_data(models, uid):
             "active": len(active_clients),
             "dormant": len(dormant_clients),
             "rescued": len(rescued_clients),
+            "prev_month_clients": prev_clients,
             "churn_pct": churn_pct,
             "rescue_pct": rescue_pct,
         },
@@ -770,7 +808,7 @@ def extract_churn_data(models, uid):
             "rescued": dict(rescued_by_user),
             "active": dict(active_by_user),
         },
-        "dormant_list": dormant_clients[:50],  # top 50 for the table
+        "dormant_list": dormant_clients[:50],
         "rescued_list": rescued_clients[:20],
     }
 
