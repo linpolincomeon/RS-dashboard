@@ -329,51 +329,62 @@ function renderVentas(){
 // ========== TAB 4: CHURN & RESCATE ==========
 function renderChurn(){
   const C=D.churn||{},S=C.summary||{},BU=C.by_user||{};
-  const churnC=S.churn_pct<=5?'g':S.churn_pct<=10?'y':'r';
-  const rescC=S.rescue_pct>=50?'g':S.rescue_pct>=25?'y':'r';
 
   let h=`<div class="kpi-row">
-    ${mkKpi('c-green','👥 Clientes Activos',S.active||0,'últimos 90 días')}
-    ${mkKpi('c-red','😴 Durmientes',S.dormant||0,'sin compra dentro de su ciclo')}
-    ${mkKpi('c-yellow','🔄 Rescatados',S.rescued||0,'volvieron a comprar')}
-    ${mkKpi('c-red','📉 Churn Rate',(S.churn_pct||0)+'%',(S.dormant||0)+' / '+(S.prev_month_clients||'?')+' clientes mes ant.',S.dormant||0,S.prev_month_clients||1)}
-    ${mkKpi('c-green','🏆 Tasa Rescate',(S.rescue_pct||0)+'%','rescatados / (durmientes+rescatados)',S.rescued||0,Math.max((S.dormant||0)+(S.rescued||0),1))}
+    ${mkKpi('c-green','👥 Activos',S.active||0,'comprando dentro de su ciclo')}
+    ${mkKpi('c-yellow','😴 Durmientes',S.dormant||0,'fuera de ciclo, < 9 meses')}
+    ${mkKpi('c-red','💀 Perdidos',S.lost||0,'sin factura hace 9+ meses')}
+    ${mkKpi('c-green','🔄 Rescatados',S.rescued||0,'volvieron a facturar')}
+    ${mkKpi('c-red','📉 Churn',(S.churn_pct||0)+'%',(S.newly_lost||0)+' nuevos perdidos / '+(S.prev_month_clients||'?')+' clientes mes ant.')}
+    ${mkKpi('c-green','🏆 Tasa Rescate',(S.rescue_pct||0)+'%','rescatados / (durmientes+perdidos+rescatados)')}
   </div>`;
 
-  // Chart: Churn by salesperson
-  h+=`<div class="chart-row"><div class="ccrd"><h3>Durmientes por Vendedor</h3><canvas id="cChurnUser" height="220"></canvas></div><div class="ccrd"><h3>Rescates por Vendedor</h3><canvas id="cRescueUser" height="220"></canvas></div></div>`;
+  h+=`<div class="chart-row"><div class="ccrd"><h3>Estado Clientes por Vendedor</h3><canvas id="cChurnUser" height="220"></canvas></div><div class="ccrd"><h3>Rescates por Vendedor</h3><canvas id="cRescueUser" height="220"></canvas></div></div>`;
 
   // Dormant table
   const dl=C.dormant_list||[];
-  h+=`<div class="sec"><div class="sec-h"><h2>😴 Clientes Durmientes</h2><span style="font-size:12px;color:var(--dim)">${dl.length}${S.dormant>50?' (mostrando 50)':''}</span></div>
-  <div class="sec-b" style="padding:0;overflow-x:auto"><table><thead><tr><th>Cliente</th><th>Vendedor</th><th>Freq. Promedio</th><th>Umbral</th><th>Días sin compra</th><th>Última compra</th><th>Facturas 6m</th></tr></thead><tbody>`;
+  h+=`<div class="sec"><div class="sec-h"><h2>😴 Durmientes</h2><span style="font-size:12px;color:var(--dim)">${dl.length}${S.dormant>50?' (mostrando 50)':''}</span></div>
+  <div class="sec-b" style="padding:0;overflow-x:auto"><table><thead><tr><th>Cliente</th><th>Vendedor</th><th>Freq. Prom.</th><th>Umbral</th><th>Días sin compra</th><th>Última compra</th><th>Fact. 12m</th></tr></thead><tbody>`;
   if(dl.length) dl.forEach(c=>{
-    const dc=c.days_since>60?'color:var(--red);font-weight:600':c.days_since>30?'color:var(--yellow);font-weight:600':'';
-    h+=`<tr><td class="bold">${H(c.name)}</td><td>${H(c.user)}</td><td>${c.avg_freq||'—'} días</td><td>${c.threshold||'—'} días</td><td style="${dc}">${c.days_since}d</td><td style="color:var(--dim)">${c.last_date}</td><td>${c.invoices_6m}</td></tr>`;
-  }); else h+=`<tr><td colspan="7" class="nodata">✅ Sin clientes durmientes</td></tr>`;
+    const dc=c.days_since>180?'color:var(--red);font-weight:600':c.days_since>60?'color:var(--yellow);font-weight:600':'';
+    h+=`<tr><td class="bold">${H(c.name)}</td><td>${H(c.user)}</td><td>${c.avg_freq||'—'}d</td><td>${c.threshold||'—'}d</td><td style="${dc}">${c.days_since}d</td><td style="color:var(--dim)">${c.last_date}</td><td>${c.invoices_12m||c.invoices_6m||'—'}</td></tr>`;
+  }); else h+=`<tr><td colspan="7" class="nodata">✅ Sin durmientes</td></tr>`;
   h+=`</tbody></table></div></div>`;
+
+  // Lost table
+  const ll=C.lost_list||[];
+  if(ll.length){
+    h+=`<div class="sec"><div class="sec-h"><h2>💀 Perdidos (9+ meses)</h2><span style="font-size:12px;color:var(--dim)">${ll.length}${S.lost>30?' (mostrando 30)':''}</span></div>
+    <div class="sec-b" style="padding:0;overflow-x:auto"><table><thead><tr><th>Cliente</th><th>Vendedor</th><th>Días sin compra</th><th>Última compra</th><th>Fact. 12m</th></tr></thead><tbody>`;
+    ll.forEach(c=>{
+      h+=`<tr><td class="bold">${H(c.name)}</td><td>${H(c.user)}</td><td style="color:var(--red);font-weight:600">${c.days_since}d</td><td style="color:var(--dim)">${c.last_date}</td><td>${c.invoices_12m||c.invoices_6m||'—'}</td></tr>`;
+    });
+    h+=`</tbody></table></div></div>`;
+  }
 
   // Rescued table
   const rl=C.rescued_list||[];
   if(rl.length){
-    h+=`<div class="sec"><div class="sec-h"><h2>🏆 Clientes Rescatados</h2><span style="font-size:12px;color:var(--dim)">${rl.length}</span></div>
-    <div class="sec-b" style="padding:0;overflow-x:auto"><table><thead><tr><th>Cliente</th><th>Vendedor</th><th>Freq. Promedio</th><th>Última compra</th><th>Facturas 6m</th></tr></thead><tbody>`;
+    h+=`<div class="sec"><div class="sec-h"><h2>🔄 Rescatados</h2><span style="font-size:12px;color:var(--dim)">${rl.length}</span></div>
+    <div class="sec-b" style="padding:0;overflow-x:auto"><table><thead><tr><th>Cliente</th><th>Vendedor</th><th>Freq. Prom.</th><th>Última compra</th><th>Fact. 12m</th></tr></thead><tbody>`;
     rl.forEach(c=>{
-      h+=`<tr><td class="bold">${H(c.name)}</td><td>${H(c.user)}</td><td>${c.avg_freq||'—'} días</td><td>${c.last_date}</td><td>${c.invoices_6m}</td></tr>`;
+      h+=`<tr><td class="bold">${H(c.name)}</td><td>${H(c.user)}</td><td>${c.avg_freq||'—'}d</td><td>${c.last_date}</td><td>${c.invoices_12m||c.invoices_6m||'—'}</td></tr>`;
     });
     h+=`</tbody></table></div></div>`;
   }
 
   document.getElementById('p-churn').innerHTML=h;
 
-  // Charts
-  const dbu=BU.dormant||{},rbu=BU.rescued||{};
-  const allUsers=[...new Set([...Object.keys(dbu),...Object.keys(rbu)])].filter(u=>isAllowed(u)).sort();
+  // Stacked chart: dormant + lost by salesperson
+  const dbu=BU.dormant||{},lbu=BU.lost||{},rbu=BU.rescued||{},abu=BU.active||{};
+  const allUsers=[...new Set([...Object.keys(dbu),...Object.keys(lbu),...Object.keys(rbu),...Object.keys(abu)])].filter(u=>isAllowed(u)).sort();
 
   if(allUsers.length){
     new Chart(document.getElementById('cChurnUser'),{type:'bar',data:{labels:allUsers.map(u=>u.split(' ')[0]),datasets:[
-      {label:'Durmientes',data:allUsers.map(u=>dbu[u]||0),backgroundColor:'rgba(200,54,14,.5)',borderRadius:6,barPercentage:.6}
-    ]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{display:false}},y:{beginAtZero:true,grid:{color:'#f0f0f0'}}}}});
+      {label:'Activos',data:allUsers.map(u=>abu[u]||0),backgroundColor:'rgba(22,163,74,.4)',borderRadius:6},
+      {label:'Durmientes',data:allUsers.map(u=>dbu[u]||0),backgroundColor:'rgba(202,138,4,.5)',borderRadius:6},
+      {label:'Perdidos',data:allUsers.map(u=>lbu[u]||0),backgroundColor:'rgba(200,54,14,.5)',borderRadius:6},
+    ]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{font:{family:'DM Sans',size:11}}}},scales:{x:{stacked:true,grid:{display:false}},y:{stacked:true,beginAtZero:true,grid:{color:'#f0f0f0'}}}}});
 
     new Chart(document.getElementById('cRescueUser'),{type:'bar',data:{labels:allUsers.map(u=>u.split(' ')[0]),datasets:[
       {label:'Rescatados',data:allUsers.map(u=>rbu[u]||0),backgroundColor:'rgba(22,163,74,.5)',borderRadius:6,barPercentage:.6}
