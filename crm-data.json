@@ -1,5 +1,5 @@
 {
-  "updated": "2026-04-07T21:32:55.323553",
+  "updated": "2026-04-07T21:49:52.067551",
   "week": {
     "start": "2026-04-02",
     "end": "2026-04-08",
@@ -2191,6 +2191,20 @@
       "action": "Llamar o enviar mail"
     },
     {
+      "id": 41,
+      "name": "Llamar contacto Indap , 7 región. dato entregado por WS",
+      "stage": "Oportunidad de Negocio",
+      "stage_class": "oportunidad",
+      "exec": "GARRIDO CISTERNA JUAN MANUEL",
+      "exec_id": 48,
+      "value": 0,
+      "days_in_stage": 253,
+      "last_update": "2025-07-28",
+      "origin": "—",
+      "created": "2025-07-28",
+      "action": "Llamar o enviar mail"
+    },
+    {
       "id": 12,
       "name": "DANIEL ESPINA",
       "stage": "Contactado",
@@ -2287,20 +2301,6 @@
       "origin": "—",
       "created": "2025-07-28",
       "action": "Seguimiento cotización"
-    },
-    {
-      "id": 41,
-      "name": "Llamar contacto Indap , 7 región. dato entregado por WS",
-      "stage": "Oportunidad de Negocio",
-      "stage_class": "oportunidad",
-      "exec": "GARRIDO CISTERNA JUAN MANUEL",
-      "exec_id": 48,
-      "value": 0,
-      "days_in_stage": 252,
-      "last_update": "2025-07-28",
-      "origin": "—",
-      "created": "2025-07-28",
-      "action": "Llamar o enviar mail"
     },
     {
       "id": 15,
@@ -2765,10 +2765,10 @@
       "action": "Seguimiento cotización"
     },
     {
-      "id": 138,
-      "name": "Cristian Reyes",
-      "stage": "Oportunidad de Negocio",
-      "stage_class": "oportunidad",
+      "id": 134,
+      "name": "Claudio Rabello",
+      "stage": "Cotizado",
+      "stage_class": "cotizado",
       "exec": "Vanessa Vazquez",
       "exec_id": 67,
       "value": 0,
@@ -2776,7 +2776,7 @@
       "last_update": "2025-08-18",
       "origin": "—",
       "created": "2025-08-18",
-      "action": "Llamar o enviar mail"
+      "action": "Seguimiento cotización"
     }
   ],
   "activities": [
@@ -3414,7 +3414,7 @@
           ]
         },
         "seguimiento": {
-          "value": 100,
+          "value": 0,
           "goal": 100,
           "unit": "%"
         },
@@ -3811,7 +3811,7 @@
           ]
         },
         "seguimiento": {
-          "value": 100,
+          "value": 0,
           "goal": 100,
           "unit": "%"
         },
@@ -4207,7 +4207,7 @@
           ]
         },
         "seguimiento": {
-          "value": 100,
+          "value": 0,
           "goal": 100,
           "unit": "%"
         },
@@ -4581,7 +4581,7 @@
           ]
         },
         "seguimiento": {
-          "value": 100,
+          "value": 0,
           "goal": 100,
           "unit": "%"
         },
@@ -4628,20 +4628,24 @@
     "month_start": "2026-04-01",
     "month_end": "2026-04-30",
     "totals": {
-      "total_litros": 136484,
-      "total_venta_neta": 164106490,
-      "invoice_count": 87,
+      "total_litros": 140784,
+      "total_venta_neta": 169470486,
+      "invoice_count": 89,
       "nc_count": 7,
       "litros_by_user": {
+        "TomEnergy": 87070,
         "Toro González Sebastian Enrique": 47914,
-        "TomEnergy": 82770,
         "Comber Sigall Pauline": 5800
       },
       "venta_by_user": {
+        "TomEnergy": 107168437,
         "Toro González Sebastian Enrique": 55229725,
-        "TomEnergy": 101804441,
         "Comber Sigall Pauline": 7072324
-      }
+      },
+      "margin_retail_pct": 8.54,
+      "margin_volume_pct": 7.09,
+      "retail_venta": 142840749,
+      "volume_venta": 30850946
     },
     "new_clients": {
       "count": 8,
@@ -4658,8 +4662,67 @@
       },
       {
         "label": "2/4-8/4",
-        "litros": 98788,
-        "venta_neta": 122768802
+        "litros": 103088,
+        "venta_neta": 128132798
+      }
+    ]
+  },
+  "ventas_prev": {
+    "month_label": "March 2026",
+    "month_start": "2026-03-01",
+    "month_end": "2026-03-31",
+    "totals": {
+      "total_litros": 1025164,
+      "total_venta_neta": 934413276,
+      "invoice_count": 649,
+      "nc_count": 12,
+      "litros_by_user": {
+        "TomEnergy": 837477,
+        "Toro González Sebastian Enrique": 138967,
+        "Comber Sigall Pauline": 40720,
+        "De Trenqualye Merino Andre Jean": 6000,
+        "Fernando Jullian": 2000
+      },
+      "venta_by_user": {
+        "TomEnergy": 752564141,
+        "Toro González Sebastian Enrique": 137343553,
+        "Comber Sigall Pauline": 36738127,
+        "De Trenqualye Merino Andre Jean": 6348795,
+        "Fernando Jullian": 1418660
+      },
+      "margin_retail_pct": 10.46,
+      "margin_volume_pct": 4.11,
+      "retail_venta": 747243246,
+      "volume_venta": 220389565
+    },
+    "new_clients": {
+      "count": 29,
+      "by_user": {
+        "Toro González Sebastian Enrique": 24,
+        "TomEnergy": 4,
+        "Comber Sigall Pauline": 1
+      }
+    },
+    "weekly": [
+      {
+        "label": "12/3-18/3",
+        "litros": 192209,
+        "venta_neta": 165463365
+      },
+      {
+        "label": "19/3-25/3",
+        "litros": 327527,
+        "venta_neta": 350646166
+      },
+      {
+        "label": "26/3-31/3",
+        "litros": 160334,
+        "venta_neta": 193216866
+      },
+      {
+        "label": "2/4-31/3",
+        "litros": 0,
+        "venta_neta": 0
       }
     ]
   },
@@ -5232,7 +5295,7 @@
     },
     "seguimiento": {
       "goal": 100,
-      "label": "Seguimiento 48h",
+      "label": "Cotiz. Enviadas",
       "unit": "%",
       "freq": "semanal"
     },
