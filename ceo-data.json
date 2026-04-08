@@ -1,20 +1,20 @@
 {
-  "updated": "2026-04-08T16:04:16.568513",
+  "updated": "2026-04-08T21:31:19.390308",
   "weeks": [
     {
       "label": "02apr-08apr",
       "start": "2026-04-02",
       "end": "2026-04-08",
-      "ventas": 181783948,
-      "neto": 148758676,
-      "litros": 119253,
-      "precio": 1247,
-      "margin": 0.08195,
-      "facturas": 77,
-      "nc": 2,
-      "clientes": 59,
-      "recaud": 0,
-      "cheques": 0,
+      "ventas": 203988515,
+      "neto": 167048290,
+      "litros": 133606,
+      "precio": 1250,
+      "margin": 0.08372,
+      "facturas": 89,
+      "nc": 3,
+      "clientes": 65,
+      "recaud": 65404650,
+      "cheques": 65404650,
       "transf": 0,
       "factoring": 0,
       "compras_enap": 89064999,
@@ -326,8 +326,8 @@
     {
       "date": "08apr",
       "day": "Mié",
-      "litros": 16266,
-      "neto": 20801838
+      "litros": 33119,
+      "neto": 42385570
     },
     {
       "date": "07apr",
@@ -422,6 +422,10 @@
   ],
   "banks": [
     {
+      "name": "DE CHILE",
+      "balance": 17453860
+    },
+    {
       "name": "ITAU",
       "balance": 13827704
     },
@@ -432,10 +436,6 @@
     {
       "name": "BCI",
       "balance": 4664202
-    },
-    {
-      "name": "DE CHILE",
-      "balance": 3667838
     },
     {
       "name": "CAJA",
@@ -450,43 +450,35 @@
       "balance": -838790
     }
   ],
-  "total_cash": 35160105,
+  "total_cash": 48946127,
   "receivables": {
-    "open_invoices": 357,
-    "total_due": 640843340,
-    "current": 547368288,
-    "overdue": 93475052,
-    "pct_overdue": 14.6,
+    "open_invoices": 337,
+    "total_due": 591392927,
+    "current": 516106305,
+    "overdue": 75286622,
+    "pct_overdue": 12.7,
     "aging": {
-      "0-30": 81285389,
-      "31-60": 1224100,
+      "0-30": 63393059,
+      "31-60": 928000,
       "61-90": 0,
       "90+": 10965563
     },
     "top_debtors": [
       {
         "name": "JOSE RODRIGO ORMAZABAL VIDAL",
-        "amount": 39166503
-      },
-      {
-        "name": "MAQUINARIAS Y ARIDOS SAN PEDRO SPA.",
-        "amount": 37887481
-      },
-      {
-        "name": "SOC AGRICOLA GRANJA SAN RAFAEL LIMITADA",
-        "amount": 25702491
-      },
-      {
-        "name": "SAMUEL BUDINICH SPA",
-        "amount": 22342885
-      },
-      {
-        "name": "INGENERIA Y CONSTRUCCIONES FEBLANCA SPA",
-        "amount": 18006997
+        "amount": 36433503
       },
       {
         "name": "AGRICOLA AGROBOSQUES SAN ISIDRO S.A.",
-        "amount": 17199838
+        "amount": 18014053
+      },
+      {
+        "name": "INGENERIA Y CONSTRUCCIONES FEBLANCA SPA",
+        "amount": 16950197
+      },
+      {
+        "name": "SAMUEL BUDINICH SPA",
+        "amount": 15661785
       },
       {
         "name": "FORESTAL PUIHUA SPA",
@@ -543,13 +535,21 @@
       {
         "name": "PATRICIO REYES SERRANO",
         "amount": 7465001
+      },
+      {
+        "name": "SOC AGRICOLA SANTA TERESA SPA",
+        "amount": 7241641
+      },
+      {
+        "name": "AGROMORANDE S A",
+        "amount": 6739700
       }
     ]
   },
   "crm": {
     "total": 1387,
-    "open": 1167,
-    "won": 219,
+    "open": 1164,
+    "won": 222,
     "new_30d": 86,
     "by_stage": [
       {
@@ -578,11 +578,11 @@
       },
       {
         "stage": "Durmiente",
-        "count": 191
+        "count": 188
       },
       {
         "stage": "Won",
-        "count": 219
+        "count": 222
       }
     ]
   }
