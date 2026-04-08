@@ -2,7 +2,7 @@
 """
 CRM Weekly Dashboard — Odoo Data Extractor
 Extracts CRM pipeline, activities, per-executive stats,
-PLUS funnel metrics and sales KPIs.
+PLUS funnel metrics, sales KPIs, churn, and SLA de entrega.
 Outputs crm-data.json for the static dashboard on GitHub Pages.
 
 Runs via GitHub Actions on the same schedule as extract_ceo.py.
@@ -336,7 +336,7 @@ def extract_funnel_data(models, uid):
                 "fecha": (l.get("create_date") or "")[:10],
             })
 
-        # 2. Contactos efectivos (notes, emails, whatsapp, calls on crm.lead)
+        # 2. Contactos efectivos
         contact_count = 0
         contacts_by_user = defaultdict(int)
         try:
@@ -348,10 +348,8 @@ def extract_funnel_data(models, uid):
             ], ["res_id"], limit=2000)
             contact_count = len(contact_msgs)
 
-            # Map lead IDs to their assigned salesperson
             lead_ids = list(set(m.get("res_id") for m in contact_msgs if m.get("res_id")))
             if lead_ids:
-                # Chunk to avoid timeout
                 lead_user_map = {}
                 for i in range(0, len(lead_ids), 200):
                     chunk = lead_ids[i:i+200]
@@ -403,7 +401,7 @@ def extract_funnel_data(models, uid):
                 "fecha": (q.get("create_date") or "")[:10],
             })
 
-        # 4. Seguimiento: cotizaciones enviadas manualmente (state=sent) / total cotizaciones
+        # 4. Seguimiento
         sent_count = 0
         if quote_count:
             try:
@@ -463,9 +461,7 @@ def extract_funnel_data(models, uid):
             }
         })
 
-    # 6. Retencion 90d (solo semana actual)
-    # Definición: de los clientes que compraron en los últimos 90 días,
-    # ¿qué % compró al menos 2 veces?
+    # 6. Retencion 90d
     wk0 = get_enap_week(0)
     wed_date = wk0["wed"]
     lookback_start = wed_date - timedelta(days=90)
@@ -476,14 +472,13 @@ def extract_funnel_data(models, uid):
         ["state", "=", "sale"],
     ], ["partner_id"], limit=5000)
 
-    # Count orders per partner
     partner_order_count = Counter()
     for o in all_orders_90d:
         pid = safe_id(o.get("partner_id"))
         if pid:
             partner_order_count[pid] += 1
 
-    ret_total = len(partner_order_count)  # unique clients who bought
+    ret_total = len(partner_order_count)
     retained_ids = {pid for pid, cnt in partner_order_count.items() if cnt >= 2}
     ret_pct = round((len(retained_ids) / ret_total) * 100) if ret_total > 0 else 0
     print(f"  Retencion 90d: {ret_pct}% ({len(retained_ids)}/{ret_total} clientes con 2+ compras)")
@@ -508,7 +503,6 @@ def extract_sales_data(models, uid, custom_start=None, custom_end=None, label_ov
     print(f"\nExtracting sales KPIs ({lbl})...")
     print(f"  Mes: {fmt(m_start)} -> {fmt(m_end)}")
 
-    # Facturas (with margin)
     invoices = sr(models, uid, "account.move", [
         ["move_type", "=", "out_invoice"],
         ["state", "=", "posted"],
@@ -520,10 +514,9 @@ def extract_sales_data(models, uid, custom_start=None, custom_end=None, label_ov
     inv_user_map = {i["id"]: safe_name(i.get("invoice_user_id")) for i in invoices}
     inv_margin_map = {i["id"]: i.get("margin_zone", 0) or 0 for i in invoices}
 
-    # Get volume client flag and delivery zone from partners
     partner_ids = list(set(safe_id(i.get("partner_id")) for i in invoices if safe_id(i.get("partner_id"))))
     volume_partners = set()
-    partner_zone = {}  # pid -> zone name
+    partner_zone = {}
     if partner_ids:
         for i in range(0, len(partner_ids), 200):
             chunk = partner_ids[i:i+200]
@@ -547,7 +540,6 @@ def extract_sales_data(models, uid, custom_start=None, custom_end=None, label_ov
     total_litros = 0
     total_venta = 0
 
-    # Margin tracking by segment
     retail_venta = 0
     retail_costo = 0
     volume_venta = 0
@@ -573,7 +565,6 @@ def extract_sales_data(models, uid, custom_start=None, custom_end=None, label_ov
             total_litros += qty
             total_venta += sub
 
-            # Zone tracking
             zone = partner_zone.get(pid, "Sin zona")
             litros_by_zone[zone] += qty
             venta_by_zone[zone] += sub
@@ -592,7 +583,6 @@ def extract_sales_data(models, uid, custom_start=None, custom_end=None, label_ov
 
     print(f"  Margen Retail: {margin_retail_pct}% | Margen Volumen: {margin_volume_pct}%")
 
-    # NC (restar)
     ncs = sr(models, uid, "account.move", [
         ["move_type", "=", "out_refund"],
         ["state", "=", "posted"],
@@ -619,7 +609,6 @@ def extract_sales_data(models, uid, custom_start=None, custom_end=None, label_ov
             total_litros -= qty
             total_venta -= sub
 
-    # Clientes nuevos (primera factura en el mes)
     new_cl_by_user = defaultdict(int)
     new_cl_count = 0
     seen = set()
@@ -638,7 +627,6 @@ def extract_sales_data(models, uid, custom_start=None, custom_end=None, label_ov
             new_cl_by_user[u] += 1
             new_cl_count += 1
 
-    # Ventas semanales del mes
     weekly_sales = []
     for offset in range(4):
         wk = get_enap_week(offset)
@@ -671,7 +659,7 @@ def extract_sales_data(models, uid, custom_start=None, custom_end=None, label_ov
             "venta_neta": round(wk_venta),
         })
 
-    print(f"  Litros: {round(total_litros)} Venta: {round(total_venta)} Facturas: {len(invoices)} NC: {len(ncs)}")
+    print(f"  Litros: {round(total_litros)} Facturas: {len(invoices)} NC: {len(ncs)}")
     print(f"  Clientes nuevos: {new_cl_count}")
 
     return {
@@ -699,22 +687,14 @@ def extract_sales_data(models, uid, custom_start=None, custom_end=None, label_ov
 
 
 # ==============================================================
-# PART 4: CHURN & RESCUE (CRM stages + invoicing)
+# PART 4: CHURN & RESCUE
 # ==============================================================
 LOST_THRESHOLD_DAYS = 270  # 9 months
 
 def extract_churn_data(models, uid):
-    """
-    Uses CRM lead stages (Durmiente / Perdidos) as source of truth,
-    enriched with invoicing data for frequency and volume.
-    
-    Churn % = Perdidos nuevos este mes / Clientes Actuales mes anterior
-    Rescue: split between ejecutivo (perdidos) and fidelización (durmientes)
-    """
     print("\nExtracting Churn & Rescue data...")
     today = datetime.now().date()
 
-    # 1. Get all CRM leads in Durmiente and Perdidos stages
     stages = sr(models, uid, "crm.stage", [], ["name"], limit=50)
     stage_map = {s["id"]: s["name"] for s in stages}
     durmiente_ids = [sid for sid, name in stage_map.items() if "durmiente" in name.lower()]
@@ -722,13 +702,11 @@ def extract_churn_data(models, uid):
 
     print(f"  Stage IDs — Durmiente: {durmiente_ids}, Perdidos: {perdido_ids}")
 
-    # Get durmiente leads
     durmiente_leads = sr(models, uid, "crm.lead", [
         ["stage_id", "in", durmiente_ids],
         ["active", "=", True],
     ], ["partner_id", "user_id", "partner_name", "write_date", "create_date"], limit=5000)
 
-    # Get perdido leads
     perdido_leads = sr(models, uid, "crm.lead", [
         ["stage_id", "in", perdido_ids],
         ["active", "=", True],
@@ -736,12 +714,9 @@ def extract_churn_data(models, uid):
 
     print(f"  CRM: {len(durmiente_leads)} durmientes, {len(perdido_leads)} perdidos")
 
-    # 2. Get active clients (invoiced this month or last month)
     month_start = today.replace(day=1)
     prev_month_end = month_start - timedelta(days=1)
     prev_month_start = prev_month_end.replace(day=1)
-    two_months_ago = prev_month_start - timedelta(days=1)
-    two_months_start = two_months_ago.replace(day=1)
 
     curr_inv = sr(models, uid, "account.move", [
         ["move_type", "=", "out_invoice"],
@@ -761,7 +736,6 @@ def extract_churn_data(models, uid):
     prev_month_partners = set(safe_id(i.get("partner_id")) for i in prev_inv if safe_id(i.get("partner_id")))
     prev_month_clients = len(prev_month_partners)
 
-    # 3. Build durmiente list with details
     dormant_list = []
     dormant_by_user = Counter()
     rescued_dormant_list = []
@@ -773,25 +747,17 @@ def extract_churn_data(models, uid):
         name = safe_name(lead.get("partner_id")) or lead.get("partner_name", "?")
         write_date = (lead.get("write_date") or "")[:10]
 
-        # Check if this dormant client invoiced this month (= rescued by fidelización)
         if pid and pid in curr_month_partners:
-            rescued_dormant_list.append({
-                "name": name, "user": user, "last_update": write_date,
-            })
+            rescued_dormant_list.append({"name": name, "user": user, "last_update": write_date})
             rescued_dormant_by_user[user] += 1
         else:
-            dormant_list.append({
-                "name": name, "user": user, "last_update": write_date,
-            })
+            dormant_list.append({"name": name, "user": user, "last_update": write_date})
             dormant_by_user[user] += 1
 
-    # 4. Build perdido list with details
     lost_list = []
     lost_by_user = Counter()
     rescued_lost_list = []
     rescued_lost_by_user = Counter()
-
-    # "Newly lost this month" = perdido leads updated this month
     newly_lost = 0
 
     for lead in perdido_leads:
@@ -800,26 +766,17 @@ def extract_churn_data(models, uid):
         name = safe_name(lead.get("partner_id")) or lead.get("partner_name", "?")
         write_date = (lead.get("write_date") or "")[:10]
 
-        # Check if moved to perdido this month
         if write_date >= fmt(month_start):
             newly_lost += 1
 
-        # Check if this lost client invoiced this month (= rescued by ejecutivo, counts as new)
         if pid and pid in curr_month_partners:
-            rescued_lost_list.append({
-                "name": name, "user": user, "last_update": write_date,
-            })
+            rescued_lost_list.append({"name": name, "user": user, "last_update": write_date})
             rescued_lost_by_user[user] += 1
         else:
-            lost_list.append({
-                "name": name, "user": user, "last_update": write_date,
-            })
+            lost_list.append({"name": name, "user": user, "last_update": write_date})
             lost_by_user[user] += 1
 
-    # 5. Active clients count (from invoicing)
     active_count = len(curr_month_partners | prev_month_partners)
-
-    # 6. Churn = perdidos nuevos este mes / clientes actuales mes anterior
     churn_pct = round((newly_lost / prev_month_clients) * 100, 1) if prev_month_clients > 0 else 0
     total_rescued = len(rescued_dormant_list) + len(rescued_lost_list)
     total_at_risk = len(dormant_list) + len(lost_list) + total_rescued
@@ -829,7 +786,6 @@ def extract_churn_data(models, uid):
     print(f"  Durmientes CRM: {len(dormant_list)} (+{len(rescued_dormant_list)} rescatados)")
     print(f"  Perdidos CRM: {len(lost_list)} (+{len(rescued_lost_list)} rescatados)")
     print(f"  Nuevos perdidos este mes: {newly_lost}")
-    print(f"  Clientes mes anterior: {prev_month_clients}")
     print(f"  Churn: {churn_pct}% ({newly_lost}/{prev_month_clients})")
 
     return {
@@ -858,10 +814,107 @@ def extract_churn_data(models, uid):
 
 
 # ==============================================================
+# PART 5: SLA DE ENTREGA
+# ==============================================================
+def extract_sla_data(models, uid, m_start, m_end):
+    """
+    SLA de entrega: shipping_date en sale.order vs primera factura (account.move).
+    Factura buscada por invoice_origin = order.name.
+    SLA incumplido si fecha_primera_factura - shipping_date > 1 día.
+    """
+    print(f"\nExtracting SLA entrega ({fmt(m_start)} → {fmt(m_end)})...")
+
+    orders = sr(models, uid, "sale.order", [
+        ["state", "=", "sale"],
+        ["date_order", ">=", fdt_s(m_start)],
+        ["date_order", "<=", fdt_e(m_end)],
+        ["shipping_date", "!=", False],
+    ], ["name", "partner_id", "shipping_date"], limit=2000)
+
+    print(f"  Órdenes con shipping_date: {len(orders)}")
+
+    cumplidos = 0
+    incumplidos = 0
+    dias_list = []
+    detalle_incumplidos = []
+
+    # Traer todas las facturas del mes en chunks por invoice_origin para evitar N queries
+    order_names = [o.get("name", "") for o in orders if o.get("name")]
+    invoices_all = []
+    if order_names:
+        for i in range(0, len(order_names), 200):
+            chunk = order_names[i:i+200]
+            batch = sr(models, uid, "account.move", [
+                ["invoice_origin", "in", chunk],
+                ["move_type", "=", "out_invoice"],
+                ["state", "=", "posted"],
+                ["invoice_date", ">=", fmt(m_start)],
+                ["invoice_date", "<=", fmt(m_end)],
+            ], ["invoice_origin", "invoice_date"], limit=5000)
+            invoices_all.extend(batch)
+
+    # Agrupar por invoice_origin → lista de fechas, luego tomar la mínima
+    inv_by_origin = defaultdict(list)
+    for inv in invoices_all:
+        origin = inv.get("invoice_origin", "")
+        date_str = (inv.get("invoice_date") or "")[:10]
+        if origin and date_str:
+            inv_by_origin[origin].append(date_str)
+
+    for o in orders:
+        try:
+            ship_str = (o.get("shipping_date") or "")[:10]
+            if not ship_str:
+                continue
+            ship_dt = datetime.strptime(ship_str, "%Y-%m-%d").date()
+
+            order_name = o.get("name", "")
+            dates = sorted(inv_by_origin.get(order_name, []))
+            if not dates:
+                continue
+
+            first_inv_date_str = dates[0]
+            first_inv_dt = datetime.strptime(first_inv_date_str, "%Y-%m-%d").date()
+            diff = (first_inv_dt - ship_dt).days
+
+            dias_list.append(max(diff, 0))
+
+            if diff <= 1:
+                cumplidos += 1
+            else:
+                incumplidos += 1
+                detalle_incumplidos.append({
+                    "cliente": safe_name(o.get("partner_id")),
+                    "orden": order_name,
+                    "fecha_entrega": ship_str,
+                    "fecha_factura": first_inv_date_str,
+                    "dias_diff": diff,
+                })
+        except Exception:
+            continue
+
+    total = cumplidos + incumplidos
+    cumplimiento_pct = round((cumplidos / total) * 100) if total > 0 else 0
+    dias_promedio = round(sum(dias_list) / len(dias_list), 1) if dias_list else 0
+    detalle_incumplidos.sort(key=lambda x: -x["dias_diff"])
+
+    print(f"  Total evaluadas: {total} | Cumplidas: {cumplidos} | Incumplidas: {incumplidos} | SLA: {cumplimiento_pct}%")
+
+    return {
+        "cumplidos": cumplidos,
+        "incumplidos": incumplidos,
+        "cumplimiento_pct": cumplimiento_pct,
+        "dias_promedio": dias_promedio,
+        "total_evaluadas": total,
+        "detalle": detalle_incumplidos[:50],
+    }
+
+
+# ==============================================================
 # MAIN
 # ==============================================================
 def main():
-    print("=== CRM + Funnel + Ventas · Odoo Extraction ===")
+    print("=== CRM + Funnel + Ventas + SLA · Odoo Extraction ===")
     models, uid = connect()
 
     # Part 1: Original CRM
@@ -881,6 +934,10 @@ def main():
 
     # Part 4: Churn & Rescue
     churn = extract_churn_data(models, uid)
+
+    # Part 5: SLA entrega mes anterior
+    sla_prev = extract_sla_data(models, uid, prev_m_start, prev_m_end)
+    ventas_prev["sla"] = sla_prev
 
     # Load or create vendor goals
     goals_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "vendor-goals.json")
