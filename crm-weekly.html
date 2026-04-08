@@ -109,7 +109,7 @@ tr:hover td{background:#fafaf8}
   <div id="loading"><div class="spinner"></div>Cargando datos CRM...</div>
 
   <div id="content" style="display:none">
-    <div id="weekSelector" style="display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap"></div>
+    <div id="weekSelector" style="display:none;gap:6px;margin-bottom:14px;flex-wrap:wrap"></div>
     <div class="tabs" id="tabBar">
       <div class="tab active" data-tab="pipeline">📊 Pipeline</div>
       <div class="tab" data-tab="funnel">🎯 Funnel</div>
@@ -138,6 +138,8 @@ document.getElementById('tabBar').addEventListener('click',e=>{
   document.querySelectorAll('.panel').forEach(x=>x.classList.remove('active'));
   t.classList.add('active');
   document.getElementById('p-'+t.dataset.tab).classList.add('active');
+  const ws=document.getElementById('weekSelector');
+  ws.style.display=['funnel','vendedor'].includes(t.dataset.tab)?'flex':'none';
 });
 
 const H=s=>{if(!s)return'';const d=document.createElement('div');d.textContent=s;return d.innerHTML};
@@ -484,6 +486,22 @@ function renderMesVencido(){
     h+=`</tbody></table></div></div>`;
   }
 
+  // Zone breakdown
+  const lz=TP.litros_by_zone||{},vz=TP.venta_by_zone||{},mz=TP.margin_by_zone||{};
+  const zones=Object.keys(lz).filter(z=>z!=='Sin zona');
+  if(zones.length){
+    h+=`<div class="chart-row"><div class="ccrd"><h3>Litros por Zona</h3><canvas id="cZoneLt" height="250"></canvas></div><div class="ccrd"><h3>Margen por Zona</h3><canvas id="cZoneMg" height="250"></canvas></div></div>`;
+    h+=`<div class="sec"><div class="sec-h"><h2>📍 Desglose por Zona</h2></div><div class="sec-b" style="padding:0;overflow-x:auto"><table><thead><tr><th>Zona</th><th>Litros</th><th>Venta Neta</th><th>Margen %</th></tr></thead><tbody>`;
+    zones.forEach(z=>{
+      const mg=mz[z]||0;
+      const mc=mg>=12?'tag-g':mg>=9?'tag-y':'tag-r';
+      h+=`<tr><td class="bold">${H(z)}</td><td>${fL(lz[z]||0)}</td><td>${fC(vz[z]||0)}</td><td><span class="tag ${mc}">${mg}%</span></td></tr>`;
+    });
+    // Sin zona row if exists
+    if(lz['Sin zona']) h+=`<tr><td style="color:var(--dim)">Sin zona</td><td>${fL(lz['Sin zona'])}</td><td>${fC(vz['Sin zona']||0)}</td><td><span class="tag tag-y">${mz['Sin zona']||0}%</span></td></tr>`;
+    h+=`</tbody></table></div></div>`;
+  }
+
   document.getElementById('p-mesvencido').innerHTML=h;
 
   // Charts
@@ -495,6 +513,18 @@ function renderMesVencido(){
     new Chart(document.getElementById('cVentaPrev'),{type:'bar',data:{labels:users.map(u=>u.split(' ')[0]),datasets:[
       {label:'Venta Neta',data:users.map(u=>(TP.venta_by_user||{})[u]||0),backgroundColor:'rgba(22,163,74,.4)',borderRadius:6,barPercentage:.5}
     ]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{display:false}},y:{beginAtZero:true,grid:{color:'#f0f0f0'},ticks:{callback:v=>'$'+(v/1e6).toFixed(1)+'M'}}}}});
+  }
+
+  // Zone charts
+  if(zones.length){
+    const zColors=zones.map((_,i)=>{const hue=(i*47)%360;return`hsla(${hue},55%,55%,.6)`});
+    new Chart(document.getElementById('cZoneLt'),{type:'bar',data:{labels:zones,datasets:[
+      {label:'Litros',data:zones.map(z=>lz[z]||0),backgroundColor:zColors,borderRadius:6,barPercentage:.6}
+    ]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{display:false},ticks:{callback:v=>(v/1000)+'k'}},y:{grid:{display:false}}}}});
+
+    new Chart(document.getElementById('cZoneMg'),{type:'bar',data:{labels:zones,datasets:[
+      {label:'Margen %',data:zones.map(z=>mz[z]||0),backgroundColor:zones.map(z=>{const mg=mz[z]||0;return mg>=12?'rgba(22,163,74,.5)':mg>=9?'rgba(202,138,4,.5)':'rgba(200,54,14,.5)'}),borderRadius:6,barPercentage:.6}
+    ]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{display:false},ticks:{callback:v=>v+'%'}},y:{grid:{display:false}}}}});
   }
 }
 

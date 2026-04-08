@@ -520,22 +520,30 @@ def extract_sales_data(models, uid, custom_start=None, custom_end=None, label_ov
     inv_user_map = {i["id"]: safe_name(i.get("invoice_user_id")) for i in invoices}
     inv_margin_map = {i["id"]: i.get("margin_zone", 0) or 0 for i in invoices}
 
-    # Get volume client flag from partners
+    # Get volume client flag and delivery zone from partners
     partner_ids = list(set(safe_id(i.get("partner_id")) for i in invoices if safe_id(i.get("partner_id"))))
     volume_partners = set()
+    partner_zone = {}  # pid -> zone name
     if partner_ids:
         for i in range(0, len(partner_ids), 200):
             chunk = partner_ids[i:i+200]
             partners = sr(models, uid, "res.partner", [
                 ["id", "in", chunk],
-            ], ["id", "is_volume_client"], limit=200)
+            ], ["id", "is_volume_client", "delivery_zone_id"], limit=200)
             for p in partners:
                 if p.get("is_volume_client"):
                     volume_partners.add(p["id"])
+                zn = safe_name(p.get("delivery_zone_id"))
+                if zn and zn != "False" and zn != "Sin asignar":
+                    partner_zone[p["id"]] = zn
     inv_partner_map = {i["id"]: safe_id(i.get("partner_id")) for i in invoices}
 
     litros_by_user = defaultdict(float)
     venta_by_user = defaultdict(float)
+    litros_by_zone = defaultdict(float)
+    venta_by_zone = defaultdict(float)
+    margin_by_zone_venta = defaultdict(float)
+    margin_by_zone_costo = defaultdict(float)
     total_litros = 0
     total_venta = 0
 
@@ -564,6 +572,13 @@ def extract_sales_data(models, uid, custom_start=None, custom_end=None, label_ov
             venta_by_user[user] += sub
             total_litros += qty
             total_venta += sub
+
+            # Zone tracking
+            zone = partner_zone.get(pid, "Sin zona")
+            litros_by_zone[zone] += qty
+            venta_by_zone[zone] += sub
+            margin_by_zone_venta[zone] += sub
+            margin_by_zone_costo[zone] += sub * (1 - margin) if margin else sub
 
             if is_vol:
                 volume_venta += sub
@@ -674,6 +689,9 @@ def extract_sales_data(models, uid, custom_start=None, custom_end=None, label_ov
             "margin_volume_pct": margin_volume_pct,
             "retail_venta": round(retail_venta),
             "volume_venta": round(volume_venta),
+            "litros_by_zone": {k: round(v) for k, v in sorted(litros_by_zone.items(), key=lambda x: -x[1])},
+            "venta_by_zone": {k: round(v) for k, v in sorted(venta_by_zone.items(), key=lambda x: -x[1])},
+            "margin_by_zone": {k: round((1 - margin_by_zone_costo[k] / margin_by_zone_venta[k]) * 100, 1) if margin_by_zone_venta[k] > 0 else 0 for k in litros_by_zone},
         },
         "new_clients": {"count": new_cl_count, "by_user": dict(new_cl_by_user)},
         "weekly": list(reversed(weekly_sales)),
