@@ -1,23 +1,23 @@
 {
-  "updated": "2026-04-08T05:31:44.162041",
+  "updated": "2026-04-08T16:04:16.568513",
   "weeks": [
     {
       "label": "02apr-08apr",
       "start": "2026-04-02",
       "end": "2026-04-08",
-      "ventas": 156670417,
-      "neto": 127956838,
-      "litros": 102987,
-      "precio": 1242,
-      "margin": 0.07992,
-      "facturas": 65,
+      "ventas": 181783948,
+      "neto": 148758676,
+      "litros": 119253,
+      "precio": 1247,
+      "margin": 0.08195,
+      "facturas": 77,
       "nc": 2,
-      "clientes": 51,
+      "clientes": 59,
       "recaud": 0,
       "cheques": 0,
       "transf": 0,
       "factoring": 0,
-      "compras_enap": 87712610,
+      "compras_enap": 89064999,
       "ppto": 326422,
       "parcial": true
     },
@@ -37,7 +37,7 @@
       "cheques": 9482998,
       "transf": 0,
       "factoring": 0,
-      "compras_enap": 187183226,
+      "compras_enap": 192854664,
       "ppto": 283811,
       "parcial": false
     },
@@ -326,8 +326,8 @@
     {
       "date": "08apr",
       "day": "Mié",
-      "litros": 0,
-      "neto": 0
+      "litros": 16266,
+      "neto": 20801838
     },
     {
       "date": "07apr",
@@ -422,14 +422,6 @@
   ],
   "banks": [
     {
-      "name": "DE CHILE",
-      "balance": 66332494
-    },
-    {
-      "name": "SANTANDER",
-      "balance": 25238563
-    },
-    {
       "name": "ITAU",
       "balance": 13827704
     },
@@ -442,23 +434,31 @@
       "balance": 4664202
     },
     {
+      "name": "DE CHILE",
+      "balance": 3667838
+    },
+    {
       "name": "CAJA",
       "balance": 3291177
+    },
+    {
+      "name": "SANTANDER",
+      "balance": 238563
     },
     {
       "name": "DE CREDITO",
       "balance": -838790
     }
   ],
-  "total_cash": 122824761,
+  "total_cash": 35160105,
   "receivables": {
-    "open_invoices": 354,
-    "total_due": 629123611,
-    "current": 529162758,
-    "overdue": 99960853,
-    "pct_overdue": 15.9,
+    "open_invoices": 357,
+    "total_due": 640843340,
+    "current": 547368288,
+    "overdue": 93475052,
+    "pct_overdue": 14.6,
     "aging": {
-      "0-30": 87771190,
+      "0-30": 81285389,
       "31-60": 1224100,
       "61-90": 0,
       "90+": 10965563
@@ -474,19 +474,19 @@
       },
       {
         "name": "SOC AGRICOLA GRANJA SAN RAFAEL LIMITADA",
-        "amount": 23671050
+        "amount": 25702491
       },
       {
         "name": "SAMUEL BUDINICH SPA",
         "amount": 22342885
       },
       {
-        "name": "AGRICOLA AGROBOSQUES SAN ISIDRO S.A.",
-        "amount": 20474338
+        "name": "INGENERIA Y CONSTRUCCIONES FEBLANCA SPA",
+        "amount": 18006997
       },
       {
-        "name": "INGENERIA Y CONSTRUCCIONES FEBLANCA SPA",
-        "amount": 18894397
+        "name": "AGRICOLA AGROBOSQUES SAN ISIDRO S.A.",
+        "amount": 17199838
       },
       {
         "name": "FORESTAL PUIHUA SPA",
@@ -525,6 +525,10 @@
         "amount": 8499700
       },
       {
+        "name": "AGRICOLA TRICAHUE LTDA",
+        "amount": 8173401
+      },
+      {
         "name": "AGROSERVICIOS JR SPA",
         "amount": 8144001
       },
@@ -539,18 +543,14 @@
       {
         "name": "PATRICIO REYES SERRANO",
         "amount": 7465001
-      },
-      {
-        "name": "SOC AGRICOLA SANTA TERESA SPA",
-        "amount": 7241641
       }
     ]
   },
   "crm": {
-    "total": 1371,
-    "open": 1151,
+    "total": 1387,
+    "open": 1167,
     "won": 219,
-    "new_30d": 70,
+    "new_30d": 86,
     "by_stage": [
       {
         "stage": "Perdidos",
@@ -566,7 +566,7 @@
       },
       {
         "stage": "Oportunidad de Negocio",
-        "count": 106
+        "count": 120
       },
       {
         "stage": "Contactado",
@@ -574,7 +574,7 @@
       },
       {
         "stage": "Cotizado",
-        "count": 266
+        "count": 268
       },
       {
         "stage": "Durmiente",
