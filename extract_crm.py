@@ -610,6 +610,7 @@ def extract_sales_data(models, uid, custom_start=None, custom_end=None, label_ov
             total_venta -= sub
 
     new_cl_by_user = defaultdict(int)
+    new_cl_detail = []
     new_cl_count = 0
     seen = set()
     for inv in invoices:
@@ -624,8 +625,10 @@ def extract_sales_data(models, uid, custom_start=None, custom_end=None, label_ov
         ])
         if prev == 0:
             u = safe_name(inv.get("invoice_user_id"))
+            pname = safe_name(inv.get("partner_id"))
             new_cl_by_user[u] += 1
             new_cl_count += 1
+            new_cl_detail.append({"cliente": pname, "vendedor": u, "fecha": inv.get("invoice_date", "")})
 
     weekly_sales = []
     for offset in range(4):
@@ -681,7 +684,7 @@ def extract_sales_data(models, uid, custom_start=None, custom_end=None, label_ov
             "venta_by_zone": {k: round(v) for k, v in sorted(venta_by_zone.items(), key=lambda x: -x[1])},
             "margin_by_zone": {k: round((1 - margin_by_zone_costo[k] / margin_by_zone_venta[k]) * 100, 1) if margin_by_zone_venta[k] > 0 else 0 for k in litros_by_zone},
         },
-        "new_clients": {"count": new_cl_count, "by_user": dict(new_cl_by_user)},
+        "new_clients": {"count": new_cl_count, "by_user": dict(new_cl_by_user), "detail": new_cl_detail},
         "weekly": list(reversed(weekly_sales)),
     }
 
@@ -751,8 +754,80 @@ def extract_churn_data(models, uid):
             rescued_dormant_list.append({"name": name, "user": user, "last_update": write_date})
             rescued_dormant_by_user[user] += 1
         else:
-            dormant_list.append({"name": name, "user": user, "last_update": write_date})
+            dormant_list.append({"name": name, "user": user, "last_update": write_date, "partner_id": pid})
             dormant_by_user[user] += 1
+
+    # ── Avg monthly litros (8 months) for dormant clients ──
+    dormant_pids = [c["partner_id"] for c in dormant_list if c.get("partner_id")]
+    avg_litros_map = {}
+    if dormant_pids:
+        eight_months_ago = (today.replace(day=1) - timedelta(days=1))  # end of prev month
+        for _ in range(7):
+            eight_months_ago = (eight_months_ago.replace(day=1) - timedelta(days=1))
+        eight_months_start = eight_months_ago.replace(day=1)
+
+        print(f"  Querying 8-month litros for {len(dormant_pids)} dormant partners ({fmt(eight_months_start)} → {fmt(today)})...")
+
+        # Get invoices for these partners in the 8-month window
+        batch_size = 200
+        all_inv_lines = []
+        for i in range(0, len(dormant_pids), batch_size):
+            batch = dormant_pids[i:i+batch_size]
+            invs = sr(models, uid, "account.move", [
+                ["move_type", "=", "out_invoice"],
+                ["state", "=", "posted"],
+                ["partner_id", "in", batch],
+                ["invoice_date", ">=", fmt(eight_months_start)],
+                ["invoice_date", "<=", fmt(today)],
+            ], ["id", "partner_id"], limit=50000)
+
+            inv_ids = [inv["id"] for inv in invs]
+            inv_pid_map = {inv["id"]: safe_id(inv.get("partner_id")) for inv in invs}
+
+            if inv_ids:
+                lines = sr(models, uid, "account.move.line", [
+                    ["move_id", "in", inv_ids],
+                    ["product_id", "=", DIESEL_PRODUCT_ID],
+                ], ["move_id", "quantity"], limit=50000)
+                for ln in lines:
+                    mid = safe_id(ln.get("move_id"))
+                    pid_ln = inv_pid_map.get(mid)
+                    if pid_ln:
+                        avg_litros_map[pid_ln] = avg_litros_map.get(pid_ln, 0) + (ln.get("quantity", 0) or 0)
+
+        # Credit notes — subtract
+        for i in range(0, len(dormant_pids), batch_size):
+            batch = dormant_pids[i:i+batch_size]
+            ncs = sr(models, uid, "account.move", [
+                ["move_type", "=", "out_refund"],
+                ["state", "=", "posted"],
+                ["partner_id", "in", batch],
+                ["invoice_date", ">=", fmt(eight_months_start)],
+                ["invoice_date", "<=", fmt(today)],
+            ], ["id", "partner_id"], limit=10000)
+
+            nc_ids = [nc["id"] for nc in ncs]
+            nc_pid_map = {nc["id"]: safe_id(nc.get("partner_id")) for nc in ncs}
+
+            if nc_ids:
+                nc_lines = sr(models, uid, "account.move.line", [
+                    ["move_id", "in", nc_ids],
+                    ["product_id", "=", DIESEL_PRODUCT_ID],
+                ], ["move_id", "quantity"], limit=10000)
+                for ln in nc_lines:
+                    mid = safe_id(ln.get("move_id"))
+                    pid_ln = nc_pid_map.get(mid)
+                    if pid_ln:
+                        avg_litros_map[pid_ln] = avg_litros_map.get(pid_ln, 0) - (ln.get("quantity", 0) or 0)
+
+        # Divide by 8 for average
+        avg_litros_map = {pid: round(max(total, 0) / 8) for pid, total in avg_litros_map.items()}
+        print(f"  Avg monthly litros computed for {len(avg_litros_map)} partners")
+
+    # Attach avg_monthly_litros and remove internal partner_id
+    for c in dormant_list:
+        c["avg_monthly_litros"] = avg_litros_map.get(c.get("partner_id"), 0)
+        c.pop("partner_id", None)
 
     lost_list = []
     lost_by_user = Counter()
@@ -806,7 +881,7 @@ def extract_churn_data(models, uid):
             "rescued_dormant": dict(rescued_dormant_by_user),
             "rescued_lost": dict(rescued_lost_by_user),
         },
-        "dormant_list": dormant_list[:50],
+        "dormant_list": sorted(dormant_list, key=lambda x: x.get("avg_monthly_litros", 0), reverse=True)[:50],
         "lost_list": lost_list[:30],
         "rescued_dormant_list": rescued_dormant_list[:20],
         "rescued_lost_list": rescued_lost_list[:20],

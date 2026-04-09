@@ -181,7 +181,7 @@ async function loadData(){
   }
 }
 
-let selectedWeek=0;
+let selectedWeek=1;
 
 function renderWeekSelector(){
   const fw=D.funnel_weeks||[];
@@ -203,7 +203,9 @@ function selectWeek(idx){
 }
 
 function render(){
-  document.getElementById('weekBadge').textContent=D.week?`Sem. ${D.week.label}`:'—';
+  const fw=D.funnel_weeks||[];
+  const initW=fw[selectedWeek]||fw[0];
+  document.getElementById('weekBadge').textContent=initW?`Sem. ${initW.label}`:(D.week?`Sem. ${D.week.label}`:'—');
   renderWeekSelector();
   renderPipeline();
   if(D.funnel_weeks) renderFunnel(); else document.getElementById('p-funnel').innerHTML='<div class="nodata">Ejecuta el extract_crm.py actualizado para ver el funnel.</div>';
@@ -389,10 +391,12 @@ function renderChurn(){
   const dlWeek=ws?dl.filter(c=>c.last_update>=ws&&c.last_update<=we):[];
   const llWeek=ws?ll.filter(c=>c.last_update>=ws&&c.last_update<=we):[];
 
-  h+=`<div class="sec"><div class="sec-h"><h2>🆕😴 Nuevos Durmientes esta Semana</h2><span style="font-size:12px;color:var(--dim)">${dlWeek.length}</span></div>
-  <div class="sec-b" style="padding:0;overflow-x:auto"><table><thead><tr><th>Cliente</th><th>Responsable</th><th>Fecha cambio</th></tr></thead><tbody>`;
-  if(dlWeek.length)dlWeek.forEach(c=>{h+=`<tr><td class="bold">${H(c.name)}</td><td>${H(c.user)}</td><td>${c.last_update}</td></tr>`});
-  else h+=`<tr><td colspan="3" class="nodata">✅ Sin nuevos durmientes esta semana</td></tr>`;
+  const dlWeekSorted=dlWeek.slice().sort((a,b)=>(b.avg_monthly_litros||0)-(a.avg_monthly_litros||0));
+
+  h+=`<div class="sec"><div class="sec-h"><h2>🆕😴 Nuevos Durmientes de la Semana</h2><span style="font-size:12px;color:var(--dim)">${dlWeekSorted.length}</span></div>
+  <div class="sec-b" style="padding:0;overflow-x:auto"><table><thead><tr><th>Prioridad</th><th>Cliente</th><th>Prom. Mensual 8M</th><th>Responsable</th><th>Fecha cambio</th></tr></thead><tbody>`;
+  if(dlWeekSorted.length)dlWeekSorted.forEach((c,i)=>{const avg=c.avg_monthly_litros||0;const tc=avg>=5000?'color:var(--red);font-weight:700':avg>=1000?'color:var(--yellow);font-weight:600':'color:var(--dim)';h+=`<tr><td style="text-align:center;font-weight:700;color:var(--red)">${i+1}</td><td class="bold">${H(c.name)}</td><td style="${tc}">${fL(avg)}</td><td>${H(c.user)}</td><td>${c.last_update}</td></tr>`});
+  else h+=`<tr><td colspan="5" class="nodata">✅ Sin nuevos durmientes esta semana</td></tr>`;
   h+=`</tbody></table></div></div>`;
 
   h+=`<div class="sec"><div class="sec-h"><h2>🆕💀 Nuevos Perdidos esta Semana</h2><span style="font-size:12px;color:var(--dim)">${llWeek.length}</span></div>
@@ -401,10 +405,11 @@ function renderChurn(){
   else h+=`<tr><td colspan="3" class="nodata">✅ Sin nuevos perdidos esta semana</td></tr>`;
   h+=`</tbody></table></div></div>`;
 
+  const dlSorted=dl.slice().sort((a,b)=>(b.avg_monthly_litros||0)-(a.avg_monthly_litros||0));
   h+=`<div class="sec"><div class="sec-h"><h2>😴 Todos los Durmientes</h2><span style="font-size:12px;color:var(--dim)">${dl.length}${S.dormant>50?' (mostrando 50)':''}</span></div>
-  <div class="sec-b" style="padding:0;overflow-x:auto"><table><thead><tr><th>Cliente</th><th>Responsable</th><th>Última actualización</th></tr></thead><tbody>`;
-  if(dl.length)dl.forEach(c=>{h+=`<tr><td class="bold">${H(c.name)}</td><td>${H(c.user)}</td><td style="color:var(--dim)">${c.last_update||'—'}</td></tr>`});
-  else h+=`<tr><td colspan="3" class="nodata">✅ Sin durmientes</td></tr>`;
+  <div class="sec-b" style="padding:0;overflow-x:auto"><table><thead><tr><th>Cliente</th><th>Prom. Mensual 8M</th><th>Responsable</th><th>Última actualización</th></tr></thead><tbody>`;
+  if(dlSorted.length)dlSorted.forEach(c=>{const avg=c.avg_monthly_litros||0;const tc=avg>=5000?'color:var(--red);font-weight:700':avg>=1000?'color:var(--yellow);font-weight:600':'color:var(--dim)';h+=`<tr><td class="bold">${H(c.name)}</td><td style="${tc}">${fL(avg)}</td><td>${H(c.user)}</td><td style="color:var(--dim)">${c.last_update||'—'}</td></tr>`});
+  else h+=`<tr><td colspan="4" class="nodata">✅ Sin durmientes</td></tr>`;
   h+=`</tbody></table></div></div>`;
 
   h+=`<div class="sec"><div class="sec-h"><h2>💀 Todos los Perdidos</h2><span style="font-size:12px;color:var(--dim)">${ll.length}${S.lost>30?' (mostrando 30)':''}</span></div>
@@ -456,6 +461,10 @@ function renderVendedor(){
   const users=Object.keys(VG).filter(u=>u!=='Sin asignar'&&isAllowed(u));
   if(!users.length){document.getElementById('p-vendedor').innerHTML='<div class="nodata">Sin datos. Edita vendor-goals.json</div>';return}
 
+  // Build per-user cotizaciones and clientes nuevos from detail arrays
+  const allQuotes=((st.cotizacion||{}).detail)||[];
+  const allNewCl=(nc.detail)||[];
+
   let h='<div class="exec-grid">';
   users.forEach(u=>{
     const g=VG[u]||{},lt=(T.litros_by_user||{})[u]||0;
@@ -480,6 +489,28 @@ function renderVendedor(){
       const disp=m.fmt?m.fmt(m.val):m.val,gDisp=m.fmt?m.fmt(m.goal):m.goal;
       h+=`<div class="vm"><span class="ml">${m.lbl}</span><span class="mv"><span style="color:${barC(c)}">${disp}</span><small>/ ${gDisp}</small><span class="minibar"><span class="minibar-f" style="width:${p}%;background:${barC(c)}"></span></span></span></div>`;
     });
+
+    // Cotizaciones detail for this user
+    const uQuotes=allQuotes.filter(q=>q.vendedor===u);
+    if(uQuotes.length){
+      h+=`<div style="margin-top:12px;border-top:1px solid var(--border);padding-top:10px"><div style="font-size:11px;font-weight:600;color:var(--dim);text-transform:uppercase;margin-bottom:6px">📄 Cotizaciones (${uQuotes.length})</div>`;
+      uQuotes.forEach(q=>{
+        const st_tag=q.estado==='sent'?'tag-g':'tag-y';
+        h+=`<div style="display:flex;justify-content:space-between;align-items:center;padding:3px 0;font-size:12px;border-bottom:1px solid #f5f5f5"><span>${H(q.cliente||q.name)}</span><span style="display:flex;gap:6px;align-items:center"><span class="tag ${st_tag}">${q.estado==='sent'?'Enviada':'Borrador'}</span><span style="color:var(--dim)">${q.fecha||''}</span></span></div>`;
+      });
+      h+=`</div>`;
+    }
+
+    // Clientes nuevos detail for this user
+    const uNewCl=allNewCl.filter(c=>c.vendedor===u);
+    if(uNewCl.length){
+      h+=`<div style="margin-top:10px;border-top:1px solid var(--border);padding-top:10px"><div style="font-size:11px;font-weight:600;color:var(--dim);text-transform:uppercase;margin-bottom:6px">🆕 Clientes Nuevos (${uNewCl.length})</div>`;
+      uNewCl.forEach(c=>{
+        h+=`<div style="display:flex;justify-content:space-between;padding:3px 0;font-size:12px;border-bottom:1px solid #f5f5f5"><span class="bold">${H(c.cliente)}</span><span style="color:var(--dim)">${c.fecha||''}</span></div>`;
+      });
+      h+=`</div>`;
+    }
+
     h+=`</div>`;
   });
   h+='</div>';
