@@ -399,10 +399,11 @@ function renderChurn(){
   else h+=`<tr><td colspan="5" class="nodata">✅ Sin nuevos durmientes esta semana</td></tr>`;
   h+=`</tbody></table></div></div>`;
 
-  h+=`<div class="sec"><div class="sec-h"><h2>🆕💀 Nuevos Perdidos esta Semana</h2><span style="font-size:12px;color:var(--dim)">${llWeek.length}</span></div>
-  <div class="sec-b" style="padding:0;overflow-x:auto"><table><thead><tr><th>Cliente</th><th>Último vendedor</th><th>Fecha cambio</th></tr></thead><tbody>`;
-  if(llWeek.length)llWeek.forEach(c=>{h+=`<tr><td class="bold">${H(c.name)}</td><td>${H(c.user)}</td><td>${c.last_update}</td></tr>`});
-  else h+=`<tr><td colspan="3" class="nodata">✅ Sin nuevos perdidos esta semana</td></tr>`;
+  const llWeekSorted=llWeek.slice().sort((a,b)=>(b.avg_monthly_litros||0)-(a.avg_monthly_litros||0));
+  h+=`<div class="sec"><div class="sec-h"><h2>🆕💀 Nuevos Perdidos de la Semana</h2><span style="font-size:12px;color:var(--dim)">${llWeekSorted.length}</span></div>
+  <div class="sec-b" style="padding:0;overflow-x:auto"><table><thead><tr><th>Prioridad</th><th>Cliente</th><th>Prom. Mensual 8M</th><th>Último vendedor</th><th>Fecha cambio</th></tr></thead><tbody>`;
+  if(llWeekSorted.length)llWeekSorted.forEach((c,i)=>{const avg=c.avg_monthly_litros||0;const tc=avg>=5000?'color:var(--red);font-weight:700':avg>=1000?'color:var(--yellow);font-weight:600':'color:var(--dim)';h+=`<tr><td style="text-align:center;font-weight:700;color:var(--red)">${i+1}</td><td class="bold">${H(c.name)}</td><td style="${tc}">${fL(avg)}</td><td>${H(c.user)}</td><td>${c.last_update}</td></tr>`});
+  else h+=`<tr><td colspan="5" class="nodata">✅ Sin nuevos perdidos esta semana</td></tr>`;
   h+=`</tbody></table></div></div>`;
 
   const dlSorted=dl.slice().sort((a,b)=>(b.avg_monthly_litros||0)-(a.avg_monthly_litros||0));
@@ -412,10 +413,11 @@ function renderChurn(){
   else h+=`<tr><td colspan="4" class="nodata">✅ Sin durmientes</td></tr>`;
   h+=`</tbody></table></div></div>`;
 
+  const llSorted=ll.slice().sort((a,b)=>(b.avg_monthly_litros||0)-(a.avg_monthly_litros||0));
   h+=`<div class="sec"><div class="sec-h"><h2>💀 Todos los Perdidos</h2><span style="font-size:12px;color:var(--dim)">${ll.length}${S.lost>30?' (mostrando 30)':''}</span></div>
-  <div class="sec-b" style="padding:0;overflow-x:auto"><table><thead><tr><th>Cliente</th><th>Último vendedor</th><th>Última actualización</th></tr></thead><tbody>`;
-  if(ll.length)ll.forEach(c=>{h+=`<tr><td class="bold">${H(c.name)}</td><td>${H(c.user)}</td><td style="color:var(--dim)">${c.last_update||'—'}</td></tr>`});
-  else h+=`<tr><td colspan="3" class="nodata">Sin perdidos</td></tr>`;
+  <div class="sec-b" style="padding:0;overflow-x:auto"><table><thead><tr><th>Cliente</th><th>Prom. Mensual 8M</th><th>Último vendedor</th><th>Última actualización</th></tr></thead><tbody>`;
+  if(llSorted.length)llSorted.forEach(c=>{const avg=c.avg_monthly_litros||0;const tc=avg>=5000?'color:var(--red);font-weight:700':avg>=1000?'color:var(--yellow);font-weight:600':'color:var(--dim)';h+=`<tr><td class="bold">${H(c.name)}</td><td style="${tc}">${fL(avg)}</td><td>${H(c.user)}</td><td style="color:var(--dim)">${c.last_update||'—'}</td></tr>`});
+  else h+=`<tr><td colspan="4" class="nodata">Sin perdidos</td></tr>`;
   h+=`</tbody></table></div></div>`;
 
   const rdl=C.rescued_dormant_list||[];
@@ -456,16 +458,25 @@ function renderChurn(){
 // ========== TAB 5: POR VENDEDOR ==========
 function renderVendedor(){
   const fw=D.funnel_weeks||[],cw=fw[selectedWeek]||fw.find(w=>w.is_current)||fw[0];
-  const V=D.ventas||{},T=V.totals||{},nc=V.new_clients||{},VG=D.vendor_goals||{};
+  const V=D.ventas||{},T=V.totals||{},nc=V.new_clients||{},VG=D.vendor_goals||{},CG=D.company_goals||{};
   const st=cw?cw.stages:{};
   const users=Object.keys(VG).filter(u=>u!=='Sin asignar'&&isAllowed(u));
   if(!users.length){document.getElementById('p-vendedor').innerHTML='<div class="nodata">Sin datos. Edita vendor-goals.json</div>';return}
 
-  // Build per-user cotizaciones and clientes nuevos from detail arrays
   const allQuotes=((st.cotizacion||{}).detail)||[];
   const allNewCl=(nc.detail)||[];
+  const ltGoal=CG.litros_mes||0;
 
-  let h='<div class="exec-grid">';
+  // ── Top KPIs ──
+  let h=`<div class="kpi-row">
+    ${mkKpi('c-red','⛽ Litros Mes',fL(T.total_litros||0),ltGoal?pct(T.total_litros||0,ltGoal)+'% de meta':'',T.total_litros||0,ltGoal||1)}
+    ${mkKpi('c-blue','🆕 Clientes Nuevos',nc.count||0,'primera factura del mes')}
+    ${mkKpi('c-yellow','📄 Cotizaciones Semana',allQuotes.length,'semana seleccionada')}
+    ${mkKpi('c-green','🤝 Cierres Semana',(st.cierre||{}).value||0,'nuevos clientes cerrados')}
+  </div>`;
+
+  // ── Vendor cards (metrics only) ──
+  h+='<div class="exec-grid">';
   users.forEach(u=>{
     const g=VG[u]||{},lt=(T.litros_by_user||{})[u]||0;
     const fLeads=((st.leads||{}).by_user||{})[u]||0;
@@ -489,31 +500,35 @@ function renderVendedor(){
       const disp=m.fmt?m.fmt(m.val):m.val,gDisp=m.fmt?m.fmt(m.goal):m.goal;
       h+=`<div class="vm"><span class="ml">${m.lbl}</span><span class="mv"><span style="color:${barC(c)}">${disp}</span><small>/ ${gDisp}</small><span class="minibar"><span class="minibar-f" style="width:${p}%;background:${barC(c)}"></span></span></span></div>`;
     });
-
-    // Cotizaciones detail for this user
-    const uQuotes=allQuotes.filter(q=>q.vendedor===u);
-    if(uQuotes.length){
-      h+=`<div style="margin-top:12px;border-top:1px solid var(--border);padding-top:10px"><div style="font-size:11px;font-weight:600;color:var(--dim);text-transform:uppercase;margin-bottom:6px">📄 Cotizaciones (${uQuotes.length})</div>`;
-      uQuotes.forEach(q=>{
-        const st_tag=q.estado==='sent'?'tag-g':'tag-y';
-        h+=`<div style="display:flex;justify-content:space-between;align-items:center;padding:3px 0;font-size:12px;border-bottom:1px solid #f5f5f5"><span>${H(q.cliente||q.name)}</span><span style="display:flex;gap:6px;align-items:center"><span class="tag ${st_tag}">${q.estado==='sent'?'Enviada':'Borrador'}</span><span style="color:var(--dim)">${q.fecha||''}</span></span></div>`;
-      });
-      h+=`</div>`;
-    }
-
-    // Clientes nuevos detail for this user
-    const uNewCl=allNewCl.filter(c=>c.vendedor===u);
-    if(uNewCl.length){
-      h+=`<div style="margin-top:10px;border-top:1px solid var(--border);padding-top:10px"><div style="font-size:11px;font-weight:600;color:var(--dim);text-transform:uppercase;margin-bottom:6px">🆕 Clientes Nuevos (${uNewCl.length})</div>`;
-      uNewCl.forEach(c=>{
-        h+=`<div style="display:flex;justify-content:space-between;padding:3px 0;font-size:12px;border-bottom:1px solid #f5f5f5"><span class="bold">${H(c.cliente)}</span><span style="color:var(--dim)">${c.fecha||''}</span></div>`;
-      });
-      h+=`</div>`;
-    }
-
     h+=`</div>`;
   });
   h+='</div>';
+
+  // ── Full-width table: Clientes Nuevos ──
+  if(allNewCl.length){
+    const ncSorted=allNewCl.slice().sort((a,b)=>(b.litros||0)-(a.litros||0));
+    h+=`<div class="sec" style="margin-top:20px"><div class="sec-h"><h2>🆕 Clientes Nuevos del Mes</h2><span style="font-size:12px;color:var(--dim)">${ncSorted.length}</span></div>
+    <div class="sec-b" style="padding:0;overflow-x:auto"><table><thead><tr><th>Cliente</th><th>Vendedor</th><th>Litros</th><th>Fecha</th></tr></thead><tbody>`;
+    ncSorted.forEach(c=>{
+      const lt=c.litros||0;
+      h+=`<tr><td class="bold">${H(c.cliente)}</td><td>${H(c.vendedor)}</td><td class="bold">${fL(lt)}</td><td style="color:var(--dim)">${c.fecha||''}</td></tr>`;
+    });
+    h+=`</tbody></table></div></div>`;
+  }
+
+  // ── Full-width table: Cotizaciones ──
+  if(allQuotes.length){
+    const qSorted=allQuotes.slice().sort((a,b)=>(b.litros||0)-(a.litros||0));
+    h+=`<div class="sec"><div class="sec-h"><h2>📄 Cotizaciones de la Semana</h2><span style="font-size:12px;color:var(--dim)">${qSorted.length}</span></div>
+    <div class="sec-b" style="padding:0;overflow-x:auto"><table><thead><tr><th>Cliente</th><th>Vendedor</th><th>Litros</th><th>Estado</th><th>Fecha</th></tr></thead><tbody>`;
+    qSorted.forEach(q=>{
+      const lt=q.litros||0;
+      const st_tag=q.estado==='sent'?'tag-g':'tag-y';
+      h+=`<tr><td class="bold">${H(q.cliente||q.name)}</td><td>${H(q.vendedor)}</td><td class="bold">${fL(lt)}</td><td><span class="tag ${st_tag}">${q.estado==='sent'?'Enviada':'Borrador'}</span></td><td style="color:var(--dim)">${q.fecha||''}</td></tr>`;
+    });
+    h+=`</tbody></table></div></div>`;
+  }
+
   document.getElementById('p-vendedor').innerHTML=h;
 }
 

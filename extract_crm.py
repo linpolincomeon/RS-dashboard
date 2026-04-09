@@ -387,6 +387,19 @@ def extract_funnel_data(models, uid):
         quote_detail = sr(models, uid, "sale.order", quote_domain,
                           ["name", "partner_id", "user_id", "amount_untaxed", "state", "create_date"], limit=20)
 
+        # Get litros from sale.order.line for these quotes
+        quote_ids = [q["id"] for q in quote_detail]
+        quote_litros_map = {}
+        if quote_ids:
+            sol = sr(models, uid, "sale.order.line", [
+                ["order_id", "in", quote_ids],
+                ["product_id", "=", DIESEL_PRODUCT_ID],
+            ], ["order_id", "product_uom_qty"], limit=500)
+            for ln in sol:
+                oid = safe_id(ln.get("order_id"))
+                if oid:
+                    quote_litros_map[oid] = quote_litros_map.get(oid, 0) + (ln.get("product_uom_qty", 0) or 0)
+
         quotes_by_user = defaultdict(int)
         quote_rows = []
         for q in quote_detail:
@@ -397,6 +410,7 @@ def extract_funnel_data(models, uid):
                 "cliente": safe_name(q.get("partner_id")),
                 "vendedor": u,
                 "monto": q.get("amount_untaxed", 0),
+                "litros": round(quote_litros_map.get(q["id"], 0)),
                 "estado": q.get("state", ""),
                 "fecha": (q.get("create_date") or "")[:10],
             })
@@ -544,6 +558,7 @@ def extract_sales_data(models, uid, custom_start=None, custom_end=None, label_ov
     retail_costo = 0
     volume_venta = 0
     volume_costo = 0
+    litros_by_partner = defaultdict(float)
 
     if inv_ids:
         lines = sr(models, uid, "account.move.line", [
@@ -564,6 +579,8 @@ def extract_sales_data(models, uid, custom_start=None, custom_end=None, label_ov
             venta_by_user[user] += sub
             total_litros += qty
             total_venta += sub
+            if pid:
+                litros_by_partner[pid] += qty
 
             zone = partner_zone.get(pid, "Sin zona")
             litros_by_zone[zone] += qty
@@ -588,10 +605,11 @@ def extract_sales_data(models, uid, custom_start=None, custom_end=None, label_ov
         ["state", "=", "posted"],
         ["invoice_date", ">=", fmt(m_start)],
         ["invoice_date", "<=", fmt(m_end)],
-    ], ["name", "invoice_user_id", "amount_untaxed"], limit=500)
+    ], ["name", "invoice_user_id", "amount_untaxed", "partner_id"], limit=500)
 
     nc_ids = [n["id"] for n in ncs]
     nc_user_map = {n["id"]: safe_name(n.get("invoice_user_id")) for n in ncs}
+    nc_partner_map = {n["id"]: safe_id(n.get("partner_id")) for n in ncs}
 
     if nc_ids:
         nc_lines = sr(models, uid, "account.move.line", [
@@ -608,6 +626,9 @@ def extract_sales_data(models, uid, custom_start=None, custom_end=None, label_ov
             venta_by_user[user] -= sub
             total_litros -= qty
             total_venta -= sub
+            nc_pid = nc_partner_map.get(mid)
+            if nc_pid:
+                litros_by_partner[nc_pid] -= qty
 
     new_cl_by_user = defaultdict(int)
     new_cl_detail = []
@@ -628,7 +649,7 @@ def extract_sales_data(models, uid, custom_start=None, custom_end=None, label_ov
             pname = safe_name(inv.get("partner_id"))
             new_cl_by_user[u] += 1
             new_cl_count += 1
-            new_cl_detail.append({"cliente": pname, "vendedor": u, "fecha": inv.get("invoice_date", "")})
+            new_cl_detail.append({"cliente": pname, "vendedor": u, "fecha": inv.get("invoice_date", ""), "litros": round(max(litros_by_partner.get(pid, 0), 0))})
 
     weekly_sales = []
     for offset in range(4):
@@ -758,18 +779,18 @@ def extract_churn_data(models, uid):
             dormant_by_user[user] += 1
 
     # ── Avg monthly litros (8 months) for dormant clients ──
+    eight_months_ago = (today.replace(day=1) - timedelta(days=1))  # end of prev month
+    for _ in range(7):
+        eight_months_ago = (eight_months_ago.replace(day=1) - timedelta(days=1))
+    eight_months_start = eight_months_ago.replace(day=1)
+    batch_size = 200
+
     dormant_pids = [c["partner_id"] for c in dormant_list if c.get("partner_id")]
     avg_litros_map = {}
     if dormant_pids:
-        eight_months_ago = (today.replace(day=1) - timedelta(days=1))  # end of prev month
-        for _ in range(7):
-            eight_months_ago = (eight_months_ago.replace(day=1) - timedelta(days=1))
-        eight_months_start = eight_months_ago.replace(day=1)
-
         print(f"  Querying 8-month litros for {len(dormant_pids)} dormant partners ({fmt(eight_months_start)} → {fmt(today)})...")
 
         # Get invoices for these partners in the 8-month window
-        batch_size = 200
         all_inv_lines = []
         for i in range(0, len(dormant_pids), batch_size):
             batch = dormant_pids[i:i+batch_size]
@@ -848,8 +869,65 @@ def extract_churn_data(models, uid):
             rescued_lost_list.append({"name": name, "user": user, "last_update": write_date})
             rescued_lost_by_user[user] += 1
         else:
-            lost_list.append({"name": name, "user": user, "last_update": write_date})
+            lost_list.append({"name": name, "user": user, "last_update": write_date, "partner_id": pid})
             lost_by_user[user] += 1
+
+    # ── Avg monthly litros (8 months) for lost clients ──
+    lost_pids = [c["partner_id"] for c in lost_list if c.get("partner_id")]
+    avg_litros_lost = {}
+    if lost_pids:
+        # Reuse same 8-month window calculated for dormant
+        print(f"  Querying 8-month litros for {len(lost_pids)} lost partners...")
+        for i in range(0, len(lost_pids), batch_size):
+            batch = lost_pids[i:i+batch_size]
+            invs = sr(models, uid, "account.move", [
+                ["move_type", "=", "out_invoice"],
+                ["state", "=", "posted"],
+                ["partner_id", "in", batch],
+                ["invoice_date", ">=", fmt(eight_months_start)],
+                ["invoice_date", "<=", fmt(today)],
+            ], ["id", "partner_id"], limit=50000)
+            inv_ids_l = [inv["id"] for inv in invs]
+            inv_pid_map_l = {inv["id"]: safe_id(inv.get("partner_id")) for inv in invs}
+            if inv_ids_l:
+                lines = sr(models, uid, "account.move.line", [
+                    ["move_id", "in", inv_ids_l],
+                    ["product_id", "=", DIESEL_PRODUCT_ID],
+                ], ["move_id", "quantity"], limit=50000)
+                for ln in lines:
+                    mid = safe_id(ln.get("move_id"))
+                    pid_ln = inv_pid_map_l.get(mid)
+                    if pid_ln:
+                        avg_litros_lost[pid_ln] = avg_litros_lost.get(pid_ln, 0) + (ln.get("quantity", 0) or 0)
+
+        for i in range(0, len(lost_pids), batch_size):
+            batch = lost_pids[i:i+batch_size]
+            ncs_l = sr(models, uid, "account.move", [
+                ["move_type", "=", "out_refund"],
+                ["state", "=", "posted"],
+                ["partner_id", "in", batch],
+                ["invoice_date", ">=", fmt(eight_months_start)],
+                ["invoice_date", "<=", fmt(today)],
+            ], ["id", "partner_id"], limit=10000)
+            nc_ids_l = [nc["id"] for nc in ncs_l]
+            nc_pid_map_l = {nc["id"]: safe_id(nc.get("partner_id")) for nc in ncs_l}
+            if nc_ids_l:
+                nc_lines_l = sr(models, uid, "account.move.line", [
+                    ["move_id", "in", nc_ids_l],
+                    ["product_id", "=", DIESEL_PRODUCT_ID],
+                ], ["move_id", "quantity"], limit=10000)
+                for ln in nc_lines_l:
+                    mid = safe_id(ln.get("move_id"))
+                    pid_ln = nc_pid_map_l.get(mid)
+                    if pid_ln:
+                        avg_litros_lost[pid_ln] = avg_litros_lost.get(pid_ln, 0) - (ln.get("quantity", 0) or 0)
+
+        avg_litros_lost = {pid: round(max(total, 0) / 8) for pid, total in avg_litros_lost.items()}
+        print(f"  Avg monthly litros computed for {len(avg_litros_lost)} lost partners")
+
+    for c in lost_list:
+        c["avg_monthly_litros"] = avg_litros_lost.get(c.get("partner_id"), 0)
+        c.pop("partner_id", None)
 
     active_count = len(curr_month_partners | prev_month_partners)
     churn_pct = round((newly_lost / prev_month_clients) * 100, 1) if prev_month_clients > 0 else 0
@@ -882,7 +960,7 @@ def extract_churn_data(models, uid):
             "rescued_lost": dict(rescued_lost_by_user),
         },
         "dormant_list": sorted(dormant_list, key=lambda x: x.get("avg_monthly_litros", 0), reverse=True)[:50],
-        "lost_list": lost_list[:30],
+        "lost_list": sorted(lost_list, key=lambda x: x.get("avg_monthly_litros", 0), reverse=True)[:30],
         "rescued_dormant_list": rescued_dormant_list[:20],
         "rescued_lost_list": rescued_lost_list[:20],
     }
