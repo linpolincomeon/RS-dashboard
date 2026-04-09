@@ -1,18 +1,18 @@
 {
-  "updated": "2026-04-09T16:08:16.459912",
+  "updated": "2026-04-09T21:35:30.642605",
   "weeks": [
     {
       "label": "09apr-15apr",
       "start": "2026-04-09",
       "end": "2026-04-15",
-      "ventas": 12248602,
-      "neto": 10267256,
-      "litros": 7900,
-      "precio": 1300,
-      "margin": 0.10034,
-      "facturas": 6,
-      "nc": 0,
-      "clientes": 5,
+      "ventas": 26116993,
+      "neto": 22108308,
+      "litros": 16768,
+      "precio": 1318,
+      "margin": 0.10399,
+      "facturas": 14,
+      "nc": 2,
+      "clientes": 12,
       "recaud": 0,
       "cheques": 0,
       "transf": 0,
@@ -326,8 +326,8 @@
     {
       "date": "09apr",
       "day": "Jue",
-      "litros": 7900,
-      "neto": 10267256
+      "litros": 16770,
+      "neto": 22126751
     },
     {
       "date": "08apr",
@@ -422,12 +422,12 @@
   ],
   "banks": [
     {
-      "name": "DE CHILE",
-      "balance": 31105717
-    },
-    {
       "name": "ITAU",
       "balance": 13803998
+    },
+    {
+      "name": "DE CHILE",
+      "balance": 11644449
     },
     {
       "name": "ESTADO",
@@ -450,15 +450,15 @@
       "balance": -838790
     }
   ],
-  "total_cash": 61157245,
+  "total_cash": 41695977,
   "receivables": {
     "open_invoices": 335,
-    "total_due": 588380160,
-    "current": 507194033,
-    "overdue": 81186127,
-    "pct_overdue": 13.8,
+    "total_due": 594986520,
+    "current": 518470968,
+    "overdue": 76515552,
+    "pct_overdue": 12.9,
     "aging": {
-      "0-30": 69292564,
+      "0-30": 64621989,
       "31-60": 928000,
       "61-90": 0,
       "90+": 10965563
@@ -525,6 +525,10 @@
         "amount": 8144001
       },
       {
+        "name": "EXPORTADORA MELIFEN LTDA.",
+        "amount": 8033450
+      },
+      {
         "name": "AGRÍCOLA LA RIGADA SPA",
         "amount": 7644000
       },
@@ -539,18 +543,14 @@
       {
         "name": "AGRICOLA TRICAHUE LTDA",
         "amount": 7013001
-      },
-      {
-        "name": "TRANSPORTES V&J SPA",
-        "amount": 6690299
       }
     ]
   },
   "crm": {
-    "total": 1387,
-    "open": 1167,
-    "won": 219,
-    "new_30d": 83,
+    "total": 1388,
+    "open": 1166,
+    "won": 221,
+    "new_30d": 85,
     "by_stage": [
       {
         "stage": "Perdidos",
@@ -566,7 +566,7 @@
       },
       {
         "stage": "Oportunidad de Negocio",
-        "count": 118
+        "count": 117
       },
       {
         "stage": "Contactado",
@@ -574,15 +574,15 @@
       },
       {
         "stage": "Cotizado",
-        "count": 268
+        "count": 269
       },
       {
         "stage": "Durmiente",
-        "count": 191
+        "count": 190
       },
       {
         "stage": "Won",
-        "count": 219
+        "count": 221
       }
     ]
   }
