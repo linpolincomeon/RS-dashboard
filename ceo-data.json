@@ -1,6 +1,26 @@
 {
-  "updated": "2026-04-08T21:31:19.390308",
+  "updated": "2026-04-09T00:04:51.302939",
   "weeks": [
+    {
+      "label": "09apr-15apr",
+      "start": "2026-04-09",
+      "end": "2026-04-15",
+      "ventas": 0,
+      "neto": 0,
+      "litros": 0,
+      "precio": 0,
+      "margin": 0,
+      "facturas": 0,
+      "nc": 0,
+      "clientes": 0,
+      "recaud": 0,
+      "cheques": 0,
+      "transf": 0,
+      "factoring": 0,
+      "compras_enap": 0,
+      "ppto": 326422,
+      "parcial": true
+    },
     {
       "label": "02apr-08apr",
       "start": "2026-04-02",
@@ -19,7 +39,7 @@
       "factoring": 0,
       "compras_enap": 89064999,
       "ppto": 326422,
-      "parcial": true
+      "parcial": false
     },
     {
       "label": "26mar-01apr",
@@ -300,29 +320,15 @@
       "compras_enap": 158487440,
       "ppto": 212548,
       "parcial": false
-    },
-    {
-      "label": "18dec-24dec",
-      "start": "2025-12-18",
-      "end": "2025-12-24",
-      "ventas": 180574110,
-      "neto": 127282231,
-      "litros": 185492,
-      "precio": 686,
-      "margin": 0.1137,
-      "facturas": 120,
-      "nc": 0,
-      "clientes": 87,
-      "recaud": 852995,
-      "cheques": 852995,
-      "transf": 0,
-      "factoring": 0,
-      "compras_enap": 173750364,
-      "ppto": 212548,
-      "parcial": false
     }
   ],
   "daily": [
+    {
+      "date": "09apr",
+      "day": "Jue",
+      "litros": 0,
+      "neto": 0
+    },
     {
       "date": "08apr",
       "day": "Mié",
@@ -412,12 +418,6 @@
       "day": "Jue",
       "litros": 23650,
       "neto": 23603535
-    },
-    {
-      "date": "18mar",
-      "day": "Mié",
-      "litros": 40245,
-      "neto": 36023708
     }
   ],
   "banks": [
@@ -454,11 +454,11 @@
   "receivables": {
     "open_invoices": 337,
     "total_due": 591392927,
-    "current": 516106305,
-    "overdue": 75286622,
-    "pct_overdue": 12.7,
+    "current": 503550431,
+    "overdue": 87842496,
+    "pct_overdue": 14.9,
     "aging": {
-      "0-30": 63393059,
+      "0-30": 75948933,
       "31-60": 928000,
       "61-90": 0,
       "90+": 10965563
@@ -550,7 +550,7 @@
     "total": 1387,
     "open": 1164,
     "won": 222,
-    "new_30d": 86,
+    "new_30d": 83,
     "by_stage": [
       {
         "stage": "Perdidos",
