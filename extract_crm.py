@@ -559,6 +559,8 @@ def extract_sales_data(models, uid, custom_start=None, custom_end=None, label_ov
     volume_venta = 0
     volume_costo = 0
     litros_by_partner = defaultdict(float)
+    margin_by_user_venta = defaultdict(float)
+    margin_by_user_costo = defaultdict(float)
 
     if inv_ids:
         lines = sr(models, uid, "account.move.line", [
@@ -581,6 +583,8 @@ def extract_sales_data(models, uid, custom_start=None, custom_end=None, label_ov
             total_venta += sub
             if pid:
                 litros_by_partner[pid] += qty
+            margin_by_user_venta[user] += sub
+            margin_by_user_costo[user] += sub * (1 - margin) if margin else sub
 
             zone = partner_zone.get(pid, "Sin zona")
             litros_by_zone[zone] += qty
@@ -605,11 +609,12 @@ def extract_sales_data(models, uid, custom_start=None, custom_end=None, label_ov
         ["state", "=", "posted"],
         ["invoice_date", ">=", fmt(m_start)],
         ["invoice_date", "<=", fmt(m_end)],
-    ], ["name", "invoice_user_id", "amount_untaxed", "partner_id"], limit=500)
+    ], ["name", "invoice_user_id", "amount_untaxed", "partner_id", "margin_zone"], limit=500)
 
     nc_ids = [n["id"] for n in ncs]
     nc_user_map = {n["id"]: safe_name(n.get("invoice_user_id")) for n in ncs}
     nc_partner_map = {n["id"]: safe_id(n.get("partner_id")) for n in ncs}
+    nc_margin_map = {n["id"]: n.get("margin_zone", 0) or 0 for n in ncs}
 
     if nc_ids:
         nc_lines = sr(models, uid, "account.move.line", [
@@ -622,10 +627,13 @@ def extract_sales_data(models, uid, custom_start=None, custom_end=None, label_ov
             qty = ln.get("quantity", 0)
             sub = ln.get("price_subtotal", 0)
             user = nc_user_map.get(mid, "Sin asignar")
+            nc_margin = nc_margin_map.get(mid, 0)
             litros_by_user[user] -= qty
             venta_by_user[user] -= sub
             total_litros -= qty
             total_venta -= sub
+            margin_by_user_venta[user] -= sub
+            margin_by_user_costo[user] -= sub * (1 - nc_margin) if nc_margin else sub
             nc_pid = nc_partner_map.get(mid)
             if nc_pid:
                 litros_by_partner[nc_pid] -= qty
@@ -704,6 +712,7 @@ def extract_sales_data(models, uid, custom_start=None, custom_end=None, label_ov
             "litros_by_zone": {k: round(v) for k, v in sorted(litros_by_zone.items(), key=lambda x: -x[1])},
             "venta_by_zone": {k: round(v) for k, v in sorted(venta_by_zone.items(), key=lambda x: -x[1])},
             "margin_by_zone": {k: round((1 - margin_by_zone_costo[k] / margin_by_zone_venta[k]) * 100, 1) if margin_by_zone_venta[k] > 0 else 0 for k in litros_by_zone},
+            "margin_by_user": {k: round((1 - margin_by_user_costo[k] / margin_by_user_venta[k]) * 100, 1) if margin_by_user_venta.get(k, 0) > 0 else 0 for k in litros_by_user},
         },
         "new_clients": {"count": new_cl_count, "by_user": dict(new_cl_by_user), "detail": new_cl_detail},
         "weekly": list(reversed(weekly_sales)),

@@ -328,22 +328,37 @@ function renderVentas(){
   const ltGoal=CG.litros_mes||0;
   const mrActual=T.margin_retail_pct||0, mvActual=T.margin_volume_pct||0;
   const mrGoal=CG.margen_retail||12, mvGoal=CG.margen_volumen||9;
+
+  // Prorata factor for the month
+  const mStart=V.month_start?new Date(V.month_start+'T00:00:00'):null;
+  const mEnd=V.month_end?new Date(V.month_end+'T00:00:00'):null;
+  const now=new Date(D.updated||Date.now());
+  let pf=1;
+  if(mStart&&mEnd){
+    const dim=Math.round((mEnd-mStart)/86400000)+1;
+    const de=Math.min(Math.round((now-mStart)/86400000)+1,dim);
+    pf=de/dim;
+  }
+
   let h=`<div class="kpi-row">
     ${mkKpi('c-red','⛽ Litros Mes',fL(T.total_litros||0),ltGoal?'Meta: '+fL(ltGoal)+' ('+pct(T.total_litros||0,ltGoal)+'%)':'',T.total_litros||0,ltGoal||1)}
     ${mkKpi('c-blue','🆕 Clientes Nuevos',nc.count||0,'primera factura del mes')}
     ${mkKpi(mrActual>=mrGoal?'c-green':'c-red','📊 Margen Retail',mrActual+'%','Meta: '+mrGoal+'% · '+fC(T.retail_venta||0),mrActual,mrGoal)}
     ${mkKpi(mvActual>=mvGoal?'c-green':'c-red','📊 Margen Volumen',mvActual+'%','Meta: '+mvGoal+'% · '+fC(T.volume_venta||0),mvActual,mvGoal)}
   </div>`;
-  h+=`<div class="chart-row"><div class="ccrd"><h3>Litros por Vendedor</h3><canvas id="cLitros" height="220"></canvas></div><div class="ccrd"><h3>Venta Semanal</h3><canvas id="cVSem" height="220"></canvas></div></div>`;
+  h+=`<div class="chart-row"><div class="ccrd"><h3>Litros por Vendedor</h3><canvas id="cLitros" height="220"></canvas></div><div class="ccrd"><h3>Venta Semanal vs Meta</h3><canvas id="cVSem" height="220"></canvas></div></div>`;
 
   const users=Object.keys({...(T.litros_by_user||{}), ...(T.venta_by_user||{})}).filter(u=>u!=='Sin asignar'&&isAllowed(u));
   if(users.length){
-    h+=`<div class="sec"><div class="sec-h"><h2>Resumen Mensual</h2></div><div class="sec-b" style="padding:0;overflow-x:auto"><table><thead><tr><th>Vendedor</th><th>Litros</th><th>Meta Lt</th><th>%</th></tr></thead><tbody>`;
+    h+=`<div class="sec"><div class="sec-h"><h2>Resumen Mensual</h2></div><div class="sec-b" style="padding:0;overflow-x:auto"><table><thead><tr><th>Vendedor</th><th>Litros</th><th>Margen %</th><th>Meta Prorrateada</th><th>Meta Mes</th><th>% Prorrata</th></tr></thead><tbody>`;
     users.forEach(u=>{
       const g=VG[u]||{},lt=(T.litros_by_user||{})[u]||0;
       const gL=g.litros_mes||0;
-      const ltPct=gL>0?`<span class="tag ${tagC(clr(lt,gL))}">${pct(lt,gL)}%</span>`:'—';
-      h+=`<tr><td class="bold">${H(u)}</td><td>${fL(lt)}</td><td style="color:var(--dim)">${gL?fL(gL):'—'}</td><td>${ltPct}</td></tr>`;
+      const gPro=Math.round(gL*pf);
+      const ltPct=gPro>0?`<span class="tag ${tagC(clr(lt,gPro))}">${pct(lt,gPro)}%</span>`:'—';
+      const mg=(T.margin_by_user||{})[u]||0;
+      const mc=mg>=12?'tag-g':mg>=9?'tag-y':'tag-r';
+      h+=`<tr><td class="bold">${H(u)}</td><td>${fL(lt)}</td><td><span class="tag ${mc}">${mg}%</span></td><td style="color:var(--dim)">${gPro?fL(gPro):'—'}</td><td style="color:var(--dim)">${gL?fL(gL):'—'}</td><td>${ltPct}</td></tr>`;
     });
     h+=`</tbody></table></div></div>`;
   }
@@ -352,15 +367,17 @@ function renderVentas(){
   if(users.length){
     const elL=document.getElementById('cLitros');
     if(elL) new Chart(elL,{type:'bar',data:{labels:users.map(u=>u.split(' ')[0]),datasets:[
-      {label:'Litros',data:users.map(u=>(T.litros_by_user||{})[u]||0),backgroundColor:users.map(u=>{const g=VG[u]||{};const c=clr((T.litros_by_user||{})[u]||0,g.litros_mes||1);return c==='g'?'rgba(22,163,74,.5)':c==='y'?'rgba(202,138,4,.5)':'rgba(200,54,14,.5)'}),borderRadius:6,barPercentage:.5},
-      {label:'Meta',data:users.map(u=>(VG[u]||{}).litros_mes||0),backgroundColor:'rgba(0,0,0,.06)',borderRadius:6,barPercentage:.5}
+      {label:'Litros',data:users.map(u=>(T.litros_by_user||{})[u]||0),backgroundColor:users.map(u=>{const g=VG[u]||{};const gPro=Math.round((g.litros_mes||0)*pf);const c=gPro>0?clr((T.litros_by_user||{})[u]||0,gPro):'y';return c==='g'?'rgba(22,163,74,.5)':c==='y'?'rgba(202,138,4,.5)':'rgba(200,54,14,.5)'}),borderRadius:6,barPercentage:.5},
+      {label:'Meta Prorrateada',data:users.map(u=>Math.round(((VG[u]||{}).litros_mes||0)*pf)),backgroundColor:'rgba(0,0,0,.06)',borderRadius:6,barPercentage:.5}
     ]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{font:{family:'DM Sans',size:11}}}},scales:{x:{grid:{display:false}},y:{beginAtZero:true,grid:{color:'#f0f0f0'},ticks:{callback:v=>(v/1000)+'k'}}}}});
   }
   const ws=V.weekly||[];
   if(ws.length){
+    const weeklyGoal=ltGoal>0?Math.round(ltGoal/4):0;
     const elS=document.getElementById('cVSem');
     if(elS) new Chart(elS,{type:'bar',data:{labels:ws.map(w=>w.label),datasets:[
-      {label:'Litros',data:ws.map(w=>w.litros),backgroundColor:'rgba(200,54,14,.4)',borderRadius:6,barPercentage:.6}
+      {label:'Litros',data:ws.map(w=>w.litros),backgroundColor:ws.map(w=>w.litros>=weeklyGoal?'rgba(22,163,74,.5)':'rgba(200,54,14,.4)'),borderRadius:6,barPercentage:.6},
+      {label:'Meta Semanal ('+fLs(weeklyGoal)+')',data:ws.map(()=>weeklyGoal),type:'line',borderColor:'var(--red)',borderWidth:2,borderDash:[6,4],pointRadius:0,fill:false,order:0}
     ]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{font:{family:'DM Sans',size:11}}}},scales:{x:{grid:{display:false}},y:{beginAtZero:true,grid:{color:'#f0f0f0'},ticks:{callback:v=>(v/1000)+'k'}}}}});
   }
 }
@@ -467,6 +484,17 @@ function renderVendedor(){
   const allNewCl=(nc.detail)||[];
   const ltGoal=CG.litros_mes||0;
 
+  // Calculate prorated factor (days elapsed / days in month)
+  const mStart=V.month_start?new Date(V.month_start+'T00:00:00'):null;
+  const mEnd=V.month_end?new Date(V.month_end+'T00:00:00'):null;
+  const now=new Date(D.updated||Date.now());
+  let prorataFactor=1;
+  if(mStart&&mEnd){
+    const daysInMonth=Math.round((mEnd-mStart)/(86400000))+1;
+    const daysElapsed=Math.min(Math.round((now-mStart)/(86400000))+1,daysInMonth);
+    prorataFactor=daysElapsed/daysInMonth;
+  }
+
   // ── Top KPIs ──
   let h=`<div class="kpi-row">
     ${mkKpi('c-red','⛽ Litros Mes',fL(T.total_litros||0),ltGoal?pct(T.total_litros||0,ltGoal)+'% de meta':'',T.total_litros||0,ltGoal||1)}
@@ -484,12 +512,14 @@ function renderVendedor(){
     const fQuotes=((st.cotizacion||{}).by_user||{})[u]||0;
     const fClose=((st.cierre||{}).by_user||{})[u]||0;
     const fNewCl=((nc.by_user)||{})[u]||0;
+    const ltGoalFull=g.litros_mes||0;
+    const ltGoalPro=Math.round(ltGoalFull*prorataFactor);
     const metrics=[
       {lbl:'Oportunidades semana',val:fLeads,goal:g.leads_semana||15},
       {lbl:'Contactos efectivos',val:fContacto,goal:g.contactos_semana||10},
       {lbl:'Cotizaciones semana',val:fQuotes,goal:g.cotizaciones_semana||8},
       {lbl:'Clientes nuevos mes',val:fNewCl,goal:g.clientes_nuevos_mes||2},
-      {lbl:'Litros mes',val:lt,goal:g.litros_mes||0,fmt:fL,skip0:true},
+      {lbl:ltGoalFull?'Litros (meta prorrateada)':'Litros mes',val:lt,goal:ltGoalFull?ltGoalPro:0,fmt:fL,skip0:true,fullGoal:ltGoalFull},
     ];
     const scored=metrics.filter(m=>!m.skip0||m.goal>0);
     const overall=scored.length?Math.round(scored.reduce((s,m)=>s+Math.min((m.val/Math.max(m.goal,1))*100,100),0)/scored.length):0;
@@ -498,7 +528,8 @@ function renderVendedor(){
     metrics.filter(m=>!m.skip0||m.goal>0).forEach(m=>{
       const p=Math.min(pct(m.val,Math.max(m.goal,1)),100),c=clr(m.val,Math.max(m.goal,1));
       const disp=m.fmt?m.fmt(m.val):m.val,gDisp=m.fmt?m.fmt(m.goal):m.goal;
-      h+=`<div class="vm"><span class="ml">${m.lbl}</span><span class="mv"><span style="color:${barC(c)}">${disp}</span><small>/ ${gDisp}</small><span class="minibar"><span class="minibar-f" style="width:${p}%;background:${barC(c)}"></span></span></span></div>`;
+      const fullRef=m.fullGoal?` <small style="color:var(--dim)">(mes: ${m.fmt?m.fmt(m.fullGoal):m.fullGoal})</small>`:'';
+      h+=`<div class="vm"><span class="ml">${m.lbl}</span><span class="mv"><span style="color:${barC(c)}">${disp}</span><small>/ ${gDisp}</small>${fullRef}<span class="minibar"><span class="minibar-f" style="width:${p}%;background:${barC(c)}"></span></span></span></div>`;
     });
     h+=`</div>`;
   });
