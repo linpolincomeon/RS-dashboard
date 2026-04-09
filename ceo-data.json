@@ -1,18 +1,18 @@
 {
-  "updated": "2026-04-09T00:04:51.302939",
+  "updated": "2026-04-09T16:08:16.459912",
   "weeks": [
     {
       "label": "09apr-15apr",
       "start": "2026-04-09",
       "end": "2026-04-15",
-      "ventas": 0,
-      "neto": 0,
-      "litros": 0,
-      "precio": 0,
-      "margin": 0,
-      "facturas": 0,
+      "ventas": 12248602,
+      "neto": 10267256,
+      "litros": 7900,
+      "precio": 1300,
+      "margin": 0.10034,
+      "facturas": 6,
       "nc": 0,
-      "clientes": 0,
+      "clientes": 5,
       "recaud": 0,
       "cheques": 0,
       "transf": 0,
@@ -37,7 +37,7 @@
       "cheques": 65404650,
       "transf": 0,
       "factoring": 0,
-      "compras_enap": 89064999,
+      "compras_enap": 92513426,
       "ppto": 326422,
       "parcial": false
     },
@@ -326,8 +326,8 @@
     {
       "date": "09apr",
       "day": "Jue",
-      "litros": 0,
-      "neto": 0
+      "litros": 7900,
+      "neto": 10267256
     },
     {
       "date": "08apr",
@@ -423,15 +423,15 @@
   "banks": [
     {
       "name": "DE CHILE",
-      "balance": 17453860
+      "balance": 31105717
     },
     {
       "name": "ITAU",
-      "balance": 13827704
+      "balance": 13803998
     },
     {
       "name": "ESTADO",
-      "balance": 10309411
+      "balance": 8892378
     },
     {
       "name": "BCI",
@@ -450,15 +450,15 @@
       "balance": -838790
     }
   ],
-  "total_cash": 48946127,
+  "total_cash": 61157245,
   "receivables": {
-    "open_invoices": 337,
-    "total_due": 591392927,
-    "current": 503550431,
-    "overdue": 87842496,
-    "pct_overdue": 14.9,
+    "open_invoices": 335,
+    "total_due": 588380160,
+    "current": 507194033,
+    "overdue": 81186127,
+    "pct_overdue": 13.8,
     "aging": {
-      "0-30": 75948933,
+      "0-30": 69292564,
       "31-60": 928000,
       "61-90": 0,
       "90+": 10965563
@@ -473,12 +473,12 @@
         "amount": 18014053
       },
       {
-        "name": "INGENERIA Y CONSTRUCCIONES FEBLANCA SPA",
-        "amount": 16950197
-      },
-      {
         "name": "SAMUEL BUDINICH SPA",
         "amount": 15661785
+      },
+      {
+        "name": "INGENERIA Y CONSTRUCCIONES FEBLANCA SPA",
+        "amount": 14717698
       },
       {
         "name": "FORESTAL PUIHUA SPA",
@@ -513,12 +513,12 @@
         "amount": 8913353
       },
       {
-        "name": "AGRICOLA LO BELTRAN LIMITADA",
-        "amount": 8499700
+        "name": "AGROMORANDE S A",
+        "amount": 8819701
       },
       {
-        "name": "AGRICOLA TRICAHUE LTDA",
-        "amount": 8173401
+        "name": "AGRICOLA LO BELTRAN LIMITADA",
+        "amount": 8499700
       },
       {
         "name": "AGROSERVICIOS JR SPA",
@@ -529,10 +529,6 @@
         "amount": 7644000
       },
       {
-        "name": "ALEX PRADO FRUTAS Y TRANSPORTES SPA",
-        "amount": 7640000
-      },
-      {
         "name": "PATRICIO REYES SERRANO",
         "amount": 7465001
       },
@@ -541,15 +537,19 @@
         "amount": 7241641
       },
       {
-        "name": "AGROMORANDE S A",
-        "amount": 6739700
+        "name": "AGRICOLA TRICAHUE LTDA",
+        "amount": 7013001
+      },
+      {
+        "name": "TRANSPORTES V&J SPA",
+        "amount": 6690299
       }
     ]
   },
   "crm": {
     "total": 1387,
-    "open": 1164,
-    "won": 222,
+    "open": 1167,
+    "won": 219,
     "new_30d": 83,
     "by_stage": [
       {
@@ -566,11 +566,11 @@
       },
       {
         "stage": "Oportunidad de Negocio",
-        "count": 120
+        "count": 118
       },
       {
         "stage": "Contactado",
-        "count": 79
+        "count": 81
       },
       {
         "stage": "Cotizado",
@@ -578,11 +578,11 @@
       },
       {
         "stage": "Durmiente",
-        "count": 188
+        "count": 191
       },
       {
         "stage": "Won",
-        "count": 222
+        "count": 219
       }
     ]
   }
