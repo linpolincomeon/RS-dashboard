@@ -1,23 +1,23 @@
 {
-  "updated": "2026-04-10T06:11:51.732034",
+  "updated": "2026-04-10T14:37:03.047563",
   "weeks": [
     {
       "label": "09apr-15apr",
       "start": "2026-04-09",
       "end": "2026-04-15",
-      "ventas": 26116993,
-      "neto": 22108308,
-      "litros": 16768,
-      "precio": 1318,
-      "margin": 0.10399,
-      "facturas": 14,
+      "ventas": 33688037,
+      "neto": 28592549,
+      "litros": 21812,
+      "precio": 1311,
+      "margin": 0.09688,
+      "facturas": 17,
       "nc": 2,
-      "clientes": 12,
+      "clientes": 15,
       "recaud": 0,
       "cheques": 0,
       "transf": 0,
       "factoring": 0,
-      "compras_enap": 0,
+      "compras_enap": 1417033,
       "ppto": 326422,
       "parcial": true
     },
@@ -37,7 +37,7 @@
       "cheques": 65404650,
       "transf": 0,
       "factoring": 0,
-      "compras_enap": 92513426,
+      "compras_enap": 92549222,
       "ppto": 326422,
       "parcial": false
     },
@@ -326,8 +326,8 @@
     {
       "date": "10apr",
       "day": "Vie",
-      "litros": 0,
-      "neto": 0
+      "litros": 5044,
+      "neto": 6484241
     },
     {
       "date": "09apr",
@@ -422,16 +422,16 @@
   ],
   "banks": [
     {
-      "name": "ITAU",
-      "balance": 13803998
-    },
-    {
       "name": "DE CHILE",
-      "balance": 11644449
+      "balance": 43469877
     },
     {
       "name": "ESTADO",
       "balance": 8892378
+    },
+    {
+      "name": "ITAU",
+      "balance": 8000095
     },
     {
       "name": "BCI",
@@ -450,15 +450,15 @@
       "balance": -838790
     }
   ],
-  "total_cash": 41695977,
+  "total_cash": 67717502,
   "receivables": {
-    "open_invoices": 335,
-    "total_due": 594986520,
-    "current": 509071919,
-    "overdue": 85914601,
-    "pct_overdue": 14.4,
+    "open_invoices": 323,
+    "total_due": 585275966,
+    "current": 505059263,
+    "overdue": 80216703,
+    "pct_overdue": 13.7,
     "aging": {
-      "0-30": 74021038,
+      "0-30": 68323140,
       "31-60": 0,
       "61-90": 928000,
       "90+": 10965563
@@ -466,7 +466,7 @@
     "top_debtors": [
       {
         "name": "JOSE RODRIGO ORMAZABAL VIDAL",
-        "amount": 36433503
+        "amount": 39735703
       },
       {
         "name": "AGRICOLA AGROBOSQUES SAN ISIDRO S.A.",
@@ -477,12 +477,12 @@
         "amount": 15661785
       },
       {
-        "name": "INGENERIA Y CONSTRUCCIONES FEBLANCA SPA",
-        "amount": 14717698
-      },
-      {
         "name": "FORESTAL PUIHUA SPA",
         "amount": 13769700
+      },
+      {
+        "name": "INGENERIA Y CONSTRUCCIONES FEBLANCA SPA",
+        "amount": 13534498
       },
       {
         "name": "SERVICIOS AGRICOLAS HERNANDEZ LIMITADA",
@@ -517,8 +517,8 @@
         "amount": 8819701
       },
       {
-        "name": "AGRICOLA LO BELTRAN LIMITADA",
-        "amount": 8499700
+        "name": "EMPRESAS TUCAPEL S A",
+        "amount": 8723084
       },
       {
         "name": "AGROSERVICIOS JR SPA",
@@ -547,10 +547,10 @@
     ]
   },
   "crm": {
-    "total": 1389,
-    "open": 1167,
-    "won": 221,
-    "new_30d": 85,
+    "total": 1391,
+    "open": 1171,
+    "won": 219,
+    "new_30d": 87,
     "by_stage": [
       {
         "stage": "Perdidos",
@@ -562,11 +562,11 @@
       },
       {
         "stage": "Ruta",
-        "count": 41
+        "count": 42
       },
       {
         "stage": "Oportunidad de Negocio",
-        "count": 117
+        "count": 119
       },
       {
         "stage": "Contactado",
@@ -574,15 +574,15 @@
       },
       {
         "stage": "Cotizado",
-        "count": 269
+        "count": 268
       },
       {
         "stage": "Durmiente",
-        "count": 191
+        "count": 193
       },
       {
         "stage": "Won",
-        "count": 221
+        "count": 219
       }
     ]
   }
