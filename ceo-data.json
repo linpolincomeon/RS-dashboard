@@ -1,20 +1,20 @@
 {
-  "updated": "2026-04-10T17:59:59.334313",
+  "updated": "2026-04-10T21:03:06.175163",
   "weeks": [
     {
       "label": "09apr-15apr",
       "start": "2026-04-09",
       "end": "2026-04-15",
-      "ventas": 56376101,
-      "neto": 48019322,
-      "litros": 36742,
-      "precio": 1307,
-      "margin": 0.09154,
-      "facturas": 27,
+      "ventas": 81359611,
+      "neto": 69369195,
+      "litros": 53032,
+      "precio": 1308,
+      "margin": 0.09033,
+      "facturas": 39,
       "nc": 2,
-      "clientes": 21,
-      "recaud": 0,
-      "cheques": 0,
+      "clientes": 32,
+      "recaud": 2822900,
+      "cheques": 2822900,
       "transf": 0,
       "factoring": 0,
       "compras_enap": 1417033,
@@ -326,8 +326,8 @@
     {
       "date": "10apr",
       "day": "Vie",
-      "litros": 19974,
-      "neto": 25911014
+      "litros": 36264,
+      "neto": 47260887
     },
     {
       "date": "09apr",
@@ -423,7 +423,7 @@
   "banks": [
     {
       "name": "DE CHILE",
-      "balance": 43469877
+      "balance": 29520587
     },
     {
       "name": "ESTADO",
@@ -450,15 +450,15 @@
       "balance": -838790
     }
   ],
-  "total_cash": 67717502,
+  "total_cash": 53768212,
   "receivables": {
-    "open_invoices": 333,
-    "total_due": 607964030,
-    "current": 527747327,
-    "overdue": 80216703,
-    "pct_overdue": 13.2,
+    "open_invoices": 331,
+    "total_due": 619874369,
+    "current": 547767607,
+    "overdue": 72106762,
+    "pct_overdue": 11.6,
     "aging": {
-      "0-30": 68323140,
+      "0-30": 60213199,
       "31-60": 0,
       "61-90": 928000,
       "90+": 10965563
@@ -466,7 +466,7 @@
     "top_debtors": [
       {
         "name": "JOSE RODRIGO ORMAZABAL VIDAL",
-        "amount": 39735703
+        "amount": 36091703
       },
       {
         "name": "AGRICOLA AGROBOSQUES SAN ISIDRO S.A.",
@@ -481,12 +481,20 @@
         "amount": 15661785
       },
       {
+        "name": "SOC AGRICOLA GRANJA SAN RAFAEL LIMITADA",
+        "amount": 13925532
+      },
+      {
         "name": "FORESTAL PUIHUA SPA",
         "amount": 13769700
       },
       {
         "name": "SERVICIOS AGRICOLAS HERNANDEZ LIMITADA",
         "amount": 13275000
+      },
+      {
+        "name": "TRANSPORTE SANTA ELENITA SPA",
+        "amount": 12731651
       },
       {
         "name": "PATRICIO VISCAY ALBORNOZ",
@@ -503,14 +511,6 @@
       {
         "name": "URAN ANTONIO LUNA DOMÍNGUEZ",
         "amount": 11424000
-      },
-      {
-        "name": "TRANSPORTE SANTA ELENITA SPA",
-        "amount": 11102650
-      },
-      {
-        "name": "SOC AGRICOLA GRANJA SAN RAFAEL LIMITADA",
-        "amount": 10672582
       },
       {
         "name": "VICTOR FAVIO VILCHES MARDONES",
@@ -547,14 +547,14 @@
     ]
   },
   "crm": {
-    "total": 1395,
-    "open": 1173,
-    "won": 221,
-    "new_30d": 91,
+    "total": 1397,
+    "open": 1168,
+    "won": 228,
+    "new_30d": 93,
     "by_stage": [
       {
         "stage": "Perdidos",
-        "count": 464
+        "count": 459
       },
       {
         "stage": "No Cerrados",
@@ -574,15 +574,15 @@
       },
       {
         "stage": "Cotizado",
-        "count": 268
+        "count": 269
       },
       {
         "stage": "Durmiente",
-        "count": 195
+        "count": 194
       },
       {
         "stage": "Won",
-        "count": 221
+        "count": 228
       }
     ]
   }
