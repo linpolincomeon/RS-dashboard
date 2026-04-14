@@ -106,7 +106,7 @@ def detect_custom_fields(models, uid):
         {"attributes": ["string", "type"]}
     )
     has = {
-        "x_litros_estimados": True,  # Field confirmed in Odoo Studio — always use litros
+        "x_litros_estimados": "x_litros_estimados" in fields,
         "x_tipo_contacto": "x_tipo_contacto" in fields,
         "x_origen_oportunidad": "x_origen_oportunidad" in fields,
     }
@@ -1136,7 +1136,7 @@ def main():
         "updated": datetime.now().isoformat(),
         "week": {"start": get_enap_week()["start"], "end": get_enap_week()["end"], "label": get_enap_week()["label"]},
         # Original CRM fields (backward compatible)
-        "has_litros": crm["has_litros"],
+        "has_litros": True,  # expected_revenue stores litros in TomEnergy's Odoo
         "summary": crm["summary"],
         "executives": crm["executives"],
         "funnel": crm["funnel"],
