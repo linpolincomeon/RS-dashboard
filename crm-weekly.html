@@ -56,6 +56,24 @@ tr:hover td{background:#fafaf8}
 .fstep.contactado{background:#fefce8;color:var(--yellow)}
 .fstep.ruta{background:#eff6ff;color:var(--blue)}
 .fstep.cotizado{background:#f0fdf4;color:var(--green)}
+.funnel-flow{display:flex;align-items:center;gap:0;margin-bottom:24px;overflow-x:auto;padding:8px 0}
+.funnel-stage{text-align:center;padding:18px 16px;border-radius:12px;min-width:120px;flex:1;position:relative}
+.funnel-stage .fs-cnt{font-size:28px;font-weight:700;display:block}
+.funnel-stage .fs-lbl{font-size:11px;text-transform:uppercase;letter-spacing:.4px;margin-top:2px;display:block;font-weight:600}
+.funnel-stage .fs-val{font-size:11px;margin-top:4px;opacity:.8;display:block}
+.funnel-arrow{color:var(--dim);font-size:12px;text-align:center;padding:0 4px;flex-shrink:0;display:flex;flex-direction:column;align-items:center;gap:1px}
+.funnel-arrow .fa-pct{font-weight:700;font-size:11px;white-space:nowrap}
+.exec-rank{width:100%;border-collapse:collapse;font-size:13px}
+.exec-rank th{text-align:left;padding:10px 12px;color:var(--dim);font-size:11px;font-weight:600;text-transform:uppercase;border-bottom:2px solid #f0f0f0}
+.exec-rank td{padding:10px 12px;border-bottom:1px solid #f5f5f5;vertical-align:middle}
+.exec-rank tr:hover td{background:#fafaf8}
+.health-dot{width:10px;height:10px;border-radius:50%;display:inline-block}
+.stage-bar{display:flex;height:8px;border-radius:4px;overflow:hidden;width:100%;min-width:80px}
+.stage-bar span{display:block;height:100%}
+.collapsible-trigger{cursor:pointer;user-select:none}
+.collapsible-trigger:hover{opacity:.8}
+.collapsible-body{transition:max-height .3s ease}
+.hot-badge{background:linear-gradient(135deg,#ff6b35,#f7c948);color:#fff;font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px;display:inline-block;margin-left:6px}
 .exec-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px}
 .ecard{background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:16px}
 .ecard .eh{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
@@ -129,7 +147,7 @@ tr:hover td{background:#fafaf8}
 
 <script>
 let D=null;
-const ALLOWED_VENDORS=new Set(['toro gonzález sebastian enrique','comber sigall pauline','de trenqualye merino andre jean','vial comber pauline','fernando jullian','tomenergy']);
+const ALLOWED_VENDORS=new Set(['toro gonzález sebastian enrique','comber sigall pauline','de trenqualye merino andre jean','fernando jullian','tomenergy','carlos labbe','joaquin muñoz','yeniré ron','yenire ron']);
 const isAllowed=n=>n&&ALLOWED_VENDORS.has(n.toLowerCase().trim());
 
 document.getElementById('tabBar').addEventListener('click',e=>{
@@ -216,57 +234,177 @@ function render(){
 }
 
 // ========== TAB 1: PIPELINE ==========
+const PIPELINE_ACTIVE_DAYS=90; // Only show opps with activity in last 90 days
 function renderPipeline(){
   const s=D.summary,isL=D.has_litros;
-  const fV=isL?fL:fC,fS=isL?fLs:fCs,vL=isL?'Litros Estimados':'Valor Estimado';
+  const fV=isL?fL:fC,fS=isL?fLs:fCs,vL=isL?'Litros':'Valor';
+  const pl=D.pipeline||[],fn=D.funnel||[];
+
+  // --- Stage counts from funnel (accurate totals from Odoo) ---
+  const ACTIVE_STAGES=new Set(['Oportunidad de Negocio','Contactado','Ruta','Cotizado']);
+  const stageMap={};
+  fn.forEach(f=>{stageMap[f.stage]=f.count});
+  const stOpp=stageMap['Oportunidad de Negocio']||0;
+  const stCont=stageMap['Contactado']||0;
+  const stRuta=stageMap['Ruta']||0;
+  const stCot=stageMap['Cotizado']||0;
+  const stDurm=stageMap['Durmiente']||0;
+  const stNoCerr=stageMap['No Cerrados']||0;
+  const realActive=stOpp+stCont+stRuta+stCot;
+
+  // --- Pipeline detail list: split fresh (<=90d) vs legacy (>90d) ---
+  const allActive=pl.filter(p=>p&&ACTIVE_STAGES.has(p.stage));
+  const freshPl=allActive.filter(p=>p.days_in_stage<=PIPELINE_ACTIVE_DAYS);
+  const legacyPl=allActive.filter(p=>p.days_in_stage>PIPELINE_ACTIVE_DAYS);
+  const freshValue=freshPl.reduce((s,p)=>s+(p.value||0),0);
+  const freshMoved=freshPl.filter(p=>p.days_in_stage<=7).length;
+  const freshStale=freshPl.filter(p=>p.days_in_stage>7).length;
+
+  // Avg days in fresh pipeline
+  const avgDays=freshPl.length?Math.round(freshPl.reduce((s,p)=>s+p.days_in_stage,0)/freshPl.length):0;
+
+  // Cotizado value (hot deals) — only fresh
+  const hotDeals=freshPl.filter(p=>p.stage==='Cotizado').sort((a,b)=>(b.value||0)-(a.value||0));
+
   let h='';
+
+  // === PERIOD BADGE ===
+  h+=`<div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;flex-wrap:wrap">
+    <span style="font-size:13px;color:var(--dim)">Mostrando pipeline activo de los últimos <strong style="color:var(--text)">${PIPELINE_ACTIVE_DAYS} días</strong></span>`;
+  if(legacyPl.length) h+=`<span style="font-size:12px;color:var(--yellow);font-weight:600">${legacyPl.length} opp legacy (>${PIPELINE_ACTIVE_DAYS}d) ocultas</span>`;
+  h+=`</div>`;
+
+  // === KPI ROW 1: Pipeline Health ===
   h+=`<div class="kpi-row">
-    ${mkKpi('c-red','Oportunidades Activas',s.active,s.new_this_week+' nuevas esta semana')}
-    ${mkKpi('c-green','Movimientos Semana',s.moved_this_week,'cambios de etapa')}
-    ${mkKpi('c-yellow','⚠ Estancadas >7d',s.stale_7d,'requieren atención')}
-    ${mkKpi('c-blue',vL,fV(s.total_value),'pipeline activo')}
-    ${mkKpi('c-green','Ganadas',s.won,'cerradas')}
+    ${mkKpi('c-blue','Pipeline Activo',realActive,stOpp+' oportunidad · '+stCont+' contactado · '+stRuta+' ruta · '+stCot+' cotizado')}
+    ${mkKpi('c-green','Movimientos Semana',s.moved_this_week,s.new_this_week+' nuevas + '+(s.moved_this_week-s.new_this_week>0?s.moved_this_week-s.new_this_week:0)+' avances de etapa')}
+    ${mkKpi('c-red','Necesitan Acción',freshStale,'opp activas 8–90d sin movimiento',freshStale,realActive||1)}
+    ${mkKpi('c-blue',isL?'Litros en Pipeline':'Valor Pipeline',fV(freshValue),'últimos '+PIPELINE_ACTIVE_DAYS+'d')}
+    ${mkKpi('c-green','Ganadas',s.won,'cerradas (total histórico)')}
   </div>`;
 
-  h+='<div class="funnel-row">'+(D.funnel||[]).map(f=>
-    `<div class="fstep ${f.class}"><span class="cnt">${f.count}</span><span class="fn">${H(f.stage)}</span></div>`
-  ).join('')+'</div>';
+  // === KPI ROW 2: Velocity + Dormant ===
+  h+=`<div class="kpi-row" style="margin-bottom:8px">
+    ${mkKpi('c-yellow','⏱ Velocidad Promedio',avgDays+'d','días promedio en etapa actual')}
+    ${mkKpi('c-yellow','😴 Durmientes',stDurm,'fuera de ciclo de compra')}
+    ${mkKpi('c-red','❌ No Cerrados',stNoCerr,'oportunidades perdidas/archivadas')}
+  </div>`;
 
-  const uL=isL?'Litros':'Valor';
-  h+=`<div class="sec"><div class="sec-h"><h2>Resumen por Ejecutivo</h2></div><div class="sec-b"><div class="exec-grid">`;
-  (D.executives||[]).filter(e=>e&&e.total>0&&isAllowed(e.name)).forEach(e=>{
-    h+=`<div class="ecard"><div class="eh"><span class="en">${H(e.name)}</span><span style="font-size:12px;color:var(--dim)">${e.total} opp</span></div>
-    <div class="estats">
-      <div class="estat"><div class="n" style="color:var(--green)">${e.moved}</div><div class="l">Movidas</div></div>
-      <div class="estat"><div class="n" style="color:${e.stale?'var(--red)':'var(--dim)'}">${e.stale}</div><div class="l">Estancadas</div></div>
-      <div class="estat"><div class="n" style="color:var(--blue)">${fS(e.value)}</div><div class="l">${uL}</div></div>
-    </div></div>`;
+  // === VISUAL FUNNEL: real pipeline counts from Odoo ===
+  const stages=[
+    {lbl:'Oportunidad',cnt:stOpp,bg:'#fef2f2',color:'var(--red)'},
+    {lbl:'Contactado',cnt:stCont,bg:'#fefce8',color:'var(--yellow)'},
+    {lbl:'Ruta',cnt:stRuta,bg:'#eff6ff',color:'var(--blue)'},
+    {lbl:'Cotizado',cnt:stCot,bg:'#f0fdf4',color:'var(--green)'},
+    {lbl:'Ganadas',cnt:s.won,bg:'#f0fdf4',color:'var(--green)'}
+  ];
+  // Value by stage from available pipeline data (may be partial)
+  const valByStage={};
+  pl.filter(p=>p).forEach(p=>{valByStage[p.stage]=(valByStage[p.stage]||0)+(p.value||0)});
+
+  h+=`<div class="sec"><div class="sec-h"><h2>Flujo del Pipeline</h2><span style="font-size:12px;color:var(--dim)">últimos ${PIPELINE_ACTIVE_DAYS}d</span></div><div class="sec-b"><div class="funnel-flow">`;
+  stages.forEach((st,i)=>{
+    const stKey=st.lbl==='Oportunidad'?'Oportunidad de Negocio':st.lbl;
+    const val=st.lbl==='Ganadas'?'':'<span class="fs-val">'+fV(valByStage[stKey]||0)+'</span>';
+    h+=`<div class="funnel-stage" style="background:${st.bg};color:${st.color}">
+      <span class="fs-cnt">${st.cnt}</span>
+      <span class="fs-lbl">${st.lbl}</span>${val}</div>`;
+    if(i<stages.length-1){
+      const next=stages[i+1];
+      const convPct=st.cnt>0?Math.round((next.cnt/st.cnt)*100):'—';
+      h+=`<div class="funnel-arrow"><span style="font-size:16px">→</span><span class="fa-pct" style="color:${typeof convPct==='number'?(convPct>=50?'var(--green)':convPct>=25?'var(--yellow)':'var(--red)'):'var(--dim)'}">${convPct}%</span></div>`;
+    }
   });
   h+=`</div></div></div>`;
 
-  const pl=D.pipeline||[];
-  h+=`<div class="sec"><div class="sec-h"><h2>Pipeline — Oportunidades</h2><span style="font-size:12px;color:var(--dim)">${pl.length}</span></div>
-  <div class="sec-b" style="padding:0;overflow-x:auto"><table><thead><tr><th>Cliente</th><th>Etapa</th><th>Ejecutivo</th><th>Valor</th><th>Días</th><th>Último mov.</th></tr></thead><tbody>`;
-  pl.filter(l=>l).forEach(l=>{
-    const d=l.days_in_stage,dc=d>14?'color:var(--red);font-weight:600':d>7?'color:var(--yellow);font-weight:600':'color:var(--dim)';
-    h+=`<tr><td class="bold">${H(l.name)}</td><td><span class="tag tag-${l.stage_class==='cotizado'?'g':l.stage_class==='contactado'?'y':'r'}">${H(l.stage)}</span></td><td>${H(l.exec)}</td><td class="bold">${fV(l.value)}</td><td style="${dc}">${d}d</td><td style="color:var(--dim)">${l.last_update||'—'}</td></tr>`;
+  // === EXECUTIVE RANKING TABLE ===
+  const execs=(D.executives||[]).filter(e=>e&&isAllowed(e.name)).sort((a,b)=>{
+    const ra=a.total>0?a.moved/a.total:0, rb=b.total>0?b.moved/b.total:0;
+    return rb-ra||(b.value||0)-(a.value||0);
+  });
+
+  h+=`<div class="sec"><div class="sec-h"><h2>Ranking Ejecutivos</h2><span style="font-size:12px;color:var(--dim)">ordenado por actividad</span></div>
+  <div class="sec-b" style="padding:0;overflow-x:auto"><table class="exec-rank"><thead><tr>
+    <th></th><th>Ejecutivo</th><th>Pipeline</th><th style="text-align:center">Movidas</th><th style="text-align:center">Estancadas</th><th>${vL}</th><th style="text-align:center">Actividad</th>
+  </tr></thead><tbody>`;
+  execs.forEach((e,i)=>{
+    const ratio=e.total>0?Math.round((e.moved/e.total)*100):0;
+    const health=e.moved>0?(ratio>=10?'var(--green)':ratio>=3?'var(--yellow)':'var(--red)'):'var(--red)';
+    const healthLabel=e.moved>0?(ratio>=10?'Activo':ratio>=3?'Lento':'Crítico'):'Sin actividad';
+    const movedStyle=e.moved>0?'color:var(--green);font-weight:700':'color:var(--dim)';
+    const staleStyle=e.stale>0?'color:var(--red);font-weight:600':'color:var(--dim)';
+    h+=`<tr>
+      <td style="text-align:center;font-weight:700;color:var(--dim)">${i+1}</td>
+      <td><span class="bold">${H(e.name)}</span></td>
+      <td>${e.total}</td>
+      <td style="text-align:center;${movedStyle}">${e.moved}</td>
+      <td style="text-align:center;${staleStyle}">${e.stale}</td>
+      <td class="bold">${fS(e.value)}</td>
+      <td style="text-align:center"><span class="health-dot" style="background:${health}" title="${healthLabel}"></span> <span style="font-size:11px;color:${health}">${healthLabel}</span></td>
+    </tr>`;
   });
   h+=`</tbody></table></div></div>`;
 
-  const st=D.stale||[];
-  h+=`<div class="sec"><div class="sec-h"><h2>⚠ Sin Movimiento >7d</h2><span style="font-size:12px;color:var(--dim)">${st.length}</span></div>
-  <div class="sec-b" style="padding:0;overflow-x:auto"><table><thead><tr><th>Cliente</th><th>Etapa</th><th>Ejecutivo</th><th>Valor</th><th>Días</th><th>Acción</th></tr></thead><tbody>`;
-  if(st.length)st.filter(l=>l).forEach(l=>{h+=`<tr><td class="bold">${H(l.name)}</td><td><span class="tag tag-r">${H(l.stage)}</span></td><td>${H(l.exec)}</td><td class="bold">${fV(l.value)}</td><td style="color:var(--red);font-weight:600">${l.days_in_stage}d</td><td style="color:var(--yellow)">${l.action||'Contactar'}</td></tr>`});
+  // === HOT DEALS: Cotizado with value (fresh only) ===
+  const hotWithValue=hotDeals.filter(p=>p.value>0);
+  if(hotWithValue.length){
+    h+=`<div class="sec"><div class="sec-h"><h2>🔥 Hot Deals — Cotizado con Valor</h2><span class="hot-badge">${hotWithValue.length} deals</span></div>
+    <div class="sec-b" style="padding:0;overflow-x:auto"><table><thead><tr><th>Cliente</th><th>Ejecutivo</th><th>${vL}</th><th>Días</th><th>Último mov.</th></tr></thead><tbody>`;
+    hotWithValue.forEach(l=>{
+      const d=l.days_in_stage,dc=d>14?'color:var(--red);font-weight:600':d>7?'color:var(--yellow);font-weight:600':'color:var(--green)';
+      h+=`<tr><td class="bold">${H(l.name)}</td><td>${H(l.exec)}</td><td class="bold" style="color:var(--blue)">${fV(l.value)}</td><td style="${dc}">${d}d</td><td style="color:var(--dim)">${l.last_update||'—'}</td></tr>`;
+    });
+    h+=`</tbody></table></div></div>`;
+  }
+
+  // === RECENT MOVEMENTS: opps with <=7 days ===
+  const recent=freshPl.filter(p=>p.days_in_stage<=7).sort((a,b)=>a.days_in_stage-b.days_in_stage);
+  if(recent.length){
+    h+=`<div class="sec"><div class="sec-h"><h2>✅ Movimientos Recientes (últimos 7d)</h2><span style="font-size:12px;color:var(--dim)">${recent.length}</span></div>
+    <div class="sec-b" style="padding:0;overflow-x:auto"><table><thead><tr><th>Cliente</th><th>Etapa</th><th>Ejecutivo</th><th>${vL}</th><th>Hace</th></tr></thead><tbody>`;
+    recent.forEach(l=>{
+      h+=`<tr><td class="bold">${H(l.name)}</td><td><span class="tag tag-${l.stage_class==='cotizado'?'g':l.stage_class==='contactado'?'y':'r'}">${H(l.stage)}</span></td><td>${H(l.exec)}</td><td class="bold">${fV(l.value)}</td><td style="color:var(--green)">${l.days_in_stage===0?'Hoy':l.days_in_stage+'d'}</td></tr>`;
+    });
+    h+=`</tbody></table></div></div>`;
+  }
+
+  // === STALE (fresh only, <=90d): Collapsible ===
+  const freshStaleList=freshPl.filter(p=>p.days_in_stage>7).sort((a,b)=>(b.value||0)-(a.value||0));
+  h+=`<div class="sec"><div class="sec-h collapsible-trigger" onclick="this.parentElement.parentElement.querySelector('.collapsible-body').style.display=this.parentElement.parentElement.querySelector('.collapsible-body').style.display==='none'?'block':'none';this.querySelector('.chevron').textContent=this.parentElement.parentElement.querySelector('.collapsible-body').style.display==='none'?'▸':'▾'">
+    <h2><span class="chevron">▾</span> ⚠ Necesitan Atención (8–90d)</h2><span style="font-size:12px;color:var(--dim)">${freshStaleList.length} opp</span></div>
+  <div class="sec-b collapsible-body" style="padding:0;overflow-x:auto"><table><thead><tr><th>Cliente</th><th>Etapa</th><th>Ejecutivo</th><th>${vL}</th><th>Días</th><th>Acción</th></tr></thead><tbody>`;
+  if(freshStaleList.length)freshStaleList.forEach(l=>{
+    const dc=l.days_in_stage>30?'color:var(--red);font-weight:700':l.days_in_stage>14?'color:var(--red);font-weight:600':'color:var(--yellow)';
+    h+=`<tr><td class="bold">${H(l.name)}</td><td><span class="tag tag-r">${H(l.stage)}</span></td><td>${H(l.exec)}</td><td class="bold">${fV(l.value)}</td><td style="${dc}">${l.days_in_stage}d</td><td style="color:var(--yellow)">${l.action||'Contactar'}</td></tr>`;
+  });
   else h+=`<tr><td colspan="6" class="nodata">✅ Todo con movimiento reciente</td></tr>`;
   h+=`</tbody></table></div></div>`;
 
+  // === LEGACY BACKLOG: Collapsible, collapsed by default ===
+  if(legacyPl.length){
+    const legSorted=legacyPl.sort((a,b)=>(b.value||0)-(a.value||0));
+    h+=`<div class="sec" style="opacity:.7"><div class="sec-h collapsible-trigger" onclick="this.parentElement.parentElement.querySelector('.collapsible-body').style.display=this.parentElement.parentElement.querySelector('.collapsible-body').style.display==='none'?'block':'none';this.querySelector('.chevron').textContent=this.parentElement.parentElement.querySelector('.collapsible-body').style.display==='none'?'▸':'▾'">
+      <h2><span class="chevron">▸</span> 📦 Backlog Legacy (>${PIPELINE_ACTIVE_DAYS}d sin movimiento)</h2><span style="font-size:12px;color:var(--dim)">${legSorted.length} opp — requieren limpieza</span></div>
+    <div class="sec-b collapsible-body" style="padding:0;overflow-x:auto;display:none"><table><thead><tr><th>Cliente</th><th>Etapa</th><th>Ejecutivo</th><th>${vL}</th><th>Días</th><th>Sugerencia</th></tr></thead><tbody>`;
+    legSorted.forEach(l=>{
+      const sug=l.value>0?'Revisar o cerrar':'Cerrar o archivar';
+      h+=`<tr><td class="bold">${H(l.name)}</td><td><span class="tag tag-r">${H(l.stage)}</span></td><td>${H(l.exec)}</td><td class="bold">${fV(l.value)}</td><td style="color:var(--red);font-weight:700">${l.days_in_stage}d</td><td style="color:var(--dim);font-style:italic">${sug}</td></tr>`;
+    });
+    h+=`</tbody></table></div></div>`;
+  }
+
+  // === ACTIVITIES & MESSAGES (compact, side by side) ===
   const acts=D.activities||[],msgs=D.messages||[];
-  h+=`<div class="sec"><div class="sec-h"><h2>Actividades Pendientes</h2></div><div class="sec-b">`;
-  h+=acts.length?acts.map(a=>`<div class="act"><span class="act-d">${a.date||'—'}</span><span class="act-w">${H(a.who)}</span><span>${H(a.type)}: ${H(a.summary)} — <em>${H(a.lead)}</em></span></div>`).join(''):'<div class="nodata">Sin actividades</div>';
-  h+=`</div></div>`;
-  h+=`<div class="sec"><div class="sec-h"><h2>Notas Recientes</h2></div><div class="sec-b">`;
-  h+=msgs.length?msgs.map(m=>`<div class="act"><span class="act-d">${m.date||'—'}</span><span class="act-w">${H(m.who)}</span><span>${H(m.desc)}</span></div>`).join(''):'<div class="nodata">Sin mensajes</div>';
-  h+=`</div></div>`;
+  if(acts.length||msgs.length){
+    h+=`<div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">`;
+    h+=`<div class="sec"><div class="sec-h"><h2>Actividades Pendientes</h2></div><div class="sec-b" style="max-height:250px;overflow-y:auto">`;
+    h+=acts.length?acts.map(a=>`<div class="act"><span class="act-d">${a.date||'—'}</span><span class="act-w">${H(a.who)}</span><span>${H(a.type)}: ${H(a.summary)} — <em>${H(a.lead)}</em></span></div>`).join(''):'<div class="nodata">Sin actividades</div>';
+    h+=`</div></div>`;
+    h+=`<div class="sec"><div class="sec-h"><h2>Notas Recientes</h2></div><div class="sec-b" style="max-height:250px;overflow-y:auto">`;
+    h+=msgs.length?msgs.map(m=>`<div class="act"><span class="act-d">${m.date||'—'}</span><span class="act-w">${H(m.who)}</span><span>${H(m.desc)}</span></div>`).join(''):'<div class="nodata">Sin mensajes</div>';
+    h+=`</div></div></div>`;
+  }
+
   document.getElementById('p-pipeline').innerHTML=h;
 }
 
