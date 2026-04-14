@@ -1,11 +1,11 @@
 {
-  "updated": "2026-04-14T20:44:41.388431",
+  "updated": "2026-04-14T21:24:14.502199",
   "week": {
     "start": "2026-04-09",
     "end": "2026-04-15",
     "label": "09 Apr – 15 Apr"
   },
-  "has_litros": false,
+  "has_litros": true,
   "summary": {
     "active": 714,
     "new_this_week": 17,
@@ -369,7 +369,7 @@
       "exec": "Toro González Sebastian Enrique",
       "exec_id": 56,
       "value": 4000,
-      "days_in_stage": 4,
+      "days_in_stage": 5,
       "last_update": "2026-04-09",
       "origin": "—",
       "created": "2026-04-08"
@@ -2429,6 +2429,20 @@
       "action": "Seguimiento cotización"
     },
     {
+      "id": 66,
+      "name": "AGROINDUSTRIAL ALMAHUE LTDA",
+      "stage": "Cotizado",
+      "stage_class": "cotizado",
+      "exec": "Toro González Sebastian Enrique",
+      "exec_id": 56,
+      "value": 0,
+      "days_in_stage": 246,
+      "last_update": "2025-08-11",
+      "origin": "—",
+      "created": "2025-08-11",
+      "action": "Seguimiento cotización"
+    },
+    {
       "id": 67,
       "name": "EXPORTADORA IDAHUE CHILE",
       "stage": "Cotizado",
@@ -2454,20 +2468,6 @@
       "last_update": "2025-08-12",
       "origin": "—",
       "created": "2025-08-07",
-      "action": "Seguimiento cotización"
-    },
-    {
-      "id": 66,
-      "name": "AGROINDUSTRIAL ALMAHUE LTDA",
-      "stage": "Cotizado",
-      "stage_class": "cotizado",
-      "exec": "Toro González Sebastian Enrique",
-      "exec_id": 56,
-      "value": 0,
-      "days_in_stage": 245,
-      "last_update": "2025-08-11",
-      "origin": "—",
-      "created": "2025-08-11",
       "action": "Seguimiento cotización"
     },
     {
@@ -3233,18 +3233,13 @@
     },
     {
       "date": "2026-04-13 20:52",
-      "who": "Comber Sigall Pauline",
-      "desc": "Hay un nuevo lead para el equipo \"Ventas\"."
-    },
-    {
-      "date": "2026-04-13 20:52",
       "who": "OdooBot",
       "desc": "Lead Enrichment (based on email address)\n        \n             No company data found based on the email address or email address is one of an email provider. No credit was consumed."
     },
     {
-      "date": "2026-04-13 20:35",
-      "who": "OdooBot",
-      "desc": "Lead Enrichment (based on email address)\n        \n            Enrichment could not be done because the email address does not look valid."
+      "date": "2026-04-13 20:52",
+      "who": "Comber Sigall Pauline",
+      "desc": "Hay un nuevo lead para el equipo \"Ventas\"."
     },
     {
       "date": "2026-04-13 20:35",
@@ -3252,12 +3247,7 @@
       "desc": "Lead Enrichment (based on email address)\n        \n            Enrichment could not be done because the email address does not look valid."
     },
     {
-      "date": "2026-04-13 20:06",
-      "who": "OdooBot",
-      "desc": "Lead Enrichment (based on email address)\n        \n            Enrichment could not be done because the email address does not look valid."
-    },
-    {
-      "date": "2026-04-13 20:06",
+      "date": "2026-04-13 20:35",
       "who": "OdooBot",
       "desc": "Lead Enrichment (based on email address)\n        \n            Enrichment could not be done because the email address does not look valid."
     },
@@ -3265,6 +3255,16 @@
       "date": "2026-04-13 20:06",
       "who": "Toledo Núñez Madelaine Camila",
       "desc": "Hay un nuevo lead para el equipo \"Ventas\"."
+    },
+    {
+      "date": "2026-04-13 20:06",
+      "who": "OdooBot",
+      "desc": "Lead Enrichment (based on email address)\n        \n            Enrichment could not be done because the email address does not look valid."
+    },
+    {
+      "date": "2026-04-13 20:06",
+      "who": "OdooBot",
+      "desc": "Lead Enrichment (based on email address)\n        \n            Enrichment could not be done because the email address does not look valid."
     },
     {
       "date": "2026-04-13 19:47",
@@ -3487,10 +3487,10 @@
           ]
         },
         "contacto": {
-          "value": 119,
+          "value": 121,
           "goal": 10,
           "by_user": {
-            "Toro González Sebastian Enrique": 30,
+            "Toro González Sebastian Enrique": 32,
             "Muñoz Joaquin": 2,
             "Vanessa Vazquez": 5,
             "Administrator": 13,
@@ -3505,14 +3505,23 @@
           }
         },
         "cotizacion": {
-          "value": 36,
+          "value": 37,
           "goal": 8,
           "by_user": {
+            "Toro González Sebastian Enrique": 5,
             "Comber Sigall Pauline": 1,
-            "TomEnergy": 15,
-            "Toro González Sebastian Enrique": 4
+            "TomEnergy": 14
           },
           "detail": [
+            {
+              "name": "S30159",
+              "cliente": "ACOSTA HERMANOS",
+              "vendedor": "Toro González Sebastian Enrique",
+              "monto": 5021134.0,
+              "litros": 4000,
+              "estado": "draft",
+              "fecha": "2026-04-14"
+            },
             {
               "name": "S30153",
               "cliente": "EDILIO ARMANDO FUENTES MORALES",
@@ -3683,15 +3692,6 @@
               "litros": 0,
               "estado": "draft",
               "fecha": "2026-04-13"
-            },
-            {
-              "name": "S30062",
-              "cliente": "FORESTAL PUIHUA SPA",
-              "vendedor": "TomEnergy",
-              "monto": 3954926.0,
-              "litros": 3000,
-              "estado": "draft",
-              "fecha": "2026-04-10"
             }
           ]
         },
@@ -3701,14 +3701,28 @@
           "unit": "%"
         },
         "cierre": {
-          "value": 5,
+          "value": 7,
           "goal": 2,
           "by_user": {
+            "Muñoz Joaquin": 1,
+            "Carlos Labbe": 1,
             "Toro González Sebastian Enrique": 2,
             "Comber Sigall Pauline": 1,
             "TomEnergy": 2
           },
           "detail": [
+            {
+              "partner": "ELABORADORA Y COMERCIALIZADORA DE ACEITES DE OLIVA PICHUANTE E HIJOS SPA",
+              "order": "S30157",
+              "amount": 1969900.0,
+              "vendedor": "Muñoz Joaquin"
+            },
+            {
+              "partner": "AGRICOLA LOS BOLDOS SPA",
+              "order": "S30155",
+              "amount": 2559306.0,
+              "vendedor": "Carlos Labbe"
+            },
             {
               "partner": "JOSE ANDRES IBAÑEZ CUEVAS",
               "order": "S30143",
@@ -3742,10 +3756,10 @@
           ]
         },
         "retencion": {
-          "value": 72,
+          "value": 71,
           "goal": 90,
           "unit": "%",
-          "total_evaluated": 375,
+          "total_evaluated": 378,
           "retained_count": 269
         }
       }
@@ -5035,53 +5049,53 @@
     "month_start": "2026-04-01",
     "month_end": "2026-04-30",
     "totals": {
-      "total_litros": 300938,
-      "total_venta_neta": 378223564,
-      "invoice_count": 206,
+      "total_litros": 308838,
+      "total_venta_neta": 388606017,
+      "invoice_count": 210,
       "nc_count": 11,
       "litros_by_user": {
+        "TomEnergy": 205109,
         "Toro González Sebastian Enrique": 90309,
-        "TomEnergy": 197209,
         "Comber Sigall Pauline": 11420,
         "De Trenqualye Merino Andre Jean": 2000
       },
       "venta_by_user": {
+        "TomEnergy": 261561755,
         "Toro González Sebastian Enrique": 110132337,
-        "TomEnergy": 251179302,
         "Comber Sigall Pauline": 14381190,
         "De Trenqualye Merino Andre Jean": 2530735
       },
-      "margin_retail_pct": 8.94,
-      "margin_volume_pct": 6.53,
-      "retail_venta": 342683738,
-      "volume_venta": 39809754,
+      "margin_retail_pct": 8.99,
+      "margin_volume_pct": 6.54,
+      "retail_venta": 346684732,
+      "volume_venta": 46191213,
       "litros_by_zone": {
         "Talca": 84939,
-        "Rancagua": 63364,
-        "Curico": 60870,
+        "Rancagua": 66264,
+        "Curico": 65870,
         "San Fernando": 39600,
         "Chillan": 31574,
         "VI Costa": 20700
       },
       "venta_by_zone": {
         "Talca": 106963844,
-        "Rancagua": 81146588,
-        "Curico": 77177076,
+        "Rancagua": 85147582,
+        "Curico": 83558535,
         "San Fernando": 51483626,
         "Chillan": 39070728,
         "VI Costa": 26651630
       },
       "margin_by_zone": {
+        "Rancagua": 9.2,
+        "Curico": 8.2,
         "Talca": 8.4,
-        "Curico": 8.3,
         "San Fernando": 10.2,
         "VI Costa": 9.5,
-        "Chillan": 7.0,
-        "Rancagua": 9.0
+        "Chillan": 7.0
       },
       "margin_by_user": {
-        "Toro González Sebastian Enrique": 5.2,
         "TomEnergy": 8.7,
+        "Toro González Sebastian Enrique": 5.2,
         "Comber Sigall Pauline": 9.3,
         "De Trenqualye Merino Andre Jean": 5.8
       }
@@ -5181,8 +5195,8 @@
       },
       {
         "label": "9/4-15/4",
-        "litros": 129538,
-        "venta_neta": 169710345
+        "litros": 140344,
+        "venta_neta": 183857868
       }
     ]
   },
