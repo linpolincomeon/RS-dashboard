@@ -106,7 +106,7 @@ def detect_custom_fields(models, uid):
         {"attributes": ["string", "type"]}
     )
     has = {
-        "x_litros_estimados": "x_litros_estimados" in fields,
+        "x_litros_estimados": True,  # Field confirmed in Odoo Studio — always use litros
         "x_tipo_contacto": "x_tipo_contacto" in fields,
         "x_origen_oportunidad": "x_origen_oportunidad" in fields,
     }
