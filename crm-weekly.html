@@ -329,8 +329,9 @@ function renderPipeline(){
   </tr></thead><tbody>`;
   execs.forEach((e,i)=>{
     const ratio=e.total>0?Math.round((e.moved/e.total)*100):0;
-    const health=e.moved>0?(ratio>=10?'var(--green)':ratio>=3?'var(--yellow)':'var(--red)'):'var(--red)';
-    const healthLabel=e.moved>0?(ratio>=10?'Activo':ratio>=3?'Lento':'Crítico'):'Sin actividad';
+    // Health: Activo if ratio>=10% OR moved>=5 deals; Lento if ratio>=3% OR moved>=2; else Crítico
+    const health=e.moved>0?((ratio>=10||e.moved>=5)?'var(--green)':(ratio>=3||e.moved>=2)?'var(--yellow)':'var(--red)'):'var(--red)';
+    const healthLabel=e.moved>0?((ratio>=10||e.moved>=5)?'Activo':(ratio>=3||e.moved>=2)?'Lento':'Crítico'):'Sin actividad';
     const movedStyle=e.moved>0?'color:var(--green);font-weight:700':'color:var(--dim)';
     const staleStyle=e.stale>0?'color:var(--red);font-weight:600':'color:var(--dim)';
     h+=`<tr>
@@ -481,12 +482,14 @@ function renderVentas(){
   let h=`<div class="kpi-row">
     ${mkKpi('c-red','⛽ Litros Mes',fL(T.total_litros||0),ltGoal?'Meta: '+fL(ltGoal)+' ('+pct(T.total_litros||0,ltGoal)+'%)':'',T.total_litros||0,ltGoal||1)}
     ${mkKpi('c-blue','🆕 Clientes Nuevos',nc.count||0,'primera factura del mes')}
-    ${mkKpi(mrActual>=mrGoal?'c-green':'c-red','📊 Margen Retail',mrActual+'%','Meta: '+mrGoal+'% · '+fC(T.retail_venta||0),mrActual,mrGoal)}
-    ${mkKpi(mvActual>=mvGoal?'c-green':'c-red','📊 Margen Volumen',mvActual+'%','Meta: '+mvGoal+'% · '+fC(T.volume_venta||0),mvActual,mvGoal)}
+    ${mkKpi(mrActual>=mrGoal?'c-green':'c-red','📊 Margen Retail',mrActual+'%','Meta: '+mrGoal+'%',mrActual,mrGoal)}
+    ${mkKpi(mvActual>=mvGoal?'c-green':'c-red','📊 Margen Volumen',mvActual+'%','Meta: '+mvGoal+'%',mvActual,mvGoal)}
   </div>`;
   h+=`<div class="chart-row"><div class="ccrd"><h3>Litros por Vendedor</h3><canvas id="cLitros" height="220"></canvas></div><div class="ccrd"><h3>Venta Semanal vs Meta</h3><canvas id="cVSem" height="220"></canvas></div></div>`;
 
-  const users=Object.keys({...(T.litros_by_user||{}), ...(T.venta_by_user||{})}).filter(u=>u!=='Sin asignar'&&isAllowed(u));
+  // Include all allowed vendors with goals, even if they have no sales yet
+  const _uSet=new Set([...Object.keys(T.litros_by_user||{}),...Object.keys(T.venta_by_user||{}),...Object.keys(VG)]);
+  const users=[..._uSet].filter(u=>u!=='Sin asignar'&&isAllowed(u));
   if(users.length){
     h+=`<div class="sec"><div class="sec-h"><h2>Resumen Mensual</h2></div><div class="sec-b" style="padding:0;overflow-x:auto"><table><thead><tr><th>Vendedor</th><th>Litros</th><th>Margen %</th><th>Meta Prorrateada</th><th>Meta Mes</th><th>% Prorrata</th></tr></thead><tbody>`;
     users.forEach(u=>{
@@ -543,10 +546,12 @@ function renderChurn(){
   h+=`<div class="chart-row"><div class="ccrd"><h3>Cartera por Vendedor</h3><canvas id="cChurnUser" height="220"></canvas></div><div class="ccrd"><h3>Rescates por Vendedor</h3><canvas id="cRescueUser" height="220"></canvas></div></div>`;
 
   const dl=C.dormant_list||[],ll=C.lost_list||[];
+  // Deduplicate by client name, keep entry with most recent last_update
+  const _dedup=(list)=>{const m=new Map();list.forEach(c=>{const k=(c.name||'').toUpperCase();const prev=m.get(k);if(!prev||(c.last_update||'')>(prev.last_update||''))m.set(k,c);});return[...m.values()]};
   const dlWeek=ws?dl.filter(c=>c.last_update>=ws&&c.last_update<=we):[];
   const llWeek=ws?ll.filter(c=>c.last_update>=ws&&c.last_update<=we):[];
 
-  const dlWeekSorted=dlWeek.slice().sort((a,b)=>(b.avg_monthly_litros||0)-(a.avg_monthly_litros||0));
+  const dlWeekSorted=_dedup(dlWeek).sort((a,b)=>(b.avg_monthly_litros||0)-(a.avg_monthly_litros||0));
 
   h+=`<div class="sec"><div class="sec-h"><h2>🆕😴 Nuevos Durmientes de la Semana</h2><span style="font-size:12px;color:var(--dim)">${dlWeekSorted.length}</span></div>
   <div class="sec-b" style="padding:0;overflow-x:auto"><table><thead><tr><th>Prioridad</th><th>Cliente</th><th>Prom. Mensual 8M</th><th>Responsable</th><th>Fecha cambio</th></tr></thead><tbody>`;
@@ -554,22 +559,22 @@ function renderChurn(){
   else h+=`<tr><td colspan="5" class="nodata">✅ Sin nuevos durmientes esta semana</td></tr>`;
   h+=`</tbody></table></div></div>`;
 
-  const llWeekSorted=llWeek.slice().sort((a,b)=>(b.avg_monthly_litros||0)-(a.avg_monthly_litros||0));
+  const llWeekSorted=_dedup(llWeek).sort((a,b)=>(b.avg_monthly_litros||0)-(a.avg_monthly_litros||0));
   h+=`<div class="sec"><div class="sec-h"><h2>🆕💀 Nuevos Perdidos de la Semana</h2><span style="font-size:12px;color:var(--dim)">${llWeekSorted.length}</span></div>
   <div class="sec-b" style="padding:0;overflow-x:auto"><table><thead><tr><th>Prioridad</th><th>Cliente</th><th>Prom. Mensual 8M</th><th>Último vendedor</th><th>Fecha cambio</th></tr></thead><tbody>`;
   if(llWeekSorted.length)llWeekSorted.forEach((c,i)=>{const avg=c.avg_monthly_litros||0;const tc=avg>=5000?'color:var(--red);font-weight:700':avg>=1000?'color:var(--yellow);font-weight:600':'color:var(--dim)';h+=`<tr><td style="text-align:center;font-weight:700;color:var(--red)">${i+1}</td><td class="bold">${H(c.name)}</td><td style="${tc}">${fL(avg)}</td><td>${H(c.user)}</td><td>${c.last_update}</td></tr>`});
   else h+=`<tr><td colspan="5" class="nodata">✅ Sin nuevos perdidos esta semana</td></tr>`;
   h+=`</tbody></table></div></div>`;
 
-  const dlSorted=dl.slice().sort((a,b)=>(b.avg_monthly_litros||0)-(a.avg_monthly_litros||0));
-  h+=`<div class="sec"><div class="sec-h"><h2>😴 Todos los Durmientes</h2><span style="font-size:12px;color:var(--dim)">${dl.length}${S.dormant>50?' (mostrando 50)':''}</span></div>
+  const dlSorted=_dedup(dl).sort((a,b)=>(b.avg_monthly_litros||0)-(a.avg_monthly_litros||0));
+  h+=`<div class="sec"><div class="sec-h"><h2>😴 Todos los Durmientes</h2><span style="font-size:12px;color:var(--dim)">${dlSorted.length} clientes únicos</span></div>
   <div class="sec-b" style="padding:0;overflow-x:auto"><table><thead><tr><th>Cliente</th><th>Prom. Mensual 8M</th><th>Responsable</th><th>Última actualización</th></tr></thead><tbody>`;
   if(dlSorted.length)dlSorted.forEach(c=>{const avg=c.avg_monthly_litros||0;const tc=avg>=5000?'color:var(--red);font-weight:700':avg>=1000?'color:var(--yellow);font-weight:600':'color:var(--dim)';h+=`<tr><td class="bold">${H(c.name)}</td><td style="${tc}">${fL(avg)}</td><td>${H(c.user)}</td><td style="color:var(--dim)">${c.last_update||'—'}</td></tr>`});
   else h+=`<tr><td colspan="4" class="nodata">✅ Sin durmientes</td></tr>`;
   h+=`</tbody></table></div></div>`;
 
-  const llSorted=ll.slice().sort((a,b)=>(b.avg_monthly_litros||0)-(a.avg_monthly_litros||0));
-  h+=`<div class="sec"><div class="sec-h"><h2>💀 Todos los Perdidos</h2><span style="font-size:12px;color:var(--dim)">${ll.length}${S.lost>30?' (mostrando 30)':''}</span></div>
+  const llSorted=_dedup(ll).sort((a,b)=>(b.avg_monthly_litros||0)-(a.avg_monthly_litros||0));
+  h+=`<div class="sec"><div class="sec-h"><h2>💀 Todos los Perdidos</h2><span style="font-size:12px;color:var(--dim)">${llSorted.length} clientes únicos</span></div>
   <div class="sec-b" style="padding:0;overflow-x:auto"><table><thead><tr><th>Cliente</th><th>Prom. Mensual 8M</th><th>Último vendedor</th><th>Última actualización</th></tr></thead><tbody>`;
   if(llSorted.length)llSorted.forEach(c=>{const avg=c.avg_monthly_litros||0;const tc=avg>=5000?'color:var(--red);font-weight:700':avg>=1000?'color:var(--yellow);font-weight:600':'color:var(--dim)';h+=`<tr><td class="bold">${H(c.name)}</td><td style="${tc}">${fL(avg)}</td><td>${H(c.user)}</td><td style="color:var(--dim)">${c.last_update||'—'}</td></tr>`});
   else h+=`<tr><td colspan="4" class="nodata">Sin perdidos</td></tr>`;
@@ -714,8 +719,8 @@ function renderMesVencido(){
   h+=`<div class="kpi-row">
     ${mkKpi('c-red','⛽ Litros',fL(TP.total_litros||0),ltGoal?pct(TP.total_litros||0,ltGoal)+'% de meta '+fL(ltGoal):'',TP.total_litros||0,ltGoal||1)}
     ${mkKpi('c-blue','🆕 Clientes Nuevos',ncP.count||0,'primera factura del mes')}
-    ${mkKpi(mrA>=mrGoal?'c-green':'c-red','📊 Margen Retail',mrA+'%','Meta: '+mrGoal+'% · '+fC(TP.retail_venta||0),mrA,mrGoal)}
-    ${mkKpi(mvA>=mvGoal?'c-green':'c-red','📊 Margen Volumen',mvA+'%','Meta: '+mvGoal+'% · '+fC(TP.volume_venta||0),mvA,mvGoal)}
+    ${mkKpi(mrA>=mrGoal?'c-green':'c-red','📊 Margen Retail',mrA+'%','Meta: '+mrGoal+'%',mrA,mrGoal)}
+    ${mkKpi(mvA>=mvGoal?'c-green':'c-red','📊 Margen Volumen',mvA+'%','Meta: '+mvGoal+'%',mvA,mvGoal)}
   </div>`;
 
   // SLA entrega
@@ -763,7 +768,8 @@ function renderMesVencido(){
   h+=`</tbody></table></div></div>`;
 
   // Resumen por vendedor
-  const users=Object.keys({...(TP.litros_by_user||{}), ...(TP.venta_by_user||{})}).filter(u=>u!=='Sin asignar'&&isAllowed(u));
+  const _uSetP=new Set([...Object.keys(TP.litros_by_user||{}),...Object.keys(TP.venta_by_user||{}),...Object.keys(VG)]);
+  const users=[..._uSetP].filter(u=>u!=='Sin asignar'&&isAllowed(u));
   if(users.length){
     h+=`<div class="chart-row"><div class="ccrd"><h3>Litros por Vendedor</h3><canvas id="cLitrosPrev" height="220"></canvas></div><div class="ccrd"><h3>Clientes Nuevos por Vendedor</h3><canvas id="cVentaPrev" height="220"></canvas></div></div>`;
     h+=`<div class="sec"><div class="sec-h"><h2>Resumen ${VP.month_label||'Mes Anterior'} por Vendedor</h2></div><div class="sec-b" style="padding:0;overflow-x:auto"><table><thead><tr><th>Vendedor</th><th>Litros</th><th>Clientes Nuevos</th></tr></thead><tbody>`;
