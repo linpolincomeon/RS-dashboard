@@ -1,5 +1,5 @@
 {
-  "updated": "2026-04-15T21:28:20.241303",
+  "updated": "2026-04-15T22:06:44.771937",
   "week": {
     "start": "2026-04-09",
     "end": "2026-04-15",
@@ -369,7 +369,7 @@
       "exec": "Comber Sigall Pauline",
       "exec_id": 52,
       "value": 0,
-      "days_in_stage": 5,
+      "days_in_stage": 6,
       "last_update": "2026-04-09",
       "origin": "—",
       "created": "2026-04-09"
@@ -382,7 +382,7 @@
       "exec": "Comber Sigall Pauline",
       "exec_id": 52,
       "value": 0,
-      "days_in_stage": 5,
+      "days_in_stage": 6,
       "last_update": "2026-04-09",
       "origin": "—",
       "created": "2026-04-09"
@@ -395,7 +395,7 @@
       "exec": "Comber Sigall Pauline",
       "exec_id": 52,
       "value": 0,
-      "days_in_stage": 5,
+      "days_in_stage": 6,
       "last_update": "2026-04-09",
       "origin": "—",
       "created": "2026-04-09"
@@ -2205,6 +2205,20 @@
       "action": "Llamar o enviar mail"
     },
     {
+      "id": 41,
+      "name": "Llamar contacto Indap , 7 región. dato entregado por WS",
+      "stage": "Oportunidad de Negocio",
+      "stage_class": "oportunidad",
+      "exec": "GARRIDO CISTERNA JUAN MANUEL",
+      "exec_id": 48,
+      "value": 0,
+      "days_in_stage": 261,
+      "last_update": "2025-07-28",
+      "origin": "—",
+      "created": "2025-07-28",
+      "action": "Llamar o enviar mail"
+    },
+    {
       "id": 12,
       "name": "DANIEL ESPINA",
       "stage": "Contactado",
@@ -2301,20 +2315,6 @@
       "origin": "—",
       "created": "2025-07-28",
       "action": "Seguimiento cotización"
-    },
-    {
-      "id": 41,
-      "name": "Llamar contacto Indap , 7 región. dato entregado por WS",
-      "stage": "Oportunidad de Negocio",
-      "stage_class": "oportunidad",
-      "exec": "GARRIDO CISTERNA JUAN MANUEL",
-      "exec_id": 48,
-      "value": 0,
-      "days_in_stage": 260,
-      "last_update": "2025-07-28",
-      "origin": "—",
-      "created": "2025-07-28",
-      "action": "Llamar o enviar mail"
     },
     {
       "id": 15,
@@ -2779,10 +2779,10 @@
       "action": "Seguimiento cotización"
     },
     {
-      "id": 138,
-      "name": "Cristian Reyes",
-      "stage": "Oportunidad de Negocio",
-      "stage_class": "oportunidad",
+      "id": 121,
+      "name": "alto nilahue",
+      "stage": "Cotizado",
+      "stage_class": "cotizado",
       "exec": "Vanessa Vazquez",
       "exec_id": 67,
       "value": 0,
@@ -2790,7 +2790,7 @@
       "last_update": "2025-08-18",
       "origin": "—",
       "created": "2025-08-18",
-      "action": "Llamar o enviar mail"
+      "action": "Seguimiento cotización"
     }
   ],
   "activities": [
@@ -3197,14 +3197,19 @@
   ],
   "messages": [
     {
-      "date": "2026-04-15 20:40",
-      "who": "Toledo Núñez Madelaine Camila",
-      "desc": "Hay un nuevo lead para el equipo \"Ventas\"."
+      "date": "2026-04-15 21:34",
+      "who": "OdooBot",
+      "desc": "Lead Enrichment (based on email address)\n        \n            Enrichment could not be done because the email address does not look valid."
     },
     {
       "date": "2026-04-15 20:40",
       "who": "OdooBot",
       "desc": "Lead Enrichment (based on email address)\n        \n            Enrichment could not be done because the email address does not look valid."
+    },
+    {
+      "date": "2026-04-15 20:40",
+      "who": "Toledo Núñez Madelaine Camila",
+      "desc": "Hay un nuevo lead para el equipo \"Ventas\"."
     },
     {
       "date": "2026-04-15 20:39",
@@ -3340,11 +3345,6 @@
       "date": "2026-04-10 19:56",
       "who": "OdooBot",
       "desc": "Lead Enrichment (based on email address)\n        \n            Enrichment could not be done because the email address does not look valid."
-    },
-    {
-      "date": "2026-04-10 18:03",
-      "who": "Comber Sigall Pauline",
-      "desc": "Hay un nuevo lead para el equipo \"Ventas\"."
     }
   ],
   "funnel_weeks": [
@@ -3508,10 +3508,10 @@
           ]
         },
         "contacto": {
-          "value": 162,
+          "value": 163,
           "goal": 10,
           "by_user": {
-            "Comber Sigall Pauline": 56,
+            "Comber Sigall Pauline": 57,
             "Administrator": 17,
             "Toro González Sebastian Enrique": 48,
             "Muñoz Joaquin": 6,
