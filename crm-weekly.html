@@ -512,14 +512,15 @@ function renderVentas(){
       {label:'Meta Prorrateada',data:users.map(u=>Math.round(((VG[u]||{}).litros_mes||0)*pf)),backgroundColor:'rgba(0,0,0,.06)',borderRadius:6,barPercentage:.5}
     ]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{font:{family:'DM Sans',size:11}}}},scales:{x:{grid:{display:false}},y:{beginAtZero:true,grid:{color:'#f0f0f0'},ticks:{callback:v=>(v/1000)+'k'}}}}});
   }
-  const ws=V.weekly||[];
+  // Prefer 16-week history; fall back to in-month weekly
+  const ws=(V.weekly_history&&V.weekly_history.length)?V.weekly_history:(V.weekly||[]);
   if(ws.length){
     const weeklyGoal=ltGoal>0?Math.round(ltGoal/4):0;
     const elS=document.getElementById('cVSem');
-    if(elS) new Chart(elS,{type:'bar',data:{labels:ws.map(w=>w.label),datasets:[
-      {label:'Litros',data:ws.map(w=>w.litros),backgroundColor:ws.map(w=>w.litros>=weeklyGoal?'rgba(22,163,74,.5)':'rgba(200,54,14,.4)'),borderRadius:6,barPercentage:.6},
-      {label:'Meta Semanal ('+fLs(weeklyGoal)+')',data:ws.map(()=>weeklyGoal),type:'line',borderColor:'var(--red)',borderWidth:2,borderDash:[6,4],pointRadius:0,fill:false,order:0}
-    ]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{font:{family:'DM Sans',size:11}}}},scales:{x:{grid:{display:false}},y:{beginAtZero:true,grid:{color:'#f0f0f0'},ticks:{callback:v=>(v/1000)+'k'}}}}});
+    if(elS) new Chart(elS,{type:'bar',data:{labels:ws.map(w=>w.label.split('-')[0]),datasets:[
+      {label:'Litros',data:ws.map(w=>w.litros),backgroundColor:ws.map((w,i)=>i===ws.length-1?'rgba(200,54,14,.85)':'rgba(200,54,14,.35)'),borderRadius:5,barPercentage:.7,order:1},
+      {label:'Presupuesto ('+fLs(weeklyGoal)+')',data:ws.map(()=>weeklyGoal),type:'line',borderColor:'#854f0b',borderWidth:2,borderDash:[6,4],pointRadius:0,fill:false,tension:0,order:0}
+    ]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{font:{family:'DM Sans',size:11}}}},scales:{x:{grid:{display:false},ticks:{font:{size:9,family:'DM Sans'},maxRotation:50}},y:{beginAtZero:true,grid:{color:'rgba(0,0,0,.04)'},ticks:{font:{size:9,family:'DM Sans'},callback:v=>(v/1000)+'k'}}}}});
   }
 }
 
