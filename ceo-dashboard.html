@@ -23,7 +23,6 @@
 }
 body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(--text);line-height:1.5}
 .container{max-width:1320px;margin:0 auto;padding:1.5rem 2rem 3rem}
-
 /* Header */
 .header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;padding-bottom:1rem;border-bottom:1px solid var(--border);flex-wrap:wrap;gap:10px}
 .header h1{font-size:20px;font-weight:500;letter-spacing:-0.02em}
@@ -32,19 +31,16 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(-
 .ts{font-size:11px;color:var(--text3)}
 .btn{font-family:inherit;font-size:12px;font-weight:500;padding:6px 16px;border:1px solid var(--border2);border-radius:var(--radius);background:var(--surface);color:var(--text);cursor:pointer;transition:all .15s}
 .btn:hover{background:var(--surface2)}
-
 /* Tabs */
 .tabs{display:flex;gap:3px;margin-bottom:.75rem;background:var(--surface2);padding:3px;border-radius:var(--radius);width:fit-content}
 .tab{font-family:inherit;font-size:12px;font-weight:400;padding:6px 18px;border:none;border-radius:8px;background:transparent;color:var(--text2);cursor:pointer;transition:all .15s}
 .tab.active{background:var(--surface);color:var(--text);font-weight:600;box-shadow:0 1px 3px rgba(0,0,0,.06)}
-
 /* Week filter */
 .filters{display:flex;gap:4px;margin-bottom:1.25rem;align-items:center}
 .wf{font-family:inherit;font-size:11px;font-weight:500;padding:4px 12px;border:1px solid var(--border);border-radius:6px;background:var(--surface);color:var(--text3);cursor:pointer;transition:.15s}
 .wf:hover{color:var(--text2);border-color:var(--border2)}
 .wf.on{background:var(--accent-light);color:var(--accent);border-color:var(--accent);font-weight:600}
 .fl{font-size:11px;color:var(--text3);margin-left:8px}
-
 /* KPIs */
 .kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-bottom:1.5rem}
 .kpi{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1rem 1.25rem;position:relative;overflow:hidden}
@@ -60,7 +56,6 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(-
 .kpi-delta{font-size:11px;margin-top:4px;font-weight:500}
 .kpi-delta.up{color:var(--green)}.kpi-delta.dn{color:var(--red)}
 .kpi-sub{font-size:11px;color:var(--text3);margin-top:4px}
-
 /* Charts */
 .chart-row{display:grid;gap:16px;margin-bottom:1.5rem}
 .chart-row.two{grid-template-columns:1fr 1fr}
@@ -68,7 +63,6 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(-
 .chart-title{font-size:13px;font-weight:600;margin-bottom:.75rem;display:flex;align-items:center;justify-content:space-between}
 .badge{font-size:10px;font-weight:500;color:var(--text3);background:var(--surface2);padding:2px 10px;border-radius:20px}
 .chart-wrap{position:relative;height:240px}
-
 /* Table */
 .section-label{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin:1.5rem 0 .5rem;font-weight:600}
 .table-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1rem;overflow:auto}
@@ -80,7 +74,6 @@ tr:hover td{background:rgba(200,54,14,.02)}
 .hi{color:var(--text);font-weight:600}
 .ok{color:var(--green)}.bad{color:var(--red)}
 .note{font-size:10px;color:var(--text3);margin-top:6px}
-
 /* Panels */
 .panel{display:none}.panel.active{display:block}
 .loading{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:50vh;gap:14px}
@@ -88,7 +81,6 @@ tr:hover td{background:rgba(200,54,14,.02)}
 .spinner{width:28px;height:28px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
 .footer{margin-top:2rem;padding:8px 0;border-top:1px solid var(--border);font-size:10px;color:var(--text3);display:flex;justify-content:space-between}
-
 @media(max-width:800px){
   .kpi-grid{grid-template-columns:repeat(2,1fr)}
   .chart-row.two{grid-template-columns:1fr}
@@ -105,13 +97,10 @@ tr:hover td{background:rgba(200,54,14,.02)}
       <button class="btn" onclick="location.reload()">Actualizar</button>
     </div>
   </header>
-
   <div id="loading" class="loading"><div class="spinner"></div><h3>Cargando datos...</h3></div>
-
   <div id="main" style="display:none">
     <div class="tabs" id="tabs"></div>
     <div class="filters" id="filters"></div>
-
     <div class="panel active" id="p-ventas"></div>
     <div class="panel" id="p-cobranza"></div>
     <div class="panel" id="p-crm"></div>
@@ -119,19 +108,16 @@ tr:hover td{background:rgba(200,54,14,.02)}
   </div>
 </div>
 <div class="container"><div class="footer"><span>TomEnergy · CEO Dashboard</span><span id="ftr"></span></div></div>
-
 <script>
 let D=null, curTab='ventas', fN=16;
 const charts={};
 const C={accent:'#c8360e',blue:'#1a5fb4',green:'#0f6e56',amber:'#854f0b',red:'#a32d2d',purple:'#6b3fa0',teal:'#0f7b6c'};
-
 const fM=n=>!n&&n!==0?'—':'$'+(n/1e6).toFixed(1)+'M';
 const fK=n=>!n&&n!==0?'—':Math.round(n/1000).toLocaleString('es-CL')+'K';
 const fNum=n=>!n&&n!==0?'—':Math.round(n).toLocaleString('es-CL');
 const fP=n=>!n&&n!==0?'—':(n*100).toFixed(1)+'%';
 const pD=(c,p)=>(!c||!p)?null:((c-p)/Math.abs(p))*100;
 const dH=d=>{if(d==null)return'';const u=d>=0;return`<div class="kpi-delta ${u?'up':'dn'}">${u?'▲':'▼'} ${Math.abs(d).toFixed(1)}%</div>`};
-
 function setupTabs(){
   const tabDefs=[['ventas','Ventas'],['cobranza','Cobranza'],['crm','CRM'],['caja','Caja']];
   document.getElementById('tabs').innerHTML=tabDefs.map(([k,l])=>
@@ -153,7 +139,6 @@ function switchTab(t){
   setupTabs();render();
 }
 function setFilter(n){fN=n;render()}
-
 function render(){
   if(curTab==='ventas') renderVentas();
   else if(curTab==='cobranza') renderCobranza();
@@ -161,14 +146,12 @@ function render(){
   else renderCaja();
   setupTabs();
 }
-
 // ── VENTAS ──
 function renderVentas(){
   const el=document.getElementById('p-ventas');
   const wk=[...D.weeks.slice(0,fN)].reverse();
   const last=D.weeks[0], prev=D.weeks[1]||last;
   const dv=last.ppto>0?last.litros/last.ppto:0;
-
   let h='<div class="kpi-grid">';
   h+=kpi('Venta Semana',fM(last.ventas),pD(last.ventas,prev.ventas),'c-accent',`${last.facturas} fact · ${last.clientes} cli`);
   h+=kpi('Litros',fK(last.litros),pD(last.litros,prev.litros),'c-blue',`$${fNum(last.precio)}/L neto`);
@@ -177,7 +160,6 @@ function renderVentas(){
   h+=kpi('Recaudación',fM(last.recaud),pD(last.recaud,prev.recaud||1),'c-purple',`Cheques: ${fM(last.cheques)}`);
   h+=kpi('Caja Total',fM(D.total_cash),null,D.total_cash>30e6?'c-green':'c-red',`${D.banks.length} cuentas`);
   h+='</div>';
-
   h+='<div class="chart-row two">';
   h+='<div class="chart-card"><div class="chart-title">Litros por semana <span class="badge">Jue→Mié</span></div><div class="chart-wrap"><canvas id="cLitros"></canvas></div></div>';
   h+='<div class="chart-card"><div class="chart-title">Litros vs Presupuesto <span class="badge">Real vs Meta</span></div><div class="chart-wrap"><canvas id="cPpto"></canvas></div></div>';
@@ -185,7 +167,6 @@ function renderVentas(){
   h+='<div class="chart-card"><div class="chart-title">Margen bruto % <span class="badge">margin_zone</span></div><div class="chart-wrap"><canvas id="cMargin"></canvas></div></div>';
   h+='<div class="chart-card"><div class="chart-title">Recaudación vs Compras ENAP <span class="badge">CLP</span></div><div class="chart-wrap"><canvas id="cRecaud"></canvas></div></div>';
   h+='</div>';
-
   // Daily sales chart
   const dyData=D.daily||[];
   if(dyData.length>0){
@@ -193,7 +174,6 @@ function renderVentas(){
     h+='<div class="chart-card"><div class="chart-title">Venta diaria en litros <span class="badge">Últimos 16 días hábiles</span></div><div class="chart-wrap"><canvas id="cDaily"></canvas></div></div>';
     h+='</div>';
   }
-
   h+='<div class="section-label">Resumen semanal</div>';
   h+='<div class="table-card"><table><thead><tr>';
   h+='<th>Semana</th><th class="r">Ventas</th><th class="r">Litros</th><th class="r">Ppto</th><th class="r">Desv.</th><th class="r">Margen</th><th class="r">$/L</th><th class="r">Recaud.</th><th class="r">Compras</th>';
@@ -213,32 +193,31 @@ function renderVentas(){
   });
   h+='</tbody></table><div class="note">* Parcial · Margen = margin_zone (Odoo) · NC descontadas · Semana comercial Jue→Mié</div></div>';
   el.innerHTML=h;
-
   // Charts
   const labels=wk.map(w=>w.label.split('-')[0]);
   const gC='rgba(0,0,0,.04)', tC='#9c9b96';
-
+  // Litros por semana — bars + presupuesto dashed line
   dc('cL');charts.cL=new Chart(document.getElementById('cLitros'),{type:'bar',
-    data:{labels,datasets:[{data:wk.map(w=>w.litros),backgroundColor:wk.map((_,i)=>i===wk.length-1?C.accent+'cc':C.accent+'44'),borderRadius:5}]},
+    data:{labels,datasets:[
+      {label:'Litros',data:wk.map(w=>w.litros),backgroundColor:wk.map((_,i)=>i===wk.length-1?C.accent+'cc':C.accent+'44'),borderRadius:5,order:1},
+      {label:'Presupuesto',data:wk.map(w=>w.ppto),type:'line',borderColor:C.amber,backgroundColor:'transparent',pointRadius:0,borderWidth:2,borderDash:[6,4],tension:0,order:0}
+    ]},
     options:co(tC,gC,v=>fK(v))});
-
+  // Litros vs Presupuesto — colored bars + ppto line
   dc('cP');charts.cP=new Chart(document.getElementById('cPpto'),{type:'bar',
     data:{labels,datasets:[
       {label:'Real',data:wk.map(w=>w.litros),backgroundColor:wk.map(w=>w.litros>=w.ppto?C.green+'88':C.red+'66'),borderRadius:5},
       {label:'Presupuesto',data:wk.map(w=>w.ppto),type:'line',borderColor:C.amber,backgroundColor:'transparent',pointRadius:0,borderWidth:2,borderDash:[5,3],tension:0}
     ]},options:co(tC,gC,v=>fK(v))});
-
   dc('cM');charts.cM=new Chart(document.getElementById('cMargin'),{type:'bar',
     data:{labels,datasets:[{data:wk.map(w=>+(w.margin*100).toFixed(2)),
       backgroundColor:wk.map(w=>w.margin>=.12?C.green+'88':w.margin>=.10?C.blue+'66':C.red+'66'),borderRadius:5}]},
     options:co(tC,gC,v=>v.toFixed(1)+'%')});
-
   dc('cR');charts.cR=new Chart(document.getElementById('cRecaud'),{type:'bar',
     data:{labels,datasets:[
       {label:'Recaudación',data:wk.map(w=>Math.round(w.recaud/1e6)),backgroundColor:C.purple+'55',borderRadius:5},
       {label:'Compras ENAP',data:wk.map(w=>Math.round((w.compras_enap||0)/1e6)),type:'line',borderColor:C.red,backgroundColor:'transparent',pointRadius:2,pointBackgroundColor:C.red,borderWidth:2,tension:.3}
     ]},options:co(tC,gC,v=>'$'+v+'M')});
-
   // Daily chart
   const dy=D.daily||[];
   if(dy.length>0){
@@ -251,7 +230,6 @@ function renderVentas(){
       options:co(tC,gC,v=>fK(v))});
   }
 }
-
 // ── COBRANZA ──
 function renderCobranza(){
   const el=document.getElementById('p-cobranza');
@@ -269,7 +247,6 @@ function renderCobranza(){
   h+='</tbody></table></div>';
   el.innerHTML=h;
 }
-
 // ── CRM ──
 function renderCRM(){
   const el=document.getElementById('p-crm');
@@ -292,7 +269,6 @@ function renderCRM(){
   h+='</div>';
   el.innerHTML=h;
 }
-
 // ── CAJA ──
 function renderCaja(){
   const el=document.getElementById('p-caja');
@@ -311,7 +287,6 @@ function renderCaja(){
   h+='</tbody></table></div>';
   el.innerHTML=h;
 }
-
 // ── HELPERS ──
 function kpi(label,val,delta,cls,sub){
   return `<div class="kpi ${cls}"><div class="kpi-label">${label}</div><div class="kpi-val">${val}</div>${dH(delta)}${sub?`<div class="kpi-sub">${sub}</div>`:''}</div>`;
@@ -323,7 +298,6 @@ function co(tC,gC,fmt){
             y:{ticks:{color:tC,font:{size:9,family:'DM Sans'},callback:v=>fmt(v)},grid:{color:gC}}}};
 }
 function dc(k){if(charts[k]){charts[k].destroy();delete charts[k]}}
-
 // ── LOAD ──
 async function loadData(){
   try{
