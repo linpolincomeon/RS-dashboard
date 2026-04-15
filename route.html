@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Ruta del día — TomEnergy</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f7f6f3;
+    --card: #ffffff;
+    --accent: #c8360e;
+    --muted: #6b6b6b;
+    --border: #e7e5e0;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: #1a1a1a;
+    padding: 24px;
+  }
+  h1 { margin: 0 0 4px; font-size: 28px; }
+  .subtitle { color: var(--muted); margin-bottom: 24px; font-size: 14px; }
+  .route-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 20px;
+  }
+  .route-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 12px;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 12px;
+    margin-bottom: 16px;
+  }
+  .route-title { font-size: 20px; font-weight: 700; }
+  .route-meta { color: var(--muted); font-size: 13px; }
+  .maps-btn {
+    display: inline-block;
+    background: var(--accent);
+    color: #fff;
+    text-decoration: none;
+    padding: 10px 16px;
+    border-radius: 8px;
+    font-weight: 500;
+    font-size: 14px;
+    margin-right: 8px;
+    margin-bottom: 8px;
+  }
+  .maps-btn:hover { opacity: 0.9; }
+  table { width: 100%; border-collapse: collapse; margin-top: 12px; font-size: 14px; }
+  th, td { text-align: left; padding: 10px 8px; border-bottom: 1px solid var(--border); }
+  th { color: var(--muted); font-weight: 500; text-transform: uppercase; font-size: 11px; letter-spacing: 0.5px; }
+  td.num { text-align: right; font-variant-numeric: tabular-nums; }
+  .idx { font-weight: 700; color: var(--accent); width: 32px; }
+  .phone a { color: #1a1a1a; text-decoration: none; }
+  .empty { color: var(--muted); font-style: italic; padding: 16px 0; }
+  .generated { color: var(--muted); font-size: 12px; margin-top: 32px; text-align: center; }
+</style>
+</head>
+<body>
+
+<h1>Ruta del día</h1>
+<div class="subtitle" id="subtitle">Cargando órdenes a facturar…</div>
+
+<div id="routes"></div>
+
+<div class="generated" id="generated"></div>
+
+<script>
+const CLP = new Intl.NumberFormat('es-CL', { style: 'currency', currency: 'CLP', maximumFractionDigits: 0 });
+
+async function load() {
+  const res = await fetch('route-data.json?ts=' + Date.now());
+  const data = await res.json();
+  renderRoutes(data);
+}
+
+function renderRoutes(data) {
+  document.getElementById('subtitle').textContent =
+    `${data.total_orders} órdenes a facturar · ${data.routes.length} rutas`;
+  document.getElementById('generated').textContent =
+    'Generado ' + new Date(data.generated_at).toLocaleString('es-CL');
+
+  const root = document.getElementById('routes');
+  root.innerHTML = '';
+  for (const r of data.routes) {
+    root.appendChild(renderRoute(r));
+  }
+}
+
+function renderRoute(r) {
+  const card = document.createElement('div');
+  card.className = 'route-card';
+
+  const head = document.createElement('div');
+  head.className = 'route-head';
+  head.innerHTML = `
+    <div>
+      <div class="route-title">${r.origin.label} <span style="color:var(--muted);font-weight:400">· ${r.warehouse_code}</span></div>
+      <div class="route-meta">${r.stop_count} paradas · ida y vuelta</div>
+    </div>
+    <div>${(r.maps_links || []).map(l => `
+      <a class="maps-btn" href="${l.url}" target="_blank" rel="noopener">
+        ${l.of > 1 ? `Tramo ${l.part}/${l.of}` : 'Abrir en Maps'} · ${l.stops} paradas
+      </a>`).join('')}
+    </div>
+  `;
+  card.appendChild(head);
+
+  if (!r.stops.length) {
+    const e = document.createElement('div');
+    e.className = 'empty';
+    e.textContent = 'Sin órdenes a facturar en esta zona.';
+    card.appendChild(e);
+    return card;
+  }
+
+  const table = document.createElement('table');
+  table.innerHTML = `
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Orden</th>
+        <th>Cliente</th>
+        <th>Dirección</th>
+        <th>Tel.</th>
+        <th>Compromiso</th>
+        <th class="num">Monto</th>
+      </tr>
+    </thead>
+    <tbody>
+      ${r.stops.map((s, i) => `
+        <tr>
+          <td class="idx">${i + 1}</td>
+          <td>${s.order}</td>
+          <td>${s.customer}</td>
+          <td>${s.address}</td>
+          <td class="phone">${s.phone ? `<a href="tel:${s.phone}">${s.phone}</a>` : ''}</td>
+          <td>${s.commitment_date ? new Date(s.commitment_date).toLocaleDateString('es-CL') : ''}</td>
+          <td class="num">${s.amount_untaxed ? CLP.format(s.amount_untaxed) : ''}</td>
+        </tr>
+      `).join('')}
+    </tbody>
+  `;
+  card.appendChild(table);
+  return card;
+}
+
+load().catch(err => {
+  document.getElementById('subtitle').textContent = 'Error cargando route-data.json: ' + err.message;
+});
+</script>
+
+</body>
+</html>
