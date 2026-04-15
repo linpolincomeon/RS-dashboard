@@ -475,27 +475,28 @@ def extract_funnel_data(models, uid):
             }
         })
 
-    # 6. Retencion 90d
+    # 6. Retencion 90d — based on posted invoices (actual billing), not sale orders
     wk0 = get_enap_week(0)
     wed_date = wk0["wed"]
     lookback_start = wed_date - timedelta(days=90)
 
-    all_orders_90d = sr(models, uid, "sale.order", [
-        ["date_order", ">=", fdt_s(lookback_start)],
-        ["date_order", "<=", fdt_e(wed_date)],
-        ["state", "=", "sale"],
-    ], ["partner_id"], limit=5000)
+    all_inv_90d = sr(models, uid, "account.move", [
+        ["move_type", "=", "out_invoice"],
+        ["state", "=", "posted"],
+        ["invoice_date", ">=", lookback_start.strftime("%Y-%m-%d")],
+        ["invoice_date", "<=", wed_date.strftime("%Y-%m-%d")],
+    ], ["partner_id"], limit=10000)
 
     partner_order_count = Counter()
-    for o in all_orders_90d:
-        pid = safe_id(o.get("partner_id"))
+    for inv in all_inv_90d:
+        pid = safe_id(inv.get("partner_id"))
         if pid:
             partner_order_count[pid] += 1
 
     ret_total = len(partner_order_count)
     retained_ids = {pid for pid, cnt in partner_order_count.items() if cnt >= 2}
     ret_pct = round((len(retained_ids) / ret_total) * 100) if ret_total > 0 else 0
-    print(f"  Retencion 90d: {ret_pct}% ({len(retained_ids)}/{ret_total} clientes con 2+ compras)")
+    print(f"  Retencion 90d: {ret_pct}% ({len(retained_ids)}/{ret_total} clientes con 2+ facturas)")
 
     weeks_data[0]["stages"]["retencion"] = {
         "value": ret_pct, "goal": 90, "unit": "%",
@@ -809,7 +810,7 @@ def extract_churn_data(models, uid):
         write_date = (lead.get("write_date") or "")[:10]
 
         if pid and pid in curr_month_partners:
-            rescued_dormant_list.append({"name": name, "user": user, "last_update": write_date})
+            rescued_dormant_list.append({"name": name, "user": user, "last_update": write_date, "partner_id": pid})
             rescued_dormant_by_user[user] += 1
         else:
             dormant_list.append({"name": name, "user": user, "last_update": write_date, "partner_id": pid})
@@ -1000,6 +1001,8 @@ def extract_churn_data(models, uid):
         "lost_list": sorted(lost_list, key=lambda x: x.get("avg_monthly_litros", 0), reverse=True)[:30],
         "rescued_dormant_list": rescued_dormant_list[:20],
         "rescued_lost_list": rescued_lost_list[:20],
+        # Full partner ID list for mantención calc (not displayed)
+        "_rescued_dormant_partner_ids": [r.get("partner_id") for r in rescued_dormant_list if r.get("partner_id")],
     }
 
 
@@ -1128,6 +1131,58 @@ def main():
     # Part 5: SLA entrega mes anterior
     sla_prev = extract_sla_data(models, uid, prev_m_start, prev_m_end)
     ventas_prev["sla"] = sla_prev
+
+    # Part 6: Pauline Comber "mantención" liters patch
+    # Her number = TomEnergy invoices + Comber invoices + Rescued dormant liters
+    COMBER_NAME = "Comber Sigall Pauline"
+    TOMENERGY_NAME = "TomEnergy"
+
+    def _rescued_litros(month_start, month_end):
+        """Sum liters invoiced this month for rescued-dormant partners."""
+        pids = churn.get("_rescued_dormant_partner_ids") or []
+        if not pids:
+            return 0
+        rinv = sr(models, uid, "account.move", [
+            ["move_type", "=", "out_invoice"],
+            ["state", "=", "posted"],
+            ["partner_id", "in", pids],
+            ["invoice_date", ">=", month_start.strftime("%Y-%m-%d")],
+            ["invoice_date", "<=", month_end.strftime("%Y-%m-%d")],
+        ], ["id"], limit=5000)
+        if not rinv:
+            return 0
+        rids = [i["id"] for i in rinv]
+        rlines = sr(models, uid, "account.move.line", [
+            ["move_id", "in", rids],
+            ["product_id", "=", DIESEL_PRODUCT_ID],
+        ], ["quantity"], limit=10000)
+        return round(sum(ln.get("quantity", 0) for ln in rlines))
+
+    def _patch_comber(vts, month_start, month_end):
+        lbu = vts.get("totals", {}).get("litros_by_user", {})
+        tom = lbu.get(TOMENERGY_NAME, 0) or 0
+        com = lbu.get(COMBER_NAME, 0) or 0
+        resc = _rescued_litros(month_start, month_end)
+        mantencion = tom + com + resc
+        lbu[COMBER_NAME] = mantencion
+        vts["totals"]["litros_by_user"] = lbu
+        vts["totals"]["comber_mantencion_detail"] = {
+            "tomenergy_litros": tom,
+            "comber_own_litros": com,
+            "rescued_dormant_litros": resc,
+            "total": mantencion,
+        }
+        print(f"  Comber mantención: {mantencion} L (TomEnergy {tom} + Comber {com} + Rescue {resc})")
+
+    # Current month
+    curr_m_start = datetime.now().date().replace(day=1)
+    if datetime.now().month == 12:
+        curr_m_end = datetime.now().date().replace(year=datetime.now().year + 1, month=1, day=1) - timedelta(days=1)
+    else:
+        curr_m_end = datetime.now().date().replace(month=datetime.now().month + 1, day=1) - timedelta(days=1)
+    _patch_comber(ventas, curr_m_start, curr_m_end)
+    # Previous month (Mes Vencido)
+    _patch_comber(ventas_prev, prev_m_start, prev_m_end)
 
     # Load or create vendor goals
     goals_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "vendor-goals.json")
