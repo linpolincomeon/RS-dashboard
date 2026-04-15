@@ -1,16 +1,16 @@
 {
-  "updated": "2026-04-15T06:14:24.926490",
+  "updated": "2026-04-15T13:55:44.995504",
   "weeks": [
     {
       "label": "09apr-15apr",
       "start": "2026-04-09",
       "end": "2026-04-15",
-      "ventas": 219856495,
-      "neto": 187902592,
-      "litros": 143411,
+      "ventas": 229367836,
+      "neto": 196046751,
+      "litros": 149671,
       "precio": 1310,
-      "margin": 0.08953,
-      "facturas": 100,
+      "margin": 0.08919,
+      "facturas": 103,
       "nc": 3,
       "clientes": 70,
       "recaud": 2822900,
@@ -326,8 +326,8 @@
     {
       "date": "15apr",
       "day": "Mié",
-      "litros": 0,
-      "neto": 0
+      "litros": 6260,
+      "neto": 8144159
     },
     {
       "date": "14apr",
@@ -422,12 +422,12 @@
   ],
   "banks": [
     {
-      "name": "DE CHILE",
-      "balance": 39795825
-    },
-    {
       "name": "ITAU",
       "balance": 22992865
+    },
+    {
+      "name": "DE CHILE",
+      "balance": 19600095
     },
     {
       "name": "ESTADO",
@@ -450,15 +450,15 @@
       "balance": -838790
     }
   ],
-  "total_cash": 75859124,
+  "total_cash": 55663394,
   "receivables": {
-    "open_invoices": 332,
-    "total_due": 647732681,
-    "current": 571885520,
-    "overdue": 75847161,
-    "pct_overdue": 11.7,
+    "open_invoices": 330,
+    "total_due": 652158122,
+    "current": 578325961,
+    "overdue": 73832161,
+    "pct_overdue": 11.3,
     "aging": {
-      "0-30": 56881597,
+      "0-30": 54866597,
       "31-60": 7072001,
       "61-90": 928000,
       "90+": 10965563
@@ -466,7 +466,7 @@
     "top_debtors": [
       {
         "name": "JOSE RODRIGO ORMAZABAL VIDAL",
-        "amount": 37804703
+        "amount": 43808703
       },
       {
         "name": "SOC AGRICOLA GRANJA SAN RAFAEL LIMITADA",
@@ -477,10 +477,6 @@
         "amount": 20211499
       },
       {
-        "name": "AGRICOLA AGROBOSQUES SAN ISIDRO S.A.",
-        "amount": 18014053
-      },
-      {
         "name": "SAMUEL BUDINICH SPA",
         "amount": 17564985
       },
@@ -489,16 +485,20 @@
         "amount": 16545700
       },
       {
+        "name": "AGRICOLA AGROBOSQUES SAN ISIDRO S.A.",
+        "amount": 16100053
+      },
+      {
+        "name": "TRANSPORTE SANTA ELENITA SPA",
+        "amount": 14295491
+      },
+      {
         "name": "PATRICIO VISCAY ALBORNOZ",
         "amount": 13735441
       },
       {
         "name": "SERVICIOS AGRICOLAS HERNANDEZ LIMITADA",
         "amount": 13275000
-      },
-      {
-        "name": "TRANSPORTE SANTA ELENITA SPA",
-        "amount": 12731651
       },
       {
         "name": "SOC. DE TRANSPORTES TRACMAVI LTDA.",
@@ -548,13 +548,13 @@
   },
   "crm": {
     "total": 1402,
-    "open": 1172,
-    "won": 229,
+    "open": 1171,
+    "won": 230,
     "new_30d": 92,
     "by_stage": [
       {
         "stage": "Perdidos",
-        "count": 460
+        "count": 459
       },
       {
         "stage": "No Cerrados",
@@ -582,7 +582,7 @@
       },
       {
         "stage": "Won",
-        "count": 229
+        "count": 230
       }
     ]
   }
