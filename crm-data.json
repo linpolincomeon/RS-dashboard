@@ -1,5 +1,5 @@
 {
-  "updated": "2026-04-15T22:06:44.771937",
+  "updated": "2026-04-15T23:11:20.528395",
   "week": {
     "start": "2026-04-09",
     "end": "2026-04-15",
@@ -3799,8 +3799,8 @@
           "value": 71,
           "goal": 90,
           "unit": "%",
-          "total_evaluated": 383,
-          "retained_count": 271
+          "total_evaluated": 389,
+          "retained_count": 275
         }
       }
     },
@@ -5095,7 +5095,7 @@
       "nc_count": 13,
       "litros_by_user": {
         "TomEnergy": 233788,
-        "Comber Sigall Pauline": 13810,
+        "Comber Sigall Pauline": 249898,
         "Toro González Sebastian Enrique": 110823,
         "Muñoz Joaquin": 1500,
         "Carlos Labbe": 2000,
@@ -5144,6 +5144,12 @@
         "Muñoz Joaquin": 8.5,
         "Carlos Labbe": 6.1,
         "De Trenqualye Merino Andre Jean": 5.8
+      },
+      "comber_mantencion_detail": {
+        "tomenergy_litros": 233788,
+        "comber_own_litros": 13810,
+        "rescued_dormant_litros": 2300,
+        "total": 249898
       }
     },
     "new_clients": {
@@ -5356,7 +5362,7 @@
       "litros_by_user": {
         "TomEnergy": 837477,
         "Toro González Sebastian Enrique": 138967,
-        "Comber Sigall Pauline": 40720,
+        "Comber Sigall Pauline": 878197,
         "De Trenqualye Merino Andre Jean": 6000,
         "Fernando Jullian": 2000
       },
@@ -5401,6 +5407,12 @@
         "Comber Sigall Pauline": 9.0,
         "De Trenqualye Merino Andre Jean": 8.7,
         "Fernando Jullian": 14.0
+      },
+      "comber_mantencion_detail": {
+        "tomenergy_litros": 837477,
+        "comber_own_litros": 40720,
+        "rescued_dormant_litros": 0,
+        "total": 878197
       }
     },
     "new_clients": {
@@ -6380,20 +6392,28 @@
       {
         "name": "LUIS ALBERTO SOTO BRAVO",
         "user": "Comber Sigall Pauline",
-        "last_update": "2026-04-15"
+        "last_update": "2026-04-15",
+        "partner_id": 5169
       },
       {
         "name": "VITIVINICOLA INVINA LTDA",
         "user": "Comber Sigall Pauline",
-        "last_update": "2026-04-15"
+        "last_update": "2026-04-15",
+        "partner_id": 5416
       },
       {
         "name": "LUIS ALBERTO SOTO BRAVO",
         "user": "TomEnergy",
-        "last_update": "2026-04-15"
+        "last_update": "2026-04-15",
+        "partner_id": 5169
       }
     ],
-    "rescued_lost_list": []
+    "rescued_lost_list": [],
+    "_rescued_dormant_partner_ids": [
+      5169,
+      5416,
+      5169
+    ]
   },
   "vendor_goals": {
     "Toro González Sebastian Enrique": {
@@ -6407,7 +6427,7 @@
       "retencion_90d": 90
     },
     "Comber Sigall Pauline": {
-      "litros_mes": 0,
+      "litros_mes": 807326,
       "presupuesto_venta": 0,
       "margen_min": 0,
       "leads_semana": 15,
