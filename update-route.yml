@@ -1,0 +1,43 @@
+name: Update Route Data
+
+on:
+  schedule:
+    # 06:00 UTC = 03:00 Chile (invierno) / 02:00 (verano). Ajusta si quieres.
+    - cron: "0 6 * * *"
+  workflow_dispatch:  # permite correrlo a mano desde la pestaña Actions
+
+permissions:
+  contents: write
+
+jobs:
+  build-route:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Run extract_route.py
+        # IMPORTANTE: secrets al STEP, no al job (fix del bug conocido)
+        env:
+          ODOO_URL:  ${{ secrets.ODOO_URL }}
+          ODOO_DB:   ${{ secrets.ODOO_DB }}
+          ODOO_USER: ${{ secrets.ODOO_USER }}
+          ODOO_KEY:  ${{ secrets.ODOO_KEY }}
+        run: python extract_route.py
+
+      - name: Commit route-data.json
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add route-data.json
+          if git diff --cached --quiet; then
+            echo "Sin cambios en route-data.json"
+          else
+            git commit -m "chore: update route-data.json"
+            git push
+          fi
