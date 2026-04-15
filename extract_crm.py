@@ -691,6 +691,33 @@ def extract_sales_data(models, uid, custom_start=None, custom_end=None, label_ov
             "venta_neta": round(wk_venta),
         })
 
+    # Weekly history — 16 weeks back, ENAP commercial weeks (Thu-Wed), no month boundary
+    weekly_history = []
+    for offset in range(16):
+        wk = get_enap_week(offset)
+        ws_d = datetime.strptime(wk["start"], "%Y-%m-%d").date()
+        we_d = datetime.strptime(wk["end"], "%Y-%m-%d").date()
+        wk_inv = sr(models, uid, "account.move", [
+            ["move_type", "=", "out_invoice"],
+            ["state", "=", "posted"],
+            ["invoice_date", ">=", fmt(ws_d)],
+            ["invoice_date", "<=", fmt(we_d)],
+        ], ["id"], limit=5000)
+        wk_ids = [i["id"] for i in wk_inv]
+        wk_l = 0
+        if wk_ids:
+            wk_lines = sr(models, uid, "account.move.line", [
+                ["move_id", "in", wk_ids],
+                ["product_id", "=", DIESEL_PRODUCT_ID],
+            ], ["quantity"], limit=5000)
+            for ln in wk_lines:
+                wk_l += ln.get("quantity", 0)
+        weekly_history.append({
+            "label": f"{ws_d.day}/{ws_d.month}-{we_d.day}/{we_d.month}",
+            "litros": round(wk_l),
+        })
+    weekly_history.reverse()  # oldest first
+
     print(f"  Litros: {round(total_litros)} Facturas: {len(invoices)} NC: {len(ncs)}")
     print(f"  Clientes nuevos: {new_cl_count}")
 
@@ -716,6 +743,7 @@ def extract_sales_data(models, uid, custom_start=None, custom_end=None, label_ov
         },
         "new_clients": {"count": new_cl_count, "by_user": dict(new_cl_by_user), "detail": new_cl_detail},
         "weekly": list(reversed(weekly_sales)),
+        "weekly_history": weekly_history,
     }
 
 
