@@ -1161,31 +1161,69 @@ def main():
     sla_prev = extract_sla_data(models, uid, prev_m_start, prev_m_end)
     ventas_prev["sla"] = sla_prev
 
-    # Part 6: Pauline Comber "mantención" liters patch
-    # Her number = (TomEnergy + Comber invoices) MINUS new client liters in those buckets
-    # Rationale: "not new" liters from TomEnergy/Comber pool — she handles existing-customer retention.
+    # Part 6: Pauline Comber "mantención" — absorbs the TomEnergy bucket into Comber's row.
+    # Liters = (TomEnergy + Comber invoices) − new client liters (she handles retention, not acquisition)
+    # Venta neta y margen se suman/pondera. La fila "TomEnergy" se elimina del output.
     COMBER_NAME = "Comber Sigall Pauline"
     TOMENERGY_NAME = "TomEnergy"
 
     def _patch_comber(vts):
         tot = vts.get("totals", {})
-        lbu = tot.get("litros_by_user", {})
-        nc_lbu = vts.get("new_clients", {}).get("litros_by_user", {}) or {}
-        tom = lbu.get(TOMENERGY_NAME, 0) or 0
-        com = lbu.get(COMBER_NAME, 0) or 0
-        # New client liters attributed to TomEnergy or Comber
-        new_tom = nc_lbu.get(TOMENERGY_NAME, 0) or 0
-        new_com = nc_lbu.get(COMBER_NAME, 0) or 0
-        mantencion = max(0, (tom + com) - (new_tom + new_com))
-        lbu[COMBER_NAME] = mantencion
+        lbu = tot.get("litros_by_user", {}) or {}
+        vbu = tot.get("venta_by_user", {}) or {}
+        mbu = tot.get("margin_by_user", {}) or {}
+        nc = vts.get("new_clients", {}) or {}
+        nc_lbu = nc.get("litros_by_user", {}) or {}
+        nc_bu = nc.get("by_user", {}) or {}
+
+        tom_l = lbu.get(TOMENERGY_NAME, 0) or 0
+        com_l = lbu.get(COMBER_NAME, 0) or 0
+        new_tom_l = nc_lbu.get(TOMENERGY_NAME, 0) or 0
+        new_com_l = nc_lbu.get(COMBER_NAME, 0) or 0
+        mantencion_l = max(0, (tom_l + com_l) - (new_tom_l + new_com_l))
+
+        tom_v = vbu.get(TOMENERGY_NAME, 0) or 0
+        com_v = vbu.get(COMBER_NAME, 0) or 0
+        merged_v = tom_v + com_v
+
+        tom_m = mbu.get(TOMENERGY_NAME, 0) or 0
+        com_m = mbu.get(COMBER_NAME, 0) or 0
+        # Margen ponderado por venta neta
+        merged_m = round((tom_m * tom_v + com_m * com_v) / merged_v, 1) if merged_v > 0 else 0
+
+        # Merge into Comber
+        lbu[COMBER_NAME] = mantencion_l
+        vbu[COMBER_NAME] = round(merged_v)
+        mbu[COMBER_NAME] = merged_m
+        # Drop TomEnergy row
+        lbu.pop(TOMENERGY_NAME, None)
+        vbu.pop(TOMENERGY_NAME, None)
+        mbu.pop(TOMENERGY_NAME, None)
+
+        # Merge new-clients tallies as well
+        tom_nc = nc_bu.get(TOMENERGY_NAME, 0) or 0
+        com_nc = nc_bu.get(COMBER_NAME, 0) or 0
+        if (tom_nc + com_nc) > 0:
+            nc_bu[COMBER_NAME] = tom_nc + com_nc
+        nc_bu.pop(TOMENERGY_NAME, None)
+        nc_lbu[COMBER_NAME] = new_tom_l + new_com_l
+        nc_lbu.pop(TOMENERGY_NAME, None)
+
         tot["litros_by_user"] = lbu
+        tot["venta_by_user"] = vbu
+        tot["margin_by_user"] = mbu
+        nc["litros_by_user"] = nc_lbu
+        nc["by_user"] = nc_bu
+        vts["new_clients"] = nc
         tot["comber_mantencion_detail"] = {
-            "tomenergy_litros": tom,
-            "comber_own_litros": com,
-            "new_client_litros_excluded": new_tom + new_com,
-            "total": mantencion,
+            "tomenergy_litros": tom_l,
+            "comber_own_litros": com_l,
+            "new_client_litros_excluded": new_tom_l + new_com_l,
+            "total": mantencion_l,
+            "merged_venta_neta": round(merged_v),
+            "merged_margin_pct": merged_m,
         }
-        print(f"  Comber mantención: {mantencion} L  =  TomEnergy {tom} + Comber {com} − Nuevos {new_tom + new_com}")
+        print(f"  Comber mantención: {mantencion_l} L  =  TomEnergy {tom_l} + Comber {com_l} − Nuevos {new_tom_l + new_com_l}  · Margen ponderado: {merged_m}%")
 
     _patch_comber(ventas)
     _patch_comber(ventas_prev)
