@@ -1178,9 +1178,9 @@ def main():
 
         tom_l = lbu.get(TOMENERGY_NAME, 0) or 0
         com_l = lbu.get(COMBER_NAME, 0) or 0
-        new_tom_l = nc_lbu.get(TOMENERGY_NAME, 0) or 0
-        new_com_l = nc_lbu.get(COMBER_NAME, 0) or 0
-        mantencion_l = max(0, (tom_l + com_l) - (new_tom_l + new_com_l))
+        # No subtraction of new clients — those liters already have their own exec assigned.
+        # Comber's number is simply: everything billed under TomEnergy + Comber.
+        mantencion_l = tom_l + com_l
 
         tom_v = vbu.get(TOMENERGY_NAME, 0) or 0
         com_v = vbu.get(COMBER_NAME, 0) or 0
@@ -1200,13 +1200,8 @@ def main():
         vbu.pop(TOMENERGY_NAME, None)
         mbu.pop(TOMENERGY_NAME, None)
 
-        # Merge new-clients tallies as well
-        tom_nc = nc_bu.get(TOMENERGY_NAME, 0) or 0
-        com_nc = nc_bu.get(COMBER_NAME, 0) or 0
-        if (tom_nc + com_nc) > 0:
-            nc_bu[COMBER_NAME] = tom_nc + com_nc
+        # Remove TomEnergy from new-clients tallies too (absorbed into Comber)
         nc_bu.pop(TOMENERGY_NAME, None)
-        nc_lbu[COMBER_NAME] = new_tom_l + new_com_l
         nc_lbu.pop(TOMENERGY_NAME, None)
 
         tot["litros_by_user"] = lbu
@@ -1218,12 +1213,11 @@ def main():
         tot["comber_mantencion_detail"] = {
             "tomenergy_litros": tom_l,
             "comber_own_litros": com_l,
-            "new_client_litros_excluded": new_tom_l + new_com_l,
             "total": mantencion_l,
             "merged_venta_neta": round(merged_v),
             "merged_margin_pct": merged_m,
         }
-        print(f"  Comber mantención: {mantencion_l} L  =  TomEnergy {tom_l} + Comber {com_l} − Nuevos {new_tom_l + new_com_l}  · Margen ponderado: {merged_m}%")
+        print(f"  Comber mantención: {mantencion_l} L  =  TomEnergy {tom_l} + Comber {com_l}  · Margen ponderado: {merged_m}%")
 
     _patch_comber(ventas)
     _patch_comber(ventas_prev)
@@ -1279,8 +1273,8 @@ def main():
         "vendor_goals": vendor_goals,
         "company_goals": {
             "litros_mes": 1305689,
-            "margen_retail": 12.0,
-            "margen_volumen": 9.0,
+            "margen_retail": 8.5,
+            "margen_volumen": 6.0,
             "month": "abril 2026",
         },
         "funnel_goals": {
