@@ -149,7 +149,7 @@ tr:hover td{background:#fafaf8}
 
 <script>
 let D=null;
-const ALLOWED_VENDORS=['toro gonzález sebastian enrique','comber sigall pauline','fernando jullian','tomenergy','carlos labbe','joaquin muñoz','yeniré ron','yenire ron'];
+const ALLOWED_VENDORS=['toro gonzález sebastian enrique','comber sigall pauline','fernando jullian','tomenergy','carlos labbe','joaquin muñoz','yeniré ron','yenire ron','mauro boccardo'];
 const norm=s=>s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').split(/\s+/).filter(Boolean).sort().join(' ');
 const _aN=new Set(ALLOWED_VENDORS.map(norm));
 const isAllowed=n=>n&&_aN.has(norm(n));
