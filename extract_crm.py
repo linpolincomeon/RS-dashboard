@@ -223,10 +223,15 @@ def extract_crm_data(models, uid):
     for p in pipeline:
         eid = p["exec_id"]
         if eid not in exec_map:
-            exec_map[eid] = {"name": p["exec"], "total": 0, "moved": 0, "stale": 0, "value": 0}
+            exec_map[eid] = {
+                "name": p["exec"], "total": 0,
+                "moved": 0, "moved_30d": 0,  # 7d (this ENAP week) / 30d windows
+                "stale": 0, "value": 0,
+            }
         exec_map[eid]["total"] += 1
         exec_map[eid]["value"] += p["value"]
         if p["last_update"] >= week_start: exec_map[eid]["moved"] += 1
+        if p["days_in_stage"] <= 30: exec_map[eid]["moved_30d"] += 1
         if p["days_in_stage"] > 7: exec_map[eid]["stale"] += 1
 
     executives = sorted(exec_map.values(), key=lambda x: -x["total"])
