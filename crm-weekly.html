@@ -263,8 +263,9 @@ function renderPipeline(){
   // Avg days in fresh pipeline
   const avgDays=freshPl.length?Math.round(freshPl.reduce((s,p)=>s+p.days_in_stage,0)/freshPl.length):0;
 
-  // Cotizado value (hot deals) — only fresh
-  const hotDeals=freshPl.filter(p=>p.stage==='Cotizado').sort((a,b)=>(b.value||0)-(a.value||0));
+  // Cotizado value (hot deals) — cotizados CON movimiento en últimos 30 días
+  const HOT_DAYS=30;
+  const hotDeals=freshPl.filter(p=>p.stage==='Cotizado'&&p.days_in_stage<=HOT_DAYS).sort((a,b)=>(b.value||0)-(a.value||0));
 
   let h='';
 
@@ -318,30 +319,30 @@ function renderPipeline(){
   h+=`</div></div></div>`;
 
   // === EXECUTIVE RANKING TABLE ===
+  // Sort by 30-day movement (real activity), then by this-week moved, then by pipeline value
   const execs=(D.executives||[]).filter(e=>e&&isAllowed(e.name)).sort((a,b)=>{
-    const ra=a.total>0?a.moved/a.total:0, rb=b.total>0?b.moved/b.total:0;
-    return rb-ra||(b.value||0)-(a.value||0);
+    return (b.moved_30d||0)-(a.moved_30d||0)||(b.moved||0)-(a.moved||0)||(b.value||0)-(a.value||0);
   });
 
-  h+=`<div class="sec"><div class="sec-h"><h2>Ranking Ejecutivos</h2><span style="font-size:12px;color:var(--dim)">ordenado por actividad</span></div>
+  h+=`<div class="sec"><div class="sec-h"><h2>Ranking Ejecutivos</h2><span style="font-size:12px;color:var(--dim)">ordenado por movimientos últimos 30d</span></div>
   <div class="sec-b" style="padding:0;overflow-x:auto"><table class="exec-rank"><thead><tr>
-    <th></th><th>Ejecutivo</th><th>Pipeline</th><th style="text-align:center">Movidas</th><th style="text-align:center">Estancadas</th><th>${vL}</th><th style="text-align:center">Actividad</th>
+    <th></th><th>Ejecutivo</th><th style="text-align:center">Pipeline</th><th style="text-align:center">Mov. 7d</th><th style="text-align:center">Mov. 30d</th><th style="text-align:center">Estancadas</th><th>${vL}</th>
   </tr></thead><tbody>`;
   execs.forEach((e,i)=>{
-    const ratio=e.total>0?Math.round((e.moved/e.total)*100):0;
-    // Health: Activo if ratio>=10% OR moved>=5 deals; Lento if ratio>=3% OR moved>=2; else Crítico
-    const health=e.moved>0?((ratio>=10||e.moved>=5)?'var(--green)':(ratio>=3||e.moved>=2)?'var(--yellow)':'var(--red)'):'var(--red)';
-    const healthLabel=e.moved>0?((ratio>=10||e.moved>=5)?'Activo':(ratio>=3||e.moved>=2)?'Lento':'Crítico'):'Sin actividad';
-    const movedStyle=e.moved>0?'color:var(--green);font-weight:700':'color:var(--dim)';
+    const m7=e.moved||0, m30=e.moved_30d||0;
+    // 7d color: green if ≥3, yellow if ≥1, red if 0
+    const c7=m7>=3?'color:var(--green);font-weight:700':m7>=1?'color:var(--yellow);font-weight:600':'color:var(--red);font-weight:600';
+    // 30d color: green if ≥10, yellow if ≥3, red if <3
+    const c30=m30>=10?'color:var(--green);font-weight:700':m30>=3?'color:var(--yellow);font-weight:600':'color:var(--red);font-weight:600';
     const staleStyle=e.stale>0?'color:var(--red);font-weight:600':'color:var(--dim)';
     h+=`<tr>
       <td style="text-align:center;font-weight:700;color:var(--dim)">${i+1}</td>
       <td><span class="bold">${H(e.name)}</span></td>
-      <td>${e.total}</td>
-      <td style="text-align:center;${movedStyle}">${e.moved}</td>
+      <td style="text-align:center">${e.total}</td>
+      <td style="text-align:center;${c7}">${m7}</td>
+      <td style="text-align:center;${c30}">${m30}</td>
       <td style="text-align:center;${staleStyle}">${e.stale}</td>
       <td class="bold">${fS(e.value)}</td>
-      <td style="text-align:center"><span class="health-dot" style="background:${health}" title="${healthLabel}"></span> <span style="font-size:11px;color:${health}">${healthLabel}</span></td>
     </tr>`;
   });
   h+=`</tbody></table></div></div>`;
@@ -349,7 +350,7 @@ function renderPipeline(){
   // === HOT DEALS: Cotizado with value (fresh only) ===
   const hotWithValue=hotDeals.filter(p=>p.value>0);
   if(hotWithValue.length){
-    h+=`<div class="sec"><div class="sec-h"><h2>🔥 Hot Deals — Cotizado con Valor</h2><span class="hot-badge">${hotWithValue.length} deals</span></div>
+    h+=`<div class="sec"><div class="sec-h"><h2>🔥 Hot Deals — Cotizado con movimiento últimos ${HOT_DAYS}d</h2><span class="hot-badge">${hotWithValue.length} deals</span></div>
     <div class="sec-b" style="padding:0;overflow-x:auto"><table><thead><tr><th>Cliente</th><th>Ejecutivo</th><th>${vL}</th><th>Días</th><th>Último mov.</th></tr></thead><tbody>`;
     hotWithValue.forEach(l=>{
       const d=l.days_in_stage,dc=d>14?'color:var(--red);font-weight:600':d>7?'color:var(--yellow);font-weight:600':'color:var(--green)';
@@ -541,7 +542,7 @@ function renderChurn(){
   h+=`<div class="kpi-row">
     ${mkKpi('c-green','🔄 Rescate Durmientes',S.rescued_dormant||0,'fidelización · volvieron a facturar')}
     ${mkKpi('c-blue','🆕 Rescate Perdidos',S.rescued_lost||0,'ejecutivo · cuentan como cliente nuevo')}
-    ${mkKpi('c-green','🏆 Tasa Rescate',(S.rescue_pct||0)+'%','total rescatados / total en riesgo')}
+    ${mkKpi('c-green','🏆 Tasa Rescate',(S.rescue_pct||0)+'%','rescatados / (durmientes + rescatados)')}
   </div>`;
 
   h+=`<div class="chart-row"><div class="ccrd"><h3>Cartera por Vendedor</h3><canvas id="cChurnUser" height="220"></canvas></div><div class="ccrd"><h3>Rescates por Vendedor</h3><canvas id="cRescueUser" height="220"></canvas></div></div>`;
