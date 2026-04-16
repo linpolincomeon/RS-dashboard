@@ -430,18 +430,18 @@ def extract_funnel_data(models, uid):
                 "fecha": (q.get("create_date") or "")[:10],
             })
 
-        # 4. Seguimiento
-        sent_count = 0
+        # 4. Cotizaciones Confirmadas (quotes that became sale orders)
+        confirmed_count = 0
         if quote_count:
             try:
-                sent_count = s_count(models, uid, "sale.order", [
+                confirmed_count = s_count(models, uid, "sale.order", [
                     ["create_date", ">=", fdt_s(ws)],
                     ["create_date", "<=", fdt_e(we)],
-                    ["state", "=", "sent"],
+                    ["state", "in", ["sale", "done"]],
                 ])
             except:
                 pass
-        followup_pct = min(round((sent_count / max(quote_count, 1)) * 100), 100) if quote_count else 0
+        followup_pct = min(round((confirmed_count / max(quote_count, 1)) * 100), 100) if quote_count else 0
 
         # 5. Cierres (nuevos clientes)
         close_orders = sr(models, uid, "sale.order", [
@@ -1176,8 +1176,11 @@ def main():
         nc_lbu = nc.get("litros_by_user", {}) or {}
         nc_bu = nc.get("by_user", {}) or {}
 
+        # DEBUG: show all keys in litros_by_user so we can verify TomEnergy's exact name
+        print(f"  [DEBUG] litros_by_user keys: {list(lbu.keys())}")
         tom_l = lbu.get(TOMENERGY_NAME, 0) or 0
         com_l = lbu.get(COMBER_NAME, 0) or 0
+        print(f"  [DEBUG] tom_l={tom_l}, com_l={com_l}")
         # No subtraction of new clients — those liters already have their own exec assigned.
         # Comber's number is simply: everything billed under TomEnergy + Comber.
         mantencion_l = tom_l + com_l
@@ -1281,7 +1284,7 @@ def main():
             "leads": {"goal": 15, "label": "Leads", "freq": "semanal"},
             "contacto": {"goal": 10, "label": "Contacto Efectivo", "freq": "semanal"},
             "cotizacion": {"goal": 8, "label": "Cotizacion", "freq": "semanal"},
-            "seguimiento": {"goal": 100, "label": "Cotiz. Enviadas", "unit": "%", "freq": "semanal"},
+            "seguimiento": {"goal": 100, "label": "Cotiz. Confirmadas", "unit": "%", "freq": "semanal"},
             "cierre": {"goal": 2, "label": "Cierre", "freq": "semanal"},
             "retencion": {"goal": 90, "label": "Retencion 90d", "unit": "%", "freq": "mensual"},
         },
