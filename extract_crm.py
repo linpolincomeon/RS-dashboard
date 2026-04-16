@@ -1162,16 +1162,23 @@ def main():
     ventas_prev["sla"] = sla_prev
 
     # Part 6: Pauline Comber "mantención" — absorbs the TomEnergy bucket into Comber's row.
-    # Liters = (TomEnergy + Comber invoices) − new client liters (she handles retention, not acquisition)
+    # Liters = TomEnergy liters + Comber liters (simple sum, no subtraction).
     # Venta neta y margen se suman/pondera. La fila "TomEnergy" se elimina del output.
-    COMBER_NAME = "Comber Sigall Pauline"
 
-    def _find_tom_key(d):
-        """Find the TomEnergy key in a dict, case-insensitive partial match."""
+    def _find_key(d, needle):
+        """Find a key in dict by case-insensitive partial match on needle."""
+        needle_lower = needle.lower().replace(" ", "")
         for k in d:
-            if "tomenergy" in k.lower().replace(" ", ""):
+            if needle_lower in k.lower().replace(" ", ""):
                 return k
         return None
+
+    def _get_val(d, key):
+        """Safely get a numeric value from dict, returns 0 if key is None or value is falsy."""
+        if key is None:
+            return 0
+        val = d.get(key, 0)
+        return val if val else 0
 
     def _patch_comber(vts):
         tot = vts.get("totals", {})
@@ -1182,38 +1189,49 @@ def main():
         nc_lbu = nc.get("litros_by_user", {}) or {}
         nc_bu = nc.get("by_user", {}) or {}
 
-        # Find TomEnergy key dynamically (handles name variations in Odoo)
-        tom_key = _find_tom_key(lbu)
-        print(f"  [DEBUG] litros_by_user keys: {list(lbu.keys())}")
-        print(f"  [DEBUG] TomEnergy key found: {tom_key!r}")
+        # Dynamic key search for BOTH TomEnergy and Comber (handles Odoo name variations)
+        tom_key = _find_key(lbu, "tomenergy")
+        com_key = _find_key(lbu, "comber")
 
-        tom_l = lbu.get(tom_key, 0) or 0 if tom_key else 0
-        com_l = lbu.get(COMBER_NAME, 0) or 0
+        print(f"  [DEBUG] litros_by_user keys: {list(lbu.keys())}")
+        print(f"  [DEBUG] TomEnergy key found: {tom_key!r}  value: {lbu.get(tom_key, 'N/A')}")
+        print(f"  [DEBUG] Comber key found: {com_key!r}  value: {lbu.get(com_key, 'N/A')}")
+
+        tom_l = _get_val(lbu, tom_key)
+        com_l = _get_val(lbu, com_key)
         mantencion_l = tom_l + com_l
 
-        tom_key_v = _find_tom_key(vbu)
-        tom_v = vbu.get(tom_key_v, 0) or 0 if tom_key_v else 0
-        com_v = vbu.get(COMBER_NAME, 0) or 0
+        tom_key_v = _find_key(vbu, "tomenergy")
+        com_key_v = _find_key(vbu, "comber")
+        tom_v = _get_val(vbu, tom_key_v)
+        com_v = _get_val(vbu, com_key_v)
         merged_v = tom_v + com_v
 
-        tom_key_m = _find_tom_key(mbu)
-        tom_m = mbu.get(tom_key_m, 0) or 0 if tom_key_m else 0
-        com_m = mbu.get(COMBER_NAME, 0) or 0
+        tom_key_m = _find_key(mbu, "tomenergy")
+        com_key_m = _find_key(mbu, "comber")
+        tom_m = _get_val(mbu, tom_key_m)
+        com_m = _get_val(mbu, com_key_m)
         merged_m = round((tom_m * tom_v + com_m * com_v) / merged_v, 1) if merged_v > 0 else 0
 
-        # Merge into Comber
-        lbu[COMBER_NAME] = mantencion_l
-        vbu[COMBER_NAME] = round(merged_v)
-        mbu[COMBER_NAME] = merged_m
+        # Use the actual Comber key found in the dict (or fallback to a canonical name)
+        final_key = com_key or "Comber Sigall Pauline"
 
-        # Drop TomEnergy row (whatever its exact key name)
-        if tom_key: lbu.pop(tom_key, None)
-        if tom_key_v: vbu.pop(tom_key_v, None)
-        if tom_key_m: mbu.pop(tom_key_m, None)
+        # Merge into Comber
+        lbu[final_key] = mantencion_l
+        vbu[final_key] = round(merged_v)
+        mbu[final_key] = merged_m
+
+        # Drop TomEnergy row (whatever its exact key name) — but only if different from Comber's key
+        if tom_key and tom_key != final_key:
+            lbu.pop(tom_key, None)
+        if tom_key_v and tom_key_v != (com_key_v or final_key):
+            vbu.pop(tom_key_v, None)
+        if tom_key_m and tom_key_m != (com_key_m or final_key):
+            mbu.pop(tom_key_m, None)
 
         # Remove TomEnergy from new-clients tallies too
-        tom_key_nc = _find_tom_key(nc_bu)
-        tom_key_ncl = _find_tom_key(nc_lbu)
+        tom_key_nc = _find_key(nc_bu, "tomenergy")
+        tom_key_ncl = _find_key(nc_lbu, "tomenergy")
         if tom_key_nc: nc_bu.pop(tom_key_nc, None)
         if tom_key_ncl: nc_lbu.pop(tom_key_ncl, None)
 
@@ -1230,7 +1248,7 @@ def main():
             "merged_venta_neta": round(merged_v),
             "merged_margin_pct": merged_m,
         }
-        print(f"  Comber mantención: {mantencion_l} L  =  TomEnergy({tom_key}) {tom_l} + Comber {com_l}  · Margen: {merged_m}%")
+        print(f"  Comber mantención: {mantencion_l} L  =  TomEnergy({tom_key}) {tom_l} + Comber({com_key}) {com_l}  · Margen: {merged_m}%")
 
     _patch_comber(ventas)
     _patch_comber(ventas_prev)

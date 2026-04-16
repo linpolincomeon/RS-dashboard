@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TomEnergy — Equipo Comercial</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+:root{--bg:#f7f6f3;--card:#fff;--border:#e8e5e0;--text:#1a1a1a;--dim:#888;--red:#c8360e;--green:#16a34a;--yellow:#ca8a04;--blue:#2563eb;--font:'DM Sans',sans-serif}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14px;line-height:1.5}
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:14px 24px;background:var(--card);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100}
+.topbar h1{font-size:20px;font-weight:700}.topbar h1 span{color:var(--red)}
+.topbar-right{display:flex;align-items:center;gap:10px;font-size:13px}
+.btn{background:var(--card);border:1px solid var(--border);color:var(--text);padding:6px 14px;border-radius:8px;font-family:var(--font);font-size:12px;font-weight:600;cursor:pointer;transition:.2s;text-decoration:none;display:inline-flex;align-items:center;gap:4px}
+.btn:hover{border-color:var(--red);color:var(--red)}
+.dot{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:5px}
+.dot-ok{background:var(--green)}.dot-err{background:var(--red)}.dot-load{background:var(--yellow);animation:pulse 1s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+.week-badge{background:var(--red);color:#fff;font-size:12px;font-weight:600;padding:4px 14px;border-radius:16px}
+.wrap{max-width:1400px;margin:0 auto;padding:20px 24px}
+#loading{text-align:center;padding:80px 20px;color:var(--dim)}
+.spinner{width:32px;height:32px;border:3px solid var(--border);border-top-color:var(--red);border-radius:50%;animation:spin .7s linear infinite;margin:0 auto 12px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.kpi-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-bottom:28px}
+.kpi{background:var(--card);border-radius:12px;padding:16px;box-shadow:0 1px 3px rgba(0,0,0,.04);position:relative;overflow:hidden}
+.kpi::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;border-radius:12px 12px 0 0}
+.kpi.c-red::before{background:var(--red)}.kpi.c-green::before{background:var(--green)}.kpi.c-yellow::before{background:var(--yellow)}.kpi.c-blue::before{background:var(--blue)}
+.kpi .lbl{font-size:11px;color:var(--dim);text-transform:uppercase;letter-spacing:.3px;margin-bottom:6px;font-weight:500}
+.kpi .val{font-size:28px;font-weight:700;line-height:1.1}
+.kpi .det{font-size:11px;color:var(--dim);margin-top:3px}
+.kpi .bar{height:4px;background:#eee;border-radius:2px;margin-top:8px;overflow:hidden}
+.kpi .bar-f{height:100%;border-radius:2px;transition:width .8s}
+.sec{background:var(--card);border-radius:12px;box-shadow:0 1px 3px rgba(0,0,0,.04);margin-bottom:24px;overflow:hidden}
+.sec-h{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid var(--border)}
+.sec-h h2{font-size:15px;font-weight:600}
+.sec-b{padding:16px 18px}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{text-align:left;padding:10px 12px;color:var(--dim);font-size:11px;font-weight:600;text-transform:uppercase;border-bottom:2px solid #f0f0f0}
+td{padding:10px 12px;border-bottom:1px solid #f5f5f5;vertical-align:middle}
+tr:hover td{background:#fafaf8}
+.bold{font-weight:600}
+.tag{display:inline-block;padding:3px 10px;border-radius:8px;font-size:12px;font-weight:600}
+.tag-g{background:#f0fdf4;color:var(--green)}.tag-y{background:#fefce8;color:var(--yellow)}.tag-r{background:#fef2f2;color:var(--red)}
+.err{background:#fef2f2;border:1px solid #fecaca;color:var(--red);padding:12px 18px;border-radius:10px;margin-bottom:16px;font-size:13px;display:none}
+.err.active{display:block}
+.nodata{text-align:center;padding:40px;color:var(--dim)}
+.chart-cont{background:var(--card);border-radius:12px;box-shadow:0 1px 3px rgba(0,0,0,.04);padding:16px;margin-bottom:24px}
+.chart-cont h3{font-size:14px;font-weight:600;margin-bottom:14px;color:var(--text)}
+.chart-cont canvas{max-height:320px}
+.bottom-nav{display:flex;gap:10px;padding:20px 0;border-top:1px solid var(--border);margin-top:20px}
+.bottom-nav a{display:inline-flex;align-items:center;gap:4px;color:var(--text);text-decoration:none;font-weight:600;font-size:13px}
+.bottom-nav a:hover{color:var(--red)}
+@media(max-width:800px){.kpi-row{grid-template-columns:repeat(2,1fr)}.chart-cont{padding:12px}}
+@media(max-width:500px){.kpi-row{grid-template-columns:1fr}.topbar{flex-direction:column;gap:10px;text-align:center}.topbar-right{width:100%;justify-content:center;flex-wrap:wrap}}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div style="display:flex;align-items:center;gap:14px">
+    <h1>🔥 <span>TomEnergy</span> — Equipo Comercial</h1>
+    <span class="week-badge" id="weekBadge">—</span>
+  </div>
+  <div class="topbar-right">
+    <span><span class="dot dot-load" id="dot"></span><span id="stxt">Cargando...</span></span>
+    <button class="btn" onclick="loadData()">↻ Actualizar</button>
+    <a class="btn" href="crm-weekly.html">C-Suite</a>
+    <a class="btn" href="crm-freelancer.html">Freelancers</a>
+  </div>
+</div>
+
+<div class="wrap">
+  <div class="err" id="err"></div>
+  <div id="loading"><div class="spinner"></div>Cargando datos del equipo comercial...</div>
+
+  <div id="content" style="display:none">
+    <!-- Section 1: Team KPI Cards -->
+    <div class="kpi-row" id="kpiRow"></div>
+
+    <!-- Section 2: Ranking Table -->
+    <div class="sec" id="rankingSection">
+      <div class="sec-h"><h2>📊 Ranking Equipo</h2></div>
+      <div class="sec-b">
+        <table id="rankingTable">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Ejecutivo</th>
+              <th>% Meta Litros</th>
+              <th>% Meta Leads</th>
+              <th>% Meta Cotiz.</th>
+              <th>% Meta Cierre</th>
+              <th>Mov. 7d</th>
+              <th>Mov. 30d</th>
+            </tr>
+          </thead>
+          <tbody id="rankingBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Section 3: Litros por Vendedor Chart -->
+    <div class="chart-cont">
+      <h3>📈 Litros por Vendedor (% de Meta)</h3>
+      <canvas id="chartVendedor"></canvas>
+    </div>
+
+    <!-- Section 4: Movimientos Recientes -->
+    <div class="sec" id="movementsSection">
+      <div class="sec-h"><h2>🔄 Movimientos Recientes (≤7 días)</h2></div>
+      <div class="sec-b">
+        <table id="movementsTable">
+          <thead>
+            <tr>
+              <th>Cliente</th>
+              <th>Etapa</th>
+              <th>Ejecutivo</th>
+              <th>Litros</th>
+              <th>Hace</th>
+            </tr>
+          </thead>
+          <tbody id="movementsBody"></tbody>
+        </table>
+        <div class="nodata" id="noMovements" style="display:none">Sin movimientos recientes</div>
+      </div>
+    </div>
+
+    <!-- Section 5: Bottom Navigation -->
+    <div class="bottom-nav">
+      <a href="crm-weekly.html">← C-Suite Dashboard</a>
+      <a href="crm-freelancer.html">Freelancers →</a>
+    </div>
+  </div>
+</div>
+
+<script>
+let D = null;
+let chartVendedor = null;
+
+// Regular sales team only (excludes freelancers like Fernando Jullian and CS like Comber)
+const ALLOWED_VENDORS = [
+  'toro gonzález sebastian enrique',
+  'carlos labbe',
+  'joaquin muñoz',
+  'yeniré ron',
+  'yenire ron'
+];
+
+// Normalize: lowercase, strip accents, sort words → order-independent matching
+// Normalize: lowercase, strip accents, sort words → order-independent matching
+const norm = s => s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').split(/\s+/).filter(Boolean).sort().join(' ');
+const _allowedNorms = new Set(ALLOWED_VENDORS.map(norm));
+const isAllowed = n => n && _allowedNorms.has(norm(n));
+
+// Fuzzy vendor_goals lookup (handles name order differences between Odoo and goals JSON)
+function getGoal(name) {
+  if (!D || !D.vendor_goals) return {};
+  const direct = D.vendor_goals[name];
+  if (direct) return direct;
+  const n = norm(name);
+  for (const [k, v] of Object.entries(D.vendor_goals)) {
+    if (norm(k) === n) return v;
+  }
+  return {};
+}
+
+// Utility functions
+const H = s => {
+  if (!s) return '';
+  const d = document.createElement('div');
+  d.textContent = s;
+  return d.innerHTML;
+};
+
+const fL = n => n ? Math.round(n).toLocaleString('es-CL') + ' L' : '0 L';
+const fC = n => n ? '$' + Math.round(n).toLocaleString('es-CL') : '$0';
+const pct = (v, g) => Math.min(Math.round((v / g) * 100), 999);
+const clr = (v, g) => {
+  const p = (v / g) * 100;
+  return p >= 100 ? 'g' : p >= 60 ? 'y' : 'r';
+};
+const tagC = c => c === 'g' ? 'tag-g' : c === 'y' ? 'tag-y' : 'tag-r';
+const barC = c => c === 'g' ? 'var(--green)' : c === 'y' ? 'var(--yellow)' : 'var(--red)';
+
+function getDaysInMonth(date = new Date()) {
+  return new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate();
+}
+
+function getDaysElapsed(monthStart, today = new Date()) {
+  const start = new Date(monthStart);
+  const diff = today - start;
+  return Math.max(1, Math.floor(diff / (1000 * 60 * 60 * 24)));
+}
+
+function getProratedFactor(monthStart) {
+  const daysElapsed = getDaysElapsed(monthStart);
+  const daysInMonth = getDaysInMonth();
+  return daysElapsed / daysInMonth;
+}
+
+function mkKpi(color, lbl, val, det, v, g) {
+  let bar = '';
+  if (v != null && g) {
+    const p = Math.min(pct(v, g), 100);
+    const c = clr(v, g);
+    bar = `<div class="bar"><div class="bar-f" style="width:${p}%;background:${barC(c)}"></div></div>`;
+  }
+  return `<div class="kpi ${color}"><div class="lbl">${lbl}</div><div class="val">${val}</div><div class="det">${det}</div>${bar}</div>`;
+}
+
+function getTeamGoal(key) {
+  if (!D.company_goals) return 0;
+  return D.company_goals[key] || 0;
+}
+
+function getCurrentWeek() {
+  if (!D.funnel_weeks || D.funnel_weeks.length === 0) return null;
+  return D.funnel_weeks[0];
+}
+
+function render() {
+  if (!D) return;
+
+  // Set week badge
+  const week = getCurrentWeek();
+  if (week && week.label) {
+    document.getElementById('weekBadge').textContent = week.label;
+  }
+
+  // Section 1: Team KPI Cards
+  const V = D.ventas || {};
+  const T = V.totals || {};
+  const VG = D.vendor_goals || {};
+  const lbu = T.litros_by_user || {};
+
+  // Sum only allowed vendors' litros
+  let totalsLitros = 0;
+  let goalLitros = 0;
+  for (const [u, v] of Object.entries(lbu)) {
+    if (isAllowed(u)) totalsLitros += v;
+  }
+  for (const [u, g] of Object.entries(VG)) {
+    if (isAllowed(u)) goalLitros += (g.litros_mes || 0);
+  }
+
+  // Sum allowed vendor funnel from current week
+  const sumAllowed = (obj) => {
+    if (!obj) return 0;
+    return Object.entries(obj).filter(([k]) => isAllowed(k)).reduce((a, [, v]) => a + v, 0);
+  };
+  const currentWeekLeads = week ? sumAllowed(week.stages?.leads?.by_user) : 0;
+  const currentWeekCotiz = week ? sumAllowed(week.stages?.cotizacion?.by_user) : 0;
+  const currentWeekCierre = week ? sumAllowed(week.stages?.cierre?.by_user) : 0;
+  const teamLeadsGoal = getTeamGoal('leads_semana');
+  const teamCotizGoal = getTeamGoal('cotizaciones_semana');
+  const teamCierreGoal = getTeamGoal('contactos_semana');
+
+  let kpiHtml = '';
+  kpiHtml += mkKpi('c-red', 'Total Litros Equipo',
+    fL(totalsLitros),
+    `${pct(totalsLitros, goalLitros)}% de meta`,
+    totalsLitros, goalLitros);
+
+  kpiHtml += mkKpi('c-green', 'Leads de la Semana',
+    Math.round(currentWeekLeads),
+    teamLeadsGoal ? `Meta: ${teamLeadsGoal}` : 'Sin meta',
+    currentWeekLeads, teamLeadsGoal || currentWeekLeads);
+
+  kpiHtml += mkKpi('c-yellow', 'Cotizaciones de la Semana',
+    Math.round(currentWeekCotiz),
+    teamCotizGoal ? `Meta: ${teamCotizGoal}` : 'Sin meta',
+    currentWeekCotiz, teamCotizGoal || currentWeekCotiz);
+
+  kpiHtml += mkKpi('c-blue', 'Cierres de la Semana',
+    Math.round(currentWeekCierre),
+    teamCierreGoal ? `Meta: ${teamCierreGoal}` : 'Sin meta',
+    currentWeekCierre, teamCierreGoal || currentWeekCierre);
+
+  document.getElementById('kpiRow').innerHTML = kpiHtml;
+
+  // Section 2: Ranking Table
+  renderRankingTable();
+
+  // Section 3: Litros Chart
+  renderChartVendedor();
+
+  // Section 4: Movimientos Recientes
+  renderMovements();
+}
+
+function renderRankingTable() {
+  if (!D) return;
+
+  const tbody = document.getElementById('rankingBody');
+  tbody.innerHTML = '';
+
+  const executives = (D.executives || []).filter(e => isAllowed(e.name));
+  const T2 = (D.ventas || {}).totals || {};
+  const proratedFactor = getProratedFactor(D.ventas?.month_start || new Date());
+  const week = getCurrentWeek();
+
+  const rows = executives.map(exec => {
+    const name = exec.name;
+    const litrosUser = (T2.litros_by_user || {})[name] || 0;
+    const litrosMeta = getGoal(name).litros_mes || 0;
+
+    let litrosPct = '—';
+    if (litrosMeta > 0) {
+      const proratedMeta = litrosMeta * proratedFactor;
+      litrosPct = Math.round((litrosUser / proratedMeta) * 100) + '%';
+    }
+
+    const leadsUser = week?.stages?.leads?.by_user?.[name] || 0;
+    const leadsMeta = getGoal(name).leads_semana || 0;
+    const leadsPct = leadsMeta > 0 ? Math.round((leadsUser / leadsMeta) * 100) + '%' : '—';
+
+    const cotizUser = week?.stages?.cotizacion?.by_user?.[name] || 0;
+    const cotizMeta = getGoal(name).cotizaciones_semana || 0;
+    const cotizPct = cotizMeta > 0 ? Math.round((cotizUser / cotizMeta) * 100) + '%' : '—';
+
+    const cierreUser = week?.stages?.cierre?.by_user?.[name] || 0;
+    const cierreMeta = getGoal(name).contactos_semana || 0;
+    const cierrePct = cierreMeta > 0 ? Math.round((cierreUser / cierreMeta) * 100) + '%' : '—';
+
+    const mov7d = exec.moved || 0;
+    const mov30d = exec.moved_30d || 0;
+
+    // For sorting, extract numeric value
+    const litrosPctNum = litrosMeta > 0 ? (litrosUser / (litrosMeta * proratedFactor)) * 100 : 0;
+
+    return { name, litrosPct, litrosPctNum, leadsPct, cotizPct, cierrePct, mov7d, mov30d };
+  }).sort((a, b) => b.litrosPctNum - a.litrosPctNum);
+
+  rows.forEach((row, idx) => {
+    const litrosColor = row.litrosPctNum >= 100 ? 'tag-g' : row.litrosPctNum >= 60 ? 'tag-y' : 'tag-r';
+    const leadsColor = row.leadsPct === '—' ? '' : (parseInt(row.leadsPct) >= 100 ? 'tag-g' : parseInt(row.leadsPct) >= 60 ? 'tag-y' : 'tag-r');
+    const cotizColor = row.cotizPct === '—' ? '' : (parseInt(row.cotizPct) >= 100 ? 'tag-g' : parseInt(row.cotizPct) >= 60 ? 'tag-y' : 'tag-r');
+    const cierreColor = row.cierrePct === '—' ? '' : (parseInt(row.cierrePct) >= 100 ? 'tag-g' : parseInt(row.cierrePct) >= 60 ? 'tag-y' : 'tag-r');
+
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td><strong>${idx + 1}</strong></td>
+      <td>${H(row.name)}</td>
+      <td><span class="tag ${litrosColor}">${row.litrosPct}</span></td>
+      <td><span class="tag ${leadsColor}">${row.leadsPct}</span></td>
+      <td><span class="tag ${cotizColor}">${row.cotizPct}</span></td>
+      <td><span class="tag ${cierreColor}">${row.cierrePct}</span></td>
+      <td><strong>${row.mov7d}</strong></td>
+      <td><strong>${row.mov30d}</strong></td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+function renderChartVendedor() {
+  if (!D || !D.executives) return;
+
+  const executives = D.executives.filter(e => isAllowed(e.name));
+  const T3 = (D.ventas || {}).totals || {};
+  const proratedFactor = getProratedFactor(D.ventas?.month_start || new Date());
+
+  const labels = executives.map(e => e.name.split(' ').slice(0, 2).join(' ')); // First 2 words
+  const data = executives.map(exec => {
+    const litrosUser = (T3.litros_by_user || {})[exec.name] || 0;
+    const litrosMeta = getGoal(exec.name).litros_mes || 0;
+    if (litrosMeta === 0) return 0;
+    const proratedMeta = litrosMeta * proratedFactor;
+    return Math.round((litrosUser / proratedMeta) * 100);
+  });
+
+  const bgColors = data.map(v => v >= 100 ? '#16a34a' : v >= 60 ? '#ca8a04' : '#c8360e');
+
+  const ctx = document.getElementById('chartVendedor').getContext('2d');
+  if (chartVendedor) chartVendedor.destroy();
+
+  chartVendedor = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: labels,
+      datasets: [{
+        label: '% de Meta',
+        data: data,
+        backgroundColor: bgColors,
+        borderRadius: 4
+      }]
+    },
+    options: {
+      indexAxis: 'y',
+      responsive: true,
+      maintainAspectRatio: true,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            label: ctx => ctx.parsed.x + '%'
+          }
+        }
+      },
+      scales: {
+        x: {
+          beginAtZero: true,
+          max: 150,
+          ticks: {
+            callback: v => v + '%'
+          },
+          grid: { color: '#f0f0f0' }
+        },
+        y: { grid: { display: false } }
+      },
+      annotation: {
+        drawTime: 'beforeDatasetsDraw',
+        annotations: {}
+      }
+    },
+    plugins: [{
+      afterDatasetsDraw(chart) {
+        const { ctx, chartArea, scales } = chart;
+        const xScale = scales.x;
+        const x100 = chartArea.left + ((100 - xScale.min) / (xScale.max - xScale.min)) * chartArea.width;
+        ctx.save();
+        ctx.strokeStyle = '#888';
+        ctx.setLineDash([3, 3]);
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(x100, chartArea.top);
+        ctx.lineTo(x100, chartArea.bottom);
+        ctx.stroke();
+        ctx.restore();
+      }
+    }]
+  });
+}
+
+function renderMovements() {
+  if (!D || !D.pipeline) {
+    document.getElementById('movementsBody').innerHTML = '';
+    document.getElementById('noMovements').style.display = 'block';
+    return;
+  }
+
+  const tbody = document.getElementById('movementsBody');
+  tbody.innerHTML = '';
+
+  const recentPipeline = D.pipeline.filter(p => (p.days_since_activity != null ? p.days_since_activity : p.days_in_stage) <= 7 && isAllowed(p.exec));
+
+  if (recentPipeline.length === 0) {
+    document.getElementById('noMovements').style.display = 'block';
+    return;
+  }
+
+  document.getElementById('noMovements').style.display = 'none';
+
+  recentPipeline.forEach(p => {
+    const stageName = p.stage ? p.stage.charAt(0).toUpperCase() + p.stage.slice(1) : '—';
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${H(p.name)}</td>
+      <td>${stageName}</td>
+      <td>${H(p.exec)}</td>
+      <td>${fL(p.value)}</td>
+      <td>${p.days_in_stage}d</td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+async function loadData() {
+  const dot = document.getElementById('dot');
+  const stxt = document.getElementById('stxt');
+  dot.className = 'dot dot-load';
+  stxt.textContent = 'Cargando...';
+
+  try {
+    const r = await fetch('crm-data.json?t=' + Date.now());
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    D = await r.json();
+    render();
+    document.getElementById('loading').style.display = 'none';
+    document.getElementById('content').style.display = 'block';
+    dot.className = 'dot dot-ok';
+    const upd = new Date(D.updated);
+    stxt.textContent = upd.toLocaleDateString('es-CL', { day: '2-digit', month: 'short' }) +
+      ' ' + upd.toLocaleTimeString('es-CL', { hour: '2-digit', minute: '2-digit' });
+    document.getElementById('err').classList.remove('active');
+  } catch (e) {
+    dot.className = 'dot dot-err';
+    stxt.textContent = 'Error';
+    document.getElementById('err').textContent = 'Error cargando crm-data.json: ' + e.message;
+    document.getElementById('err').classList.add('active');
+  }
+}
+
+// Load on startup
+loadData();
+</script>
+
+</body>
+</html>

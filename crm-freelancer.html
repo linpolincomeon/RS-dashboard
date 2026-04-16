@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TomEnergy — Freelancers</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f7f6f3;--card:#fff;--border:#e8e5e0;--text:#1a1a1a;--dim:#888;--red:#c8360e;--green:#16a34a;--yellow:#ca8a04;--blue:#2563eb;--font:'DM Sans',sans-serif}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14px;line-height:1.5}
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:14px 24px;background:var(--card);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100}
+.topbar h1{font-size:20px;font-weight:700}.topbar h1 span{color:var(--red)}
+.topbar-right{display:flex;align-items:center;gap:10px;font-size:13px}
+.btn{background:var(--card);border:1px solid var(--border);color:var(--text);padding:6px 14px;border-radius:8px;font-family:var(--font);font-size:12px;font-weight:600;cursor:pointer;transition:.2s;text-decoration:none;display:inline-flex;align-items:center;gap:4px}
+.btn:hover{border-color:var(--red);color:var(--red)}
+.dot{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:5px}
+.dot-ok{background:var(--green)}.dot-err{background:var(--red)}.dot-load{background:var(--yellow);animation:pulse 1s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+.week-badge{background:var(--red);color:#fff;font-size:12px;font-weight:600;padding:4px 14px;border-radius:16px}
+.wrap{max-width:900px;margin:0 auto;padding:20px 24px}
+#loading{text-align:center;padding:80px 20px;color:var(--dim)}
+.spinner{width:32px;height:32px;border:3px solid var(--border);border-top-color:var(--red);border-radius:50%;animation:spin .7s linear infinite;margin:0 auto 12px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.kpi-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-bottom:28px}
+.kpi{background:var(--card);border-radius:12px;padding:16px;box-shadow:0 1px 3px rgba(0,0,0,.04);position:relative;overflow:hidden}
+.kpi::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;border-radius:12px 12px 0 0}
+.kpi.c-red::before{background:var(--red)}.kpi.c-green::before{background:var(--green)}.kpi.c-yellow::before{background:var(--yellow)}.kpi.c-blue::before{background:var(--blue)}
+.kpi .lbl{font-size:11px;color:var(--dim);text-transform:uppercase;letter-spacing:.3px;margin-bottom:6px;font-weight:500}
+.kpi .val{font-size:28px;font-weight:700;line-height:1.1}
+.kpi .det{font-size:11px;color:var(--dim);margin-top:3px}
+.kpi .bar{height:4px;background:#eee;border-radius:2px;margin-top:8px;overflow:hidden}
+.kpi .bar-f{height:100%;border-radius:2px;transition:width .8s}
+.sec{background:var(--card);border-radius:12px;box-shadow:0 1px 3px rgba(0,0,0,.04);margin-bottom:24px;overflow:hidden}
+.sec-h{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid var(--border)}
+.sec-h h2{font-size:15px;font-weight:600}
+.sec-b{padding:16px 18px}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{text-align:left;padding:10px 12px;color:var(--dim);font-size:11px;font-weight:600;text-transform:uppercase;border-bottom:2px solid #f0f0f0}
+td{padding:10px 12px;border-bottom:1px solid #f5f5f5;vertical-align:middle}
+tr:hover td{background:#fafaf8}
+.bold{font-weight:600}
+.tag{display:inline-block;padding:3px 10px;border-radius:8px;font-size:12px;font-weight:600}
+.tag-g{background:#f0fdf4;color:var(--green)}.tag-y{background:#fefce8;color:var(--yellow)}.tag-r{background:#fef2f2;color:var(--red)}
+.err{background:#fef2f2;border:1px solid #fecaca;color:var(--red);padding:12px 18px;border-radius:10px;margin-bottom:16px;font-size:13px;display:none}
+.err.active{display:block}
+.nodata{text-align:center;padding:40px;color:var(--dim)}
+.bottom-nav{display:flex;gap:10px;padding:20px 0;border-top:1px solid var(--border);margin-top:20px}
+.bottom-nav a{display:inline-flex;align-items:center;gap:4px;color:var(--text);text-decoration:none;font-weight:600;font-size:13px}
+.bottom-nav a:hover{color:var(--red)}
+@media(max-width:500px){.kpi-row{grid-template-columns:1fr}.topbar{flex-direction:column;gap:10px;text-align:center}.topbar-right{width:100%;justify-content:center;flex-wrap:wrap}}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div style="display:flex;align-items:center;gap:14px">
+    <h1>🔥 <span>TomEnergy</span> — Freelancers</h1>
+    <span class="week-badge" id="weekBadge">—</span>
+  </div>
+  <div class="topbar-right">
+    <span><span class="dot dot-load" id="dot"></span><span id="stxt">Cargando...</span></span>
+    <button class="btn" onclick="loadData()">↻ Actualizar</button>
+    <a class="btn" href="crm-sales.html">Equipo</a>
+  </div>
+</div>
+
+<div class="wrap">
+  <div class="err" id="err"></div>
+  <div id="loading"><div class="spinner"></div>Cargando datos...</div>
+
+  <div id="content" style="display:none">
+    <!-- Freelancer cards (one per freelancer) -->
+    <div id="freelancerCards"></div>
+
+    <!-- Pipeline list -->
+    <div class="sec" id="pipelineSection">
+      <div class="sec-h"><h2>📋 Pipeline Activo</h2></div>
+      <div class="sec-b">
+        <table id="pipelineTable">
+          <thead>
+            <tr>
+              <th>Cliente</th>
+              <th>Etapa</th>
+              <th>Litros</th>
+              <th>Días</th>
+            </tr>
+          </thead>
+          <tbody id="pipelineBody"></tbody>
+        </table>
+        <div class="nodata" id="noPipeline" style="display:none">Sin oportunidades en pipeline</div>
+      </div>
+    </div>
+
+    <!-- Bottom Navigation -->
+    <div class="bottom-nav">
+      <a href="crm-sales.html">← Equipo Comercial</a>
+    </div>
+  </div>
+</div>
+
+<script>
+let D = null;
+
+// Freelancers — add new freelancers here as they join
+const FREELANCERS = [
+  'fernando jullian'
+];
+
+// Normalize: lowercase, strip accents, sort words → order-independent matching
+const norm = s => s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').split(/\s+/).filter(Boolean).sort().join(' ');
+const _fN = new Set(FREELANCERS.map(norm));
+const isFreelancer = n => n && _fN.has(norm(n));
+
+function getGoal(name) {
+  if (!D || !D.vendor_goals) return {};
+  const d = D.vendor_goals[name];
+  if (d) return d;
+  const nn = norm(name);
+  for (const [k, v] of Object.entries(D.vendor_goals)) {
+    if (norm(k) === nn) return v;
+  }
+  return {};
+}
+
+const H = s => {
+  if (!s) return '';
+  const d = document.createElement('div');
+  d.textContent = s;
+  return d.innerHTML;
+};
+
+const fL = n => n ? Math.round(n).toLocaleString('es-CL') + ' L' : '0 L';
+
+function render() {
+  if (!D) return;
+
+  // Week badge
+  if (D.funnel_weeks && D.funnel_weeks[0] && D.funnel_weeks[0].label) {
+    document.getElementById('weekBadge').textContent = D.funnel_weeks[0].label;
+  }
+
+  const T = (D.ventas || {}).totals || {};
+  const lbu = T.litros_by_user || {};
+  const VG = D.vendor_goals || {};
+  const week = (D.funnel_weeks || [])[0] || {};
+
+  // Build a card per freelancer
+  let cardsHtml = '';
+  const allExecs = D.executives || [];
+
+  for (const exec of allExecs) {
+    if (!isFreelancer(exec.name)) continue;
+    const name = exec.name;
+    const shortName = name.split(' ').slice(0, 2).join(' ');
+    const litros = lbu[name] || 0;
+    const meta = getGoal(name).litros_mes || 0;
+    const leads = (week.stages?.leads?.by_user || {})[name] || 0;
+    const cotiz = (week.stages?.cotizacion?.by_user || {})[name] || 0;
+    const cierre = (week.stages?.cierre?.by_user || {})[name] || 0;
+    const mov7 = exec.moved || 0;
+    const mov30 = exec.moved_30d || 0;
+
+    let metaLine = meta > 0
+      ? `${Math.round((litros / meta) * 100)}% de meta (${fL(meta)})`
+      : 'Sin meta asignada';
+
+    cardsHtml += `
+      <h3 style="font-size:16px;font-weight:600;margin-bottom:12px">${H(shortName)}</h3>
+      <div class="kpi-row">
+        <div class="kpi c-red">
+          <div class="lbl">Litros Mes</div>
+          <div class="val">${fL(litros)}</div>
+          <div class="det">${metaLine}</div>
+          ${meta > 0 ? `<div class="bar"><div class="bar-f" style="width:${Math.min(Math.round(litros/meta*100),100)}%;background:${litros>=meta?'var(--green)':litros>=meta*0.6?'var(--yellow)':'var(--red)'}"></div></div>` : ''}
+        </div>
+        <div class="kpi c-green">
+          <div class="lbl">Leads Semana</div>
+          <div class="val">${leads}</div>
+        </div>
+        <div class="kpi c-yellow">
+          <div class="lbl">Cotizaciones</div>
+          <div class="val">${cotiz}</div>
+        </div>
+        <div class="kpi c-blue">
+          <div class="lbl">Cierres</div>
+          <div class="val">${cierre}</div>
+        </div>
+      </div>
+      <div class="kpi-row" style="margin-bottom:28px">
+        <div class="kpi c-red">
+          <div class="lbl">Movimientos 7d</div>
+          <div class="val">${mov7}</div>
+        </div>
+        <div class="kpi c-yellow">
+          <div class="lbl">Movimientos 30d</div>
+          <div class="val">${mov30}</div>
+        </div>
+      </div>
+    `;
+  }
+
+  if (!cardsHtml) {
+    cardsHtml = '<div class="nodata">No hay freelancers registrados</div>';
+  }
+
+  document.getElementById('freelancerCards').innerHTML = cardsHtml;
+
+  // Pipeline — show only this freelancer's deals
+  renderPipeline();
+}
+
+function renderPipeline() {
+  const tbody = document.getElementById('pipelineBody');
+  tbody.innerHTML = '';
+
+  const items = (D.pipeline || []).filter(p => isFreelancer(p.exec));
+  items.sort((a, b) => (a.days_since_activity || a.days_in_stage || 999) - (b.days_since_activity || b.days_in_stage || 999));
+
+  if (items.length === 0) {
+    document.getElementById('noPipeline').style.display = 'block';
+    return;
+  }
+  document.getElementById('noPipeline').style.display = 'none';
+
+  items.forEach(p => {
+    const days = p.days_since_activity != null ? p.days_since_activity : p.days_in_stage;
+    const daysColor = days <= 7 ? 'tag-g' : days <= 30 ? 'tag-y' : 'tag-r';
+    const stage = p.stage ? p.stage.charAt(0).toUpperCase() + p.stage.slice(1) : '—';
+
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td class="bold">${H(p.name)}</td>
+      <td>${stage}</td>
+      <td>${fL(p.value)}</td>
+      <td><span class="tag ${daysColor}">${days}d</span></td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+async function loadData() {
+  const dot = document.getElementById('dot');
+  const stxt = document.getElementById('stxt');
+  dot.className = 'dot dot-load';
+  stxt.textContent = 'Cargando...';
+
+  try {
+    const r = await fetch('crm-data.json?t=' + Date.now());
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    D = await r.json();
+    render();
+    document.getElementById('loading').style.display = 'none';
+    document.getElementById('content').style.display = 'block';
+    dot.className = 'dot dot-ok';
+    const upd = new Date(D.updated);
+    stxt.textContent = upd.toLocaleDateString('es-CL', { day: '2-digit', month: 'short' }) +
+      ' ' + upd.toLocaleTimeString('es-CL', { hour: '2-digit', minute: '2-digit' });
+    document.getElementById('err').classList.remove('active');
+  } catch (e) {
+    dot.className = 'dot dot-err';
+    stxt.textContent = 'Error';
+    document.getElementById('err').textContent = 'Error cargando crm-data.json: ' + e.message;
+    document.getElementById('err').classList.add('active');
+  }
+}
+
+loadData();
+</script>
+
+</body>
+</html>

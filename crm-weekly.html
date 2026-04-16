@@ -117,6 +117,8 @@ tr:hover td{background:#fafaf8}
   <div class="topbar-right">
     <span><span class="dot dot-load" id="dot"></span><span id="stxt">Cargando...</span></span>
     <button class="btn" onclick="loadData()">↻ Actualizar</button>
+    <a class="btn" href="crm-sales.html">Equipo</a>
+    <a class="btn" href="crm-freelancer.html">Freelancers</a>
     <a class="btn" href="ceo-dashboard.html">CEO</a>
     <a class="btn" href="index.html">← RS</a>
   </div>
@@ -147,8 +149,11 @@ tr:hover td{background:#fafaf8}
 
 <script>
 let D=null;
-const ALLOWED_VENDORS=new Set(['toro gonzález sebastian enrique','comber sigall pauline','fernando jullian','tomenergy','carlos labbe','joaquin muñoz','yeniré ron','yenire ron']);
-const isAllowed=n=>n&&ALLOWED_VENDORS.has(n.toLowerCase().trim());
+const ALLOWED_VENDORS=['toro gonzález sebastian enrique','comber sigall pauline','fernando jullian','tomenergy','carlos labbe','joaquin muñoz','yeniré ron','yenire ron'];
+const norm=s=>s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').split(/\s+/).filter(Boolean).sort().join(' ');
+const _aN=new Set(ALLOWED_VENDORS.map(norm));
+const isAllowed=n=>n&&_aN.has(norm(n));
+function getGoal(name){if(!D||!D.vendor_goals)return{};const d=D.vendor_goals[name];if(d)return d;const nn=norm(name);for(const[k,v]of Object.entries(D.vendor_goals)){if(norm(k)===nn)return v}return{}}
 // Active acquisition executives only (count for team-level funnel goals).
 // Excluded: Comber (customer success, not acquisition), jefes, y los que aún no entraron.
 // Ajustar este número cuando se ramp-up un ejecutivo nuevo o cambie el equipo.
@@ -507,7 +512,7 @@ function renderVentas(){
   if(users.length){
     h+=`<div class="sec"><div class="sec-h"><h2>Resumen Mensual</h2></div><div class="sec-b" style="padding:0;overflow-x:auto"><table><thead><tr><th>Vendedor</th><th>Litros</th><th>Margen %</th><th>Meta Prorrateada</th><th>Meta Mes</th><th>% Prorrata</th></tr></thead><tbody>`;
     users.forEach(u=>{
-      const g=VG[u]||{},lt=(T.litros_by_user||{})[u]||0;
+      const g=getGoal(u),lt=(T.litros_by_user||{})[u]||0;
       const gL=g.litros_mes||0;
       const gPro=Math.round(gL*pf);
       const ltPct=gPro>0?`<span class="tag ${tagC(clr(lt,gPro))}">${pct(lt,gPro)}%</span>`:'—';
@@ -522,8 +527,8 @@ function renderVentas(){
   if(users.length){
     const elL=document.getElementById('cLitros');
     if(elL) new Chart(elL,{type:'bar',data:{labels:users.map(u=>u.split(' ')[0]),datasets:[
-      {label:'Litros',data:users.map(u=>(T.litros_by_user||{})[u]||0),backgroundColor:users.map(u=>{const g=VG[u]||{};const gPro=Math.round((g.litros_mes||0)*pf);const c=gPro>0?clr((T.litros_by_user||{})[u]||0,gPro):'y';return c==='g'?'rgba(22,163,74,.5)':c==='y'?'rgba(202,138,4,.5)':'rgba(200,54,14,.5)'}),borderRadius:6,barPercentage:.5},
-      {label:'Meta Prorrateada',data:users.map(u=>Math.round(((VG[u]||{}).litros_mes||0)*pf)),backgroundColor:'rgba(0,0,0,.06)',borderRadius:6,barPercentage:.5}
+      {label:'Litros',data:users.map(u=>(T.litros_by_user||{})[u]||0),backgroundColor:users.map(u=>{const g=getGoal(u);const gPro=Math.round((g.litros_mes||0)*pf);const c=gPro>0?clr((T.litros_by_user||{})[u]||0,gPro):'y';return c==='g'?'rgba(22,163,74,.5)':c==='y'?'rgba(202,138,4,.5)':'rgba(200,54,14,.5)'}),borderRadius:6,barPercentage:.5},
+      {label:'Meta Prorrateada',data:users.map(u=>Math.round((getGoal(u).litros_mes||0)*pf)),backgroundColor:'rgba(0,0,0,.06)',borderRadius:6,barPercentage:.5}
     ]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{font:{family:'DM Sans',size:11}}}},scales:{x:{grid:{display:false}},y:{beginAtZero:true,grid:{color:'#f0f0f0'},ticks:{callback:v=>(v/1000)+'k'}}}}});
   }
   // Prefer 16-week history; fall back to in-month weekly
@@ -664,7 +669,7 @@ function renderVendedor(){
   // ── Vendor cards (metrics only) ──
   h+='<div class="exec-grid">';
   users.forEach(u=>{
-    const g=VG[u]||{},lt=(T.litros_by_user||{})[u]||0;
+    const g=getGoal(u),lt=(T.litros_by_user||{})[u]||0;
     const fLeads=((st.leads||{}).by_user||{})[u]||0;
     const fContacto=((st.contacto||{}).by_user||{})[u]||0;
     const fQuotes=((st.cotizacion||{}).by_user||{})[u]||0;
