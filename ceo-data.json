@@ -1,6 +1,26 @@
 {
-  "updated": "2026-04-15T22:05:58.448081",
+  "updated": "2026-04-16T06:16:17.220893",
   "weeks": [
+    {
+      "label": "16apr-22apr",
+      "start": "2026-04-16",
+      "end": "2026-04-22",
+      "ventas": 10011600,
+      "neto": 8567932,
+      "litros": 6400,
+      "precio": 1339,
+      "margin": 0.07819,
+      "facturas": 2,
+      "nc": 0,
+      "clientes": 2,
+      "recaud": 0,
+      "cheques": 0,
+      "transf": 0,
+      "factoring": 0,
+      "compras_enap": 0,
+      "ppto": 326422,
+      "parcial": true
+    },
     {
       "label": "09apr-15apr",
       "start": "2026-04-09",
@@ -19,7 +39,7 @@
       "factoring": 0,
       "compras_enap": 138508754,
       "ppto": 326422,
-      "parcial": true
+      "parcial": false
     },
     {
       "label": "02apr-08apr",
@@ -300,29 +320,15 @@
       "compras_enap": 157394781,
       "ppto": 266438,
       "parcial": false
-    },
-    {
-      "label": "25dec-31dec",
-      "start": "2025-12-25",
-      "end": "2025-12-31",
-      "ventas": 173147048,
-      "neto": 121336426,
-      "litros": 178483,
-      "precio": 680,
-      "margin": 0.11235,
-      "facturas": 111,
-      "nc": 1,
-      "clientes": 91,
-      "recaud": 10061592,
-      "cheques": 10061592,
-      "transf": 0,
-      "factoring": 0,
-      "compras_enap": 158487440,
-      "ppto": 212548,
-      "parcial": false
     }
   ],
   "daily": [
+    {
+      "date": "16apr",
+      "day": "Jue",
+      "litros": 6400,
+      "neto": 8567932
+    },
     {
       "date": "15apr",
       "day": "Mié",
@@ -412,12 +418,6 @@
       "day": "Jue",
       "litros": 59416,
       "neto": 68246365
-    },
-    {
-      "date": "25mar",
-      "day": "Mié",
-      "litros": 125645,
-      "neto": 134419351
     }
   ],
   "banks": [
@@ -452,13 +452,13 @@
   ],
   "total_cash": 61240585,
   "receivables": {
-    "open_invoices": 348,
-    "total_due": 702720836,
-    "current": 632607175,
-    "overdue": 70113661,
-    "pct_overdue": 10.0,
+    "open_invoices": 350,
+    "total_due": 712732436,
+    "current": 623412157,
+    "overdue": 89320279,
+    "pct_overdue": 12.5,
     "aging": {
-      "0-30": 51148097,
+      "0-30": 70354715,
       "31-60": 7072001,
       "61-90": 928000,
       "90+": 10965563
@@ -548,8 +548,8 @@
   },
   "crm": {
     "total": 1406,
-    "open": 1172,
-    "won": 233,
+    "open": 1171,
+    "won": 234,
     "new_30d": 96,
     "by_stage": [
       {
@@ -578,11 +578,11 @@
       },
       {
         "stage": "Durmiente",
-        "count": 196
+        "count": 195
       },
       {
         "stage": "Won",
-        "count": 233
+        "count": 234
       }
     ]
   }
