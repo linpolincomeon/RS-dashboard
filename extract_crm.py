@@ -1165,7 +1165,13 @@ def main():
     # Liters = (TomEnergy + Comber invoices) − new client liters (she handles retention, not acquisition)
     # Venta neta y margen se suman/pondera. La fila "TomEnergy" se elimina del output.
     COMBER_NAME = "Comber Sigall Pauline"
-    TOMENERGY_NAME = "TomEnergy"
+
+    def _find_tom_key(d):
+        """Find the TomEnergy key in a dict, case-insensitive partial match."""
+        for k in d:
+            if "tomenergy" in k.lower().replace(" ", ""):
+                return k
+        return None
 
     def _patch_comber(vts):
         tot = vts.get("totals", {})
@@ -1176,36 +1182,40 @@ def main():
         nc_lbu = nc.get("litros_by_user", {}) or {}
         nc_bu = nc.get("by_user", {}) or {}
 
-        # DEBUG: show all keys in litros_by_user so we can verify TomEnergy's exact name
+        # Find TomEnergy key dynamically (handles name variations in Odoo)
+        tom_key = _find_tom_key(lbu)
         print(f"  [DEBUG] litros_by_user keys: {list(lbu.keys())}")
-        tom_l = lbu.get(TOMENERGY_NAME, 0) or 0
+        print(f"  [DEBUG] TomEnergy key found: {tom_key!r}")
+
+        tom_l = lbu.get(tom_key, 0) or 0 if tom_key else 0
         com_l = lbu.get(COMBER_NAME, 0) or 0
-        print(f"  [DEBUG] tom_l={tom_l}, com_l={com_l}")
-        # No subtraction of new clients — those liters already have their own exec assigned.
-        # Comber's number is simply: everything billed under TomEnergy + Comber.
         mantencion_l = tom_l + com_l
 
-        tom_v = vbu.get(TOMENERGY_NAME, 0) or 0
+        tom_key_v = _find_tom_key(vbu)
+        tom_v = vbu.get(tom_key_v, 0) or 0 if tom_key_v else 0
         com_v = vbu.get(COMBER_NAME, 0) or 0
         merged_v = tom_v + com_v
 
-        tom_m = mbu.get(TOMENERGY_NAME, 0) or 0
+        tom_key_m = _find_tom_key(mbu)
+        tom_m = mbu.get(tom_key_m, 0) or 0 if tom_key_m else 0
         com_m = mbu.get(COMBER_NAME, 0) or 0
-        # Margen ponderado por venta neta
         merged_m = round((tom_m * tom_v + com_m * com_v) / merged_v, 1) if merged_v > 0 else 0
 
         # Merge into Comber
         lbu[COMBER_NAME] = mantencion_l
         vbu[COMBER_NAME] = round(merged_v)
         mbu[COMBER_NAME] = merged_m
-        # Drop TomEnergy row
-        lbu.pop(TOMENERGY_NAME, None)
-        vbu.pop(TOMENERGY_NAME, None)
-        mbu.pop(TOMENERGY_NAME, None)
 
-        # Remove TomEnergy from new-clients tallies too (absorbed into Comber)
-        nc_bu.pop(TOMENERGY_NAME, None)
-        nc_lbu.pop(TOMENERGY_NAME, None)
+        # Drop TomEnergy row (whatever its exact key name)
+        if tom_key: lbu.pop(tom_key, None)
+        if tom_key_v: vbu.pop(tom_key_v, None)
+        if tom_key_m: mbu.pop(tom_key_m, None)
+
+        # Remove TomEnergy from new-clients tallies too
+        tom_key_nc = _find_tom_key(nc_bu)
+        tom_key_ncl = _find_tom_key(nc_lbu)
+        if tom_key_nc: nc_bu.pop(tom_key_nc, None)
+        if tom_key_ncl: nc_lbu.pop(tom_key_ncl, None)
 
         tot["litros_by_user"] = lbu
         tot["venta_by_user"] = vbu
@@ -1220,7 +1230,7 @@ def main():
             "merged_venta_neta": round(merged_v),
             "merged_margin_pct": merged_m,
         }
-        print(f"  Comber mantención: {mantencion_l} L  =  TomEnergy {tom_l} + Comber {com_l}  · Margen ponderado: {merged_m}%")
+        print(f"  Comber mantención: {mantencion_l} L  =  TomEnergy({tom_key}) {tom_l} + Comber {com_l}  · Margen: {merged_m}%")
 
     _patch_comber(ventas)
     _patch_comber(ventas_prev)
