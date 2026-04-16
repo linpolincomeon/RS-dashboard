@@ -1,18 +1,18 @@
 {
-  "updated": "2026-04-16T06:16:17.220893",
+  "updated": "2026-04-16T16:12:33.760037",
   "weeks": [
     {
       "label": "16apr-22apr",
       "start": "2026-04-16",
       "end": "2026-04-22",
-      "ventas": 10011600,
-      "neto": 8567932,
-      "litros": 6400,
-      "precio": 1339,
-      "margin": 0.07819,
-      "facturas": 2,
+      "ventas": 42888050,
+      "neto": 36712938,
+      "litros": 27802,
+      "precio": 1321,
+      "margin": 0.07015,
+      "facturas": 11,
       "nc": 0,
-      "clientes": 2,
+      "clientes": 10,
       "recaud": 0,
       "cheques": 0,
       "transf": 0,
@@ -37,7 +37,7 @@
       "cheques": 2822900,
       "transf": 0,
       "factoring": 0,
-      "compras_enap": 138508754,
+      "compras_enap": 285783280,
       "ppto": 326422,
       "parcial": false
     },
@@ -326,8 +326,8 @@
     {
       "date": "16apr",
       "day": "Jue",
-      "litros": 6400,
-      "neto": 8567932
+      "litros": 27802,
+      "neto": 36712938
     },
     {
       "date": "15apr",
@@ -422,24 +422,24 @@
   ],
   "banks": [
     {
-      "name": "DE CHILE",
-      "balance": 25177286
-    },
-    {
       "name": "ITAU",
       "balance": 22992865
+    },
+    {
+      "name": "DE CHILE",
+      "balance": 17638446
     },
     {
       "name": "ESTADO",
       "balance": 5715282
     },
     {
-      "name": "BCI",
-      "balance": 4664202
-    },
-    {
       "name": "CAJA",
       "balance": 3291177
+    },
+    {
+      "name": "BCI",
+      "balance": 823881
     },
     {
       "name": "SANTANDER",
@@ -450,15 +450,15 @@
       "balance": -838790
     }
   ],
-  "total_cash": 61240585,
+  "total_cash": 49861424,
   "receivables": {
-    "open_invoices": 350,
-    "total_due": 712732436,
-    "current": 623412157,
-    "overdue": 89320279,
-    "pct_overdue": 12.5,
+    "open_invoices": 325,
+    "total_due": 669437330,
+    "current": 585115451,
+    "overdue": 84321879,
+    "pct_overdue": 12.6,
     "aging": {
-      "0-30": 70354715,
+      "0-30": 65356315,
       "31-60": 7072001,
       "61-90": 928000,
       "90+": 10965563
@@ -473,16 +473,16 @@
         "amount": 30247707
       },
       {
-        "name": "SAMUEL BUDINICH SPA",
-        "amount": 17564985
-      },
-      {
         "name": "FORESTAL PUIHUA SPA",
         "amount": 16545700
       },
       {
         "name": "AGRICOLA AGROBOSQUES SAN ISIDRO S.A.",
         "amount": 16100053
+      },
+      {
+        "name": "SAMUEL BUDINICH SPA",
+        "amount": 15411835
       },
       {
         "name": "INGENERIA Y CONSTRUCCIONES FEBLANCA SPA",
@@ -503,6 +503,10 @@
       {
         "name": "SOC. DE TRANSPORTES TRACMAVI LTDA.",
         "amount": 12652053
+      },
+      {
+        "name": "CIA AGRICOLA Y FORESTAL EL ALAMO LIMITADA",
+        "amount": 12209999
       },
       {
         "name": "EMPRESAS TUCAPEL S A",
@@ -533,16 +537,12 @@
         "amount": 9824001
       },
       {
-        "name": "AURORA AUSTRALIS SA",
-        "amount": 9614999
+        "name": "TRANSPORTES SAN MARCELO SPA",
+        "amount": 9090000
       },
       {
         "name": "AGROMORANDE S A",
         "amount": 8819701
-      },
-      {
-        "name": "SOC AGRICOLA SANTA TERESA SPA",
-        "amount": 8747662
       }
     ]
   },
@@ -550,7 +550,7 @@
     "total": 1406,
     "open": 1171,
     "won": 234,
-    "new_30d": 96,
+    "new_30d": 97,
     "by_stage": [
       {
         "stage": "Perdidos",
