@@ -52,6 +52,18 @@ tr:hover td{background:#fafaf8}
 .bottom-nav{display:flex;gap:10px;padding:20px 0;border-top:1px solid var(--border);margin-top:20px}
 .bottom-nav a{display:inline-flex;align-items:center;gap:4px;color:var(--text);text-decoration:none;font-weight:600;font-size:13px}
 .bottom-nav a:hover{color:var(--red)}
+.tab-bar{display:flex;gap:0;border-bottom:2px solid var(--border);margin-bottom:24px}
+.tab-btn{padding:10px 22px;font-family:var(--font);font-size:14px;font-weight:600;color:var(--dim);background:none;border:none;border-bottom:2px solid transparent;margin-bottom:-2px;cursor:pointer;transition:.2s}
+.tab-btn:hover{color:var(--text)}
+.tab-btn.active{color:var(--red);border-bottom-color:var(--red)}
+.tab-panel{display:none}
+.tab-panel.active{display:block}
+.cs-card{background:var(--card);border-radius:12px;box-shadow:0 1px 3px rgba(0,0,0,.04);padding:18px;margin-bottom:16px}
+.cs-card h4{font-size:14px;font-weight:600;margin-bottom:10px}
+.cs-row{display:flex;gap:16px;flex-wrap:wrap}
+.cs-stat{text-align:center;min-width:80px}
+.cs-stat .cs-val{font-size:22px;font-weight:700}
+.cs-stat .cs-lbl{font-size:11px;color:var(--dim);text-transform:uppercase}
 @media(max-width:800px){.kpi-row{grid-template-columns:repeat(2,1fr)}.chart-cont{padding:12px}}
 @media(max-width:500px){.kpi-row{grid-template-columns:1fr}.topbar{flex-direction:column;gap:10px;text-align:center}.topbar-right{width:100%;justify-content:center;flex-wrap:wrap}}
 </style>
@@ -76,58 +88,110 @@ tr:hover td{background:#fafaf8}
   <div id="loading"><div class="spinner"></div>Cargando datos del equipo comercial...</div>
 
   <div id="content" style="display:none">
-    <!-- Section 1: Team KPI Cards -->
-    <div class="kpi-row" id="kpiRow"></div>
+    <!-- Tab bar -->
+    <div class="tab-bar">
+      <button class="tab-btn active" onclick="switchTab('ventas')">Ventas</button>
+      <button class="tab-btn" onclick="switchTab('fidelizacion')">Fidelización / CS</button>
+    </div>
 
-    <!-- Section 2: Ranking Table -->
-    <div class="sec" id="rankingSection">
-      <div class="sec-h"><h2>📊 Ranking Equipo</h2></div>
-      <div class="sec-b">
-        <table id="rankingTable">
-          <thead>
-            <tr>
-              <th>#</th>
-              <th>Ejecutivo</th>
-              <th>% Meta Litros</th>
-              <th>% Meta Leads</th>
-              <th>% Meta Cotiz.</th>
-              <th>% Meta Cierre</th>
-              <th>Mov. 7d</th>
-              <th>Mov. 30d</th>
-            </tr>
-          </thead>
-          <tbody id="rankingBody"></tbody>
-        </table>
+    <!-- ═══ TAB 1: VENTAS ═══ -->
+    <div class="tab-panel active" id="tab-ventas">
+      <div class="kpi-row" id="kpiRow"></div>
+
+      <div class="sec" id="rankingSection">
+        <div class="sec-h"><h2>📊 Ranking Equipo</h2></div>
+        <div class="sec-b">
+          <table id="rankingTable">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Ejecutivo</th>
+                <th>% Meta Litros</th>
+                <th>% Meta Leads</th>
+                <th>% Meta Cotiz.</th>
+                <th>% Meta Cierre</th>
+                <th>Mov. 7d</th>
+                <th>Mov. 30d</th>
+              </tr>
+            </thead>
+            <tbody id="rankingBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="chart-cont">
+        <h3>📈 Litros por Vendedor (% de Meta)</h3>
+        <canvas id="chartVendedor"></canvas>
+      </div>
+
+      <div class="sec" id="movementsSection">
+        <div class="sec-h"><h2>🔄 Movimientos Recientes (≤7 días)</h2></div>
+        <div class="sec-b">
+          <table id="movementsTable">
+            <thead>
+              <tr>
+                <th>Cliente</th>
+                <th>Etapa</th>
+                <th>Ejecutivo</th>
+                <th>Litros</th>
+                <th>Hace</th>
+              </tr>
+            </thead>
+            <tbody id="movementsBody"></tbody>
+          </table>
+          <div class="nodata" id="noMovements" style="display:none">Sin movimientos recientes</div>
+        </div>
       </div>
     </div>
 
-    <!-- Section 3: Litros por Vendedor Chart -->
-    <div class="chart-cont">
-      <h3>📈 Litros por Vendedor (% de Meta)</h3>
-      <canvas id="chartVendedor"></canvas>
-    </div>
+    <!-- ═══ TAB 2: FIDELIZACIÓN / CS ═══ -->
+    <div class="tab-panel" id="tab-fidelizacion">
+      <!-- CS KPI Cards -->
+      <div class="kpi-row" id="csKpiRow"></div>
 
-    <!-- Section 4: Movimientos Recientes -->
-    <div class="sec" id="movementsSection">
-      <div class="sec-h"><h2>🔄 Movimientos Recientes (≤7 días)</h2></div>
-      <div class="sec-b">
-        <table id="movementsTable">
-          <thead>
-            <tr>
-              <th>Cliente</th>
-              <th>Etapa</th>
-              <th>Ejecutivo</th>
-              <th>Litros</th>
-              <th>Hace</th>
-            </tr>
-          </thead>
-          <tbody id="movementsBody"></tbody>
-        </table>
-        <div class="nodata" id="noMovements" style="display:none">Sin movimientos recientes</div>
+      <!-- Per-exec breakdown -->
+      <div id="csExecCards"></div>
+
+      <!-- Rescued clients table -->
+      <div class="sec" id="rescuedSection">
+        <div class="sec-h"><h2>🏆 Clientes Rescatados</h2></div>
+        <div class="sec-b">
+          <table>
+            <thead>
+              <tr>
+                <th>Cliente</th>
+                <th>Ejecutivo</th>
+                <th>Litros Prom/Mes</th>
+                <th>Última Compra</th>
+              </tr>
+            </thead>
+            <tbody id="rescuedBody"></tbody>
+          </table>
+          <div class="nodata" id="noRescued" style="display:none">Sin rescates este mes</div>
+        </div>
+      </div>
+
+      <!-- Dormant opportunities table -->
+      <div class="sec" id="dormantSection">
+        <div class="sec-h"><h2>🎯 Oportunidades por Recuperar (Durmientes)</h2></div>
+        <div class="sec-b" style="max-height:500px;overflow-y:auto">
+          <table>
+            <thead>
+              <tr>
+                <th>Cliente</th>
+                <th>Ejecutivo Asignado</th>
+                <th>Litros Prom/Mes</th>
+                <th>Última Compra</th>
+              </tr>
+            </thead>
+            <tbody id="dormantBody"></tbody>
+          </table>
+          <div class="nodata" id="noDormant" style="display:none">Sin durmientes registrados</div>
+        </div>
       </div>
     </div>
 
-    <!-- Section 5: Bottom Navigation -->
+    <!-- Bottom Navigation -->
     <div class="bottom-nav">
       <a href="crm-weekly.html">← C-Suite Dashboard</a>
       <a href="crm-freelancer.html">Freelancers →</a>
@@ -149,10 +213,18 @@ const ALLOWED_VENDORS = [
 ];
 
 // Normalize: lowercase, strip accents, sort words → order-independent matching
-// Normalize: lowercase, strip accents, sort words → order-independent matching
 const norm = s => s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').split(/\s+/).filter(Boolean).sort().join(' ');
 const _allowedNorms = new Set(ALLOWED_VENDORS.map(norm));
 const isAllowed = n => n && _allowedNorms.has(norm(n));
+
+// CS / Fidelización team
+const CS_TEAM = [
+  'comber sigall pauline',
+  'mauro boccardo',
+  'tomenergy'
+];
+const _csNorms = new Set(CS_TEAM.map(norm));
+const isCS = n => n && _csNorms.has(norm(n));
 
 // Fuzzy vendor_goals lookup (handles name order differences between Odoo and goals JSON)
 function getGoal(name) {
@@ -464,6 +536,170 @@ function renderMovements() {
     `;
     tbody.appendChild(tr);
   });
+}
+
+// ═══ Tab switching ═══
+function switchTab(tab) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('tab-' + tab).classList.add('active');
+  document.querySelector(`.tab-btn[onclick*="${tab}"]`).classList.add('active');
+  if (tab === 'fidelizacion' && D) renderFidelizacion();
+}
+
+// ═══ Fidelización / CS rendering ═══
+function renderFidelizacion() {
+  if (!D) return;
+  const churn = D.churn || {};
+  const summary = churn.summary || {};
+  const T = (D.ventas || {}).totals || {};
+  const lbu = T.litros_by_user || {};
+  const detail = T.comber_mantencion_detail || {};
+  const retencion = (D.funnel_weeks || [])[0]?.stages?.retencion || {};
+
+  // ── KPI Cards ──
+  const csLitros = (detail.total || 0);
+  const dormantCount = summary.dormant || 0;
+  const rescuedCount = (summary.rescued_dormant || 0) + (summary.rescued_lost || 0);
+  const rescuePct = summary.rescue_pct || 0;
+  const retPct = retencion.value || 0;
+  const retGoal = retencion.goal || 90;
+  const retColor = retPct >= retGoal ? 'g' : retPct >= 60 ? 'y' : 'r';
+
+  let kh = '';
+  kh += mkKpi('c-red', 'Litros CS (Comber+TomE)',
+    fL(csLitros),
+    `Comber: ${fL(detail.comber_own_litros||0)} · TomE: ${fL(detail.tomenergy_litros||0)}`,
+    null, null);
+
+  kh += mkKpi('c-green', 'Retención 90d',
+    retPct + '%',
+    `${retencion.retained_count || 0} de ${retencion.total_evaluated || 0} clientes`,
+    retPct, retGoal);
+
+  kh += mkKpi('c-blue', 'Tasa Rescate',
+    rescuePct.toFixed(1) + '%',
+    `${rescuedCount} rescatados`,
+    null, null);
+
+  kh += mkKpi('c-yellow', 'Durmientes',
+    dormantCount,
+    'clientes sin compra reciente',
+    null, null);
+
+  document.getElementById('csKpiRow').innerHTML = kh;
+
+  // ── Per-exec cards ──
+  const csExecs = (D.executives || []).filter(e => isCS(e.name));
+  const dormantByUser = (churn.by_user || {}).dormant || {};
+  const rescuedDormantByUser = (churn.by_user || {}).rescued_dormant || {};
+  const rescuedLostByUser = (churn.by_user || {}).rescued_lost || {};
+
+  let eh = '';
+  // Always show Comber card with TomEnergy detail
+  const comberExec = csExecs.find(e => norm(e.name).includes('comber'));
+  const tomExec = csExecs.find(e => norm(e.name).includes('tomenergy'));
+
+  // Comber card (with TomEnergy merged litros detail)
+  eh += `<div class="cs-card"><h4>${H(comberExec ? comberExec.name : 'Comber Sigall Pauline')} <span style="color:var(--dim);font-weight:400;font-size:12px">+ TomEnergy</span></h4><div class="cs-row">`;
+  eh += `<div class="cs-stat"><div class="cs-val">${fL(detail.comber_own_litros||0)}</div><div class="cs-lbl">Litros propios</div></div>`;
+  eh += `<div class="cs-stat"><div class="cs-val">${fL(detail.tomenergy_litros||0)}</div><div class="cs-lbl">Litros TomEnergy</div></div>`;
+  eh += `<div class="cs-stat"><div class="cs-val" style="color:var(--red)">${fL(detail.total||0)}</div><div class="cs-lbl">Total</div></div>`;
+
+  // Dormants assigned to Comber + TomEnergy
+  let comberDorm = 0, tomDorm = 0;
+  for (const [k, v] of Object.entries(dormantByUser)) {
+    if (norm(k).includes('comber')) comberDorm += v;
+    if (norm(k).includes('tomenergy')) tomDorm += v;
+  }
+  eh += `<div class="cs-stat"><div class="cs-val">${comberDorm + tomDorm}</div><div class="cs-lbl">Durmientes</div></div>`;
+
+  let comberResc = 0, tomResc = 0;
+  for (const [k, v] of Object.entries(rescuedDormantByUser)) {
+    if (norm(k).includes('comber')) comberResc += v;
+    if (norm(k).includes('tomenergy')) tomResc += v;
+  }
+  for (const [k, v] of Object.entries(rescuedLostByUser)) {
+    if (norm(k).includes('comber')) comberResc += v;
+    if (norm(k).includes('tomenergy')) tomResc += v;
+  }
+  eh += `<div class="cs-stat"><div class="cs-val" style="color:var(--green)">${comberResc + tomResc}</div><div class="cs-lbl">Rescatados</div></div>`;
+
+  // Mov 7d / 30d
+  const comMov7 = (comberExec?.moved || 0) + (tomExec?.moved || 0);
+  const comMov30 = (comberExec?.moved_30d || 0) + (tomExec?.moved_30d || 0);
+  eh += `<div class="cs-stat"><div class="cs-val">${comMov7}</div><div class="cs-lbl">Mov. 7d</div></div>`;
+  eh += `<div class="cs-stat"><div class="cs-val">${comMov30}</div><div class="cs-lbl">Mov. 30d</div></div>`;
+  eh += `</div></div>`;
+
+  // Mauro Boccardo card
+  const mauroExec = csExecs.find(e => norm(e.name).includes('boccardo'));
+  const mauroName = mauroExec ? mauroExec.name : 'Mauro Boccardo';
+  const mauroLitros = mauroExec ? (lbu[mauroExec.name] || 0) : 0;
+  let mauroDorm = 0, mauroResc = 0;
+  for (const [k, v] of Object.entries(dormantByUser)) {
+    if (norm(k).includes('boccardo')) mauroDorm += v;
+  }
+  for (const [k, v] of Object.entries(rescuedDormantByUser)) {
+    if (norm(k).includes('boccardo')) mauroResc += v;
+  }
+  for (const [k, v] of Object.entries(rescuedLostByUser)) {
+    if (norm(k).includes('boccardo')) mauroResc += v;
+  }
+  eh += `<div class="cs-card"><h4>${H(mauroName)}</h4><div class="cs-row">`;
+  eh += `<div class="cs-stat"><div class="cs-val">${fL(mauroLitros)}</div><div class="cs-lbl">Litros</div></div>`;
+  eh += `<div class="cs-stat"><div class="cs-val">${mauroDorm}</div><div class="cs-lbl">Durmientes</div></div>`;
+  eh += `<div class="cs-stat"><div class="cs-val" style="color:var(--green)">${mauroResc}</div><div class="cs-lbl">Rescatados</div></div>`;
+  eh += `<div class="cs-stat"><div class="cs-val">${mauroExec?.moved || 0}</div><div class="cs-lbl">Mov. 7d</div></div>`;
+  eh += `<div class="cs-stat"><div class="cs-val">${mauroExec?.moved_30d || 0}</div><div class="cs-lbl">Mov. 30d</div></div>`;
+  eh += `</div></div>`;
+
+  document.getElementById('csExecCards').innerHTML = eh;
+
+  // ── Rescued clients table ──
+  const rescuedList = [...(churn.rescued_dormant_list || []), ...(churn.rescued_lost_list || [])];
+  const rescBody = document.getElementById('rescuedBody');
+  rescBody.innerHTML = '';
+  if (rescuedList.length === 0) {
+    document.getElementById('noRescued').style.display = 'block';
+  } else {
+    document.getElementById('noRescued').style.display = 'none';
+    rescuedList.sort((a, b) => (b.avg_monthly_litros || 0) - (a.avg_monthly_litros || 0));
+    rescuedList.forEach(c => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td class="bold">${H(c.name)}</td>
+        <td>${H(c.user || '—')}</td>
+        <td>${fL(c.avg_monthly_litros)}</td>
+        <td>${c.last_update || '—'}</td>
+      `;
+      rescBody.appendChild(tr);
+    });
+  }
+
+  // ── Dormant opportunities table ──
+  const dormantList = churn.dormant_list || [];
+  const dormBody = document.getElementById('dormantBody');
+  dormBody.innerHTML = '';
+  if (dormantList.length === 0) {
+    document.getElementById('noDormant').style.display = 'block';
+  } else {
+    document.getElementById('noDormant').style.display = 'none';
+    // Sort by avg_monthly_litros descending (biggest opportunities first)
+    const sorted = [...dormantList].sort((a, b) => (b.avg_monthly_litros || 0) - (a.avg_monthly_litros || 0));
+    sorted.forEach(c => {
+      const litros = c.avg_monthly_litros || 0;
+      const litrosTag = litros >= 5000 ? 'tag-r' : litros >= 1000 ? 'tag-y' : '';
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td class="bold">${H(c.name)}</td>
+        <td>${H(c.user || '—')}</td>
+        <td>${litrosTag ? `<span class="tag ${litrosTag}">${fL(litros)}</span>` : fL(litros)}</td>
+        <td>${c.last_update || '—'}</td>
+      `;
+      dormBody.appendChild(tr);
+    });
+  }
 }
 
 async function loadData() {
