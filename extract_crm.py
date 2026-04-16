@@ -642,6 +642,7 @@ def extract_sales_data(models, uid, custom_start=None, custom_end=None, label_ov
     new_cl_by_user = defaultdict(int)
     new_cl_detail = []
     new_cl_count = 0
+    new_cl_litros_by_user = defaultdict(float)  # liters of NEW clients, per salesperson
     seen = set()
     for inv in invoices:
         pid = safe_id(inv.get("partner_id"))
@@ -658,7 +659,9 @@ def extract_sales_data(models, uid, custom_start=None, custom_end=None, label_ov
             pname = safe_name(inv.get("partner_id"))
             new_cl_by_user[u] += 1
             new_cl_count += 1
-            new_cl_detail.append({"cliente": pname, "vendedor": u, "fecha": inv.get("invoice_date", ""), "litros": round(max(litros_by_partner.get(pid, 0), 0))})
+            partner_litros = max(litros_by_partner.get(pid, 0), 0)
+            new_cl_litros_by_user[u] += partner_litros
+            new_cl_detail.append({"cliente": pname, "vendedor": u, "fecha": inv.get("invoice_date", ""), "litros": round(partner_litros)})
 
     weekly_sales = []
     for offset in range(4):
@@ -742,7 +745,12 @@ def extract_sales_data(models, uid, custom_start=None, custom_end=None, label_ov
             "margin_by_zone": {k: round((1 - margin_by_zone_costo[k] / margin_by_zone_venta[k]) * 100, 1) if margin_by_zone_venta[k] > 0 else 0 for k in litros_by_zone},
             "margin_by_user": {k: round((1 - margin_by_user_costo[k] / margin_by_user_venta[k]) * 100, 1) if margin_by_user_venta.get(k, 0) > 0 else 0 for k in litros_by_user},
         },
-        "new_clients": {"count": new_cl_count, "by_user": dict(new_cl_by_user), "detail": new_cl_detail},
+        "new_clients": {
+            "count": new_cl_count,
+            "by_user": dict(new_cl_by_user),
+            "litros_by_user": {k: round(v) for k, v in new_cl_litros_by_user.items()},
+            "detail": new_cl_detail,
+        },
         "weekly": list(reversed(weekly_sales)),
         "weekly_history": weekly_history,
     }
@@ -1133,56 +1141,33 @@ def main():
     ventas_prev["sla"] = sla_prev
 
     # Part 6: Pauline Comber "mantención" liters patch
-    # Her number = TomEnergy invoices + Comber invoices + Rescued dormant liters
+    # Her number = (TomEnergy + Comber invoices) MINUS new client liters in those buckets
+    # Rationale: "not new" liters from TomEnergy/Comber pool — she handles existing-customer retention.
     COMBER_NAME = "Comber Sigall Pauline"
     TOMENERGY_NAME = "TomEnergy"
 
-    def _rescued_litros(month_start, month_end):
-        """Sum liters invoiced this month for rescued-dormant partners."""
-        pids = churn.get("_rescued_dormant_partner_ids") or []
-        if not pids:
-            return 0
-        rinv = sr(models, uid, "account.move", [
-            ["move_type", "=", "out_invoice"],
-            ["state", "=", "posted"],
-            ["partner_id", "in", pids],
-            ["invoice_date", ">=", month_start.strftime("%Y-%m-%d")],
-            ["invoice_date", "<=", month_end.strftime("%Y-%m-%d")],
-        ], ["id"], limit=5000)
-        if not rinv:
-            return 0
-        rids = [i["id"] for i in rinv]
-        rlines = sr(models, uid, "account.move.line", [
-            ["move_id", "in", rids],
-            ["product_id", "=", DIESEL_PRODUCT_ID],
-        ], ["quantity"], limit=10000)
-        return round(sum(ln.get("quantity", 0) for ln in rlines))
-
-    def _patch_comber(vts, month_start, month_end):
-        lbu = vts.get("totals", {}).get("litros_by_user", {})
+    def _patch_comber(vts):
+        tot = vts.get("totals", {})
+        lbu = tot.get("litros_by_user", {})
+        nc_lbu = vts.get("new_clients", {}).get("litros_by_user", {}) or {}
         tom = lbu.get(TOMENERGY_NAME, 0) or 0
         com = lbu.get(COMBER_NAME, 0) or 0
-        resc = _rescued_litros(month_start, month_end)
-        mantencion = tom + com + resc
+        # New client liters attributed to TomEnergy or Comber
+        new_tom = nc_lbu.get(TOMENERGY_NAME, 0) or 0
+        new_com = nc_lbu.get(COMBER_NAME, 0) or 0
+        mantencion = max(0, (tom + com) - (new_tom + new_com))
         lbu[COMBER_NAME] = mantencion
-        vts["totals"]["litros_by_user"] = lbu
-        vts["totals"]["comber_mantencion_detail"] = {
+        tot["litros_by_user"] = lbu
+        tot["comber_mantencion_detail"] = {
             "tomenergy_litros": tom,
             "comber_own_litros": com,
-            "rescued_dormant_litros": resc,
+            "new_client_litros_excluded": new_tom + new_com,
             "total": mantencion,
         }
-        print(f"  Comber mantención: {mantencion} L (TomEnergy {tom} + Comber {com} + Rescue {resc})")
+        print(f"  Comber mantención: {mantencion} L  =  TomEnergy {tom} + Comber {com} − Nuevos {new_tom + new_com}")
 
-    # Current month
-    curr_m_start = datetime.now().date().replace(day=1)
-    if datetime.now().month == 12:
-        curr_m_end = datetime.now().date().replace(year=datetime.now().year + 1, month=1, day=1) - timedelta(days=1)
-    else:
-        curr_m_end = datetime.now().date().replace(month=datetime.now().month + 1, day=1) - timedelta(days=1)
-    _patch_comber(ventas, curr_m_start, curr_m_end)
-    # Previous month (Mes Vencido)
-    _patch_comber(ventas_prev, prev_m_start, prev_m_end)
+    _patch_comber(ventas)
+    _patch_comber(ventas_prev)
 
     # Load or create vendor goals
     goals_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "vendor-goals.json")
