@@ -1,5 +1,5 @@
 {
-  "updated": "2026-04-16T20:28:19.052567",
+  "updated": "2026-04-16T20:53:23.997467",
   "week": {
     "start": "2026-04-16",
     "end": "2026-04-22",
@@ -231,7 +231,7 @@
       "exec": "Comber Sigall Pauline",
       "exec_id": 52,
       "value": 0,
-      "days_in_stage": 0,
+      "days_in_stage": 1,
       "days_since_activity": 0,
       "last_update": "2026-04-16",
       "origin": "—",
@@ -778,7 +778,7 @@
       "exec_id": 52,
       "value": 0,
       "days_in_stage": 14,
-      "days_since_activity": 6,
+      "days_since_activity": 7,
       "last_update": "2026-04-09",
       "origin": "—",
       "created": "2026-03-31"
@@ -848,7 +848,7 @@
       "exec_id": 52,
       "value": 0,
       "days_in_stage": 16,
-      "days_since_activity": 6,
+      "days_since_activity": 7,
       "last_update": "2026-04-09",
       "origin": "—",
       "created": "2026-03-31"
@@ -1211,7 +1211,7 @@
       "exec": "Toro González Sebastian Enrique",
       "exec_id": 56,
       "value": 10000,
-      "days_in_stage": 27,
+      "days_in_stage": 28,
       "days_since_activity": 9,
       "last_update": "2026-04-07",
       "origin": "—",
@@ -2616,6 +2616,21 @@
       "action": "Seguimiento cotización"
     },
     {
+      "id": 66,
+      "name": "AGROINDUSTRIAL ALMAHUE LTDA",
+      "stage": "Cotizado",
+      "stage_class": "cotizado",
+      "exec": "Toro González Sebastian Enrique",
+      "exec_id": 56,
+      "value": 0,
+      "days_in_stage": 248,
+      "days_since_activity": 24,
+      "last_update": "2026-03-23",
+      "origin": "—",
+      "created": "2025-08-11",
+      "action": "Seguimiento cotización"
+    },
+    {
       "id": 67,
       "name": "EXPORTADORA IDAHUE CHILE",
       "stage": "Cotizado",
@@ -2646,19 +2661,19 @@
       "action": "Seguimiento cotización"
     },
     {
-      "id": 66,
-      "name": "AGROINDUSTRIAL ALMAHUE LTDA",
-      "stage": "Cotizado",
-      "stage_class": "cotizado",
+      "id": 106,
+      "name": "SOCIEDAD AGRICOLA SANTA ANA DEL ROSARIO",
+      "stage": "Contactado",
+      "stage_class": "contactado",
       "exec": "Toro González Sebastian Enrique",
       "exec_id": 56,
       "value": 0,
-      "days_in_stage": 247,
+      "days_in_stage": 246,
       "days_since_activity": 24,
       "last_update": "2026-03-23",
       "origin": "—",
-      "created": "2025-08-11",
-      "action": "Seguimiento cotización"
+      "created": "2025-08-13",
+      "action": "Agendar visita (Ruta)"
     },
     {
       "id": 105,
@@ -2974,21 +2989,6 @@
       "origin": "—",
       "created": "2025-08-13",
       "action": "Seguimiento cotización"
-    },
-    {
-      "id": 106,
-      "name": "SOCIEDAD AGRICOLA SANTA ANA DEL ROSARIO",
-      "stage": "Contactado",
-      "stage_class": "contactado",
-      "exec": "Toro González Sebastian Enrique",
-      "exec_id": 56,
-      "value": 0,
-      "days_in_stage": 245,
-      "days_since_activity": 24,
-      "last_update": "2026-03-23",
-      "origin": "—",
-      "created": "2025-08-13",
-      "action": "Agendar visita (Ruta)"
     },
     {
       "id": 138,
@@ -3467,12 +3467,21 @@
           }
         },
         "cotizacion": {
-          "value": 5,
+          "value": 6,
           "goal": 8,
           "by_user": {
-            "TomEnergy": 5
+            "TomEnergy": 6
           },
           "detail": [
+            {
+              "name": "S30230",
+              "cliente": "JORGE LUIS GALLARDO LANZELLOTE",
+              "vendedor": "TomEnergy",
+              "monto": 1262.0,
+              "litros": 1,
+              "estado": "draft",
+              "fecha": "2026-04-16"
+            },
             {
               "name": "S30229",
               "cliente": "INVERSIONES SANTA BERTINA",
@@ -3521,7 +3530,7 @@
           ]
         },
         "seguimiento": {
-          "value": 60,
+          "value": 50,
           "goal": 100,
           "unit": "%"
         },
@@ -3567,10 +3576,10 @@
           ]
         },
         "retencion": {
-          "value": 67,
+          "value": 66,
           "goal": 90,
           "unit": "%",
-          "total_evaluated": 386,
+          "total_evaluated": 387,
           "retained_count": 257
         }
       }
@@ -4023,10 +4032,10 @@
           ]
         },
         "retencion": {
-          "value": 67,
+          "value": 66,
           "goal": 90,
           "unit": "%",
-          "total_evaluated": 386,
+          "total_evaluated": 387,
           "retained_count": 257
         }
       }
@@ -4409,10 +4418,10 @@
           ]
         },
         "retencion": {
-          "value": 67,
+          "value": 66,
           "goal": 90,
           "unit": "%",
-          "total_evaluated": 386,
+          "total_evaluated": 387,
           "retained_count": 257
         }
       }
@@ -4846,10 +4855,10 @@
           ]
         },
         "retencion": {
-          "value": 67,
+          "value": 66,
           "goal": 90,
           "unit": "%",
-          "total_evaluated": 386,
+          "total_evaluated": 387,
           "retained_count": 257
         }
       }
@@ -4860,53 +4869,53 @@
     "month_start": "2026-04-01",
     "month_end": "2026-04-30",
     "totals": {
-      "total_litros": 406089,
-      "total_venta_neta": 515726887,
-      "invoice_count": 263,
+      "total_litros": 414889,
+      "total_venta_neta": 527114511,
+      "invoice_count": 265,
       "nc_count": 13,
       "litros_by_user": {
-        "Toro González Sebastian Enrique": 128123,
+        "Toro González Sebastian Enrique": 135123,
         "Toledo Núñez Madelaine Camila": 2000,
-        "Comber Sigall Pauline": 270466,
+        "Comber Sigall Pauline": 272266,
         "Muñoz Joaquin": 1500,
         "Carlos Labbe": 2000,
         "De Trenqualye Merino Andre Jean": 2000
       },
       "venta_by_user": {
-        "Toro González Sebastian Enrique": 158903195,
+        "Toro González Sebastian Enrique": 167925473,
         "Toledo Núñez Madelaine Camila": 2613088,
-        "Comber Sigall Pauline": 347150663,
+        "Comber Sigall Pauline": 349516009,
         "Muñoz Joaquin": 1969900,
         "Carlos Labbe": 2559306,
         "De Trenqualye Merino Andre Jean": 2530735
       },
-      "margin_retail_pct": 8.8,
-      "margin_volume_pct": 6.25,
-      "retail_venta": 447378316,
-      "volume_venta": 75112351,
+      "margin_retail_pct": 8.81,
+      "margin_volume_pct": 6.1,
+      "retail_venta": 449743662,
+      "volume_venta": 84134629,
       "litros_by_zone": {
         "Talca": 114398,
         "Curico": 95870,
         "Rancagua": 78526,
-        "San Fernando": 47400,
-        "Chillan": 46904,
+        "Chillan": 53904,
+        "San Fernando": 49200,
         "VI Costa": 25100
       },
       "venta_by_zone": {
         "Talca": 145605370,
         "Curico": 122126281,
         "Rancagua": 101580591,
-        "San Fernando": 61817695,
-        "Chillan": 58844088,
+        "Chillan": 67866366,
+        "San Fernando": 64183041,
         "VI Costa": 32516642
       },
       "margin_by_zone": {
-        "Curico": 7.7,
         "San Fernando": 9.9,
+        "Chillan": 6.5,
+        "Curico": 7.7,
         "Talca": 8.3,
         "VI Costa": 9.5,
-        "Rancagua": 9.2,
-        "Chillan": 6.7
+        "Rancagua": 9.2
       },
       "margin_by_user": {
         "Toro González Sebastian Enrique": 5.6,
@@ -4917,28 +4926,34 @@
         "De Trenqualye Merino Andre Jean": 5.8
       },
       "comber_mantencion_detail": {
-        "tomenergy_litros": 256656,
+        "tomenergy_litros": 258456,
         "comber_own_litros": 13810,
-        "total": 270466,
-        "merged_venta_neta": 347150663,
+        "total": 272266,
+        "merged_venta_neta": 349516009,
         "merged_margin_pct": 8.7
       }
     },
     "new_clients": {
-      "count": 19,
+      "count": 20,
       "by_user": {
-        "Toro González Sebastian Enrique": 12,
+        "Toro González Sebastian Enrique": 13,
         "Muñoz Joaquin": 1,
         "Carlos Labbe": 1,
         "Comber Sigall Pauline": 2
       },
       "litros_by_user": {
-        "Toro González Sebastian Enrique": 67044,
+        "Toro González Sebastian Enrique": 74044,
         "Muñoz Joaquin": 1500,
         "Carlos Labbe": 2000,
         "Comber Sigall Pauline": 5000
       },
       "detail": [
+        {
+          "cliente": "SERVICIOS AGRICOLAS MARISEL ESPINAZA OÑATE E.I.R.L.",
+          "vendedor": "Toro González Sebastian Enrique",
+          "fecha": "2026-04-16",
+          "litros": 7000
+        },
         {
           "cliente": "SERGIO IGNACIO VERGARA HERNANDEZ",
           "vendedor": "Toro González Sebastian Enrique",
@@ -5073,8 +5088,8 @@
       },
       {
         "label": "16/4-22/4",
-        "litros": 42168,
-        "venta_neta": 55786632
+        "litros": 50968,
+        "venta_neta": 67174256
       }
     ],
     "weekly_history": [
@@ -5140,7 +5155,7 @@
       },
       {
         "label": "16/4-22/4",
-        "litros": 42168
+        "litros": 50968
       }
     ]
   },
@@ -5479,7 +5494,7 @@
       },
       {
         "label": "16/4-22/4",
-        "litros": 42168
+        "litros": 50968
       }
     ],
     "sla": {
@@ -5662,8 +5677,8 @@
   },
   "churn": {
     "summary": {
-      "active": 341,
-      "dormant": 195,
+      "active": 342,
+      "dormant": 194,
       "lost": 461,
       "newly_lost": 11,
       "rescued_dormant": 0,
@@ -5674,7 +5689,7 @@
     },
     "by_user": {
       "dormant": {
-        "Comber Sigall Pauline": 25,
+        "Comber Sigall Pauline": 24,
         "Toro González Sebastian Enrique": 16,
         "De Trenqualye Merino Andre Jean": 5,
         "GARRIDO CISTERNA JUAN MANUEL": 10,
@@ -6233,6 +6248,16 @@
       "cotizaciones_semana": 8,
       "contactos_semana": 10,
       "clientes_nuevos_mes": 2,
+      "retencion_90d": 90
+    },
+    "Mauro Boccardo": {
+      "litros_mes": 0,
+      "presupuesto_venta": 0,
+      "margen_min": 0,
+      "leads_semana": 0,
+      "cotizaciones_semana": 0,
+      "contactos_semana": 0,
+      "clientes_nuevos_mes": 0,
       "retencion_90d": 90
     },
     "Yeniré Ron": {
