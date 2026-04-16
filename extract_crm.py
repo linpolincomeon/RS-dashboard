@@ -187,8 +187,7 @@ def extract_crm_data(models, uid):
             return lead.get("x_litros_estimados") or 0
         return lead.get("expected_revenue") or 0
 
-    def days_since_update(lead):
-        dt_str = lead.get("date_last_stage_update") or lead.get("write_date")
+    def _days_from(dt_str):
         if not dt_str: return 999
         try:
             dt = datetime.strptime(dt_str[:19], "%Y-%m-%d %H:%M:%S")
@@ -197,6 +196,14 @@ def extract_crm_data(models, uid):
             except: return 999
         return (now - dt).days
 
+    def days_since_stage(lead):
+        # Pure age in current stage: only `date_last_stage_update`
+        return _days_from(lead.get("date_last_stage_update"))
+
+    def days_since_activity(lead):
+        # ANY modification: notes, activities, field edits, stage changes
+        return _days_from(lead.get("write_date") or lead.get("date_last_stage_update"))
+
     def is_terminal(stage_id):
         return stage_class.get(stage_id, "") in ("won", "perdido")
 
@@ -204,7 +211,8 @@ def extract_crm_data(models, uid):
     for l in leads:
         sid = l["stage_id"][0] if l["stage_id"] else None
         if is_terminal(sid): continue
-        days = days_since_update(l)
+        d_stage = days_since_stage(l)
+        d_activity = days_since_activity(l)
         pipeline.append({
             "id": l["id"],
             "name": l["partner_id"][1] if l["partner_id"] else l["name"],
@@ -213,8 +221,9 @@ def extract_crm_data(models, uid):
             "exec": l["user_id"][1] if l["user_id"] else "Sin asignar",
             "exec_id": l["user_id"][0] if l["user_id"] else 0,
             "value": round(get_value(l)),
-            "days_in_stage": days,
-            "last_update": (l.get("date_last_stage_update") or l.get("write_date") or "")[:10],
+            "days_in_stage": d_stage,         # age in current stage (stage transition age)
+            "days_since_activity": d_activity, # any modification (notes, activities, etc.)
+            "last_update": (l.get("write_date") or l.get("date_last_stage_update") or "")[:10],
             "origin": l.get("x_origen_oportunidad") or "—",
             "created": (l.get("create_date") or "")[:10],
         })
@@ -225,13 +234,14 @@ def extract_crm_data(models, uid):
         if eid not in exec_map:
             exec_map[eid] = {
                 "name": p["exec"], "total": 0,
-                "moved": 0, "moved_30d": 0,  # 7d (this ENAP week) / 30d windows
+                "moved": 0, "moved_30d": 0,  # 7d (this ENAP week) / 30d windows of activity
                 "stale": 0, "value": 0,
             }
         exec_map[eid]["total"] += 1
         exec_map[eid]["value"] += p["value"]
+        # Activity = any modification (write_date), not just stage transition
         if p["last_update"] >= week_start: exec_map[eid]["moved"] += 1
-        if p["days_in_stage"] <= 30: exec_map[eid]["moved_30d"] += 1
+        if p["days_since_activity"] <= 30: exec_map[eid]["moved_30d"] += 1
         if p["days_in_stage"] > 7: exec_map[eid]["stale"] += 1
 
     executives = sorted(exec_map.values(), key=lambda x: -x["total"])
