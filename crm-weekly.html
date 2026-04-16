@@ -149,6 +149,10 @@ tr:hover td{background:#fafaf8}
 let D=null;
 const ALLOWED_VENDORS=new Set(['toro gonzález sebastian enrique','comber sigall pauline','de trenqualye merino andre jean','fernando jullian','tomenergy','carlos labbe','joaquin muñoz','yeniré ron','yenire ron']);
 const isAllowed=n=>n&&ALLOWED_VENDORS.has(n.toLowerCase().trim());
+// Active acquisition executives only (count for team-level funnel goals).
+// Excluded: Comber (customer success, not acquisition), jefes, y los que aún no entraron.
+// Ajustar este número cuando se ramp-up un ejecutivo nuevo o cambie el equipo.
+const EXEC_COUNT=4;
 
 document.getElementById('tabBar').addEventListener('click',e=>{
   const t=e.target.closest('.tab');if(!t)return;
@@ -263,9 +267,10 @@ function renderPipeline(){
   // Avg days in fresh pipeline
   const avgDays=freshPl.length?Math.round(freshPl.reduce((s,p)=>s+p.days_in_stage,0)/freshPl.length):0;
 
-  // Cotizado value (hot deals) — cotizados CON movimiento en últimos 30 días
+  // Cotizado value (hot deals) — cotizados tocados en últimos 30 días (actividad, no edad de etapa)
   const HOT_DAYS=30;
-  const hotDeals=freshPl.filter(p=>p.stage==='Cotizado'&&p.days_in_stage<=HOT_DAYS).sort((a,b)=>(b.value||0)-(a.value||0));
+  const _act=(p)=>p.days_since_activity!==undefined?p.days_since_activity:p.days_in_stage;
+  const hotDeals=freshPl.filter(p=>p.stage==='Cotizado'&&_act(p)<=HOT_DAYS).sort((a,b)=>(b.value||0)-(a.value||0));
 
   let h='';
 
@@ -424,8 +429,12 @@ function renderFunnel(){
   let h='<div class="kpi-row">';
   STG.forEach(s=>{
     const d=st[s.key]||{},g=fg[s.key]||{};
-    const val=d.value??0,goal=d.goal||g.goal||1,unit=d.unit||g.unit||'',lbl=g.label||s.key;
-    h+=mkKpi(s.c,`${s.icon} ${lbl}`,`${val}${unit}`,`Meta: ${goal}${unit} ${emoji(val,goal)}`,val,goal);
+    const val=d.value??0,perExecGoal=d.goal||g.goal||1,unit=d.unit||g.unit||'',lbl=g.label||s.key;
+    // Multiply absolute per-exec goals by active exec count; leave percentages alone
+    const isPct=unit==='%';
+    const goal=isPct?perExecGoal:perExecGoal*EXEC_COUNT;
+    const sub=isPct?`Meta: ${goal}${unit} ${emoji(val,goal)}`:`Meta: ${goal}${unit} (${perExecGoal}×${EXEC_COUNT} ejec.) ${emoji(val,goal)}`;
+    h+=mkKpi(s.c,`${s.icon} ${lbl}`,`${val}${unit}`,sub,val,goal);
   });
   h+='</div>';
   h+=`<div class="chart-row"><div class="ccrd"><h3>Funnel Actual vs Meta</h3><canvas id="cFunnel" height="220"></canvas></div><div class="ccrd"><h3>Tendencia 4 Semanas</h3><canvas id="cTrend" height="220"></canvas></div></div>`;
@@ -446,7 +455,11 @@ function renderFunnel(){
 
   const labels=STG.map(s=>(fg[s.key]||{}).label||s.key);
   const vals=STG.map(s=>(st[s.key]||{}).value||0);
-  const goals=STG.map(s=>(st[s.key]||{}).goal||(fg[s.key]||{}).goal||1);
+  const goals=STG.map(s=>{
+    const perExec=(st[s.key]||{}).goal||(fg[s.key]||{}).goal||1;
+    const u=(st[s.key]||{}).unit||(fg[s.key]||{}).unit||'';
+    return u==='%'?perExec:perExec*EXEC_COUNT;
+  });
   const elFun=document.getElementById('cFunnel');
   if(elFun) new Chart(elFun,{type:'bar',data:{labels,datasets:[
     {label:'Actual',data:vals,backgroundColor:vals.map((v,i)=>{const c=clr(v,goals[i]);return c==='g'?'rgba(22,163,74,.5)':c==='y'?'rgba(202,138,4,.5)':'rgba(200,54,14,.5)'}),borderRadius:6,barPercentage:.55},
