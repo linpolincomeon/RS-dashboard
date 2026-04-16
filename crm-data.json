@@ -1,5 +1,5 @@
 {
-  "updated": "2026-04-16T20:53:23.997467",
+  "updated": "2026-04-16T23:44:00.289549",
   "week": {
     "start": "2026-04-16",
     "end": "2026-04-22",
@@ -8,10 +8,10 @@
   "has_litros": true,
   "summary": {
     "active": 715,
-    "new_this_week": 1,
+    "new_this_week": 2,
     "moved_this_week": 67,
     "stale_7d": 689,
-    "won": 234,
+    "won": 235,
     "total_value": 3384826
   },
   "executives": [
@@ -142,17 +142,31 @@
       "count": 82
     },
     {
-      "stage": "Cotizado",
-      "class": "cotizado",
-      "count": 268
-    },
-    {
       "stage": "Durmiente",
       "class": "durmiente",
       "count": 195
+    },
+    {
+      "stage": "Cotizado",
+      "class": "cotizado",
+      "count": 268
     }
   ],
   "pipeline": [
+    {
+      "id": 1900,
+      "name": "AMV SPA",
+      "stage": "Durmiente",
+      "stage_class": "durmiente",
+      "exec": "Comber Sigall Pauline",
+      "exec_id": 52,
+      "value": 0,
+      "days_in_stage": 0,
+      "days_since_activity": 0,
+      "last_update": "2026-04-16",
+      "origin": "—",
+      "created": "2026-04-16"
+    },
     {
       "id": 329,
       "name": "AGRICOLA KUNAKO SPA",
@@ -218,20 +232,6 @@
       "exec_id": 52,
       "value": 0,
       "days_in_stage": 0,
-      "days_since_activity": 0,
-      "last_update": "2026-04-16",
-      "origin": "—",
-      "created": "2026-04-15"
-    },
-    {
-      "id": 1898,
-      "name": "SOCIEDAD AGRICOLA EL CARRETON SPA",
-      "stage": "Durmiente",
-      "stage_class": "durmiente",
-      "exec": "Comber Sigall Pauline",
-      "exec_id": 52,
-      "value": 0,
-      "days_in_stage": 1,
       "days_since_activity": 0,
       "last_update": "2026-04-16",
       "origin": "—",
@@ -441,7 +441,7 @@
       "exec": "Comber Sigall Pauline",
       "exec_id": 52,
       "value": 0,
-      "days_in_stage": 6,
+      "days_in_stage": 7,
       "days_since_activity": 0,
       "last_update": "2026-04-16",
       "origin": "—",
@@ -455,7 +455,7 @@
       "exec": "Comber Sigall Pauline",
       "exec_id": 52,
       "value": 0,
-      "days_in_stage": 6,
+      "days_in_stage": 7,
       "days_since_activity": 0,
       "last_update": "2026-04-16",
       "origin": "—",
@@ -469,8 +469,8 @@
       "exec": "Comber Sigall Pauline",
       "exec_id": 52,
       "value": 0,
-      "days_in_stage": 6,
-      "days_since_activity": 6,
+      "days_in_stage": 7,
+      "days_since_activity": 7,
       "last_update": "2026-04-09",
       "origin": "—",
       "created": "2026-04-09"
@@ -483,8 +483,8 @@
       "exec": "Toro González Sebastian Enrique",
       "exec_id": 56,
       "value": 4000,
-      "days_in_stage": 6,
-      "days_since_activity": 6,
+      "days_in_stage": 7,
+      "days_since_activity": 7,
       "last_update": "2026-04-09",
       "origin": "—",
       "created": "2026-04-08"
@@ -756,20 +756,6 @@
       "created": "2025-11-12"
     },
     {
-      "id": 770,
-      "name": "JUAN FLORENTINO LEIVA LARA",
-      "stage": "Durmiente",
-      "stage_class": "durmiente",
-      "exec": "TomEnergy",
-      "exec_id": 58,
-      "value": 0,
-      "days_in_stage": 14,
-      "days_since_activity": 14,
-      "last_update": "2026-04-02",
-      "origin": "—",
-      "created": "2025-10-03"
-    },
-    {
       "id": 1851,
       "name": "AGRO COMERCIAL CODEFRUT LTDA",
       "stage": "Durmiente",
@@ -782,6 +768,20 @@
       "last_update": "2026-04-09",
       "origin": "—",
       "created": "2026-03-31"
+    },
+    {
+      "id": 770,
+      "name": "JUAN FLORENTINO LEIVA LARA",
+      "stage": "Durmiente",
+      "stage_class": "durmiente",
+      "exec": "TomEnergy",
+      "exec_id": 58,
+      "value": 0,
+      "days_in_stage": 14,
+      "days_since_activity": 14,
+      "last_update": "2026-04-02",
+      "origin": "—",
+      "created": "2025-10-03"
     },
     {
       "id": 1855,
@@ -862,7 +862,7 @@
       "exec_id": 52,
       "value": 0,
       "days_in_stage": 16,
-      "days_since_activity": 6,
+      "days_since_activity": 7,
       "last_update": "2026-04-09",
       "origin": "—",
       "created": "2026-03-31"
@@ -904,7 +904,7 @@
       "exec_id": 52,
       "value": 0,
       "days_in_stage": 16,
-      "days_since_activity": 6,
+      "days_since_activity": 7,
       "last_update": "2026-04-09",
       "origin": "—",
       "created": "2026-03-31"
@@ -1352,24 +1352,10 @@
       "exec_id": 70,
       "value": 0,
       "days_in_stage": 28,
-      "days_since_activity": 5,
+      "days_since_activity": 6,
       "last_update": "2026-04-10",
       "origin": "—",
       "created": "2026-03-19"
-    },
-    {
-      "id": 722,
-      "name": "EDELMIRA INES PEREZ ZUNIGA",
-      "stage": "Durmiente",
-      "stage_class": "durmiente",
-      "exec": "Administrator",
-      "exec_id": 2,
-      "value": 0,
-      "days_in_stage": 29,
-      "days_since_activity": 0,
-      "last_update": "2026-04-16",
-      "origin": "—",
-      "created": "2025-10-03"
     },
     {
       "id": 1282,
@@ -1384,6 +1370,20 @@
       "last_update": "2026-04-16",
       "origin": "—",
       "created": "2025-10-29"
+    },
+    {
+      "id": 722,
+      "name": "EDELMIRA INES PEREZ ZUNIGA",
+      "stage": "Durmiente",
+      "stage_class": "durmiente",
+      "exec": "Administrator",
+      "exec_id": 2,
+      "value": 0,
+      "days_in_stage": 29,
+      "days_since_activity": 0,
+      "last_update": "2026-04-16",
+      "origin": "—",
+      "created": "2025-10-03"
     },
     {
       "id": 1795,
@@ -1876,20 +1876,6 @@
       "created": "2026-01-22"
     },
     {
-      "id": 1095,
-      "name": "AMERICO SEBASTIAN PINO SEPULVEDA",
-      "stage": "Durmiente",
-      "stage_class": "durmiente",
-      "exec": "Administrator",
-      "exec_id": 2,
-      "value": 0,
-      "days_in_stage": 42,
-      "days_since_activity": 0,
-      "last_update": "2026-04-16",
-      "origin": "—",
-      "created": "2025-10-29"
-    },
-    {
       "id": 1147,
       "name": "SERGIO ENRIQUE PASTENE JORQUERA",
       "stage": "Durmiente",
@@ -1900,6 +1886,20 @@
       "days_in_stage": 42,
       "days_since_activity": 8,
       "last_update": "2026-04-08",
+      "origin": "—",
+      "created": "2025-10-29"
+    },
+    {
+      "id": 1095,
+      "name": "AMERICO SEBASTIAN PINO SEPULVEDA",
+      "stage": "Durmiente",
+      "stage_class": "durmiente",
+      "exec": "Administrator",
+      "exec_id": 2,
+      "value": 0,
+      "days_in_stage": 42,
+      "days_since_activity": 0,
+      "last_update": "2026-04-16",
       "origin": "—",
       "created": "2025-10-29"
     },
@@ -2030,34 +2030,6 @@
       "created": "2025-10-29"
     },
     {
-      "id": 765,
-      "name": "JOSE EDUARDO ROMERO ORTIZ",
-      "stage": "Durmiente",
-      "stage_class": "durmiente",
-      "exec": "Administrator",
-      "exec_id": 2,
-      "value": 0,
-      "days_in_stage": 51,
-      "days_since_activity": 20,
-      "last_update": "2026-03-27",
-      "origin": "—",
-      "created": "2025-10-03"
-    },
-    {
-      "id": 1063,
-      "name": "TRANSPORTES LIG SPA",
-      "stage": "Durmiente",
-      "stage_class": "durmiente",
-      "exec": "Administrator",
-      "exec_id": 2,
-      "value": 0,
-      "days_in_stage": 51,
-      "days_since_activity": 20,
-      "last_update": "2026-03-26",
-      "origin": "—",
-      "created": "2025-10-29"
-    },
-    {
       "id": 120,
       "name": "VICTOR MANUEL QUERO GOMEZ",
       "stage": "Durmiente",
@@ -2084,6 +2056,34 @@
       "last_update": "2026-03-26",
       "origin": "—",
       "created": "2025-10-03"
+    },
+    {
+      "id": 765,
+      "name": "JOSE EDUARDO ROMERO ORTIZ",
+      "stage": "Durmiente",
+      "stage_class": "durmiente",
+      "exec": "Administrator",
+      "exec_id": 2,
+      "value": 0,
+      "days_in_stage": 51,
+      "days_since_activity": 20,
+      "last_update": "2026-03-27",
+      "origin": "—",
+      "created": "2025-10-03"
+    },
+    {
+      "id": 1063,
+      "name": "TRANSPORTES LIG SPA",
+      "stage": "Durmiente",
+      "stage_class": "durmiente",
+      "exec": "Administrator",
+      "exec_id": 2,
+      "value": 0,
+      "days_in_stage": 51,
+      "days_since_activity": 20,
+      "last_update": "2026-03-26",
+      "origin": "—",
+      "created": "2025-10-29"
     },
     {
       "id": 17,
@@ -2184,20 +2184,6 @@
       "created": "2026-01-07"
     },
     {
-      "id": 1105,
-      "name": "JAVIER HERNAN CASTILLO MARTINEZ",
-      "stage": "Durmiente",
-      "stage_class": "durmiente",
-      "exec": "Administrator",
-      "exec_id": 2,
-      "value": 0,
-      "days_in_stage": 56,
-      "days_since_activity": 23,
-      "last_update": "2026-03-23",
-      "origin": "—",
-      "created": "2025-10-29"
-    },
-    {
       "id": 759,
       "name": "JAVIER HERNAN CASTILLO MARTINEZ",
       "stage": "Durmiente",
@@ -2210,6 +2196,20 @@
       "last_update": "2026-03-23",
       "origin": "—",
       "created": "2025-10-03"
+    },
+    {
+      "id": 1105,
+      "name": "JAVIER HERNAN CASTILLO MARTINEZ",
+      "stage": "Durmiente",
+      "stage_class": "durmiente",
+      "exec": "Administrator",
+      "exec_id": 2,
+      "value": 0,
+      "days_in_stage": 56,
+      "days_since_activity": 23,
+      "last_update": "2026-03-23",
+      "origin": "—",
+      "created": "2025-10-29"
     },
     {
       "id": 1728,
@@ -2226,20 +2226,6 @@
       "created": "2026-01-29"
     },
     {
-      "id": 1179,
-      "name": "AGRÍCOLA RAMÓN MARCELO MELÉNDEZ VALENZUELA E.I.R.L.",
-      "stage": "Durmiente",
-      "stage_class": "durmiente",
-      "exec": "Administrator",
-      "exec_id": 2,
-      "value": 0,
-      "days_in_stage": 58,
-      "days_since_activity": 23,
-      "last_update": "2026-03-23",
-      "origin": "—",
-      "created": "2025-10-29"
-    },
-    {
       "id": 667,
       "name": "AGRÍCOLA RAMÓN MARCELO MELÉNDEZ VALENZUELA E.I.R.L.",
       "stage": "Durmiente",
@@ -2252,6 +2238,20 @@
       "last_update": "2026-03-23",
       "origin": "—",
       "created": "2025-10-03"
+    },
+    {
+      "id": 1179,
+      "name": "AGRÍCOLA RAMÓN MARCELO MELÉNDEZ VALENZUELA E.I.R.L.",
+      "stage": "Durmiente",
+      "stage_class": "durmiente",
+      "exec": "Administrator",
+      "exec_id": 2,
+      "value": 0,
+      "days_in_stage": 58,
+      "days_since_activity": 23,
+      "last_update": "2026-03-23",
+      "origin": "—",
+      "created": "2025-10-29"
     }
   ],
   "stale": [
@@ -2376,6 +2376,21 @@
       "action": "Llamar o enviar mail"
     },
     {
+      "id": 41,
+      "name": "Llamar contacto Indap , 7 región. dato entregado por WS",
+      "stage": "Oportunidad de Negocio",
+      "stage_class": "oportunidad",
+      "exec": "GARRIDO CISTERNA JUAN MANUEL",
+      "exec_id": 48,
+      "value": 0,
+      "days_in_stage": 262,
+      "days_since_activity": 128,
+      "last_update": "2025-12-09",
+      "origin": "—",
+      "created": "2025-07-28",
+      "action": "Llamar o enviar mail"
+    },
+    {
       "id": 12,
       "name": "DANIEL ESPINA",
       "stage": "Contactado",
@@ -2479,21 +2494,6 @@
       "origin": "—",
       "created": "2025-07-28",
       "action": "Seguimiento cotización"
-    },
-    {
-      "id": 41,
-      "name": "Llamar contacto Indap , 7 región. dato entregado por WS",
-      "stage": "Oportunidad de Negocio",
-      "stage_class": "oportunidad",
-      "exec": "GARRIDO CISTERNA JUAN MANUEL",
-      "exec_id": 48,
-      "value": 0,
-      "days_in_stage": 261,
-      "days_since_activity": 128,
-      "last_update": "2025-12-09",
-      "origin": "—",
-      "created": "2025-07-28",
-      "action": "Llamar o enviar mail"
     },
     {
       "id": 15,
@@ -2991,10 +2991,10 @@
       "action": "Seguimiento cotización"
     },
     {
-      "id": 138,
-      "name": "Cristian Reyes",
-      "stage": "Oportunidad de Negocio",
-      "stage_class": "oportunidad",
+      "id": 121,
+      "name": "alto nilahue",
+      "stage": "Cotizado",
+      "stage_class": "cotizado",
       "exec": "Vanessa Vazquez",
       "exec_id": 67,
       "value": 0,
@@ -3003,7 +3003,7 @@
       "last_update": "2026-03-23",
       "origin": "—",
       "created": "2025-08-18",
-      "action": "Llamar o enviar mail"
+      "action": "Seguimiento cotización"
     }
   ],
   "activities": [
@@ -3017,10 +3017,26 @@
     },
     {
       "date": "2026-04-23",
-      "who": "Comber Sigall Pauline",
+      "who": "TomEnergy",
       "type": "Email",
       "summary": "Re-engage dormant client",
-      "lead": "Oportunidad de MATIAS ANTONIO RIVERA MORAGA",
+      "lead": "EDELMIRA INES PEREZ ZUNIGA",
+      "state": "planned"
+    },
+    {
+      "date": "2026-04-23",
+      "who": "Toro González Sebastian Enrique",
+      "type": "Email",
+      "summary": "Re-engage dormant client",
+      "lead": "Oportunidad de AGRÍCOLA KUNAKO SPA",
+      "state": "planned"
+    },
+    {
+      "date": "2026-04-23",
+      "who": "Administrator",
+      "type": "Email",
+      "summary": "Re-engage dormant client",
+      "lead": "ALFREDO ALFONSO OPAZO MUÑOZ",
       "state": "planned"
     },
     {
@@ -3057,10 +3073,18 @@
     },
     {
       "date": "2026-04-23",
-      "who": "Administrator",
+      "who": "Comber Sigall Pauline",
       "type": "Email",
       "summary": "Re-engage dormant client",
-      "lead": "ALFREDO ALFONSO OPAZO MUÑOZ",
+      "lead": "Oportunidad de MATIAS ANTONIO RIVERA MORAGA",
+      "state": "planned"
+    },
+    {
+      "date": "2026-04-23",
+      "who": "Comber Sigall Pauline",
+      "type": "Email",
+      "summary": "Re-engage dormant client",
+      "lead": "Oportunidad de AMV SPA",
       "state": "planned"
     },
     {
@@ -3073,10 +3097,10 @@
     },
     {
       "date": "2026-04-23",
-      "who": "Toro González Sebastian Enrique",
+      "who": "Comber Sigall Pauline",
       "type": "Email",
       "summary": "Re-engage dormant client",
-      "lead": "Oportunidad de AGRÍCOLA KUNAKO SPA",
+      "lead": "JOSE ESTEVAN BURGOS CIFUENTES",
       "state": "planned"
     },
     {
@@ -3108,7 +3132,7 @@
       "who": "Administrator",
       "type": "Email",
       "summary": "Re-engage dormant client",
-      "lead": "AGRICOLA TRABUN LTDA.",
+      "lead": "EDELMIRA INES PEREZ ZUNIGA",
       "state": "planned"
     },
     {
@@ -3116,28 +3140,12 @@
       "who": "Administrator",
       "type": "Email",
       "summary": "Re-engage dormant client",
-      "lead": "EDELMIRA INES PEREZ ZUNIGA",
-      "state": "planned"
-    },
-    {
-      "date": "2026-04-23",
-      "who": "TomEnergy",
-      "type": "Email",
-      "summary": "Re-engage dormant client",
-      "lead": "EDELMIRA INES PEREZ ZUNIGA",
-      "state": "planned"
-    },
-    {
-      "date": "2026-04-23",
-      "who": "Comber Sigall Pauline",
-      "type": "Email",
-      "summary": "Re-engage dormant client",
-      "lead": "JOSE ESTEVAN BURGOS CIFUENTES",
+      "lead": "AGRICOLA TRABUN LTDA.",
       "state": "planned"
     },
     {
       "date": "2026-04-22",
-      "who": "Toro González Sebastian Enrique",
+      "who": "Vanessa Vazquez",
       "type": "Email",
       "summary": "Re-engage dormant client",
       "lead": "Oportunidad de AGRÍCOLA KUNAKO SPA",
@@ -3155,8 +3163,32 @@
       "date": "2026-04-22",
       "who": "Comber Sigall Pauline",
       "type": "Email",
+      "summary": "1/4 compra hoy por CSC",
+      "lead": "Oportunidad de AGRO COMERCIAL CODEFRUT LTDA",
+      "state": "planned"
+    },
+    {
+      "date": "2026-04-22",
+      "who": "Comber Sigall Pauline",
+      "type": "Email",
       "summary": "16/04 enviar cotización - se mejora condición 6/4 responde aun no necesito gracias Pauline 6/4 wsp a Eugenio",
       "lead": "Oportunidad de AGRICOLA EUGENIO LIRA ESPINOZA E.I.R.L.",
+      "state": "planned"
+    },
+    {
+      "date": "2026-04-22",
+      "who": "Toledo Núñez Madelaine Camila",
+      "type": "Email",
+      "summary": "16/4 compra",
+      "lead": "Oportunidad de SOCIEDAD AGRICOLA EL CARRETON SPA",
+      "state": "planned"
+    },
+    {
+      "date": "2026-04-22",
+      "who": "Comber Sigall Pauline",
+      "type": "Email",
+      "summary": "sigue molesto y confirma que compra a otro proveedor10/4 nueva cot enviar 8/4 plantilla 6/4 wsp a Daniel despues de el msje chao Tompetrol 24/3 cierra compras a Tompetrol por no poder venderle sin alza",
+      "lead": "Oportunidad de AGRICOLA LA CRUZ",
       "state": "planned"
     },
     {
@@ -3204,14 +3236,6 @@
       "who": "Toledo Núñez Madelaine Camila",
       "type": "Email",
       "summary": "Re-engage dormant client",
-      "lead": "Oportunidad de SOCIEDAD AGRICOLA EL CARRETON SPA",
-      "state": "planned"
-    },
-    {
-      "date": "2026-04-22",
-      "who": "Toledo Núñez Madelaine Camila",
-      "type": "Email",
-      "summary": "Re-engage dormant client",
       "lead": "Oportunidad de SOCIEDAD AGRICOLA LIRCAY SPA.",
       "state": "planned"
     },
@@ -3225,15 +3249,7 @@
     },
     {
       "date": "2026-04-22",
-      "who": "Comber Sigall Pauline",
-      "type": "Email",
-      "summary": "sigue molesto y confirma que compra a otro proveedor10/4 nueva cot enviar 8/4 plantilla 6/4 wsp a Daniel despues de el msje chao Tompetrol 24/3 cierra compras a Tompetrol por no poder venderle sin alza",
-      "lead": "Oportunidad de AGRICOLA LA CRUZ",
-      "state": "planned"
-    },
-    {
-      "date": "2026-04-22",
-      "who": "Vanessa Vazquez",
+      "who": "Toro González Sebastian Enrique",
       "type": "Email",
       "summary": "Re-engage dormant client",
       "lead": "Oportunidad de AGRÍCOLA KUNAKO SPA",
@@ -3245,14 +3261,6 @@
       "type": "Email",
       "summary": "Re-engage dormant client",
       "lead": "Oportunidad de AGRÍCOLA KUNAKO SPA",
-      "state": "planned"
-    },
-    {
-      "date": "2026-04-22",
-      "who": "Comber Sigall Pauline",
-      "type": "Email",
-      "summary": "1/4 compra hoy por CSC",
-      "lead": "Oportunidad de AGRO COMERCIAL CODEFRUT LTDA",
       "state": "planned"
     },
     {
@@ -3299,7 +3307,7 @@
       "date": "2026-04-21",
       "who": "Comber Sigall Pauline",
       "type": "To-Do",
-      "summary": "16/04 contactada",
+      "summary": "116/4 aun tiene nos pedira+n cuando necesiten 6/04 contactada",
       "lead": "RENE MONTENEGRO MARQUEZ",
       "state": "planned"
     },
@@ -3315,7 +3323,7 @@
       "date": "2026-04-21",
       "who": "Comber Sigall Pauline",
       "type": "To-Do",
-      "summary": "16/04 contactar",
+      "summary": "17/4 nueva cotizacion enviada +7 vs +69 16/04 contactar",
       "lead": "JORGE GALLARDO",
       "state": "planned"
     },
@@ -3329,34 +3337,26 @@
     },
     {
       "date": "2026-04-20",
+      "who": "Comber Sigall Pauline",
+      "type": "Email",
+      "summary": "Re-engage dormant client",
+      "lead": "Oportunidad de EDUARDO ALEJANDRO CABRERA FAUNDEZ",
+      "state": "planned"
+    },
+    {
+      "date": "2026-04-20",
+      "who": "Comber Sigall Pauline",
+      "type": "Email",
+      "summary": "Re-engage dormant client",
+      "lead": "Oportunidad de EDUARDO ALEJANDRO CABRERA FAUNDEZ",
+      "state": "planned"
+    },
+    {
+      "date": "2026-04-20",
       "who": "GARRIDO CISTERNA JUAN MANUEL",
       "type": "Email",
       "summary": "Re-engage dormant client",
       "lead": "Oportunidad de AGRICOLA MARIAGRI SPA",
-      "state": "planned"
-    },
-    {
-      "date": "2026-04-20",
-      "who": "Comber Sigall Pauline",
-      "type": "Email",
-      "summary": "Re-engage dormant client",
-      "lead": "Oportunidad de EDUARDO ALEJANDRO CABRERA FAUNDEZ",
-      "state": "planned"
-    },
-    {
-      "date": "2026-04-20",
-      "who": "Comber Sigall Pauline",
-      "type": "Email",
-      "summary": "Re-engage dormant client",
-      "lead": "Oportunidad de EDUARDO ALEJANDRO CABRERA FAUNDEZ",
-      "state": "planned"
-    },
-    {
-      "date": "2026-04-19",
-      "who": "Comber Sigall Pauline",
-      "type": "To-Do",
-      "summary": "14/4 compra",
-      "lead": "Oportunidad de LUCRECIA PATRON COSTA",
       "state": "planned"
     },
     {
@@ -3369,10 +3369,26 @@
     },
     {
       "date": "2026-04-19",
+      "who": "Comber Sigall Pauline",
+      "type": "Call",
+      "summary": "Linea cancelada 16/4",
+      "lead": "Oportunidad de AMV SPA",
+      "state": "planned"
+    },
+    {
+      "date": "2026-04-19",
       "who": "Toledo Núñez Madelaine Camila",
       "type": "Call",
-      "summary": "follow up on quote sent",
+      "summary": "16/4 Cliente con deudas atrasadas y pagando",
       "lead": "Oportunidad de HUGO PATRICIO CATALAN ZAVALLA",
+      "state": "planned"
+    },
+    {
+      "date": "2026-04-19",
+      "who": "Comber Sigall Pauline",
+      "type": "To-Do",
+      "summary": "14/4 compra",
+      "lead": "Oportunidad de LUCRECIA PATRON COSTA",
       "state": "planned"
     },
     {
@@ -3385,30 +3401,24 @@
     },
     {
       "date": "2026-04-17",
-      "who": "Vial Comber Pauline",
-      "type": "Call",
-      "summary": "follow up on quote sent",
-      "lead": "TRANSPORTES H Y D ESPINOZA LIMITADA.'s opportunity",
-      "state": "planned"
-    },
-    {
-      "date": "2026-04-17",
-      "who": "Toro González Sebastian Enrique",
-      "type": "To-Do",
-      "summary": "Sebastian va a contactar",
-      "lead": "Oportunidad de AGRÍCOLA KUNAKO SPA",
-      "state": "planned"
-    },
-    {
-      "date": "2026-04-17",
-      "who": "Vial Comber Pauline",
-      "type": "Call",
-      "summary": "follow up on quote sent",
-      "lead": "Servicios de construcción y maquinarias Talmaqq Ltda.'s opportunity",
+      "who": "Comber Sigall Pauline",
+      "type": "Email",
+      "summary": "Re-engage dormant client",
+      "lead": "Oportunidad de ERNALDO CLEMENTE ESCOBAR MONDACA",
       "state": "planned"
     }
   ],
   "messages": [
+    {
+      "date": "2026-04-16 21:37",
+      "who": "OdooBot",
+      "desc": "Lead Enrichment (based on email address)\n        \n             No company data found based on the email address or email address is one of an email provider. No credit was consumed."
+    },
+    {
+      "date": "2026-04-16 21:37",
+      "who": "Comber Sigall Pauline",
+      "desc": "Hay un nuevo lead para el equipo \"Ventas\"."
+    },
     {
       "date": "2026-04-16 15:34",
       "who": "OdooBot",
@@ -3438,12 +3448,19 @@
       "is_current": true,
       "stages": {
         "leads": {
-          "value": 1,
+          "value": 2,
           "goal": 15,
           "by_user": {
-            "Comber Sigall Pauline": 1
+            "Comber Sigall Pauline": 2
           },
           "detail": [
+            {
+              "name": "Oportunidad de AMV SPA",
+              "empresa": "AMV SPA",
+              "vendedor": "Comber Sigall Pauline",
+              "etapa": "Durmiente",
+              "fecha": "2026-04-16"
+            },
             {
               "name": "Oportunidad de HUGO PATRICIO CATALAN ZAVALLA",
               "empresa": "HUGO PATRICIO CATALAN ZAVALLA",
@@ -3454,11 +3471,11 @@
           ]
         },
         "contacto": {
-          "value": 78,
+          "value": 83,
           "goal": 10,
           "by_user": {
+            "Comber Sigall Pauline": 25,
             "Vial Comber Pauline": 3,
-            "Comber Sigall Pauline": 20,
             "Toro González Sebastian Enrique": 12,
             "Muñoz Joaquin": 33,
             "Carlos Labbe": 1,
@@ -3467,12 +3484,21 @@
           }
         },
         "cotizacion": {
-          "value": 6,
+          "value": 7,
           "goal": 8,
           "by_user": {
-            "TomEnergy": 6
+            "TomEnergy": 7
           },
           "detail": [
+            {
+              "name": "S30236",
+              "cliente": "JOSE RODRIGO ORMAZABAL VIDAL",
+              "vendedor": "TomEnergy",
+              "monto": 3755689.0,
+              "litros": 3000,
+              "estado": "draft",
+              "fecha": "2026-04-16"
+            },
             {
               "name": "S30230",
               "cliente": "JORGE LUIS GALLARDO LANZELLOTE",
@@ -3530,17 +3556,16 @@
           ]
         },
         "seguimiento": {
-          "value": 50,
+          "value": 43,
           "goal": 100,
           "unit": "%"
         },
         "cierre": {
-          "value": 5,
+          "value": 2,
           "goal": 2,
           "by_user": {
             "TomEnergy": 1,
-            "Toro González Sebastian Enrique": 3,
-            "Muñoz Joaquin": 1
+            "Toro González Sebastian Enrique": 1
           },
           "detail": [
             {
@@ -3548,24 +3573,6 @@
               "order": "S30212",
               "amount": 7783802.0,
               "vendedor": "TomEnergy"
-            },
-            {
-              "partner": "SOCIEDAD DE TRANSPORTES DON IGNACIO LIMITADA",
-              "order": "S30193",
-              "amount": 3891901.0,
-              "vendedor": "Toro González Sebastian Enrique"
-            },
-            {
-              "partner": "AGROSERVICIOS TIERRA SANTA LIMITADA",
-              "order": "S30190",
-              "amount": 2685357.0,
-              "vendedor": "Muñoz Joaquin"
-            },
-            {
-              "partner": "SERVICIOS AGRICOLAS MARISEL ESPINAZA OÑATE E.I.R.L.",
-              "order": "S30182",
-              "amount": 9022278.0,
-              "vendedor": "Toro González Sebastian Enrique"
             },
             {
               "partner": "SOC AGRICOLA LAS MARIAS LTDA",
@@ -3579,7 +3586,7 @@
           "value": 66,
           "goal": 90,
           "unit": "%",
-          "total_evaluated": 387,
+          "total_evaluated": 389,
           "retained_count": 257
         }
       }
@@ -3605,7 +3612,7 @@
               "name": "Oportunidad de SOCIEDAD AGRICOLA EL CARRETON SPA",
               "empresa": "SOCIEDAD AGRICOLA EL CARRETON SPA",
               "vendedor": "Comber Sigall Pauline",
-              "etapa": "Durmiente",
+              "etapa": "Won",
               "fecha": "2026-04-15"
             },
             {
@@ -4035,7 +4042,7 @@
           "value": 66,
           "goal": 90,
           "unit": "%",
-          "total_evaluated": 387,
+          "total_evaluated": 389,
           "retained_count": 257
         }
       }
@@ -4421,7 +4428,7 @@
           "value": 66,
           "goal": 90,
           "unit": "%",
-          "total_evaluated": 387,
+          "total_evaluated": 389,
           "retained_count": 257
         }
       }
@@ -4858,7 +4865,7 @@
           "value": 66,
           "goal": 90,
           "unit": "%",
-          "total_evaluated": 387,
+          "total_evaluated": 389,
           "retained_count": 257
         }
       }
@@ -4869,90 +4876,96 @@
     "month_start": "2026-04-01",
     "month_end": "2026-04-30",
     "totals": {
-      "total_litros": 414889,
-      "total_venta_neta": 527114511,
-      "invoice_count": 265,
-      "nc_count": 13,
+      "total_litros": 418387,
+      "total_venta_neta": 531444509,
+      "invoice_count": 268,
+      "nc_count": 15,
       "litros_by_user": {
-        "Toro González Sebastian Enrique": 135123,
+        "Toro González Sebastian Enrique": 136121,
+        "Comber Sigall Pauline": 274766,
         "Toledo Núñez Madelaine Camila": 2000,
-        "Comber Sigall Pauline": 272266,
         "Muñoz Joaquin": 1500,
         "Carlos Labbe": 2000,
         "De Trenqualye Merino Andre Jean": 2000
       },
       "venta_by_user": {
-        "Toro González Sebastian Enrique": 167925473,
+        "Toro González Sebastian Enrique": 168941212,
+        "Comber Sigall Pauline": 352830268,
         "Toledo Núñez Madelaine Camila": 2613088,
-        "Comber Sigall Pauline": 349516009,
         "Muñoz Joaquin": 1969900,
         "Carlos Labbe": 2559306,
         "De Trenqualye Merino Andre Jean": 2530735
       },
-      "margin_retail_pct": 8.81,
+      "margin_retail_pct": 8.78,
       "margin_volume_pct": 6.1,
-      "retail_venta": 449743662,
+      "retail_venta": 454342616,
       "volume_venta": 84134629,
       "litros_by_zone": {
-        "Talca": 114398,
+        "Talca": 116898,
         "Curico": 95870,
-        "Rancagua": 78526,
+        "Rancagua": 79526,
         "Chillan": 53904,
         "San Fernando": 49200,
         "VI Costa": 25100
       },
       "venta_by_zone": {
-        "Talca": 145605370,
+        "Talca": 148919629,
         "Curico": 122126281,
-        "Rancagua": 101580591,
+        "Rancagua": 102865286,
         "Chillan": 67866366,
         "San Fernando": 64183041,
         "VI Costa": 32516642
       },
       "margin_by_zone": {
+        "Rancagua": 9.1,
+        "Talca": 8.3,
         "San Fernando": 9.9,
         "Chillan": 6.5,
         "Curico": 7.7,
-        "Talca": 8.3,
-        "VI Costa": 9.5,
-        "Rancagua": 9.2
+        "VI Costa": 9.5
       },
       "margin_by_user": {
-        "Toro González Sebastian Enrique": 5.6,
-        "Toledo Núñez Madelaine Camila": 6.2,
+        "Toro González Sebastian Enrique": 5.4,
         "Comber Sigall Pauline": 8.7,
+        "Toledo Núñez Madelaine Camila": 6.2,
         "Muñoz Joaquin": 8.5,
         "Carlos Labbe": 6.1,
         "De Trenqualye Merino Andre Jean": 5.8
       },
       "comber_mantencion_detail": {
-        "tomenergy_litros": 258456,
-        "comber_own_litros": 13810,
-        "total": 272266,
-        "merged_venta_neta": 349516009,
+        "tomenergy_litros": 259456,
+        "comber_own_litros": 15310,
+        "total": 274766,
+        "merged_venta_neta": 352830268,
         "merged_margin_pct": 8.7
       }
     },
     "new_clients": {
-      "count": 20,
+      "count": 21,
       "by_user": {
-        "Toro González Sebastian Enrique": 13,
+        "Toro González Sebastian Enrique": 14,
         "Muñoz Joaquin": 1,
         "Carlos Labbe": 1,
         "Comber Sigall Pauline": 2
       },
       "litros_by_user": {
-        "Toro González Sebastian Enrique": 74044,
+        "Toro González Sebastian Enrique": 75042,
         "Muñoz Joaquin": 1500,
         "Carlos Labbe": 2000,
         "Comber Sigall Pauline": 5000
       },
       "detail": [
         {
+          "cliente": "SOC AGRICOLA LAS MARIAS LTDA",
+          "vendedor": "Toro González Sebastian Enrique",
+          "fecha": "2026-04-16",
+          "litros": 1000
+        },
+        {
           "cliente": "SERVICIOS AGRICOLAS MARISEL ESPINAZA OÑATE E.I.R.L.",
           "vendedor": "Toro González Sebastian Enrique",
           "fecha": "2026-04-16",
-          "litros": 7000
+          "litros": 6999
         },
         {
           "cliente": "SERGIO IGNACIO VERGARA HERNANDEZ",
@@ -4970,7 +4983,7 @@
           "cliente": "SOCIEDAD DE TRANSPORTES DON IGNACIO LIMITADA",
           "vendedor": "Toro González Sebastian Enrique",
           "fecha": "2026-04-16",
-          "litros": 3000
+          "litros": 2999
         },
         {
           "cliente": "TRANSPORTES SAN MARCELO SPA",
@@ -5088,8 +5101,8 @@
       },
       {
         "label": "16/4-22/4",
-        "litros": 50968,
-        "venta_neta": 67174256
+        "litros": 54468,
+        "venta_neta": 71773210
       }
     ],
     "weekly_history": [
@@ -5155,7 +5168,7 @@
       },
       {
         "label": "16/4-22/4",
-        "litros": 50968
+        "litros": 54468
       }
     ]
   },
@@ -5494,7 +5507,7 @@
       },
       {
         "label": "16/4-22/4",
-        "litros": 50968
+        "litros": 54468
       }
     ],
     "sla": {
@@ -5677,15 +5690,15 @@
   },
   "churn": {
     "summary": {
-      "active": 342,
+      "active": 344,
       "dormant": 194,
       "lost": 461,
       "newly_lost": 11,
-      "rescued_dormant": 0,
+      "rescued_dormant": 1,
       "rescued_lost": 0,
       "prev_month_clients": 304,
       "churn_pct": 3.6,
-      "rescue_pct": 0.0
+      "rescue_pct": 0.5
     },
     "by_user": {
       "dormant": {
@@ -5708,7 +5721,9 @@
         "Administrator": 142,
         "Vanessa Vazquez": 38
       },
-      "rescued_dormant": {},
+      "rescued_dormant": {
+        "Comber Sigall Pauline": 1
+      },
       "rescued_lost": {}
     },
     "dormant_list": [
@@ -5911,12 +5926,6 @@
         "avg_monthly_litros": 875
       },
       {
-        "name": "MATIAS ANTONIO RIVERA MORAGA",
-        "user": "Comber Sigall Pauline",
-        "last_update": "2026-04-16",
-        "avg_monthly_litros": 830
-      },
-      {
         "name": "SOCIEDAD AGRICOLA Y COMERCIAL BETHANIA DEL SUR LIMITADA",
         "user": "Comber Sigall Pauline",
         "last_update": "2026-04-16",
@@ -6008,6 +6017,12 @@
       },
       {
         "name": "JAVIER HERNAN CASTILLO MARTINEZ",
+        "user": "Administrator",
+        "last_update": "2026-03-23",
+        "avg_monthly_litros": 625
+      },
+      {
+        "name": "COMERCIALIZADORA ECONUT LTDA",
         "user": "Administrator",
         "last_update": "2026-03-23",
         "avg_monthly_litros": 625
@@ -6195,9 +6210,18 @@
         "avg_monthly_litros": 0
       }
     ],
-    "rescued_dormant_list": [],
+    "rescued_dormant_list": [
+      {
+        "name": "MATIAS ANTONIO RIVERA MORAGA",
+        "user": "Comber Sigall Pauline",
+        "last_update": "2026-04-16",
+        "partner_id": 5207
+      }
+    ],
     "rescued_lost_list": [],
-    "_rescued_dormant_partner_ids": []
+    "_rescued_dormant_partner_ids": [
+      5207
+    ]
   },
   "vendor_goals": {
     "Toro González Sebastian Enrique": {
