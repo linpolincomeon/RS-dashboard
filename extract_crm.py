@@ -498,10 +498,13 @@ def extract_funnel_data(models, uid):
     ret_pct = round((len(retained_ids) / ret_total) * 100) if ret_total > 0 else 0
     print(f"  Retencion 90d: {ret_pct}% ({len(retained_ids)}/{ret_total} clientes con 2+ facturas)")
 
-    weeks_data[0]["stages"]["retencion"] = {
+    # Retention 90d is a rolling trailing metric — show the same value on every week tab
+    retencion_payload = {
         "value": ret_pct, "goal": 90, "unit": "%",
         "total_evaluated": ret_total, "retained_count": len(retained_ids),
     }
+    for w in weeks_data:
+        w["stages"]["retencion"] = retencion_payload
 
     return weeks_data
 
@@ -978,8 +981,11 @@ def extract_churn_data(models, uid):
     active_count = len(curr_month_partners | prev_month_partners)
     churn_pct = round((newly_lost / prev_month_clients) * 100, 1) if prev_month_clients > 0 else 0
     total_rescued = len(rescued_dormant_list) + len(rescued_lost_list)
-    total_at_risk = len(dormant_list) + len(lost_list) + total_rescued
-    rescue_pct = round((total_rescued / max(total_at_risk, 1)) * 100)
+    # Denominator: dormant pool (actively rescuable) + those already rescued.
+    # Perdidos (9+ months) are excluded because they're essentially unreachable and dilute the metric.
+    # `rescued_lost` still counts in the numerator as a bonus win.
+    total_at_risk = len(dormant_list) + len(rescued_dormant_list) + len(rescued_lost_list)
+    rescue_pct = round((total_rescued / max(total_at_risk, 1)) * 100, 1)
 
     print(f"  Activos (2 meses): {active_count}")
     print(f"  Durmientes CRM: {len(dormant_list)} (+{len(rescued_dormant_list)} rescatados)")
