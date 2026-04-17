@@ -208,25 +208,32 @@ def extract_crm_data(models, uid):
         return stage_class.get(stage_id, "") in ("won", "perdido")
 
     pipeline = []
+    won_deals = []
     for l in leads:
         sid = l["stage_id"][0] if l["stage_id"] else None
-        if is_terminal(sid): continue
+        cls = stage_class.get(sid, "oportunidad")
         d_stage = days_since_stage(l)
         d_activity = days_since_activity(l)
-        pipeline.append({
+        entry = {
             "id": l["id"],
             "name": l["partner_id"][1] if l["partner_id"] else l["name"],
             "stage": l["stage_id"][1] if l["stage_id"] else "—",
-            "stage_class": stage_class.get(sid, "oportunidad"),
+            "stage_class": cls,
             "exec": l["user_id"][1] if l["user_id"] else "Sin asignar",
             "exec_id": l["user_id"][0] if l["user_id"] else 0,
             "value": round(get_value(l)),
-            "days_in_stage": d_stage,         # age in current stage (stage transition age)
-            "days_since_activity": d_activity, # any modification (notes, activities, etc.)
+            "days_in_stage": d_stage,
+            "days_since_activity": d_activity,
             "last_update": (l.get("write_date") or l.get("date_last_stage_update") or "")[:10],
             "origin": l.get("x_origen_oportunidad") or "—",
             "created": (l.get("create_date") or "")[:10],
-        })
+        }
+        if cls == "won":
+            won_deals.append(entry)
+        elif cls == "perdido":
+            continue
+        else:
+            pipeline.append(entry)
 
     exec_map = {}
     for p in pipeline:
@@ -243,6 +250,20 @@ def extract_crm_data(models, uid):
         if p["last_update"] >= week_start: exec_map[eid]["moved"] += 1
         if p["days_since_activity"] <= 30: exec_map[eid]["moved_30d"] += 1
         if p["days_in_stage"] > 7: exec_map[eid]["stale"] += 1
+
+    # Add won counts per executive
+    won_by_exec = {}
+    for w in won_deals:
+        eid = w["exec_id"]
+        won_by_exec[eid] = won_by_exec.get(eid, 0) + 1
+        # Also ensure won execs appear in exec_map
+        if eid not in exec_map:
+            exec_map[eid] = {
+                "name": w["exec"], "total": 0,
+                "moved": 0, "moved_30d": 0, "stale": 0, "value": 0,
+            }
+    for eid, cnt in won_by_exec.items():
+        exec_map[eid]["won"] = cnt
 
     executives = sorted(exec_map.values(), key=lambda x: -x["total"])
 
@@ -309,6 +330,7 @@ def extract_crm_data(models, uid):
         "executives": executives,
         "funnel": funnel,
         "pipeline": sorted(pipeline, key=lambda x: x["days_in_stage"])[:150],
+        "won_deals": sorted(won_deals, key=lambda x: -(x.get("avg_monthly_litros") or 0)),
         "stale": stale_leads,
         "activities": act_list[:50],
         "messages": msg_list[:30],
@@ -1293,6 +1315,7 @@ def main():
         "executives": crm["executives"],
         "funnel": crm["funnel"],
         "pipeline": crm["pipeline"],
+        "won_deals": crm["won_deals"],
         "stale": crm["stale"],
         "activities": crm["activities"],
         "messages": crm["messages"],
