@@ -91,6 +91,9 @@ tr:hover td{background:#fafaf8}
 
     <!-- ═══ TAB 1: VENTAS ═══ -->
     <div class="tab-panel active" id="tab-ventas">
+      <!-- Week selector -->
+      <div id="weekSelector" style="display:flex;gap:6px;margin-bottom:18px"></div>
+
       <div class="kpi-row" id="kpiRow"></div>
 
       <div class="sec" id="rankingSection">
@@ -192,6 +195,7 @@ tr:hover td{background:#fafaf8}
 <script>
 let D = null;
 let chartVendedor = null;
+let selectedWeek = 0;
 
 // Regular sales team only (excludes freelancers like Fernando Jullian and CS like Comber)
 const ALLOWED_VENDORS = [
@@ -278,18 +282,35 @@ function getTeamGoal(key) {
 }
 
 function getCurrentWeek() {
-  if (!D.funnel_weeks || D.funnel_weeks.length === 0) return null;
-  return D.funnel_weeks[0];
+  const fw = D.funnel_weeks || [];
+  return fw[selectedWeek] || fw[0] || null;
+}
+
+function renderWeekSelector() {
+  const fw = D.funnel_weeks || [];
+  const sel = document.getElementById('weekSelector');
+  sel.innerHTML = fw.map((w, i) =>
+    `<button class="btn${i === selectedWeek ? ' style="border-color:var(--red);color:var(--red)"' : ''}" onclick="selectWeek(${i})">${w.label}${w.is_current ? ' ●' : ''}</button>`
+  ).join('');
+}
+
+function selectWeek(idx) {
+  selectedWeek = idx;
+  const week = getCurrentWeek();
+  if (week) document.getElementById('weekBadge').textContent = week.label;
+  renderWeekSelector();
+  render();
 }
 
 function render() {
   if (!D) return;
 
-  // Set week badge
+  // Set week badge + selector
   const week = getCurrentWeek();
   if (week && week.label) {
     document.getElementById('weekBadge').textContent = week.label;
   }
+  renderWeekSelector();
 
   // Section 1: Team KPI Cards
   const V = D.ventas || {};
