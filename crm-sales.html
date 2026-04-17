@@ -7,7 +7,7 @@
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <style>
-:root{--bg:#f7f6f3;--card:#fff;--border:#e8e5e0;--text:#1a1a1a;--dim:#888;--red:#c8360e;--green:#16a34a;--yellow:#ca8a04;--blue:#2563eb;--font:'DM Sans',sans-serif}
+:root{--bg:#f7f6f3;--card:#fff;--border:#e8e5e0;--text:#1a1a1a;--dim:#888;--red:#c8360e;--green:#16a34a;--yellow:#ca8a04;--blue:#2563eb;--orange:#ea580c;--purple:#7c3aed;--font:'DM Sans',sans-serif}
 *{margin:0;padding:0;box-sizing:border-box}
 body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14px;line-height:1.5}
 .topbar{display:flex;align-items:center;justify-content:space-between;padding:14px 24px;background:var(--card);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100}
@@ -23,18 +23,19 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
 #loading{text-align:center;padding:80px 20px;color:var(--dim)}
 .spinner{width:32px;height:32px;border:3px solid var(--border);border-top-color:var(--red);border-radius:50%;animation:spin .7s linear infinite;margin:0 auto 12px}
 @keyframes spin{to{transform:rotate(360deg)}}
-.kpi-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-bottom:28px}
+.kpi-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin-bottom:28px}
 .kpi{background:var(--card);border-radius:12px;padding:16px;box-shadow:0 1px 3px rgba(0,0,0,.04);position:relative;overflow:hidden}
 .kpi::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;border-radius:12px 12px 0 0}
 .kpi.c-red::before{background:var(--red)}.kpi.c-green::before{background:var(--green)}.kpi.c-yellow::before{background:var(--yellow)}.kpi.c-blue::before{background:var(--blue)}
 .kpi .lbl{font-size:11px;color:var(--dim);text-transform:uppercase;letter-spacing:.3px;margin-bottom:6px;font-weight:500}
-.kpi .val{font-size:28px;font-weight:700;line-height:1.1}
+.kpi .val{font-size:26px;font-weight:700;line-height:1.1}
 .kpi .det{font-size:11px;color:var(--dim);margin-top:3px}
 .kpi .bar{height:4px;background:#eee;border-radius:2px;margin-top:8px;overflow:hidden}
 .kpi .bar-f{height:100%;border-radius:2px;transition:width .8s}
 .sec{background:var(--card);border-radius:12px;box-shadow:0 1px 3px rgba(0,0,0,.04);margin-bottom:24px;overflow:hidden}
 .sec-h{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid var(--border)}
 .sec-h h2{font-size:15px;font-weight:600}
+.sec-h .badge{background:var(--red);color:#fff;font-size:11px;font-weight:600;padding:3px 10px;border-radius:10px}
 .sec-b{padding:16px 18px}
 table{width:100%;border-collapse:collapse;font-size:13px}
 th{text-align:left;padding:10px 12px;color:var(--dim);font-size:11px;font-weight:600;text-transform:uppercase;border-bottom:2px solid #f0f0f0}
@@ -43,24 +44,27 @@ tr:hover td{background:#fafaf8}
 .bold{font-weight:600}
 .tag{display:inline-block;padding:3px 10px;border-radius:8px;font-size:12px;font-weight:600}
 .tag-g{background:#f0fdf4;color:var(--green)}.tag-y{background:#fefce8;color:var(--yellow)}.tag-r{background:#fef2f2;color:var(--red)}
+.tag-blue{background:#eff6ff;color:var(--blue)}.tag-orange{background:#fff7ed;color:var(--orange)}.tag-purple{background:#f5f3ff;color:var(--purple)}
+.tag-dim{background:#f5f5f5;color:var(--dim)}
 .err{background:#fef2f2;border:1px solid #fecaca;color:var(--red);padding:12px 18px;border-radius:10px;margin-bottom:16px;font-size:13px;display:none}
 .err.active{display:block}
 .nodata{text-align:center;padding:40px;color:var(--dim)}
 .chart-cont{background:var(--card);border-radius:12px;box-shadow:0 1px 3px rgba(0,0,0,.04);padding:16px;margin-bottom:24px}
 .chart-cont h3{font-size:14px;font-weight:600;margin-bottom:14px;color:var(--text)}
-.chart-cont canvas{max-height:320px}
+.chart-cont canvas{max-height:300px}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px}
 .tab-bar{display:flex;gap:0;border-bottom:2px solid var(--border);margin-bottom:24px}
 .tab-btn{padding:10px 22px;font-family:var(--font);font-size:14px;font-weight:600;color:var(--dim);background:none;border:none;border-bottom:2px solid transparent;margin-bottom:-2px;cursor:pointer;transition:.2s}
 .tab-btn:hover{color:var(--text)}
 .tab-btn.active{color:var(--red);border-bottom-color:var(--red)}
-.tab-panel{display:none}
-.tab-panel.active{display:block}
+.tab-panel{display:none}.tab-panel.active{display:block}
 .cs-card{background:var(--card);border-radius:12px;box-shadow:0 1px 3px rgba(0,0,0,.04);padding:18px;margin-bottom:16px}
 .cs-card h4{font-size:14px;font-weight:600;margin-bottom:10px}
 .cs-row{display:flex;gap:16px;flex-wrap:wrap}
 .cs-stat{text-align:center;min-width:80px}
 .cs-stat .cs-val{font-size:22px;font-weight:700}
 .cs-stat .cs-lbl{font-size:11px;color:var(--dim);text-transform:uppercase}
+@media(max-width:900px){.grid-2{grid-template-columns:1fr}}
 @media(max-width:800px){.kpi-row{grid-template-columns:repeat(2,1fr)}.chart-cont{padding:12px}}
 @media(max-width:500px){.kpi-row{grid-template-columns:1fr}.topbar{flex-direction:column;gap:10px;text-align:center}.topbar-right{width:100%;justify-content:center;flex-wrap:wrap}}
 </style>
@@ -83,7 +87,6 @@ tr:hover td{background:#fafaf8}
   <div id="loading"><div class="spinner"></div>Cargando datos del equipo comercial...</div>
 
   <div id="content" style="display:none">
-    <!-- Tab bar -->
     <div class="tab-bar">
       <button class="tab-btn active" onclick="switchTab('ventas')">Ventas</button>
       <button class="tab-btn" onclick="switchTab('fidelizacion')">Fidelización / CS</button>
@@ -91,465 +94,140 @@ tr:hover td{background:#fafaf8}
 
     <!-- ═══ TAB 1: VENTAS ═══ -->
     <div class="tab-panel active" id="tab-ventas">
-      <!-- Week selector -->
       <div id="weekSelector" style="display:flex;gap:6px;margin-bottom:18px"></div>
-
       <div class="kpi-row" id="kpiRow"></div>
 
-      <div class="sec" id="rankingSection">
-        <div class="sec-h"><h2>📊 Ranking Equipo</h2></div>
-        <div class="sec-b">
-          <table id="rankingTable">
-            <thead>
-              <tr>
-                <th>#</th>
-                <th>Ejecutivo</th>
-                <th>% Meta Litros</th>
-                <th>% Meta Leads</th>
-                <th>% Meta Cotiz.</th>
-                <th>% Meta Cierre</th>
-                <th>Mov. 7d</th>
-                <th>Mov. 30d</th>
-              </tr>
-            </thead>
-            <tbody id="rankingBody"></tbody>
-          </table>
-        </div>
+      <!-- Weekly litros chart -->
+      <div class="chart-cont"><h3>📈 Venta Semanal (Litros)</h3><canvas id="chartWeekly"></canvas></div>
+
+      <!-- Ranking -->
+      <div class="sec"><div class="sec-h"><h2>📊 Ranking Equipo</h2></div><div class="sec-b">
+        <table><thead><tr><th>#</th><th>Ejecutivo</th><th>% Meta Litros</th><th>% Meta Leads</th><th>% Meta Cotiz.</th><th>% Meta Cierre</th><th>Mov. 7d</th><th>Mov. 30d</th></tr></thead><tbody id="rankingBody"></tbody></table>
+      </div></div>
+
+      <!-- Margen grids -->
+      <div class="grid-2">
+        <div class="chart-cont"><h3>💰 Margen % por Zona</h3><canvas id="chartMargenZona"></canvas></div>
+        <div class="chart-cont"><h3>💰 Margen % por Ejecutivo</h3><canvas id="chartMargenExec"></canvas></div>
       </div>
 
-      <div class="chart-cont">
-        <h3>📈 Litros por Vendedor (% de Meta)</h3>
-        <canvas id="chartVendedor"></canvas>
+      <!-- Hot Deals + Movimientos side by side -->
+      <div class="grid-2">
+        <div class="sec"><div class="sec-h"><h2>🔥 Hot Deals — Cotizados 30d</h2><span class="badge" id="hotCount">0</span></div>
+          <div class="sec-b" style="max-height:480px;overflow-y:auto"><table><thead><tr><th>Cliente</th><th>Etapa</th><th>Ejecutivo</th><th>Litros</th><th>Días</th></tr></thead><tbody id="hotBody"></tbody></table>
+          <div class="nodata" id="noHot" style="display:none">Sin hot deals</div></div></div>
+
+        <div class="sec"><div class="sec-h"><h2>✅ Movimientos Recientes (7d)</h2><span class="badge" id="movCount">0</span></div>
+          <div class="sec-b" style="max-height:480px;overflow-y:auto"><table><thead><tr><th>Cliente</th><th>Etapa</th><th>Ejecutivo</th><th>Litros</th><th>Hace</th></tr></thead><tbody id="movBody"></tbody></table>
+          <div class="nodata" id="noMov" style="display:none">Sin movimientos</div></div></div>
       </div>
 
-      <div class="sec" id="movementsSection">
-        <div class="sec-h"><h2>🔄 Movimientos Recientes (≤7 días)</h2></div>
-        <div class="sec-b">
-          <table id="movementsTable">
-            <thead>
-              <tr>
-                <th>Cliente</th>
-                <th>Etapa</th>
-                <th>Ejecutivo</th>
-                <th>Litros</th>
-                <th>Hace</th>
-              </tr>
-            </thead>
-            <tbody id="movementsBody"></tbody>
-          </table>
-          <div class="nodata" id="noMovements" style="display:none">Sin movimientos recientes</div>
-        </div>
+      <!-- Clientes Nuevos + Nuevas Cotizaciones -->
+      <div class="grid-2">
+        <div class="sec"><div class="sec-h"><h2>🆕 Clientes Nuevos</h2><span class="badge" id="ncCount">0</span></div>
+          <div class="sec-b" style="max-height:400px;overflow-y:auto"><table><thead><tr><th>Cliente</th><th>Vendedor</th><th>Litros</th><th>Fecha</th></tr></thead><tbody id="ncBody"></tbody></table>
+          <div class="nodata" id="noNC" style="display:none">Sin clientes nuevos</div></div></div>
+
+        <div class="sec"><div class="sec-h"><h2>📝 Cotizaciones Activas</h2><span class="badge" id="cotizCount">0</span></div>
+          <div class="sec-b" style="max-height:400px;overflow-y:auto"><table><thead><tr><th>Cliente</th><th>Ejecutivo</th><th>Litros</th><th>Días</th></tr></thead><tbody id="cotizBody"></tbody></table>
+          <div class="nodata" id="noCotiz" style="display:none">Sin cotizaciones</div></div></div>
       </div>
+
+      <!-- Perdidos -->
+      <div class="sec"><div class="sec-h"><h2>⚠️ Clientes Perdidos — Oportunidad de Recuperar</h2><span class="badge" id="lostCount">0</span></div>
+        <div class="sec-b" style="max-height:400px;overflow-y:auto"><table><thead><tr><th>Cliente</th><th>Ejecutivo Asignado</th><th>Litros Prom/Mes</th><th>Última Compra</th></tr></thead><tbody id="lostBody"></tbody></table>
+        <div class="nodata" id="noLost" style="display:none">Sin perdidos</div></div></div>
     </div>
 
     <!-- ═══ TAB 2: FIDELIZACIÓN / CS ═══ -->
     <div class="tab-panel" id="tab-fidelizacion">
-      <!-- CS KPI Cards -->
       <div class="kpi-row" id="csKpiRow"></div>
-
-      <!-- Per-exec breakdown -->
       <div id="csExecCards"></div>
-
-      <!-- Rescued clients table -->
-      <div class="sec" id="rescuedSection">
-        <div class="sec-h"><h2>🏆 Clientes Rescatados</h2></div>
-        <div class="sec-b">
-          <table>
-            <thead>
-              <tr>
-                <th>Cliente</th>
-                <th>Ejecutivo</th>
-                <th>Litros Prom/Mes</th>
-                <th>Última Compra</th>
-              </tr>
-            </thead>
-            <tbody id="rescuedBody"></tbody>
-          </table>
-          <div class="nodata" id="noRescued" style="display:none">Sin rescates este mes</div>
-        </div>
-      </div>
-
-      <!-- Dormant opportunities table -->
-      <div class="sec" id="dormantSection">
-        <div class="sec-h"><h2>🎯 Oportunidades por Recuperar (Durmientes)</h2></div>
-        <div class="sec-b" style="max-height:500px;overflow-y:auto">
-          <table>
-            <thead>
-              <tr>
-                <th>Cliente</th>
-                <th>Ejecutivo Asignado</th>
-                <th>Litros Prom/Mes</th>
-                <th>Última Compra</th>
-              </tr>
-            </thead>
-            <tbody id="dormantBody"></tbody>
-          </table>
-          <div class="nodata" id="noDormant" style="display:none">Sin durmientes registrados</div>
-        </div>
-      </div>
+      <div class="sec" id="rescuedSection"><div class="sec-h"><h2>🏆 Clientes Rescatados</h2></div><div class="sec-b">
+        <table><thead><tr><th>Cliente</th><th>Ejecutivo</th><th>Litros Prom/Mes</th><th>Última Compra</th></tr></thead><tbody id="rescuedBody"></tbody></table>
+        <div class="nodata" id="noRescued" style="display:none">Sin rescates este mes</div></div></div>
+      <div class="sec" id="dormantSection"><div class="sec-h"><h2>🎯 Oportunidades por Recuperar (Durmientes)</h2></div>
+        <div class="sec-b" style="max-height:500px;overflow-y:auto"><table><thead><tr><th>Cliente</th><th>Ejecutivo Asignado</th><th>Litros Prom/Mes</th><th>Última Compra</th></tr></thead><tbody id="dormantBody"></tbody></table>
+        <div class="nodata" id="noDormant" style="display:none">Sin durmientes registrados</div></div></div>
     </div>
-
   </div>
 </div>
 
 <script>
 let D = null;
-let chartVendedor = null;
 let selectedWeek = 0;
+let chartWeekly = null, chartMargenZona = null, chartMargenExec = null;
 
-// Regular sales team only (excludes freelancers like Fernando Jullian and CS like Comber)
 const ALLOWED_VENDORS = [
-  'toro gonzález sebastian enrique',
-  'carlos labbe',
-  'joaquin muñoz',
-  'yeniré ron',
-  'yenire ron'
+  'toro gonzález sebastian enrique','carlos labbe','joaquin muñoz','yeniré ron','yenire ron'
 ];
+const CS_TEAM = ['comber sigall pauline','mauro boccardo','tomenergy'];
 
-// Normalize: lowercase, strip accents, sort words → order-independent matching
 const norm = s => s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').split(/\s+/).filter(Boolean).sort().join(' ');
-const _allowedNorms = new Set(ALLOWED_VENDORS.map(norm));
-const isAllowed = n => n && _allowedNorms.has(norm(n));
+const _aN = new Set(ALLOWED_VENDORS.map(norm));
+const _csN = new Set(CS_TEAM.map(norm));
+const isAllowed = n => n && _aN.has(norm(n));
+const isCS = n => n && _csN.has(norm(n));
 
-// CS / Fidelización team
-const CS_TEAM = [
-  'comber sigall pauline',
-  'mauro boccardo',
-  'tomenergy'
-];
-const _csNorms = new Set(CS_TEAM.map(norm));
-const isCS = n => n && _csNorms.has(norm(n));
-
-// Fuzzy vendor_goals lookup (handles name order differences between Odoo and goals JSON)
 function getGoal(name) {
   if (!D || !D.vendor_goals) return {};
-  const direct = D.vendor_goals[name];
-  if (direct) return direct;
-  const n = norm(name);
-  for (const [k, v] of Object.entries(D.vendor_goals)) {
-    if (norm(k) === n) return v;
-  }
+  const d = D.vendor_goals[name]; if (d) return d;
+  const nn = norm(name);
+  for (const [k, v] of Object.entries(D.vendor_goals)) { if (norm(k) === nn) return v; }
   return {};
 }
 
-// Utility functions
-const H = s => {
-  if (!s) return '';
-  const d = document.createElement('div');
-  d.textContent = s;
-  return d.innerHTML;
-};
-
+const H = s => { if (!s) return ''; const d = document.createElement('div'); d.textContent = s; return d.innerHTML; };
 const fL = n => n ? Math.round(n).toLocaleString('es-CL') + ' L' : '0 L';
-const fC = n => n ? '$' + Math.round(n).toLocaleString('es-CL') : '$0';
-const pct = (v, g) => Math.min(Math.round((v / g) * 100), 999);
-const clr = (v, g) => {
-  const p = (v / g) * 100;
-  return p >= 100 ? 'g' : p >= 60 ? 'y' : 'r';
-};
+const pct = (v, g) => g ? Math.min(Math.round((v / g) * 100), 999) : 0;
+const clr = (v, g) => { const p = g ? (v / g) * 100 : 0; return p >= 100 ? 'g' : p >= 60 ? 'y' : 'r'; };
 const tagC = c => c === 'g' ? 'tag-g' : c === 'y' ? 'tag-y' : 'tag-r';
 const barC = c => c === 'g' ? 'var(--green)' : c === 'y' ? 'var(--yellow)' : 'var(--red)';
 
-function getDaysInMonth(date = new Date()) {
-  return new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate();
+// Stage color mapping
+function stageTag(stage, stageClass) {
+  const sc = (stageClass || '').toLowerCase();
+  const s = stage || '—';
+  if (sc.includes('cotiza')) return `<span class="tag tag-r">${H(s)}</span>`;
+  if (sc.includes('oportunidad') || sc === 'oportunidad') return `<span class="tag tag-orange">${H(s)}</span>`;
+  if (sc.includes('contacto') || sc.includes('contactado')) return `<span class="tag tag-g">${H(s)}</span>`;
+  if (sc.includes('ruta')) return `<span class="tag tag-blue">${H(s)}</span>`;
+  if (sc.includes('cierre') || sc.includes('ganado')) return `<span class="tag tag-g">${H(s)}</span>`;
+  if (sc.includes('durmiente')) return `<span class="tag tag-dim">${H(s)}</span>`;
+  if (sc.includes('perdido')) return `<span class="tag tag-r">${H(s)}</span>`;
+  return `<span class="tag tag-purple">${H(s)}</span>`;
 }
 
-function getDaysElapsed(monthStart, today = new Date()) {
-  const start = new Date(monthStart);
-  const diff = today - start;
-  return Math.max(1, Math.floor(diff / (1000 * 60 * 60 * 24)));
-}
-
-function getProratedFactor(monthStart) {
-  const daysElapsed = getDaysElapsed(monthStart);
-  const daysInMonth = getDaysInMonth();
-  return daysElapsed / daysInMonth;
+function getDaysInMonth() { return new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0).getDate(); }
+function getProratedFactor(ms) {
+  const start = new Date(ms); const diff = new Date() - start;
+  const elapsed = Math.max(1, Math.floor(diff / 864e5));
+  return elapsed / getDaysInMonth();
 }
 
 function mkKpi(color, lbl, val, det, v, g) {
   let bar = '';
-  if (v != null && g) {
-    const p = Math.min(pct(v, g), 100);
-    const c = clr(v, g);
-    bar = `<div class="bar"><div class="bar-f" style="width:${p}%;background:${barC(c)}"></div></div>`;
-  }
+  if (v != null && g) { const p = Math.min(pct(v, g), 100); const c = clr(v, g); bar = `<div class="bar"><div class="bar-f" style="width:${p}%;background:${barC(c)}"></div></div>`; }
   return `<div class="kpi ${color}"><div class="lbl">${lbl}</div><div class="val">${val}</div><div class="det">${det}</div>${bar}</div>`;
 }
 
-function getTeamGoal(key) {
-  if (!D.company_goals) return 0;
-  return D.company_goals[key] || 0;
-}
-
-function getCurrentWeek() {
-  const fw = D.funnel_weeks || [];
-  return fw[selectedWeek] || fw[0] || null;
-}
+function getCurrentWeek() { const fw = D.funnel_weeks || []; return fw[selectedWeek] || fw[0] || null; }
 
 function renderWeekSelector() {
   const fw = D.funnel_weeks || [];
-  const sel = document.getElementById('weekSelector');
-  sel.innerHTML = fw.map((w, i) =>
+  document.getElementById('weekSelector').innerHTML = fw.map((w, i) =>
     `<button class="btn${i === selectedWeek ? ' style="border-color:var(--red);color:var(--red)"' : ''}" onclick="selectWeek(${i})">${w.label}${w.is_current ? ' ●' : ''}</button>`
   ).join('');
 }
 
 function selectWeek(idx) {
   selectedWeek = idx;
-  const week = getCurrentWeek();
-  if (week) document.getElementById('weekBadge').textContent = week.label;
+  const w = getCurrentWeek();
+  if (w) document.getElementById('weekBadge').textContent = w.label;
   renderWeekSelector();
-  render();
+  renderVentas();
 }
 
-function render() {
-  if (!D) return;
-
-  // Set week badge + selector
-  const week = getCurrentWeek();
-  if (week && week.label) {
-    document.getElementById('weekBadge').textContent = week.label;
-  }
-  renderWeekSelector();
-
-  // Section 1: Team KPI Cards
-  const V = D.ventas || {};
-  const T = V.totals || {};
-  const VG = D.vendor_goals || {};
-  const lbu = T.litros_by_user || {};
-
-  // Sum only allowed vendors' litros
-  let totalsLitros = 0;
-  let goalLitros = 0;
-  for (const [u, v] of Object.entries(lbu)) {
-    if (isAllowed(u)) totalsLitros += v;
-  }
-  for (const [u, g] of Object.entries(VG)) {
-    if (isAllowed(u)) goalLitros += (g.litros_mes || 0);
-  }
-
-  // Sum allowed vendor funnel from current week
-  const sumAllowed = (obj) => {
-    if (!obj) return 0;
-    return Object.entries(obj).filter(([k]) => isAllowed(k)).reduce((a, [, v]) => a + v, 0);
-  };
-  const currentWeekLeads = week ? sumAllowed(week.stages?.leads?.by_user) : 0;
-  const currentWeekCotiz = week ? sumAllowed(week.stages?.cotizacion?.by_user) : 0;
-  const currentWeekCierre = week ? sumAllowed(week.stages?.cierre?.by_user) : 0;
-  const teamLeadsGoal = getTeamGoal('leads_semana');
-  const teamCotizGoal = getTeamGoal('cotizaciones_semana');
-  const teamCierreGoal = getTeamGoal('contactos_semana');
-
-  let kpiHtml = '';
-  kpiHtml += mkKpi('c-red', 'Total Litros Equipo',
-    fL(totalsLitros),
-    `${pct(totalsLitros, goalLitros)}% de meta`,
-    totalsLitros, goalLitros);
-
-  kpiHtml += mkKpi('c-green', 'Leads de la Semana',
-    Math.round(currentWeekLeads),
-    teamLeadsGoal ? `Meta: ${teamLeadsGoal}` : 'Sin meta',
-    currentWeekLeads, teamLeadsGoal || currentWeekLeads);
-
-  kpiHtml += mkKpi('c-yellow', 'Cotizaciones de la Semana',
-    Math.round(currentWeekCotiz),
-    teamCotizGoal ? `Meta: ${teamCotizGoal}` : 'Sin meta',
-    currentWeekCotiz, teamCotizGoal || currentWeekCotiz);
-
-  kpiHtml += mkKpi('c-blue', 'Cierres de la Semana',
-    Math.round(currentWeekCierre),
-    teamCierreGoal ? `Meta: ${teamCierreGoal}` : 'Sin meta',
-    currentWeekCierre, teamCierreGoal || currentWeekCierre);
-
-  document.getElementById('kpiRow').innerHTML = kpiHtml;
-
-  // Section 2: Ranking Table
-  renderRankingTable();
-
-  // Section 3: Litros Chart
-  renderChartVendedor();
-
-  // Section 4: Movimientos Recientes
-  renderMovements();
-}
-
-function renderRankingTable() {
-  if (!D) return;
-
-  const tbody = document.getElementById('rankingBody');
-  tbody.innerHTML = '';
-
-  const executives = (D.executives || []).filter(e => isAllowed(e.name));
-  const T2 = (D.ventas || {}).totals || {};
-  const proratedFactor = getProratedFactor(D.ventas?.month_start || new Date());
-  const week = getCurrentWeek();
-
-  const rows = executives.map(exec => {
-    const name = exec.name;
-    const litrosUser = (T2.litros_by_user || {})[name] || 0;
-    const litrosMeta = getGoal(name).litros_mes || 0;
-
-    let litrosPct = '—';
-    if (litrosMeta > 0) {
-      const proratedMeta = litrosMeta * proratedFactor;
-      litrosPct = Math.round((litrosUser / proratedMeta) * 100) + '%';
-    }
-
-    const leadsUser = week?.stages?.leads?.by_user?.[name] || 0;
-    const leadsMeta = getGoal(name).leads_semana || 0;
-    const leadsPct = leadsMeta > 0 ? Math.round((leadsUser / leadsMeta) * 100) + '%' : '—';
-
-    const cotizUser = week?.stages?.cotizacion?.by_user?.[name] || 0;
-    const cotizMeta = getGoal(name).cotizaciones_semana || 0;
-    const cotizPct = cotizMeta > 0 ? Math.round((cotizUser / cotizMeta) * 100) + '%' : '—';
-
-    const cierreUser = week?.stages?.cierre?.by_user?.[name] || 0;
-    const cierreMeta = getGoal(name).contactos_semana || 0;
-    const cierrePct = cierreMeta > 0 ? Math.round((cierreUser / cierreMeta) * 100) + '%' : '—';
-
-    const mov7d = exec.moved || 0;
-    const mov30d = exec.moved_30d || 0;
-
-    // For sorting, extract numeric value
-    const litrosPctNum = litrosMeta > 0 ? (litrosUser / (litrosMeta * proratedFactor)) * 100 : 0;
-
-    return { name, litrosPct, litrosPctNum, leadsPct, cotizPct, cierrePct, mov7d, mov30d };
-  }).sort((a, b) => b.litrosPctNum - a.litrosPctNum);
-
-  rows.forEach((row, idx) => {
-    const litrosColor = row.litrosPctNum >= 100 ? 'tag-g' : row.litrosPctNum >= 60 ? 'tag-y' : 'tag-r';
-    const leadsColor = row.leadsPct === '—' ? '' : (parseInt(row.leadsPct) >= 100 ? 'tag-g' : parseInt(row.leadsPct) >= 60 ? 'tag-y' : 'tag-r');
-    const cotizColor = row.cotizPct === '—' ? '' : (parseInt(row.cotizPct) >= 100 ? 'tag-g' : parseInt(row.cotizPct) >= 60 ? 'tag-y' : 'tag-r');
-    const cierreColor = row.cierrePct === '—' ? '' : (parseInt(row.cierrePct) >= 100 ? 'tag-g' : parseInt(row.cierrePct) >= 60 ? 'tag-y' : 'tag-r');
-
-    const tr = document.createElement('tr');
-    tr.innerHTML = `
-      <td><strong>${idx + 1}</strong></td>
-      <td>${H(row.name)}</td>
-      <td><span class="tag ${litrosColor}">${row.litrosPct}</span></td>
-      <td><span class="tag ${leadsColor}">${row.leadsPct}</span></td>
-      <td><span class="tag ${cotizColor}">${row.cotizPct}</span></td>
-      <td><span class="tag ${cierreColor}">${row.cierrePct}</span></td>
-      <td><strong>${row.mov7d}</strong></td>
-      <td><strong>${row.mov30d}</strong></td>
-    `;
-    tbody.appendChild(tr);
-  });
-}
-
-function renderChartVendedor() {
-  if (!D || !D.executives) return;
-
-  const executives = D.executives.filter(e => isAllowed(e.name));
-  const T3 = (D.ventas || {}).totals || {};
-  const proratedFactor = getProratedFactor(D.ventas?.month_start || new Date());
-
-  const labels = executives.map(e => e.name.split(' ').slice(0, 2).join(' ')); // First 2 words
-  const data = executives.map(exec => {
-    const litrosUser = (T3.litros_by_user || {})[exec.name] || 0;
-    const litrosMeta = getGoal(exec.name).litros_mes || 0;
-    if (litrosMeta === 0) return 0;
-    const proratedMeta = litrosMeta * proratedFactor;
-    return Math.round((litrosUser / proratedMeta) * 100);
-  });
-
-  const bgColors = data.map(v => v >= 100 ? '#16a34a' : v >= 60 ? '#ca8a04' : '#c8360e');
-
-  const ctx = document.getElementById('chartVendedor').getContext('2d');
-  if (chartVendedor) chartVendedor.destroy();
-
-  chartVendedor = new Chart(ctx, {
-    type: 'bar',
-    data: {
-      labels: labels,
-      datasets: [{
-        label: '% de Meta',
-        data: data,
-        backgroundColor: bgColors,
-        borderRadius: 4
-      }]
-    },
-    options: {
-      indexAxis: 'y',
-      responsive: true,
-      maintainAspectRatio: true,
-      plugins: {
-        legend: { display: false },
-        tooltip: {
-          callbacks: {
-            label: ctx => ctx.parsed.x + '%'
-          }
-        }
-      },
-      scales: {
-        x: {
-          beginAtZero: true,
-          max: 150,
-          ticks: {
-            callback: v => v + '%'
-          },
-          grid: { color: '#f0f0f0' }
-        },
-        y: { grid: { display: false } }
-      },
-      annotation: {
-        drawTime: 'beforeDatasetsDraw',
-        annotations: {}
-      }
-    },
-    plugins: [{
-      afterDatasetsDraw(chart) {
-        const { ctx, chartArea, scales } = chart;
-        const xScale = scales.x;
-        const x100 = chartArea.left + ((100 - xScale.min) / (xScale.max - xScale.min)) * chartArea.width;
-        ctx.save();
-        ctx.strokeStyle = '#888';
-        ctx.setLineDash([3, 3]);
-        ctx.lineWidth = 1;
-        ctx.beginPath();
-        ctx.moveTo(x100, chartArea.top);
-        ctx.lineTo(x100, chartArea.bottom);
-        ctx.stroke();
-        ctx.restore();
-      }
-    }]
-  });
-}
-
-function renderMovements() {
-  if (!D || !D.pipeline) {
-    document.getElementById('movementsBody').innerHTML = '';
-    document.getElementById('noMovements').style.display = 'block';
-    return;
-  }
-
-  const tbody = document.getElementById('movementsBody');
-  tbody.innerHTML = '';
-
-  const recentPipeline = D.pipeline.filter(p => (p.days_since_activity != null ? p.days_since_activity : p.days_in_stage) <= 7 && isAllowed(p.exec));
-
-  if (recentPipeline.length === 0) {
-    document.getElementById('noMovements').style.display = 'block';
-    return;
-  }
-
-  document.getElementById('noMovements').style.display = 'none';
-
-  recentPipeline.forEach(p => {
-    const stageName = p.stage ? p.stage.charAt(0).toUpperCase() + p.stage.slice(1) : '—';
-    const tr = document.createElement('tr');
-    tr.innerHTML = `
-      <td>${H(p.name)}</td>
-      <td>${stageName}</td>
-      <td>${H(p.exec)}</td>
-      <td>${fL(p.value)}</td>
-      <td>${p.days_in_stage}d</td>
-    `;
-    tbody.appendChild(tr);
-  });
-}
-
-// ═══ Tab switching ═══
 function switchTab(tab) {
   document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
   document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
@@ -558,167 +236,310 @@ function switchTab(tab) {
   if (tab === 'fidelizacion' && D) renderFidelizacion();
 }
 
-// ═══ Fidelización / CS rendering ═══
+function render() {
+  if (!D) return;
+  const w = getCurrentWeek();
+  if (w && w.label) document.getElementById('weekBadge').textContent = w.label;
+  renderWeekSelector();
+  renderVentas();
+}
+
+// ═══════════════════════════════════════
+// VENTAS TAB
+// ═══════════════════════════════════════
+function renderVentas() {
+  if (!D) return;
+  const V = D.ventas || {}, T = V.totals || {}, VG = D.vendor_goals || {};
+  const lbu = T.litros_by_user || {};
+  const week = getCurrentWeek();
+  const pf = getProratedFactor(V.month_start || new Date());
+
+  // — KPI Cards —
+  let totLitros = 0, goalLitros = 0;
+  for (const [u, v] of Object.entries(lbu)) { if (isAllowed(u)) totLitros += v; }
+  for (const [u, g] of Object.entries(VG)) { if (isAllowed(u)) goalLitros += (g.litros_mes || 0); }
+
+  const sumA = obj => { if (!obj) return 0; return Object.entries(obj).filter(([k]) => isAllowed(k)).reduce((a, [, v]) => a + v, 0); };
+  const wLeads = week ? sumA(week.stages?.leads?.by_user) : 0;
+  const wCotiz = week ? sumA(week.stages?.cotizacion?.by_user) : 0;
+  const wCierre = week ? sumA(week.stages?.cierre?.by_user) : 0;
+  const mRetail = T.margin_retail_pct || 0;
+  const mVol = T.margin_volume_pct || 0;
+  const CG = D.company_goals || {};
+
+  let kh = '';
+  kh += mkKpi('c-red', 'Litros Equipo', fL(totLitros), `${pct(totLitros, goalLitros)}% de meta`, totLitros, goalLitros);
+  kh += mkKpi('c-green', 'Leads Semana', wLeads, week ? `Semana ${week.label}` : '', null, null);
+  kh += mkKpi('c-yellow', 'Cotizaciones Semana', wCotiz, week ? `Semana ${week.label}` : '', null, null);
+  kh += mkKpi('c-blue', 'Cierres Semana', wCierre, week ? `Semana ${week.label}` : '', null, null);
+  kh += mkKpi('c-red', 'Margen Retail', mRetail + '%', `Meta: ${CG.margen_retail || 8.5}%`, mRetail, CG.margen_retail || 8.5);
+  kh += mkKpi('c-yellow', 'Margen Volumen', mVol + '%', `Meta: ${CG.margen_volumen || 6}%`, mVol, CG.margen_volumen || 6);
+  document.getElementById('kpiRow').innerHTML = kh;
+
+  renderWeeklyChart();
+  renderRanking();
+  renderMargenCharts();
+  renderHotDeals();
+  renderMovimientos();
+  renderClientesNuevos();
+  renderCotizaciones();
+  renderPerdidos();
+}
+
+// — Weekly Litros Chart with budget line —
+function renderWeeklyChart() {
+  const hist = (D.ventas || {}).weekly_history || [];
+  if (hist.length === 0) return;
+  const CG = D.company_goals || {};
+  const weeklyBudget = Math.round((CG.litros_mes || 0) / 4.33);
+
+  const ctx = document.getElementById('chartWeekly').getContext('2d');
+  if (chartWeekly) chartWeekly.destroy();
+  chartWeekly = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: hist.map(w => w.label),
+      datasets: [
+        { label: 'Litros', data: hist.map(w => w.litros), backgroundColor: hist.map(w => w.litros >= weeklyBudget ? 'rgba(22,163,74,.5)' : 'rgba(200,54,14,.4)'), borderRadius: 4 },
+        { label: 'Presupuesto Semanal', data: hist.map(() => weeklyBudget), type: 'line', borderColor: '#c8360e', borderDash: [5, 3], borderWidth: 2, pointRadius: 0, fill: false }
+      ]
+    },
+    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { font: { family: 'DM Sans', size: 11 } } } },
+      scales: { x: { grid: { display: false } }, y: { beginAtZero: true, grid: { color: '#f0f0f0' }, ticks: { callback: v => (v / 1000) + 'k' } } } }
+  });
+}
+
+// — Ranking Table —
+function renderRanking() {
+  const tbody = document.getElementById('rankingBody'); tbody.innerHTML = '';
+  const execs = (D.executives || []).filter(e => isAllowed(e.name));
+  const T = (D.ventas || {}).totals || {};
+  const pf = getProratedFactor(D.ventas?.month_start || new Date());
+  const week = getCurrentWeek();
+
+  const rows = execs.map(e => {
+    const n = e.name, lt = (T.litros_by_user || {})[n] || 0, g = getGoal(n);
+    const gL = g.litros_mes || 0, pM = gL * pf;
+    const ltP = gL > 0 ? Math.round((lt / pM) * 100) : 0;
+    const leU = week?.stages?.leads?.by_user?.[n] || 0, leG = g.leads_semana || 0;
+    const coU = week?.stages?.cotizacion?.by_user?.[n] || 0, coG = g.cotizaciones_semana || 0;
+    const ciU = week?.stages?.cierre?.by_user?.[n] || 0, ciG = g.contactos_semana || 0;
+    return { name: n, ltP, leP: leG > 0 ? Math.round(leU / leG * 100) + '%' : '—', coP: coG > 0 ? Math.round(coU / coG * 100) + '%' : '—', ciP: ciG > 0 ? Math.round(ciU / ciG * 100) + '%' : '—', m7: e.moved || 0, m30: e.moved_30d || 0 };
+  }).sort((a, b) => b.ltP - a.ltP);
+
+  rows.forEach((r, i) => {
+    const lc = r.ltP >= 100 ? 'tag-g' : r.ltP >= 60 ? 'tag-y' : 'tag-r';
+    const leC = r.leP === '—' ? '' : parseInt(r.leP) >= 100 ? 'tag-g' : parseInt(r.leP) >= 60 ? 'tag-y' : 'tag-r';
+    const coC = r.coP === '—' ? '' : parseInt(r.coP) >= 100 ? 'tag-g' : parseInt(r.coP) >= 60 ? 'tag-y' : 'tag-r';
+    const ciC = r.ciP === '—' ? '' : parseInt(r.ciP) >= 100 ? 'tag-g' : parseInt(r.ciP) >= 60 ? 'tag-y' : 'tag-r';
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td><strong>${i + 1}</strong></td><td>${H(r.name)}</td><td><span class="tag ${lc}">${r.ltP}%</span></td><td><span class="tag ${leC}">${r.leP}</span></td><td><span class="tag ${coC}">${r.coP}</span></td><td><span class="tag ${ciC}">${r.ciP}</span></td><td><strong>${r.m7}</strong></td><td><strong>${r.m30}</strong></td>`;
+    tbody.appendChild(tr);
+  });
+}
+
+// — Margen Charts —
+function renderMargenCharts() {
+  const T = (D.ventas || {}).totals || {};
+  const CG = D.company_goals || {};
+
+  // Margen por Zona
+  const mz = T.margin_by_zone || {};
+  const zLabels = Object.keys(mz), zData = Object.values(mz);
+  const ctx1 = document.getElementById('chartMargenZona').getContext('2d');
+  if (chartMargenZona) chartMargenZona.destroy();
+  chartMargenZona = new Chart(ctx1, {
+    type: 'bar', data: { labels: zLabels, datasets: [
+      { label: 'Margen %', data: zData, backgroundColor: zData.map(v => v >= (CG.margen_retail || 8.5) ? 'rgba(22,163,74,.5)' : v >= 6 ? 'rgba(202,138,4,.5)' : 'rgba(200,54,14,.5)'), borderRadius: 4 }
+    ] },
+    options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => c.parsed.x + '%' } } },
+      scales: { x: { beginAtZero: true, max: 15, ticks: { callback: v => v + '%' }, grid: { color: '#f0f0f0' } }, y: { grid: { display: false } } } }
+  });
+
+  // Margen por Ejecutivo (filtered to allowed)
+  const mu = T.margin_by_user || {};
+  const eLabels = [], eData = [];
+  for (const [k, v] of Object.entries(mu)) { if (isAllowed(k)) { eLabels.push(k.split(' ').slice(0, 2).join(' ')); eData.push(v); } }
+  const ctx2 = document.getElementById('chartMargenExec').getContext('2d');
+  if (chartMargenExec) chartMargenExec.destroy();
+  chartMargenExec = new Chart(ctx2, {
+    type: 'bar', data: { labels: eLabels, datasets: [
+      { label: 'Margen %', data: eData, backgroundColor: eData.map(v => v >= (CG.margen_retail || 8.5) ? 'rgba(22,163,74,.5)' : v >= 6 ? 'rgba(202,138,4,.5)' : 'rgba(200,54,14,.5)'), borderRadius: 4 }
+    ] },
+    options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => c.parsed.x + '%' } } },
+      scales: { x: { beginAtZero: true, max: 15, ticks: { callback: v => v + '%' }, grid: { color: '#f0f0f0' } }, y: { grid: { display: false } } } }
+  });
+}
+
+// — Hot Deals (Cotizado with activity ≤30d) —
+function renderHotDeals() {
+  const pl = (D.pipeline || []).filter(p => p.days_since_activity <= 30 && isAllowed(p.exec) && p.stage_class !== 'durmiente' && p.stage_class !== 'perdido');
+  pl.sort((a, b) => (b.value || 0) - (a.value || 0));
+  const items = pl.slice(0, 12);
+  document.getElementById('hotCount').textContent = pl.length + ' deals';
+  const tbody = document.getElementById('hotBody'); tbody.innerHTML = '';
+  if (items.length === 0) { document.getElementById('noHot').style.display = 'block'; return; }
+  document.getElementById('noHot').style.display = 'none';
+  items.forEach(p => {
+    const days = p.days_since_activity ?? p.days_in_stage;
+    const dc = days <= 7 ? 'tag-g' : days <= 14 ? 'tag-y' : 'tag-orange';
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td class="bold">${H(p.name)}</td><td>${stageTag(p.stage, p.stage_class)}</td><td>${H((p.exec || '').split(' ').slice(0, 2).join(' '))}</td><td>${fL(p.value)}</td><td><span class="tag ${dc}">${days}d</span></td>`;
+    tbody.appendChild(tr);
+  });
+}
+
+// — Movimientos Recientes (7d) —
+function renderMovimientos() {
+  const pl = (D.pipeline || []).filter(p => {
+    const d = p.days_since_activity ?? p.days_in_stage;
+    return d <= 7 && isAllowed(p.exec);
+  });
+  pl.sort((a, b) => (a.days_since_activity ?? a.days_in_stage) - (b.days_since_activity ?? b.days_in_stage));
+  const items = pl.slice(0, 12);
+  document.getElementById('movCount').textContent = pl.length;
+  const tbody = document.getElementById('movBody'); tbody.innerHTML = '';
+  if (items.length === 0) { document.getElementById('noMov').style.display = 'block'; return; }
+  document.getElementById('noMov').style.display = 'none';
+  items.forEach(p => {
+    const days = p.days_since_activity ?? p.days_in_stage;
+    const dayLabel = days === 0 ? 'Hoy' : days + 'd';
+    const dc = days === 0 ? 'tag-g' : days <= 3 ? 'tag-y' : 'tag-orange';
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td class="bold">${H(p.name)}</td><td>${stageTag(p.stage, p.stage_class)}</td><td>${H((p.exec || '').split(' ').slice(0, 2).join(' '))}</td><td>${fL(p.value)}</td><td><span class="tag ${dc}">${dayLabel}</span></td>`;
+    tbody.appendChild(tr);
+  });
+}
+
+// — Clientes Nuevos —
+function renderClientesNuevos() {
+  const detail = (D.ventas || {}).new_clients?.detail || [];
+  const filtered = detail.filter(c => isAllowed(c.vendedor));
+  document.getElementById('ncCount').textContent = filtered.length;
+  const tbody = document.getElementById('ncBody'); tbody.innerHTML = '';
+  if (filtered.length === 0) { document.getElementById('noNC').style.display = 'block'; return; }
+  document.getElementById('noNC').style.display = 'none';
+  filtered.sort((a, b) => (b.litros || 0) - (a.litros || 0));
+  filtered.forEach(c => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td class="bold">${H(c.cliente)}</td><td>${H((c.vendedor || '').split(' ').slice(0, 2).join(' '))}</td><td>${fL(c.litros)}</td><td>${c.fecha || '—'}</td>`;
+    tbody.appendChild(tr);
+  });
+}
+
+// — Cotizaciones Activas (pipeline stage=cotizacion) —
+function renderCotizaciones() {
+  const pl = (D.pipeline || []).filter(p => (p.stage_class || '').toLowerCase().includes('cotiza') && isAllowed(p.exec));
+  pl.sort((a, b) => (a.days_since_activity ?? a.days_in_stage) - (b.days_since_activity ?? b.days_in_stage));
+  document.getElementById('cotizCount').textContent = pl.length;
+  const tbody = document.getElementById('cotizBody'); tbody.innerHTML = '';
+  if (pl.length === 0) { document.getElementById('noCotiz').style.display = 'block'; return; }
+  document.getElementById('noCotiz').style.display = 'none';
+  pl.slice(0, 12).forEach(p => {
+    const days = p.days_since_activity ?? p.days_in_stage;
+    const dc = days <= 7 ? 'tag-g' : days <= 30 ? 'tag-y' : 'tag-r';
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td class="bold">${H(p.name)}</td><td>${H((p.exec || '').split(' ').slice(0, 2).join(' '))}</td><td>${fL(p.value)}</td><td><span class="tag ${dc}">${days}d</span></td>`;
+    tbody.appendChild(tr);
+  });
+}
+
+// — Perdidos —
+function renderPerdidos() {
+  const lost = (D.churn || {}).lost_list || [];
+  document.getElementById('lostCount').textContent = lost.length;
+  const tbody = document.getElementById('lostBody'); tbody.innerHTML = '';
+  if (lost.length === 0) { document.getElementById('noLost').style.display = 'block'; return; }
+  document.getElementById('noLost').style.display = 'none';
+  const sorted = [...lost].sort((a, b) => (b.avg_monthly_litros || 0) - (a.avg_monthly_litros || 0));
+  sorted.forEach(c => {
+    const litros = c.avg_monthly_litros || 0;
+    const lt = litros >= 5000 ? 'tag-r' : litros >= 1000 ? 'tag-y' : '';
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td class="bold">${H(c.name)}</td><td>${H(c.user || '—')}</td><td>${lt ? `<span class="tag ${lt}">${fL(litros)}</span>` : fL(litros)}</td><td>${c.last_update || '—'}</td>`;
+    tbody.appendChild(tr);
+  });
+}
+
+// ═══════════════════════════════════════
+// FIDELIZACIÓN TAB (unchanged)
+// ═══════════════════════════════════════
 function renderFidelizacion() {
   if (!D) return;
-  const churn = D.churn || {};
-  const summary = churn.summary || {};
-  const T = (D.ventas || {}).totals || {};
-  const lbu = T.litros_by_user || {};
+  const churn = D.churn || {}, summary = churn.summary || {};
+  const T = (D.ventas || {}).totals || {}, lbu = T.litros_by_user || {};
   const detail = T.comber_mantencion_detail || {};
   const retencion = (D.funnel_weeks || [])[0]?.stages?.retencion || {};
 
-  // ── KPI Cards ──
-  const csLitros = (detail.total || 0);
-  const dormantCount = summary.dormant || 0;
+  const csLitros = detail.total || 0, dormantCount = summary.dormant || 0;
   const rescuedCount = (summary.rescued_dormant || 0) + (summary.rescued_lost || 0);
   const rescuePct = summary.rescue_pct || 0;
-  const retPct = retencion.value || 0;
-  const retGoal = retencion.goal || 90;
-  const retColor = retPct >= retGoal ? 'g' : retPct >= 60 ? 'y' : 'r';
+  const retPct = retencion.value || 0, retGoal = retencion.goal || 90;
 
   let kh = '';
-  kh += mkKpi('c-red', 'Litros CS (Comber+TomE)',
-    fL(csLitros),
-    `Comber: ${fL(detail.comber_own_litros||0)} · TomE: ${fL(detail.tomenergy_litros||0)}`,
-    null, null);
-
-  kh += mkKpi('c-green', 'Retención 90d',
-    retPct + '%',
-    `${retencion.retained_count || 0} de ${retencion.total_evaluated || 0} clientes`,
-    retPct, retGoal);
-
-  kh += mkKpi('c-blue', 'Tasa Rescate',
-    rescuePct.toFixed(1) + '%',
-    `${rescuedCount} rescatados`,
-    null, null);
-
-  kh += mkKpi('c-yellow', 'Durmientes',
-    dormantCount,
-    'clientes sin compra reciente',
-    null, null);
-
+  kh += mkKpi('c-red', 'Litros CS (Comber+TomE)', fL(csLitros), `Comber: ${fL(detail.comber_own_litros||0)} · TomE: ${fL(detail.tomenergy_litros||0)}`, null, null);
+  kh += mkKpi('c-green', 'Retención 90d', retPct + '%', `${retencion.retained_count || 0} de ${retencion.total_evaluated || 0} clientes`, retPct, retGoal);
+  kh += mkKpi('c-blue', 'Tasa Rescate', rescuePct.toFixed(1) + '%', `${rescuedCount} rescatados`, null, null);
+  kh += mkKpi('c-yellow', 'Durmientes', dormantCount, 'clientes sin compra reciente', null, null);
   document.getElementById('csKpiRow').innerHTML = kh;
 
-  // ── Per-exec cards ──
   const csExecs = (D.executives || []).filter(e => isCS(e.name));
-  const dormantByUser = (churn.by_user || {}).dormant || {};
-  const rescuedDormantByUser = (churn.by_user || {}).rescued_dormant || {};
-  const rescuedLostByUser = (churn.by_user || {}).rescued_lost || {};
+  const dormByUser = (churn.by_user || {}).dormant || {};
+  const rescDormByUser = (churn.by_user || {}).rescued_dormant || {};
+  const rescLostByUser = (churn.by_user || {}).rescued_lost || {};
 
   let eh = '';
-  // Always show Comber card with TomEnergy detail
   const comberExec = csExecs.find(e => norm(e.name).includes('comber'));
   const tomExec = csExecs.find(e => norm(e.name).includes('tomenergy'));
 
-  // Comber card (with TomEnergy merged litros detail)
   eh += `<div class="cs-card"><h4>${H(comberExec ? comberExec.name : 'Comber Sigall Pauline')} <span style="color:var(--dim);font-weight:400;font-size:12px">+ TomEnergy</span></h4><div class="cs-row">`;
   eh += `<div class="cs-stat"><div class="cs-val">${fL(detail.comber_own_litros||0)}</div><div class="cs-lbl">Litros propios</div></div>`;
   eh += `<div class="cs-stat"><div class="cs-val">${fL(detail.tomenergy_litros||0)}</div><div class="cs-lbl">Litros TomEnergy</div></div>`;
   eh += `<div class="cs-stat"><div class="cs-val" style="color:var(--red)">${fL(detail.total||0)}</div><div class="cs-lbl">Total</div></div>`;
-
-  // Dormants assigned to Comber + TomEnergy
-  let comberDorm = 0, tomDorm = 0;
-  for (const [k, v] of Object.entries(dormantByUser)) {
-    if (norm(k).includes('comber')) comberDorm += v;
-    if (norm(k).includes('tomenergy')) tomDorm += v;
-  }
-  eh += `<div class="cs-stat"><div class="cs-val">${comberDorm + tomDorm}</div><div class="cs-lbl">Durmientes</div></div>`;
-
-  let comberResc = 0, tomResc = 0;
-  for (const [k, v] of Object.entries(rescuedDormantByUser)) {
-    if (norm(k).includes('comber')) comberResc += v;
-    if (norm(k).includes('tomenergy')) tomResc += v;
-  }
-  for (const [k, v] of Object.entries(rescuedLostByUser)) {
-    if (norm(k).includes('comber')) comberResc += v;
-    if (norm(k).includes('tomenergy')) tomResc += v;
-  }
-  eh += `<div class="cs-stat"><div class="cs-val" style="color:var(--green)">${comberResc + tomResc}</div><div class="cs-lbl">Rescatados</div></div>`;
-
-  // Mov 7d / 30d
-  const comMov7 = (comberExec?.moved || 0) + (tomExec?.moved || 0);
-  const comMov30 = (comberExec?.moved_30d || 0) + (tomExec?.moved_30d || 0);
-  eh += `<div class="cs-stat"><div class="cs-val">${comMov7}</div><div class="cs-lbl">Mov. 7d</div></div>`;
-  eh += `<div class="cs-stat"><div class="cs-val">${comMov30}</div><div class="cs-lbl">Mov. 30d</div></div>`;
+  let comDorm = 0, tomDorm = 0, comResc = 0, tomResc = 0;
+  for (const [k, v] of Object.entries(dormByUser)) { if (norm(k).includes('comber')) comDorm += v; if (norm(k).includes('tomenergy')) tomDorm += v; }
+  for (const [k, v] of Object.entries(rescDormByUser)) { if (norm(k).includes('comber')) comResc += v; if (norm(k).includes('tomenergy')) tomResc += v; }
+  for (const [k, v] of Object.entries(rescLostByUser)) { if (norm(k).includes('comber')) comResc += v; if (norm(k).includes('tomenergy')) tomResc += v; }
+  eh += `<div class="cs-stat"><div class="cs-val">${comDorm + tomDorm}</div><div class="cs-lbl">Durmientes</div></div>`;
+  eh += `<div class="cs-stat"><div class="cs-val" style="color:var(--green)">${comResc + tomResc}</div><div class="cs-lbl">Rescatados</div></div>`;
+  const cm7 = (comberExec?.moved || 0) + (tomExec?.moved || 0), cm30 = (comberExec?.moved_30d || 0) + (tomExec?.moved_30d || 0);
+  eh += `<div class="cs-stat"><div class="cs-val">${cm7}</div><div class="cs-lbl">Mov. 7d</div></div>`;
+  eh += `<div class="cs-stat"><div class="cs-val">${cm30}</div><div class="cs-lbl">Mov. 30d</div></div>`;
   eh += `</div></div>`;
 
-  // Mauro Boccardo card
   const mauroExec = csExecs.find(e => norm(e.name).includes('boccardo'));
-  const mauroName = mauroExec ? mauroExec.name : 'Mauro Boccardo';
-  const mauroLitros = mauroExec ? (lbu[mauroExec.name] || 0) : 0;
-  let mauroDorm = 0, mauroResc = 0;
-  for (const [k, v] of Object.entries(dormantByUser)) {
-    if (norm(k).includes('boccardo')) mauroDorm += v;
-  }
-  for (const [k, v] of Object.entries(rescuedDormantByUser)) {
-    if (norm(k).includes('boccardo')) mauroResc += v;
-  }
-  for (const [k, v] of Object.entries(rescuedLostByUser)) {
-    if (norm(k).includes('boccardo')) mauroResc += v;
-  }
-  eh += `<div class="cs-card"><h4>${H(mauroName)}</h4><div class="cs-row">`;
-  eh += `<div class="cs-stat"><div class="cs-val">${fL(mauroLitros)}</div><div class="cs-lbl">Litros</div></div>`;
-  eh += `<div class="cs-stat"><div class="cs-val">${mauroDorm}</div><div class="cs-lbl">Durmientes</div></div>`;
-  eh += `<div class="cs-stat"><div class="cs-val" style="color:var(--green)">${mauroResc}</div><div class="cs-lbl">Rescatados</div></div>`;
+  const mn = mauroExec ? mauroExec.name : 'Mauro Boccardo';
+  const mL = mauroExec ? (lbu[mauroExec.name] || 0) : 0;
+  let mD = 0, mR = 0;
+  for (const [k, v] of Object.entries(dormByUser)) { if (norm(k).includes('boccardo')) mD += v; }
+  for (const [k, v] of Object.entries(rescDormByUser)) { if (norm(k).includes('boccardo')) mR += v; }
+  for (const [k, v] of Object.entries(rescLostByUser)) { if (norm(k).includes('boccardo')) mR += v; }
+  eh += `<div class="cs-card"><h4>${H(mn)}</h4><div class="cs-row">`;
+  eh += `<div class="cs-stat"><div class="cs-val">${fL(mL)}</div><div class="cs-lbl">Litros</div></div>`;
+  eh += `<div class="cs-stat"><div class="cs-val">${mD}</div><div class="cs-lbl">Durmientes</div></div>`;
+  eh += `<div class="cs-stat"><div class="cs-val" style="color:var(--green)">${mR}</div><div class="cs-lbl">Rescatados</div></div>`;
   eh += `<div class="cs-stat"><div class="cs-val">${mauroExec?.moved || 0}</div><div class="cs-lbl">Mov. 7d</div></div>`;
   eh += `<div class="cs-stat"><div class="cs-val">${mauroExec?.moved_30d || 0}</div><div class="cs-lbl">Mov. 30d</div></div>`;
   eh += `</div></div>`;
-
   document.getElementById('csExecCards').innerHTML = eh;
 
-  // ── Rescued clients table ──
-  const rescuedList = [...(churn.rescued_dormant_list || []), ...(churn.rescued_lost_list || [])];
-  const rescBody = document.getElementById('rescuedBody');
-  rescBody.innerHTML = '';
-  if (rescuedList.length === 0) {
-    document.getElementById('noRescued').style.display = 'block';
-  } else {
-    document.getElementById('noRescued').style.display = 'none';
-    rescuedList.sort((a, b) => (b.avg_monthly_litros || 0) - (a.avg_monthly_litros || 0));
-    rescuedList.forEach(c => {
-      const tr = document.createElement('tr');
-      tr.innerHTML = `
-        <td class="bold">${H(c.name)}</td>
-        <td>${H(c.user || '—')}</td>
-        <td>${fL(c.avg_monthly_litros)}</td>
-        <td>${c.last_update || '—'}</td>
-      `;
-      rescBody.appendChild(tr);
-    });
-  }
+  // Rescued table
+  const rescList = [...(churn.rescued_dormant_list || []), ...(churn.rescued_lost_list || [])];
+  const rb = document.getElementById('rescuedBody'); rb.innerHTML = '';
+  if (rescList.length === 0) { document.getElementById('noRescued').style.display = 'block'; }
+  else { document.getElementById('noRescued').style.display = 'none'; rescList.sort((a, b) => (b.avg_monthly_litros || 0) - (a.avg_monthly_litros || 0)); rescList.forEach(c => { const tr = document.createElement('tr'); tr.innerHTML = `<td class="bold">${H(c.name)}</td><td>${H(c.user||'—')}</td><td>${fL(c.avg_monthly_litros)}</td><td>${c.last_update||'—'}</td>`; rb.appendChild(tr); }); }
 
-  // ── Dormant opportunities table ──
-  const dormantList = churn.dormant_list || [];
-  const dormBody = document.getElementById('dormantBody');
-  dormBody.innerHTML = '';
-  if (dormantList.length === 0) {
-    document.getElementById('noDormant').style.display = 'block';
-  } else {
-    document.getElementById('noDormant').style.display = 'none';
-    // Sort by avg_monthly_litros descending (biggest opportunities first)
-    const sorted = [...dormantList].sort((a, b) => (b.avg_monthly_litros || 0) - (a.avg_monthly_litros || 0));
-    sorted.forEach(c => {
-      const litros = c.avg_monthly_litros || 0;
-      const litrosTag = litros >= 5000 ? 'tag-r' : litros >= 1000 ? 'tag-y' : '';
-      const tr = document.createElement('tr');
-      tr.innerHTML = `
-        <td class="bold">${H(c.name)}</td>
-        <td>${H(c.user || '—')}</td>
-        <td>${litrosTag ? `<span class="tag ${litrosTag}">${fL(litros)}</span>` : fL(litros)}</td>
-        <td>${c.last_update || '—'}</td>
-      `;
-      dormBody.appendChild(tr);
-    });
-  }
+  // Dormant opportunities
+  const dl = churn.dormant_list || [];
+  const db = document.getElementById('dormantBody'); db.innerHTML = '';
+  if (dl.length === 0) { document.getElementById('noDormant').style.display = 'block'; }
+  else { document.getElementById('noDormant').style.display = 'none'; const s = [...dl].sort((a, b) => (b.avg_monthly_litros || 0) - (a.avg_monthly_litros || 0)); s.forEach(c => { const l = c.avg_monthly_litros || 0; const lt = l >= 5000 ? 'tag-r' : l >= 1000 ? 'tag-y' : ''; const tr = document.createElement('tr'); tr.innerHTML = `<td class="bold">${H(c.name)}</td><td>${H(c.user||'—')}</td><td>${lt ? `<span class="tag ${lt}">${fL(l)}</span>` : fL(l)}</td><td>${c.last_update||'—'}</td>`; db.appendChild(tr); }); }
 }
 
+// ═══════════════════════════════════════
 async function loadData() {
-  const dot = document.getElementById('dot');
-  const stxt = document.getElementById('stxt');
-  dot.className = 'dot dot-load';
-  stxt.textContent = 'Cargando...';
-
+  const dot = document.getElementById('dot'), stxt = document.getElementById('stxt');
+  dot.className = 'dot dot-load'; stxt.textContent = 'Cargando...';
   try {
     const r = await fetch('crm-data.json?t=' + Date.now());
     if (!r.ok) throw new Error('HTTP ' + r.status);
@@ -728,20 +549,15 @@ async function loadData() {
     document.getElementById('content').style.display = 'block';
     dot.className = 'dot dot-ok';
     const upd = new Date(D.updated);
-    stxt.textContent = upd.toLocaleDateString('es-CL', { day: '2-digit', month: 'short' }) +
-      ' ' + upd.toLocaleTimeString('es-CL', { hour: '2-digit', minute: '2-digit' });
+    stxt.textContent = upd.toLocaleDateString('es-CL', { day: '2-digit', month: 'short' }) + ' ' + upd.toLocaleTimeString('es-CL', { hour: '2-digit', minute: '2-digit' });
     document.getElementById('err').classList.remove('active');
   } catch (e) {
-    dot.className = 'dot dot-err';
-    stxt.textContent = 'Error';
+    dot.className = 'dot dot-err'; stxt.textContent = 'Error';
     document.getElementById('err').textContent = 'Error cargando crm-data.json: ' + e.message;
     document.getElementById('err').classList.add('active');
   }
 }
-
-// Load on startup
 loadData();
 </script>
-
 </body>
 </html>
