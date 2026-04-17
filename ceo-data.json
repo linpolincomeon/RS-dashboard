@@ -1,23 +1,23 @@
 {
-  "updated": "2026-04-17T12:00:50.552313",
+  "updated": "2026-04-17T16:10:21.781176",
   "weeks": [
     {
       "label": "16apr-22apr",
       "start": "2026-04-16",
       "end": "2026-04-22",
-      "ventas": 102425193,
-      "neto": 87239753,
-      "litros": 66326,
-      "precio": 1315,
-      "margin": 0.07436,
-      "facturas": 30,
+      "ventas": 131735154,
+      "neto": 111333291,
+      "litros": 85157,
+      "precio": 1307,
+      "margin": 0.07533,
+      "facturas": 42,
       "nc": 2,
-      "clientes": 27,
+      "clientes": 38,
       "recaud": 0,
       "cheques": 0,
       "transf": 0,
       "factoring": 0,
-      "compras_enap": 0,
+      "compras_enap": 36149133,
       "ppto": 326422,
       "parcial": true
     },
@@ -37,7 +37,7 @@
       "cheques": 2822900,
       "transf": 0,
       "factoring": 0,
-      "compras_enap": 285783280,
+      "compras_enap": 334776763,
       "ppto": 326422,
       "parcial": false
     },
@@ -57,7 +57,7 @@
       "cheques": 65404650,
       "transf": 0,
       "factoring": 0,
-      "compras_enap": 148619441,
+      "compras_enap": 148648340,
       "ppto": 326422,
       "parcial": false
     },
@@ -326,8 +326,8 @@
     {
       "date": "17apr",
       "day": "Vie",
-      "litros": 9270,
-      "neto": 12294962
+      "litros": 28101,
+      "neto": 36388500
     },
     {
       "date": "16apr",
@@ -427,7 +427,7 @@
     },
     {
       "name": "DE CHILE",
-      "balance": 14661982
+      "balance": 9961782
     },
     {
       "name": "ESTADO",
@@ -450,15 +450,15 @@
       "balance": -838790
     }
   ],
-  "total_cash": 46884960,
+  "total_cash": 42184760,
   "receivables": {
-    "open_invoices": 338,
-    "total_due": 707535373,
-    "current": 618004702,
-    "overdue": 89530671,
-    "pct_overdue": 12.7,
+    "open_invoices": 342,
+    "total_due": 723163533,
+    "current": 638080162,
+    "overdue": 85083371,
+    "pct_overdue": 11.8,
     "aging": {
-      "0-30": 70565107,
+      "0-30": 66117807,
       "31-60": 7072001,
       "61-90": 928000,
       "90+": 10965563
@@ -466,11 +466,19 @@
     "top_debtors": [
       {
         "name": "JOSE RODRIGO ORMAZABAL VIDAL",
-        "amount": 43808703
+        "amount": 41483702
       },
       {
         "name": "SOC AGRICOLA GRANJA SAN RAFAEL LIMITADA",
         "amount": 37382408
+      },
+      {
+        "name": "INGENERIA Y CONSTRUCCIONES FEBLANCA SPA",
+        "amount": 18826499
+      },
+      {
+        "name": "SOC. DE TRANSPORTES TRACMAVI LTDA.",
+        "amount": 16564553
       },
       {
         "name": "FORESTAL PUIHUA SPA",
@@ -489,10 +497,6 @@
         "amount": 15281998
       },
       {
-        "name": "INGENERIA Y CONSTRUCCIONES FEBLANCA SPA",
-        "amount": 15013999
-      },
-      {
         "name": "TRANSPORTE SANTA ELENITA SPA",
         "amount": 14295491
       },
@@ -505,10 +509,6 @@
         "amount": 13275000
       },
       {
-        "name": "SOC. DE TRANSPORTES TRACMAVI LTDA.",
-        "amount": 12652053
-      },
-      {
         "name": "EMPRESAS TUCAPEL S A",
         "amount": 12036519
       },
@@ -519,10 +519,6 @@
       {
         "name": "URAN ANTONIO LUNA DOMÍNGUEZ",
         "amount": 11424000
-      },
-      {
-        "name": "EXPORTADORA ANAKENA LTDA",
-        "amount": 11299998
       },
       {
         "name": "AGROSERVICIOS JR SPA",
@@ -541,16 +537,20 @@
         "amount": 9090000
       },
       {
-        "name": "AGROMORANDE S A",
-        "amount": 8819701
+        "name": "SOC AGRICOLA SANTA TERESA SPA",
+        "amount": 8747662
+      },
+      {
+        "name": "ARIDOS LO VALDIVIA LIMITADA",
+        "amount": 8270500
       }
     ]
   },
   "crm": {
-    "total": 1407,
-    "open": 1175,
-    "won": 231,
-    "new_30d": 97,
+    "total": 1416,
+    "open": 1170,
+    "won": 245,
+    "new_30d": 106,
     "by_stage": [
       {
         "stage": "Perdidos",
@@ -558,11 +558,11 @@
       },
       {
         "stage": "No Cerrados",
-        "count": 4
+        "count": 3
       },
       {
         "stage": "Ruta",
-        "count": 42
+        "count": 46
       },
       {
         "stage": "Oportunidad de Negocio",
@@ -570,19 +570,19 @@
       },
       {
         "stage": "Contactado",
-        "count": 82
+        "count": 81
       },
       {
         "stage": "Durmiente",
-        "count": 196
+        "count": 193
       },
       {
         "stage": "Cotizado",
-        "count": 268
+        "count": 264
       },
       {
         "stage": "Won",
-        "count": 231
+        "count": 245
       }
     ]
   }
