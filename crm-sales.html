@@ -143,6 +143,9 @@ tr:hover td{background:#fafaf8}
     <div class="tab-panel" id="tab-fidelizacion">
       <div class="kpi-row" id="csKpiRow"></div>
       <div id="csExecCards"></div>
+      <div class="sec" id="wonSection"><div class="sec-h"><h2>✅ Clientes Ganados</h2></div><div class="sec-b">
+        <div style="max-height:400px;overflow-y:auto"><table><thead><tr><th>Cliente</th><th>Ejecutivo</th><th>Litros</th><th>Última Actualización</th></tr></thead><tbody id="wonBody"></tbody></table></div>
+        <div class="nodata" id="noWon" style="display:none">Sin ganados registrados</div></div></div>
       <div class="sec" id="rescuedSection"><div class="sec-h"><h2>🏆 Clientes Rescatados</h2></div><div class="sec-b">
         <table><thead><tr><th>Cliente</th><th>Ejecutivo</th><th>Litros Prom/Mes</th><th>Última Compra</th></tr></thead><tbody id="rescuedBody"></tbody></table>
         <div class="nodata" id="noRescued" style="display:none">Sin rescates este mes</div></div></div>
@@ -476,9 +479,13 @@ function renderFidelizacion() {
   const rescuePct = summary.rescue_pct || 0;
   const retPct = retencion.value || 0, retGoal = retencion.goal || 90;
 
+  // Won deals for CS team
+  const csWonDeals = (D.won_deals || []).filter(w => isCS(w.exec));
+  const csWonCount = csWonDeals.length;
+
   let kh = '';
   kh += mkKpi('c-red', 'Litros CS (Comber+TomE)', fL(csLitros), `Comber: ${fL(detail.comber_own_litros||0)} · TomE: ${fL(detail.tomenergy_litros||0)}`, null, null);
-  kh += mkKpi('c-green', 'Retención 90d', retPct + '%', `${retencion.retained_count || 0} de ${retencion.total_evaluated || 0} clientes`, retPct, retGoal);
+  kh += mkKpi('c-green', 'Ganados', csWonCount, 'clientes en etapa Ganado', null, null);
   kh += mkKpi('c-blue', 'Tasa Rescate', rescuePct.toFixed(1) + '%', `${rescuedCount} rescatados`, null, null);
   kh += mkKpi('c-yellow', 'Durmientes', dormantCount, 'clientes sin compra reciente', null, null);
   document.getElementById('csKpiRow').innerHTML = kh;
@@ -500,6 +507,8 @@ function renderFidelizacion() {
   for (const [k, v] of Object.entries(dormByUser)) { if (norm(k).includes('comber')) comDorm += v; if (norm(k).includes('tomenergy')) tomDorm += v; }
   for (const [k, v] of Object.entries(rescDormByUser)) { if (norm(k).includes('comber')) comResc += v; if (norm(k).includes('tomenergy')) tomResc += v; }
   for (const [k, v] of Object.entries(rescLostByUser)) { if (norm(k).includes('comber')) comResc += v; if (norm(k).includes('tomenergy')) tomResc += v; }
+  const comWon = (comberExec?.won || 0) + (tomExec?.won || 0);
+  eh += `<div class="cs-stat"><div class="cs-val" style="color:var(--green)">${comWon}</div><div class="cs-lbl">Ganados</div></div>`;
   eh += `<div class="cs-stat"><div class="cs-val">${comDorm + tomDorm}</div><div class="cs-lbl">Durmientes</div></div>`;
   eh += `<div class="cs-stat"><div class="cs-val" style="color:var(--green)">${comResc + tomResc}</div><div class="cs-lbl">Rescatados</div></div>`;
   const cm7 = (comberExec?.moved || 0) + (tomExec?.moved || 0), cm30 = (comberExec?.moved_30d || 0) + (tomExec?.moved_30d || 0);
@@ -514,14 +523,29 @@ function renderFidelizacion() {
   for (const [k, v] of Object.entries(dormByUser)) { if (norm(k).includes('boccardo')) mD += v; }
   for (const [k, v] of Object.entries(rescDormByUser)) { if (norm(k).includes('boccardo')) mR += v; }
   for (const [k, v] of Object.entries(rescLostByUser)) { if (norm(k).includes('boccardo')) mR += v; }
+  const mW = mauroExec?.won || 0;
   eh += `<div class="cs-card"><h4>${H(mn)}</h4><div class="cs-row">`;
   eh += `<div class="cs-stat"><div class="cs-val">${fL(mL)}</div><div class="cs-lbl">Litros</div></div>`;
+  eh += `<div class="cs-stat"><div class="cs-val" style="color:var(--green)">${mW}</div><div class="cs-lbl">Ganados</div></div>`;
   eh += `<div class="cs-stat"><div class="cs-val">${mD}</div><div class="cs-lbl">Durmientes</div></div>`;
   eh += `<div class="cs-stat"><div class="cs-val" style="color:var(--green)">${mR}</div><div class="cs-lbl">Rescatados</div></div>`;
   eh += `<div class="cs-stat"><div class="cs-val">${mauroExec?.moved || 0}</div><div class="cs-lbl">Mov. 7d</div></div>`;
   eh += `<div class="cs-stat"><div class="cs-val">${mauroExec?.moved_30d || 0}</div><div class="cs-lbl">Mov. 30d</div></div>`;
   eh += `</div></div>`;
   document.getElementById('csExecCards').innerHTML = eh;
+
+  // Won deals table
+  const wb = document.getElementById('wonBody'); wb.innerHTML = '';
+  if (csWonDeals.length === 0) { document.getElementById('noWon').style.display = 'block'; }
+  else {
+    document.getElementById('noWon').style.display = 'none';
+    csWonDeals.sort((a, b) => (b.value || 0) - (a.value || 0));
+    csWonDeals.forEach(w => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `<td class="bold">${H(w.name)}</td><td>${H(w.exec||'—')}</td><td>${fL(w.value)}</td><td>${w.last_update||'—'}</td>`;
+      wb.appendChild(tr);
+    });
+  }
 
   // Rescued table
   const rescList = [...(churn.rescued_dormant_list || []), ...(churn.rescued_lost_list || [])];
