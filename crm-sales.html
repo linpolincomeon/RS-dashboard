@@ -289,12 +289,25 @@ function renderVentas() {
   renderPerdidos();
 }
 
-// — Weekly Litros Chart with budget line —
+// — Weekly Litros Chart with dynamic budget line —
+function getWeeklyBudget(label) {
+  // label format: "d/m-d/m" e.g. "1/1-7/1" or "29/1-4/2"
+  const CG = D.company_goals || {};
+  const b26 = CG.budget_monthly_2026 || {};
+  const b25 = CG.budget_monthly_2025 || {};
+  const m = label.match(/(\d+)\/(\d+)/);
+  if (!m) return Math.round((CG.litros_mes || 0) / 4.33);
+  const month = parseInt(m[2]);
+  // Determine year from context: if we have 2026 budgets and current year is 2026
+  const yr = new Date().getFullYear();
+  const budget = (yr === 2026 ? b26 : b25)[String(month)] || CG.litros_mes || 0;
+  return Math.round(budget / 4.33);
+}
+
 function renderWeeklyChart() {
   const hist = (D.ventas || {}).weekly_history || [];
   if (hist.length === 0) return;
-  const CG = D.company_goals || {};
-  const weeklyBudget = Math.round((CG.litros_mes || 0) / 4.33);
+  const budgets = hist.map(w => getWeeklyBudget(w.label));
 
   const ctx = document.getElementById('chartWeekly').getContext('2d');
   if (chartWeekly) chartWeekly.destroy();
@@ -303,8 +316,8 @@ function renderWeeklyChart() {
     data: {
       labels: hist.map(w => w.label),
       datasets: [
-        { label: 'Litros', data: hist.map(w => w.litros), backgroundColor: hist.map(w => w.litros >= weeklyBudget ? 'rgba(22,163,74,.5)' : 'rgba(200,54,14,.4)'), borderRadius: 4 },
-        { label: 'Presupuesto Semanal', data: hist.map(() => weeklyBudget), type: 'line', borderColor: '#c8360e', borderDash: [5, 3], borderWidth: 2, pointRadius: 0, fill: false }
+        { label: 'Litros', data: hist.map(w => w.litros), backgroundColor: hist.map((w, i) => w.litros >= budgets[i] ? 'rgba(22,163,74,.5)' : 'rgba(200,54,14,.4)'), borderRadius: 4 },
+        { label: 'Presupuesto Semanal', data: budgets, type: 'line', borderColor: '#c8360e', borderDash: [5, 3], borderWidth: 2, pointRadius: 0, fill: false }
       ]
     },
     options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { font: { family: 'DM Sans', size: 11 } } } },
