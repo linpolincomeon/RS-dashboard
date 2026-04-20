@@ -1,23 +1,23 @@
 {
-  "updated": "2026-04-20T12:11:51.903964",
+  "updated": "2026-04-20T15:42:33.421711",
   "weeks": [
     {
       "label": "16apr-22apr",
       "start": "2026-04-16",
       "end": "2026-04-22",
-      "ventas": 166876982,
-      "neto": 139911644,
-      "litros": 107719,
-      "precio": 1299,
-      "margin": 0.07597,
-      "facturas": 53,
+      "ventas": 183119731,
+      "neto": 153111358,
+      "litros": 118369,
+      "precio": 1294,
+      "margin": 0.07439,
+      "facturas": 57,
       "nc": 2,
-      "clientes": 44,
+      "clientes": 47,
       "recaud": 0,
       "cheques": 0,
       "transf": 0,
       "factoring": 0,
-      "compras_enap": 36149133,
+      "compras_enap": 127652745,
       "ppto": 326422,
       "parcial": true
     },
@@ -37,7 +37,7 @@
       "cheques": 2822900,
       "transf": 0,
       "factoring": 0,
-      "compras_enap": 334776763,
+      "compras_enap": 335425140,
       "ppto": 326422,
       "parcial": false
     },
@@ -326,8 +326,8 @@
     {
       "date": "20apr",
       "day": "Lun",
-      "litros": 0,
-      "neto": 0
+      "litros": 10650,
+      "neto": 13199714
     },
     {
       "date": "17apr",
@@ -423,11 +423,11 @@
   "banks": [
     {
       "name": "ITAU",
-      "balance": 22992865
+      "balance": 7692677
     },
     {
       "name": "DE CHILE",
-      "balance": 17852461
+      "balance": 7362872
     },
     {
       "name": "ESTADO",
@@ -443,23 +443,23 @@
     },
     {
       "name": "SANTANDER",
-      "balance": 238563
+      "balance": 465063
     },
     {
       "name": "DE CREDITO",
       "balance": -838790
     }
   ],
-  "total_cash": 50075439,
+  "total_cash": 24512162,
   "receivables": {
-    "open_invoices": 345,
-    "total_due": 750809345,
-    "current": 631767804,
-    "overdue": 119041541,
-    "pct_overdue": 15.9,
+    "open_invoices": 318,
+    "total_due": 681287529,
+    "current": 582807299,
+    "overdue": 98480230,
+    "pct_overdue": 14.5,
     "aging": {
-      "0-30": 100075977,
-      "31-60": 7072001,
+      "0-30": 80514666,
+      "31-60": 6072001,
       "61-90": 928000,
       "90+": 10965563
     },
@@ -473,20 +473,16 @@
         "amount": 41483702
       },
       {
-        "name": "EMPRESAS TUCAPEL S A",
-        "amount": 21327338
-      },
-      {
         "name": "INGENERIA Y CONSTRUCCIONES FEBLANCA SPA",
         "amount": 18562499
       },
       {
-        "name": "SOC. DE TRANSPORTES TRACMAVI LTDA.",
-        "amount": 16564553
-      },
-      {
         "name": "FORESTAL PUIHUA SPA",
         "amount": 16545700
+      },
+      {
+        "name": "EMPRESAS TUCAPEL S A",
+        "amount": 16313998
       },
       {
         "name": "AGRICOLA AGROBOSQUES SAN ISIDRO S.A.",
@@ -497,8 +493,8 @@
         "amount": 15411835
       },
       {
-        "name": "CIA AGRICOLA Y FORESTAL EL ALAMO LIMITADA",
-        "amount": 15281998
+        "name": "SOC. DE TRANSPORTES TRACMAVI LTDA.",
+        "amount": 14963153
       },
       {
         "name": "TRANSPORTE SANTA ELENITA SPA",
@@ -521,36 +517,40 @@
         "amount": 11424000
       },
       {
-        "name": "AGROSERVICIOS JR SPA",
-        "amount": 11262001
-      },
-      {
         "name": "AGRICOLA MANTOS VERDES LIMITADA",
         "amount": 10672299
       },
       {
-        "name": "VICTOR FAVIO VILCHES MARDONES",
-        "amount": 9824001
+        "name": "AGROSERVICIOS JR SPA",
+        "amount": 9338001
       },
       {
         "name": "TRANSPORTES SAN MARCELO SPA",
         "amount": 9090000
       },
       {
+        "name": "LUIS ANTONIO REYES FUENTES",
+        "amount": 9083999
+      },
+      {
+        "name": "VICTOR FAVIO VILCHES MARDONES",
+        "amount": 8824001
+      },
+      {
         "name": "SOC AGRICOLA SANTA TERESA SPA",
         "amount": 8747662
       },
       {
-        "name": "ARIDOS LO VALDIVIA LIMITADA",
-        "amount": 8270500
+        "name": "JOSE EDGARDO RAMON MEZA BANADOS",
+        "amount": 7921658
       }
     ]
   },
   "crm": {
-    "total": 1415,
-    "open": 1169,
-    "won": 245,
-    "new_30d": 89,
+    "total": 1417,
+    "open": 1173,
+    "won": 243,
+    "new_30d": 91,
     "by_stage": [
       {
         "stage": "Perdidos",
@@ -566,7 +566,7 @@
       },
       {
         "stage": "Oportunidad de Negocio",
-        "count": 123
+        "count": 125
       },
       {
         "stage": "Contactado",
@@ -578,11 +578,11 @@
       },
       {
         "stage": "Durmiente",
-        "count": 192
+        "count": 194
       },
       {
         "stage": "Won",
-        "count": 245
+        "count": 243
       }
     ]
   }
