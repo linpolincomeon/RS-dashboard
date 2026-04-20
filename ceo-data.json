@@ -1,18 +1,18 @@
 {
-  "updated": "2026-04-20T16:19:45.566519",
+  "updated": "2026-04-20T20:05:51.771000",
   "weeks": [
     {
       "label": "16apr-22apr",
       "start": "2026-04-16",
       "end": "2026-04-22",
-      "ventas": 183797181,
-      "neto": 153662700,
-      "litros": 118794,
-      "precio": 1294,
-      "margin": 0.07447,
-      "facturas": 58,
+      "ventas": 201176080,
+      "neto": 167797318,
+      "litros": 129914,
+      "precio": 1292,
+      "margin": 0.0749,
+      "facturas": 61,
       "nc": 2,
-      "clientes": 47,
+      "clientes": 50,
       "recaud": 0,
       "cheques": 0,
       "transf": 0,
@@ -326,8 +326,8 @@
     {
       "date": "20apr",
       "day": "Lun",
-      "litros": 11075,
-      "neto": 13751056
+      "litros": 22195,
+      "neto": 27885674
     },
     {
       "date": "17apr",
@@ -422,12 +422,12 @@
   ],
   "banks": [
     {
-      "name": "ITAU",
-      "balance": 7692677
+      "name": "DE CHILE",
+      "balance": 10086722
     },
     {
-      "name": "DE CHILE",
-      "balance": 7362872
+      "name": "ITAU",
+      "balance": 7692677
     },
     {
       "name": "ESTADO",
@@ -450,17 +450,17 @@
       "balance": -838790
     }
   ],
-  "total_cash": 24512162,
+  "total_cash": 27236012,
   "receivables": {
     "open_invoices": 319,
-    "total_due": 681964979,
-    "current": 583484749,
-    "overdue": 98480230,
-    "pct_overdue": 14.4,
+    "total_due": 694998878,
+    "current": 597446648,
+    "overdue": 97552230,
+    "pct_overdue": 14.0,
     "aging": {
       "0-30": 80514666,
       "31-60": 6072001,
-      "61-90": 928000,
+      "61-90": 0,
       "90+": 10965563
     },
     "top_debtors": [
@@ -475,6 +475,10 @@
       {
         "name": "INGENERIA Y CONSTRUCCIONES FEBLANCA SPA",
         "amount": 18562499
+      },
+      {
+        "name": "AGROINDUSTRIAL SIRACUSA S A",
+        "amount": 16987500
       },
       {
         "name": "FORESTAL PUIHUA SPA",
@@ -539,18 +543,14 @@
       {
         "name": "SOC AGRICOLA SANTA TERESA SPA",
         "amount": 8747662
-      },
-      {
-        "name": "JOSE EDGARDO RAMON MEZA BANADOS",
-        "amount": 7921658
       }
     ]
   },
   "crm": {
-    "total": 1417,
-    "open": 1169,
+    "total": 1418,
+    "open": 1170,
     "won": 247,
-    "new_30d": 91,
+    "new_30d": 92,
     "by_stage": [
       {
         "stage": "Perdidos",
@@ -566,7 +566,7 @@
       },
       {
         "stage": "Oportunidad de Negocio",
-        "count": 124
+        "count": 125
       },
       {
         "stage": "Contactado",
