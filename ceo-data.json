@@ -1,23 +1,23 @@
 {
-  "updated": "2026-04-21T12:07:22.359031",
+  "updated": "2026-04-21T15:48:47.884663",
   "weeks": [
     {
       "label": "16apr-22apr",
       "start": "2026-04-16",
       "end": "2026-04-22",
-      "ventas": 215047980,
-      "neto": 179087052,
-      "litros": 138614,
-      "precio": 1292,
-      "margin": 0.07635,
-      "facturas": 67,
+      "ventas": 226802180,
+      "neto": 188647872,
+      "litros": 146114,
+      "precio": 1291,
+      "margin": 0.07678,
+      "facturas": 74,
       "nc": 2,
-      "clientes": 53,
+      "clientes": 56,
       "recaud": 15786899,
       "cheques": 15786899,
       "transf": 0,
       "factoring": 0,
-      "compras_enap": 127652745,
+      "compras_enap": 135342385,
       "ppto": 326422,
       "parcial": true
     },
@@ -37,7 +37,7 @@
       "cheques": 2822900,
       "transf": 0,
       "factoring": 0,
-      "compras_enap": 335425140,
+      "compras_enap": 341326716,
       "ppto": 326422,
       "parcial": false
     },
@@ -57,7 +57,7 @@
       "cheques": 65404650,
       "transf": 0,
       "factoring": 0,
-      "compras_enap": 148648340,
+      "compras_enap": 176542872,
       "ppto": 326422,
       "parcial": false
     },
@@ -326,8 +326,8 @@
     {
       "date": "21apr",
       "day": "Mar",
-      "litros": 0,
-      "neto": 0
+      "litros": 7500,
+      "neto": 9560820
     },
     {
       "date": "20apr",
@@ -422,12 +422,8 @@
   ],
   "banks": [
     {
-      "name": "DE CHILE",
-      "balance": 10086722
-    },
-    {
       "name": "ITAU",
-      "balance": 7692677
+      "balance": 22692677
     },
     {
       "name": "ESTADO",
@@ -446,19 +442,23 @@
       "balance": 465063
     },
     {
+      "name": "DE CHILE",
+      "balance": 434977
+    },
+    {
       "name": "DE CREDITO",
       "balance": -838790
     }
   ],
-  "total_cash": 27236012,
+  "total_cash": 32584267,
   "receivables": {
-    "open_invoices": 320,
-    "total_due": 691883879,
-    "current": 598870049,
-    "overdue": 93013830,
-    "pct_overdue": 13.4,
+    "open_invoices": 290,
+    "total_due": 608373151,
+    "current": 530640071,
+    "overdue": 77733080,
+    "pct_overdue": 12.8,
     "aging": {
-      "0-30": 77176266,
+      "0-30": 61895516,
       "31-60": 6072001,
       "61-90": 0,
       "90+": 9765563
@@ -477,18 +477,6 @@
         "amount": 18562499
       },
       {
-        "name": "AGROINDUSTRIAL SIRACUSA S A",
-        "amount": 16987500
-      },
-      {
-        "name": "FORESTAL PUIHUA SPA",
-        "amount": 16545700
-      },
-      {
-        "name": "EMPRESAS TUCAPEL S A",
-        "amount": 16313998
-      },
-      {
         "name": "AGRICOLA AGROBOSQUES SAN ISIDRO S.A.",
         "amount": 16100053
       },
@@ -501,8 +489,8 @@
         "amount": 15411835
       },
       {
-        "name": "SOC. DE TRANSPORTES TRACMAVI LTDA.",
-        "amount": 14963153
+        "name": "FORESTAL PUIHUA SPA",
+        "amount": 14248201
       },
       {
         "name": "PATRICIO VISCAY ALBORNOZ",
@@ -513,12 +501,16 @@
         "amount": 13275000
       },
       {
+        "name": "SOC. DE TRANSPORTES TRACMAVI LTDA.",
+        "amount": 12765902
+      },
+      {
         "name": "EXPORTADORA ANAKENA LTDA",
         "amount": 12006498
       },
       {
-        "name": "AGRICOLA MANUEL BARRERA E.I.R.L.",
-        "amount": 11646000
+        "name": "AGROINDUSTRIAL SIRACUSA S A",
+        "amount": 11617500
       },
       {
         "name": "URAN ANTONIO LUNA DOMÍNGUEZ",
@@ -533,23 +525,31 @@
         "amount": 9338001
       },
       {
-        "name": "TRANSPORTES SAN MARCELO SPA",
-        "amount": 9090000
-      },
-      {
         "name": "LUIS ANTONIO REYES FUENTES",
         "amount": 9083999
       },
       {
         "name": "VICTOR FAVIO VILCHES MARDONES",
         "amount": 8824001
+      },
+      {
+        "name": "SOC AGRICOLA SANTA TERESA SPA",
+        "amount": 8747662
+      },
+      {
+        "name": "JOSE EDGARDO RAMON MEZA BANADOS",
+        "amount": 7921658
+      },
+      {
+        "name": "VALENZUELA LEIVA MAX",
+        "amount": 7895000
       }
     ]
   },
   "crm": {
     "total": 1418,
-    "open": 1171,
-    "won": 246,
+    "open": 1170,
+    "won": 247,
     "new_30d": 92,
     "by_stage": [
       {
@@ -562,11 +562,11 @@
       },
       {
         "stage": "Ruta",
-        "count": 46
+        "count": 45
       },
       {
         "stage": "Oportunidad de Negocio",
-        "count": 125
+        "count": 123
       },
       {
         "stage": "Contactado",
@@ -574,15 +574,15 @@
       },
       {
         "stage": "Cotizado",
-        "count": 264
+        "count": 267
       },
       {
         "stage": "Durmiente",
-        "count": 192
+        "count": 191
       },
       {
         "stage": "Won",
-        "count": 246
+        "count": 247
       }
     ]
   }
