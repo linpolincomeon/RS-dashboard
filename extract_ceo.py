@@ -189,16 +189,22 @@ def extract_weekly(models, uid, supplier_ids, contado_term_ids, ruta_stage_id):
         sum_mn, sum_n = 0, 0
         sum_mn_c, sum_n_c = 0, 0   # contado
         sum_mn_cr, sum_n_cr = 0, 0  # crédito
+        fact_contado, fact_credito = 0, 0
         for inv in invoices:
             mz = inv.get("margin_zone") or 0
             au = inv.get("amount_untaxed") or 0
+            term_id = inv.get("invoice_payment_term_id")
+            tid = term_id[0] if term_id else None
+            is_contado = tid in contado_term_ids
+            if is_contado:
+                fact_contado += 1
+            else:
+                fact_credito += 1
             if not mz or au <= 0:
                 continue
             sum_mn += mz * au
             sum_n += au
-            term_id = inv.get("invoice_payment_term_id")
-            tid = term_id[0] if term_id else None
-            if tid in contado_term_ids:
+            if is_contado:
                 sum_mn_c += mz * au
                 sum_n_c += au
             else:
@@ -302,6 +308,23 @@ def extract_weekly(models, uid, supplier_ids, contado_term_ids, ruta_stage_id):
                 ["write_date", "<=", wd["end"] + " 23:59:59"],
             ])
 
+        # ── Clientes nuevos (first invoice ever in this week) ──
+        clientes_nuevos = 0
+        seen_partners = set()
+        for inv in invoices:
+            pid = inv["partner_id"][0] if inv.get("partner_id") else None
+            if not pid or pid in seen_partners:
+                continue
+            seen_partners.add(pid)
+            prev = s_count(models, uid, "account.move", [
+                ["move_type", "=", "out_invoice"],
+                ["state", "=", "posted"],
+                ["partner_id", "=", pid],
+                ["invoice_date", "<", wd["start"]],
+            ])
+            if prev == 0:
+                clientes_nuevos += 1
+
         ppto = get_week_budget(wd["start"])
 
         results.append({
@@ -326,12 +349,15 @@ def extract_weekly(models, uid, supplier_ids, contado_term_ids, ruta_stage_id):
             "compras_odoo": round(compras_total),
             "cheq_cartera_saldo": round(cheq_cartera_saldo),
             "cheq_recibidos": round(cheq_recibidos_total),
+            "facturas_contado": fact_contado,
+            "facturas_credito": fact_credito,
             "cotiz_canceladas": cotiz_cancel,
             "visitas": visitas,
+            "clientes_nuevos": clientes_nuevos,
             "ppto": ppto,
             "parcial": i == 0,
         })
-        print(f"{len(invoices)} fact, {litros}L, margin {margin:.2%}, recaud {recaud/1e6:.1f}M")
+        print(f"{len(invoices)} fact ({fact_contado}c/{fact_credito}cr), {litros}L, margin {margin:.2%}, recaud {recaud/1e6:.1f}M, {clientes_nuevos} nuevos")
 
     return results
 
@@ -447,6 +473,12 @@ def main():
         "banks": banks,
         "total_cash": total_cash,
         "receivables": receivables,
+        "gerencia_goals": {
+            "margen_contado_meta": 0.12,
+            "margen_credito_meta": 0.09,
+            "visitas_semana": 30,
+            "clientes_nuevos_semana": 2,
+        },
     }
 
     path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "ceo-data.json")

@@ -102,6 +102,7 @@ tr:hover td{background:rgba(200,54,14,.02)}
     <div class="tabs" id="tabs"></div>
     <div class="filters" id="filters"></div>
     <div class="panel active" id="p-ventas"></div>
+    <div class="panel" id="p-gerencia"></div>
     <div class="panel" id="p-cobranza"></div>
     <div class="panel" id="p-caja"></div>
   </div>
@@ -118,11 +119,11 @@ const fP=n=>!n&&n!==0?'—':(n*100).toFixed(1)+'%';
 const pD=(c,p)=>(!c||!p)?null:((c-p)/Math.abs(p))*100;
 const dH=d=>{if(d==null)return'';const u=d>=0;return`<div class="kpi-delta ${u?'up':'dn'}">${u?'▲':'▼'} ${Math.abs(d).toFixed(1)}%</div>`};
 function setupTabs(){
-  const tabDefs=[['ventas','Ventas'],['cobranza','Cobranza'],['caja','Caja']];
+  const tabDefs=[['ventas','Ventas'],['gerencia','Gerencia'],['cobranza','Cobranza'],['caja','Caja']];
   document.getElementById('tabs').innerHTML=tabDefs.map(([k,l])=>
     `<button class="tab ${k===curTab?'active':''}" onclick="switchTab('${k}')">${l}</button>`
   ).join('');
-  if(curTab==='ventas'||curTab==='caja'){
+  if(curTab==='ventas'||curTab==='gerencia'||curTab==='caja'){
     const ws=D.weeks[selW];
     document.getElementById('filters').innerHTML=[4,8,16].map(n=>
       `<button class="wf ${fN===n?'on':''}" onclick="setFilter(${n})">${n}S</button>`
@@ -145,6 +146,7 @@ function setFilter(n){fN=n;if(selW>=n)selW=0;render()}
 function selectWeek(i){selW=i;render()}
 function render(){
   if(curTab==='ventas') renderVentas();
+  else if(curTab==='gerencia') renderGerencia();
   else if(curTab==='cobranza') renderCobranza();
   else renderCaja();
   setupTabs();
@@ -157,12 +159,17 @@ function renderVentas(){
   const dv=last.ppto>0?last.litros/last.ppto:0;
   let h='<div class="kpi-grid">';
   const mc=last.margin_contado||0, mcr=last.margin_credito||0;
+  const hasNewMargins=last.margin_contado!==undefined&&last.margin_contado!==null;
   h+=kpi('Venta Semana',fM(last.ventas),pD(last.ventas,prev.ventas),'c-accent',`${last.facturas} fact · ${last.clientes} cli`);
   h+=kpi('Litros',fK(last.litros),pD(last.litros,prev.litros),'c-blue',`$${fNum(last.precio_bruto||last.precio_neto||last.precio||0)}/L bruto`);
   h+=kpi('Litros vs Ppto',(dv*100).toFixed(0)+'%',null,dv>=.8?'c-green':dv>=.6?'c-amber':'c-red',`Meta: ${fK(last.ppto)} · Real: ${fK(last.litros)}`);
-  h+=kpi('Margen Contado',fP(mc),pD(mc,prev.margin_contado||0),mc>=.12?'c-green':mc>=.10?'c-amber':'c-red','meta 12%');
-  h+=kpi('Margen Crédito',fP(mcr),pD(mcr,prev.margin_credito||0),mcr>=.09?'c-green':mcr>=.07?'c-amber':'c-red','meta 9%');
-  h+=kpi('Recaudación',fM(last.recaud),pD(last.recaud,prev.recaud||1),'c-purple',`Transf: ${fM(last.transf)} · Cheq: ${fM(last.cheques)} · Fact: ${fM(last.factoring)}`);
+  if(hasNewMargins){
+    h+=kpi('Margen Contado',fP(mc),pD(mc,prev.margin_contado||0),mc>=.12?'c-green':mc>=.10?'c-amber':'c-red','meta 12%');
+    h+=kpi('Margen Crédito',fP(mcr),pD(mcr,prev.margin_credito||0),mcr>=.09?'c-green':mcr>=.07?'c-amber':'c-red','meta 9%');
+  } else {
+    h+=kpi('Margen Bruto',fP(last.margin),pD(last.margin,prev.margin),last.margin>=.10?'c-green':'c-red','margin_zone ponderado');
+  }
+  h+=kpi('Recaudación',fM(last.recaud),pD(last.recaud,prev.recaud||1),'c-purple',`Transf: ${fM(last.transf||0)} · Cheq: ${fM(last.cheques)} · Fact: ${fM(last.factoring||0)}`);
   h+='</div>';
   h+='<div class="chart-row two">';
   h+='<div class="chart-card"><div class="chart-title">Litros por semana <span class="badge">Jue→Mié</span></div><div class="chart-wrap"><canvas id="cLitros"></canvas></div></div>';
@@ -180,22 +187,31 @@ function renderVentas(){
   }
   h+='<div class="section-label">Resumen semanal</div>';
   h+='<div class="table-card"><table><thead><tr>';
-  h+='<th>Semana</th><th class="r">Ventas</th><th class="r">Litros</th><th class="r">Desv.</th><th class="r">M.Contado</th><th class="r">M.Crédito</th><th class="r">$/L</th><th class="r">Recaud.</th><th class="r">Compras</th><th class="r">Cheq.Cart.</th>';
+  const hasNM=D.weeks[0].margin_contado!==undefined&&D.weeks[0].margin_contado!==null;
+  h+='<th>Semana</th><th class="r">Ventas</th><th class="r">Litros</th><th class="r">Desv.</th>';
+  if(hasNM){h+='<th class="r">M.Contado</th><th class="r">M.Crédito</th>';}else{h+='<th class="r">Margen</th>';}
+  h+='<th class="r">$/L</th><th class="r">Recaud.</th><th class="r">Compras</th>';
+  if(hasNM) h+='<th class="r">Cheq.Cart.</th>';
   h+='</tr></thead><tbody>';
   D.weeks.slice(0,fN).forEach((w,i)=>{
     const dv2=w.ppto>0?w.litros/w.ppto:0;
     const sel=i===selW;
-    const wmc=w.margin_contado||0, wmcr=w.margin_credito||0;
     h+=`<tr style="${sel?'background:var(--accent-light)':''}"><td class="${sel?'hi':''}">${w.label}${w.parcial?' *':''}</td>`;
     h+=`<td class="r">${fM(w.ventas)}</td>`;
     h+=`<td class="r">${fK(w.litros)}</td>`;
     h+=`<td class="r ${dv2>=.8?'ok':'bad'}">${(dv2*100).toFixed(0)}%</td>`;
-    h+=`<td class="r ${wmc>=.12?'ok':wmc>=.10?'':'bad'}">${fP(wmc)}</td>`;
-    h+=`<td class="r ${wmcr>=.09?'ok':wmcr>=.07?'':'bad'}">${fP(wmcr)}</td>`;
+    if(hasNM){
+      const wmc=w.margin_contado||0, wmcr=w.margin_credito||0;
+      h+=`<td class="r ${wmc>=.12?'ok':wmc>=.10?'':'bad'}">${fP(wmc)}</td>`;
+      h+=`<td class="r ${wmcr>=.09?'ok':wmcr>=.07?'':'bad'}">${fP(wmcr)}</td>`;
+    } else {
+      h+=`<td class="r ${w.margin>=.10?'ok':''}">${fP(w.margin)}</td>`;
+    }
     h+=`<td class="r">$${fNum(w.precio_bruto||w.precio_neto||w.precio||0)}</td>`;
     h+=`<td class="r">${fM(w.recaud)}</td>`;
     h+=`<td class="r">${fM(w.compras_odoo||w.compras_enap||0)}</td>`;
-    h+=`<td class="r">${fM(w.cheq_cartera_saldo||0)}</td></tr>`;
+    if(hasNM) h+=`<td class="r">${fM(w.cheq_cartera_saldo||0)}</td>`;
+    h+=`</tr>`;
   });
   h+='</tbody></table><div class="note">* Parcial · Margen = margin_zone (Odoo) · NC descontadas · Semana comercial Jue→Mié</div></div>';
   el.innerHTML=h;
@@ -236,6 +252,98 @@ function renderVentas(){
       options:co(tC,gC,v=>fK(v))});
   }
 }
+// ── GERENCIA ──
+function renderGerencia(){
+  const el=document.getElementById('p-gerencia');
+  const wk=[...D.weeks.slice(0,fN)].reverse();
+  const last=D.weeks[selW], prev=D.weeks[selW+1]||last;
+  const G=D.gerencia_goals||{};
+  const mc=last.margin_contado||0, mcr=last.margin_credito||0;
+  const mMeta=G.margen_contado_meta||0.12, crMeta=G.margen_credito_meta||0.09;
+  const visMeta=G.visitas_semana||30, cnMeta=G.clientes_nuevos_semana||2;
+  const dv=last.ppto>0?last.litros/last.ppto:0;
+
+  let h='<div class="kpi-grid">';
+  h+=kpi('Margen Contado',fP(mc),pD(mc,prev.margin_contado||0),mc>=mMeta?'c-green':mc>=mMeta*.85?'c-amber':'c-red',`Meta: ${fP(mMeta)} · ${last.facturas_contado||'—'} facturas`);
+  h+=kpi('Margen Crédito',fP(mcr),pD(mcr,prev.margin_credito||0),mcr>=crMeta?'c-green':mcr>=crMeta*.85?'c-amber':'c-red',`Meta: ${fP(crMeta)} · ${last.facturas_credito||'—'} facturas`);
+  h+=kpi('Litros vs Ppto',(dv*100).toFixed(0)+'%',null,dv>=.8?'c-green':dv>=.6?'c-amber':'c-red',`Meta: ${fK(last.ppto)} · Real: ${fK(last.litros)}`);
+  h+=kpi('Visitas',fNum(last.visitas||0),pD(last.visitas||0,prev.visitas||1),'c-blue',`Meta: ${visMeta}/sem`);
+  h+=kpi('Cotiz. Canceladas',fNum(last.cotiz_canceladas||0),null,'c-amber','sale.order cancel');
+  h+=kpi('Clientes Nuevos',fNum(last.clientes_nuevos||0),null,(last.clientes_nuevos||0)>=cnMeta?'c-green':'c-red',`Meta: ${cnMeta}/sem`);
+  h+='</div>';
+
+  // Margin charts — contado vs crédito side by side
+  h+='<div class="chart-row two">';
+  h+='<div class="chart-card"><div class="chart-title">Margen Contado % <span class="badge">meta '+fP(mMeta)+'</span></div><div class="chart-wrap"><canvas id="cMgC"></canvas></div></div>';
+  h+='<div class="chart-card"><div class="chart-title">Margen Crédito % <span class="badge">meta '+fP(crMeta)+'</span></div><div class="chart-wrap"><canvas id="cMgCr"></canvas></div></div>';
+  h+='</div>';
+
+  // Metas chart — litros cumplimiento
+  h+='<div class="chart-row two">';
+  h+='<div class="chart-card"><div class="chart-title">Visitas por semana <span class="badge">CRM Ruta</span></div><div class="chart-wrap"><canvas id="cVis"></canvas></div></div>';
+  h+='<div class="chart-card"><div class="chart-title">Clientes Nuevos por semana <span class="badge">1ra factura</span></div><div class="chart-wrap"><canvas id="cCN"></canvas></div></div>';
+  h+='</div>';
+
+  // ── Table: Gerencia detail ──
+  h+='<div class="section-label">Resumen Gerencia por Semana</div>';
+  h+='<div class="table-card"><table><thead><tr>';
+  h+='<th>Semana</th><th class="r">M.Contado</th><th class="r">#Fact.C</th><th class="r">M.Crédito</th><th class="r">#Fact.Cr</th>';
+  h+='<th class="r">Litros</th><th class="r">%Ppto</th><th class="r">Visitas</th><th class="r">Cotiz.Canc.</th><th class="r">Cli.Nuevos</th>';
+  h+='</tr></thead><tbody>';
+  D.weeks.slice(0,fN).forEach((w,i)=>{
+    const sel=i===selW;
+    const dv2=w.ppto>0?w.litros/w.ppto:0;
+    const wmc=w.margin_contado||0, wmcr=w.margin_credito||0;
+    h+=`<tr style="${sel?'background:var(--accent-light)':''}">`;
+    h+=`<td class="${sel?'hi':''}">${w.label}${w.parcial?' *':''}</td>`;
+    h+=`<td class="r ${wmc>=mMeta?'ok':wmc>=mMeta*.85?'':'bad'}">${fP(wmc)}</td>`;
+    h+=`<td class="r">${w.facturas_contado!=null?w.facturas_contado:'—'}</td>`;
+    h+=`<td class="r ${wmcr>=crMeta?'ok':wmcr>=crMeta*.85?'':'bad'}">${fP(wmcr)}</td>`;
+    h+=`<td class="r">${w.facturas_credito!=null?w.facturas_credito:'—'}</td>`;
+    h+=`<td class="r">${fK(w.litros)}</td>`;
+    h+=`<td class="r ${dv2>=.8?'ok':'bad'}">${(dv2*100).toFixed(0)}%</td>`;
+    h+=`<td class="r">${w.visitas!=null?w.visitas:'—'}</td>`;
+    h+=`<td class="r">${w.cotiz_canceladas!=null?w.cotiz_canceladas:'—'}</td>`;
+    h+=`<td class="r">${w.clientes_nuevos!=null?w.clientes_nuevos:'—'}</td>`;
+    h+=`</tr>`;
+  });
+  h+='</tbody></table><div class="note">* Parcial · Margen = margin_zone ponderado por monto_neto · Semana comercial Jue→Mié</div></div>';
+  el.innerHTML=h;
+
+  // Charts
+  const labels=wk.map(w=>w.label.split('-')[0]);
+  const gC='rgba(0,0,0,.04)', tC='#9c9b96';
+
+  // Margen Contado
+  dc('cMgC');charts.cMgC=new Chart(document.getElementById('cMgC'),{type:'bar',
+    data:{labels,datasets:[
+      {data:wk.map(w=>+((w.margin_contado||0)*100).toFixed(2)),
+       backgroundColor:wk.map(w=>(w.margin_contado||0)>=mMeta?C.green+'88':C.red+'66'),borderRadius:5},
+      {label:'Meta',data:wk.map(()=>mMeta*100),type:'line',borderColor:C.amber,backgroundColor:'transparent',pointRadius:0,borderWidth:2,borderDash:[5,3],tension:0}
+    ]},options:co(tC,gC,v=>v.toFixed(1)+'%')});
+
+  // Margen Crédito
+  dc('cMgCr');charts.cMgCr=new Chart(document.getElementById('cMgCr'),{type:'bar',
+    data:{labels,datasets:[
+      {data:wk.map(w=>+((w.margin_credito||0)*100).toFixed(2)),
+       backgroundColor:wk.map(w=>(w.margin_credito||0)>=crMeta?C.green+'88':C.red+'66'),borderRadius:5},
+      {label:'Meta',data:wk.map(()=>crMeta*100),type:'line',borderColor:C.amber,backgroundColor:'transparent',pointRadius:0,borderWidth:2,borderDash:[5,3],tension:0}
+    ]},options:co(tC,gC,v=>v.toFixed(1)+'%')});
+
+  // Visitas
+  dc('cVis');charts.cVis=new Chart(document.getElementById('cVis'),{type:'bar',
+    data:{labels,datasets:[
+      {data:wk.map(w=>w.visitas||0),backgroundColor:wk.map(w=>(w.visitas||0)>=visMeta?C.blue+'88':C.red+'55'),borderRadius:5},
+      {label:'Meta',data:wk.map(()=>visMeta),type:'line',borderColor:C.amber,backgroundColor:'transparent',pointRadius:0,borderWidth:2,borderDash:[5,3],tension:0}
+    ]},options:co(tC,gC,v=>''+v)});
+
+  // Clientes Nuevos
+  dc('cCN');charts.cCN=new Chart(document.getElementById('cCN'),{type:'bar',
+    data:{labels,datasets:[
+      {data:wk.map(w=>w.clientes_nuevos||0),backgroundColor:wk.map(w=>(w.clientes_nuevos||0)>=cnMeta?C.green+'88':C.red+'55'),borderRadius:5},
+      {label:'Meta',data:wk.map(()=>cnMeta),type:'line',borderColor:C.amber,backgroundColor:'transparent',pointRadius:0,borderWidth:2,borderDash:[5,3],tension:0}
+    ]},options:co(tC,gC,v=>''+v)});
+}
 // ── COBRANZA ──
 function renderCobranza(){
   const el=document.getElementById('p-cobranza');
@@ -264,9 +372,9 @@ function renderCaja(){
     h+=`<div style="display:flex;align-items:center;gap:8px;margin-bottom:10px"><div style="width:120px;font-size:12px;color:var(--text2);text-align:right;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${b.name}</div><div style="flex:1;height:10px;background:var(--surface2);border-radius:5px;overflow:hidden"><div style="height:100%;width:${p}%;background:${b.balance>1e6?C.green:C.amber};border-radius:5px"></div></div><div style="width:90px;font-size:12px;font-weight:600;color:var(--text);text-align:right">\$${fNum(b.balance)}</div></div>`;
   });
   h+='</div>';
-  h+='<div class="section-label">Recaudación Semanal</div><div class="table-card"><table><thead><tr><th>Semana</th><th class="r">Recaud.</th><th class="r">Cheques</th><th class="r">Compras ENAP</th></tr></thead><tbody>';
+  h+='<div class="section-label">Recaudación Semanal</div><div class="table-card"><table><thead><tr><th>Semana</th><th class="r">Recaud.</th><th class="r">Transf.</th><th class="r">Cheques</th><th class="r">Factoring</th><th class="r">Compras</th></tr></thead><tbody>';
   D.weeks.slice(0,fN).forEach((w,i)=>{
-    h+=`<tr style="${i===selW?'background:var(--accent-light)':''}"><td class="${i===selW?'hi':''}">${w.label}</td><td class="r">${fM(w.recaud)}</td><td class="r">${w.cheques?fM(w.cheques):'—'}</td><td class="r">${fM(w.compras_enap||0)}</td></tr>`;
+    h+=`<tr style="${i===selW?'background:var(--accent-light)':''}"><td class="${i===selW?'hi':''}">${w.label}</td><td class="r">${fM(w.recaud)}</td><td class="r">${fM(w.transf||0)}</td><td class="r">${w.cheques?fM(w.cheques):'—'}</td><td class="r">${fM(w.factoring||0)}</td><td class="r">${fM(w.compras_odoo||w.compras_enap||0)}</td></tr>`;
   });
   h+='</tbody></table></div>';
   el.innerHTML=h;
