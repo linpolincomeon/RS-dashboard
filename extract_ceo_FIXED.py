@@ -60,10 +60,6 @@ def fetch_all(models, uid, model, domain, fields):
     return all_recs
 
 
-def s_count(models, uid, model, domain):
-    return models.execute_kw(ODOO_DB, uid, ODOO_KEY, model, "search_count", [domain])
-
-
 # ── Week ranges: Thursday to Wednesday ──
 def get_week_ranges(n_weeks=16):
     today = datetime.now()
@@ -301,25 +297,6 @@ def extract_receivables(models, uid):
     }
 
 
-# ── CRM ──
-def extract_crm(models, uid):
-    print("Extracting CRM pipeline...")
-    total = s_count(models, uid, "crm.lead", [])
-    open_l = s_count(models, uid, "crm.lead", [["active", "=", True], ["stage_id.is_won", "=", False]])
-    won = s_count(models, uid, "crm.lead", [["stage_id.is_won", "=", True]])
-    thirty_ago = (datetime.now() - timedelta(days=30)).strftime("%Y-%m-%d")
-    new_30 = s_count(models, uid, "crm.lead", [["create_date", ">=", thirty_ago]])
-
-    stages = sr(models, uid, "crm.stage", [], ["name", "sequence"], limit=20)
-    by_stage = []
-    for stg in sorted(stages, key=lambda x: x.get("sequence", 0)):
-        c = s_count(models, uid, "crm.lead", [["stage_id", "=", stg["id"]], ["active", "=", True]])
-        if c > 0:
-            by_stage.append({"stage": stg["name"], "count": c})
-
-    return {"total": total, "open": open_l, "won": won, "new_30d": new_30, "by_stage": by_stage}
-
-
 # ── MAIN ──
 def main():
     print("=== CEO Dashboard · Odoo Extraction ===")
@@ -330,7 +307,6 @@ def main():
     banks = extract_bank_balances(models, uid)
     total_cash = sum(b["balance"] for b in banks)
     receivables = extract_receivables(models, uid)
-    crm = extract_crm(models, uid)
 
     data = {
         "updated": datetime.now().isoformat(),
@@ -339,7 +315,6 @@ def main():
         "banks": banks,
         "total_cash": total_cash,
         "receivables": receivables,
-        "crm": crm,
     }
 
     path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "ceo-data.json")

@@ -36,7 +36,7 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(-
 .tab{font-family:inherit;font-size:12px;font-weight:400;padding:6px 18px;border:none;border-radius:8px;background:transparent;color:var(--text2);cursor:pointer;transition:all .15s}
 .tab.active{background:var(--surface);color:var(--text);font-weight:600;box-shadow:0 1px 3px rgba(0,0,0,.06)}
 /* Week filter */
-.filters{display:flex;gap:4px;margin-bottom:1.25rem;align-items:center}
+.filters{display:flex;gap:4px;margin-bottom:1.25rem;align-items:center;flex-wrap:wrap}
 .wf{font-family:inherit;font-size:11px;font-weight:500;padding:4px 12px;border:1px solid var(--border);border-radius:6px;background:var(--surface);color:var(--text3);cursor:pointer;transition:.15s}
 .wf:hover{color:var(--text2);border-color:var(--border2)}
 .wf.on{background:var(--accent-light);color:var(--accent);border-color:var(--accent);font-weight:600}
@@ -103,13 +103,12 @@ tr:hover td{background:rgba(200,54,14,.02)}
     <div class="filters" id="filters"></div>
     <div class="panel active" id="p-ventas"></div>
     <div class="panel" id="p-cobranza"></div>
-    <div class="panel" id="p-crm"></div>
     <div class="panel" id="p-caja"></div>
   </div>
 </div>
 <div class="container"><div class="footer"><span>TomEnergy · CEO Dashboard</span><span id="ftr"></span></div></div>
 <script>
-let D=null, curTab='ventas', fN=16;
+let D=null, curTab='ventas', fN=16, selW=0;
 const charts={};
 const C={accent:'#c8360e',blue:'#1a5fb4',green:'#0f6e56',amber:'#854f0b',red:'#a32d2d',purple:'#6b3fa0',teal:'#0f7b6c'};
 const fM=n=>!n&&n!==0?'—':'$'+(n/1e6).toFixed(1)+'M';
@@ -119,15 +118,19 @@ const fP=n=>!n&&n!==0?'—':(n*100).toFixed(1)+'%';
 const pD=(c,p)=>(!c||!p)?null:((c-p)/Math.abs(p))*100;
 const dH=d=>{if(d==null)return'';const u=d>=0;return`<div class="kpi-delta ${u?'up':'dn'}">${u?'▲':'▼'} ${Math.abs(d).toFixed(1)}%</div>`};
 function setupTabs(){
-  const tabDefs=[['ventas','Ventas'],['cobranza','Cobranza'],['crm','CRM'],['caja','Caja']];
+  const tabDefs=[['ventas','Ventas'],['cobranza','Cobranza'],['caja','Caja']];
   document.getElementById('tabs').innerHTML=tabDefs.map(([k,l])=>
     `<button class="tab ${k===curTab?'active':''}" onclick="switchTab('${k}')">${l}</button>`
   ).join('');
   if(curTab==='ventas'||curTab==='caja'){
-    const w0=D.weeks[0];
+    const ws=D.weeks[selW];
     document.getElementById('filters').innerHTML=[4,8,16].map(n=>
       `<button class="wf ${fN===n?'on':''}" onclick="setFilter(${n})">${n}S</button>`
-    ).join('')+`<span class="fl">${w0.label}${w0.parcial?' (parcial)':''} · Jue→Mié</span>`;
+    ).join('')+`<span class="fl">${ws.label}${ws.parcial?' (parcial)':''} · Jue→Mié</span>`
+    +'<div style="display:flex;gap:4px;flex-wrap:wrap;margin-top:6px;width:100%">'
+    +D.weeks.slice(0,fN).map((w,i)=>
+      `<button class="wf${i===selW?' on':''}" onclick="selectWeek(${i})" style="font-size:10px;padding:3px 8px">${w.label}${w.parcial?' *':''}</button>`
+    ).join('')+'</div>';
   } else {
     document.getElementById('filters').innerHTML='';
   }
@@ -138,11 +141,11 @@ function switchTab(t){
   document.getElementById('p-'+t).classList.add('active');
   setupTabs();render();
 }
-function setFilter(n){fN=n;render()}
+function setFilter(n){fN=n;if(selW>=n)selW=0;render()}
+function selectWeek(i){selW=i;render()}
 function render(){
   if(curTab==='ventas') renderVentas();
   else if(curTab==='cobranza') renderCobranza();
-  else if(curTab==='crm') renderCRM();
   else renderCaja();
   setupTabs();
 }
@@ -150,7 +153,7 @@ function render(){
 function renderVentas(){
   const el=document.getElementById('p-ventas');
   const wk=[...D.weeks.slice(0,fN)].reverse();
-  const last=D.weeks[0], prev=D.weeks[1]||last;
+  const last=D.weeks[selW], prev=D.weeks[selW+1]||last;
   const dv=last.ppto>0?last.litros/last.ppto:0;
   let h='<div class="kpi-grid">';
   h+=kpi('Venta Semana',fM(last.ventas),pD(last.ventas,prev.ventas),'c-accent',`${last.facturas} fact · ${last.clientes} cli`);
@@ -180,8 +183,8 @@ function renderVentas(){
   h+='</tr></thead><tbody>';
   D.weeks.slice(0,fN).forEach((w,i)=>{
     const dv2=w.ppto>0?w.litros/w.ppto:0;
-    const first=i===0;
-    h+=`<tr><td class="${first?'hi':''}">${w.label}${w.parcial?' *':''}</td>`;
+    const sel=i===selW;
+    h+=`<tr style="${sel?'background:var(--accent-light)':''}"><td class="${sel?'hi':''}">${w.label}${w.parcial?' *':''}</td>`;
     h+=`<td class="r">${fM(w.ventas)}</td>`;
     h+=`<td class="r">${fK(w.litros)}</td>`;
     h+=`<td class="r" style="color:var(--text3)">${fK(w.ppto)}</td>`;
@@ -247,28 +250,6 @@ function renderCobranza(){
   h+='</tbody></table></div>';
   el.innerHTML=h;
 }
-// ── CRM ──
-function renderCRM(){
-  const el=document.getElementById('p-crm');
-  const crm=D.crm;
-  if(!crm){el.innerHTML='<div class="chart-card" style="text-align:center;padding:3rem;color:var(--text3)">Sin datos CRM</div>';return}
-  let h='<div class="kpi-grid">';
-  h+=kpi('Total Leads',''+crm.total,null,'c-blue','Pipeline completo');
-  h+=kpi('Abiertos',''+crm.open,null,'c-green','Activos');
-  h+=kpi('Ganados',''+crm.won,null,'c-accent','Won');
-  h+=kpi('Nuevos 30d',''+crm.new_30d,null,'c-amber','Último mes');
-  h+='</div>';
-  h+='<div class="section-label">Pipeline por Etapa</div><div class="chart-card">';
-  const stages=crm.by_stage||[];
-  const mx=Math.max(...stages.map(s=>s.count),1);
-  const colors=[C.blue,C.purple,C.green,C.amber,C.accent,C.teal,C.red];
-  stages.forEach((s,i)=>{
-    const pct=Math.round(s.count/mx*100);
-    h+=`<div style="margin-bottom:10px"><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:var(--text2)">${s.stage}</span><span style="color:var(--text3);font-weight:600">${s.count}</span></div><div style="height:10px;background:var(--surface2);border-radius:5px;overflow:hidden"><div style="height:100%;width:${pct}%;background:${colors[i%colors.length]};border-radius:5px;transition:width .3s"></div></div></div>`;
-  });
-  h+='</div>';
-  el.innerHTML=h;
-}
 // ── CAJA ──
 function renderCaja(){
   const el=document.getElementById('p-caja');
@@ -282,7 +263,7 @@ function renderCaja(){
   h+='</div>';
   h+='<div class="section-label">Recaudación Semanal</div><div class="table-card"><table><thead><tr><th>Semana</th><th class="r">Recaud.</th><th class="r">Cheques</th><th class="r">Compras ENAP</th></tr></thead><tbody>';
   D.weeks.slice(0,fN).forEach((w,i)=>{
-    h+=`<tr><td class="${i===0?'hi':''}">${w.label}</td><td class="r">${fM(w.recaud)}</td><td class="r">${w.cheques?fM(w.cheques):'—'}</td><td class="r">${fM(w.compras_enap||0)}</td></tr>`;
+    h+=`<tr style="${i===selW?'background:var(--accent-light)':''}"><td class="${i===selW?'hi':''}">${w.label}</td><td class="r">${fM(w.recaud)}</td><td class="r">${w.cheques?fM(w.cheques):'—'}</td><td class="r">${fM(w.compras_enap||0)}</td></tr>`;
   });
   h+='</tbody></table></div>';
   el.innerHTML=h;
