@@ -656,8 +656,8 @@ def main():
         "sla": sla,
         "riesgo": riesgo,
         "gerencia_goals": {
-            "margen_contado_meta": 0.12,
-            "margen_credito_meta": 0.09,
+            "margen_contado_meta": 0.085,
+            "margen_credito_meta": 0.06,
             "visitas_semana": 30,
             "clientes_nuevos_semana": 2,
             "sla_target": 95,
