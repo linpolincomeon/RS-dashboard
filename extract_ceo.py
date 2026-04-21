@@ -97,18 +97,37 @@ def lookup_supplier_ids(models, uid):
     return ids
 
 
-def lookup_contado_term_ids(models, uid):
-    """Find payment term IDs that are 'contado' (1 day or prepago)."""
+def lookup_payment_terms(models, uid):
+    """Get all payment terms with name, days, and contado flag."""
+    import re
     terms = sr(models, uid, "account.payment.term", [], ["id", "name"], limit=50)
+    term_map = {}   # id -> {name, days, is_contado, label}
     contado_ids = []
     for t in terms:
-        name = (t["name"] or "").lower()
-        if "prepago" in name or "inmediato" in name or "contado" in name:
-            contado_ids.append(t["id"])
-        elif "1 d" in name or "1d" in name:
-            contado_ids.append(t["id"])
-    print(f"  Contado payment terms: {contado_ids}")
-    return contado_ids
+        tid = t["id"]
+        name = (t["name"] or "")
+        low = name.lower()
+        # Extract days from name
+        m = re.search(r"(\d+)\s*d", low)
+        if m:
+            days = int(m.group(1))
+        elif "prepago" in low or "inmediato" in low or "contado" in low:
+            days = 0
+        else:
+            days = 30  # default assumption
+        is_contado = days <= 1 or "prepago" in low or "inmediato" in low or "contado" in low
+        if is_contado:
+            contado_ids.append(tid)
+        # Normalize label for grouping
+        if days == 0 or "prepago" in low:
+            label = "Prepago"
+        elif days == 1:
+            label = "1 Día"
+        else:
+            label = f"{days} Días"
+        term_map[tid] = {"name": name, "days": days, "is_contado": is_contado, "label": label}
+    print(f"  Payment terms: {len(term_map)} found, contado: {contado_ids}")
+    return term_map, contado_ids
 
 
 def lookup_ruta_stage_id(models, uid):
@@ -156,7 +175,7 @@ def classify_bsl(ref, amount):
 
 
 # ── WEEKLY EXTRACTION ──
-def extract_weekly(models, uid, supplier_ids, contado_term_ids, ruta_stage_id):
+def extract_weekly(models, uid, supplier_ids, contado_term_ids, ruta_stage_id, term_map=None):
     print("Extracting weekly data (16 weeks, Thu-Wed)...")
     weeks = get_week_ranges(16)
     results = []
@@ -185,25 +204,36 @@ def extract_weekly(models, uid, supplier_ids, contado_term_ids, ruta_stage_id):
         neto = sum(x["amount_untaxed"] for x in invoices) - sum(r["amount_untaxed"] for r in refunds)
         clientes = len(set(x["partner_id"][0] for x in invoices if x["partner_id"]))
 
-        # ── Margin: overall + contado vs crédito ──
+        # ── Margin: overall + contado vs crédito + per payment term ──
         sum_mn, sum_n = 0, 0
         sum_mn_c, sum_n_c = 0, 0   # contado
         sum_mn_cr, sum_n_cr = 0, 0  # crédito
         fact_contado, fact_credito = 0, 0
+        # Per-term tracking: {label: {sum_mn, sum_n, count, days}}
+        by_term = {}
         for inv in invoices:
             mz = inv.get("margin_zone") or 0
             au = inv.get("amount_untaxed") or 0
             term_id = inv.get("invoice_payment_term_id")
             tid = term_id[0] if term_id else None
             is_contado = tid in contado_term_ids
+            # Resolve term info
+            tinfo = (term_map or {}).get(tid, {"label": "Sin plazo", "days": 30})
+            tlabel = tinfo["label"]
+            tdays = tinfo["days"]
             if is_contado:
                 fact_contado += 1
             else:
                 fact_credito += 1
+            if tlabel not in by_term:
+                by_term[tlabel] = {"sum_mn": 0, "sum_n": 0, "count": 0, "days": tdays}
+            by_term[tlabel]["count"] += 1
             if not mz or au <= 0:
                 continue
             sum_mn += mz * au
             sum_n += au
+            by_term[tlabel]["sum_mn"] += mz * au
+            by_term[tlabel]["sum_n"] += au
             if is_contado:
                 sum_mn_c += mz * au
                 sum_n_c += au
@@ -214,6 +244,19 @@ def extract_weekly(models, uid, supplier_ids, contado_term_ids, ruta_stage_id):
         margin = sum_mn / sum_n if sum_n > 0 else 0
         margin_contado = sum_mn_c / sum_n_c if sum_n_c > 0 else 0
         margin_credito = sum_mn_cr / sum_n_cr if sum_n_cr > 0 else 0
+        # Build per-term output
+        margin_by_term = {}
+        for lbl, bt in sorted(by_term.items(), key=lambda x: x[1]["days"]):
+            m = bt["sum_mn"] / bt["sum_n"] if bt["sum_n"] > 0 else 0
+            # Normalización: margin + (30 - days)/30 percentage points
+            adj = (30 - bt["days"]) / 30 / 100  # convert pp to ratio
+            norm = m + adj
+            margin_by_term[lbl] = {
+                "margin": round(m, 5),
+                "normalizado": round(norm, 5),
+                "count": bt["count"],
+                "days": bt["days"],
+            }
 
         # ── Invoice lines for litros + precio bruto ──
         lines = sr(models, uid, "account.move.line", [
@@ -351,6 +394,7 @@ def extract_weekly(models, uid, supplier_ids, contado_term_ids, ruta_stage_id):
             "cheq_recibidos": round(cheq_recibidos_total),
             "facturas_contado": fact_contado,
             "facturas_credito": fact_credito,
+            "margin_by_term": margin_by_term,
             "cotiz_canceladas": cotiz_cancel,
             "visitas": visitas,
             "clientes_nuevos": clientes_nuevos,
@@ -449,6 +493,137 @@ def extract_receivables(models, uid):
     }
 
 
+# ── SLA DELIVERY (stock.picking by zone) ──
+ZONE_MAP = {
+    "rancagua": "Rancagua", "san fernando": "San Fdo", "san fdo": "San Fdo",
+    "talca": "Talca", "curicó": "Curicó", "curico": "Curicó",
+    "parral": "Parral", "vi costa": "VI Costa", "linares": "Linares",
+}
+
+
+def classify_zone(city_or_zone):
+    """Map partner city/zone to dashboard zone."""
+    if not city_or_zone:
+        return "Otro"
+    low = city_or_zone.lower().strip()
+    for key, zone in ZONE_MAP.items():
+        if key in low:
+            return zone
+    return "Otro"
+
+
+def extract_sla(models, uid, weeks):
+    """Delivery SLA per zone per week from stock.picking."""
+    print("Extracting SLA delivery data...")
+    sla_data = []
+    for i, wd in enumerate(weeks[:8]):  # SLA for last 8 weeks only
+        # Outgoing deliveries completed this week
+        pickings = sr(models, uid, "stock.picking", [
+            ["picking_type_code", "=", "outgoing"],
+            ["state", "=", "done"],
+            ["date_done", ">=", wd["start"] + " 00:00:00"],
+            ["date_done", "<=", wd["end"] + " 23:59:59"],
+        ], ["partner_id", "scheduled_date", "date_done"], 2000)
+
+        zone_stats = {}
+        for p in pickings:
+            pid = p.get("partner_id")
+            if not pid:
+                continue
+            # Get partner city for zone classification
+            partner = sr(models, uid, "res.partner", [["id", "=", pid[0]]],
+                         ["city"], limit=1)
+            city = partner[0].get("city", "") if partner else ""
+            zone = classify_zone(city)
+            if zone not in zone_stats:
+                zone_stats[zone] = {"total": 0, "on_time": 0, "late_clients": []}
+            zone_stats[zone]["total"] += 1
+            # On time = delivered within 24h of scheduled
+            sched = p.get("scheduled_date", "")
+            done = p.get("date_done", "")
+            if sched and done:
+                try:
+                    s_dt = datetime.strptime(sched[:19], "%Y-%m-%d %H:%M:%S")
+                    d_dt = datetime.strptime(done[:19], "%Y-%m-%d %H:%M:%S")
+                    if (d_dt - s_dt).total_seconds() <= 86400:  # 24h
+                        zone_stats[zone]["on_time"] += 1
+                    else:
+                        pname = pid[1] if pid else "N/A"
+                        zone_stats[zone]["late_clients"].append(pname)
+                except (ValueError, TypeError):
+                    zone_stats[zone]["on_time"] += 1  # assume on time if parse fails
+
+        week_sla = {}
+        for zone, st in sorted(zone_stats.items()):
+            pct = round(st["on_time"] / st["total"] * 100, 2) if st["total"] > 0 else 100
+            week_sla[zone] = {
+                "total": st["total"],
+                "on_time": st["on_time"],
+                "late": st["total"] - st["on_time"],
+                "pct": pct,
+                "late_clients": st["late_clients"][:5],  # top 5
+            }
+        sla_data.append({"label": wd["label"], "zones": week_sla})
+        total_p = sum(s["total"] for s in week_sla.values())
+        total_ot = sum(s["on_time"] for s in week_sla.values())
+        print(f"  {wd['label']}: {total_p} pickings, {total_ot} on time")
+    return sla_data
+
+
+# ── RIESGO VIGENTE (credit risk) ──
+def extract_riesgo(models, uid):
+    """Uncovered vs covered receivable amounts (credit limit check)."""
+    print("Extracting credit risk (Riesgo Vigente)...")
+    invoices = fetch_all(models, uid, "account.move",
+        [["move_type", "=", "out_invoice"], ["state", "=", "posted"],
+         ["payment_state", "in", ["not_paid", "partial"]], ["amount_residual", ">", 0]],
+        ["partner_id", "amount_total", "amount_residual"])
+
+    # Get credit limits per partner
+    partner_ids = list(set(inv["partner_id"][0] for inv in invoices if inv.get("partner_id")))
+    partner_limits = {}
+    for offset in range(0, len(partner_ids), 200):
+        batch = partner_ids[offset:offset+200]
+        partners = sr(models, uid, "res.partner", [["id", "in", batch]],
+                       ["id", "credit_limit"], limit=200)
+        for p in partners:
+            partner_limits[p["id"]] = p.get("credit_limit", 0)
+
+    # Aggregate per partner
+    partner_debt = {}
+    for inv in invoices:
+        pid = inv["partner_id"][0] if inv.get("partner_id") else None
+        if not pid:
+            continue
+        pname = inv["partner_id"][1]
+        if pid not in partner_debt:
+            partner_debt[pid] = {"name": pname, "total": 0, "count": 0}
+        partner_debt[pid]["total"] += inv["amount_residual"]
+        partner_debt[pid]["count"] += 1
+
+    cubierto_monto, cubierto_count = 0, 0
+    no_cubierto_monto, no_cubierto_count = 0, 0
+    for pid, d in partner_debt.items():
+        limit = partner_limits.get(pid, 0)
+        if limit > 0 and d["total"] <= limit:
+            cubierto_monto += d["total"]
+            cubierto_count += d["count"]
+        else:
+            no_cubierto_monto += d["total"]
+            no_cubierto_count += d["count"]
+
+    total_m = cubierto_monto + no_cubierto_monto
+    total_c = cubierto_count + no_cubierto_count
+    return {
+        "cubierto": round(cubierto_monto),
+        "cubierto_count": cubierto_count,
+        "no_cubierto": round(no_cubierto_monto),
+        "no_cubierto_count": no_cubierto_count,
+        "pct_monto": round(no_cubierto_monto / total_m * 100, 2) if total_m > 0 else 0,
+        "pct_count": round(no_cubierto_count / total_c * 100, 2) if total_c > 0 else 0,
+    }
+
+
 # ── MAIN ──
 def main():
     print("=== CEO Dashboard · Odoo Extraction ===")
@@ -457,14 +632,19 @@ def main():
     # Dynamic lookups
     print("Looking up IDs...")
     supplier_ids = lookup_supplier_ids(models, uid)
-    contado_term_ids = lookup_contado_term_ids(models, uid)
+    term_map, contado_term_ids = lookup_payment_terms(models, uid)
     ruta_stage_id = lookup_ruta_stage_id(models, uid)
 
-    weekly = extract_weekly(models, uid, supplier_ids, contado_term_ids, ruta_stage_id)
+    weekly = extract_weekly(models, uid, supplier_ids, contado_term_ids, ruta_stage_id, term_map)
     daily = extract_daily(models, uid)
     banks = extract_bank_balances(models, uid)
     total_cash = sum(b["balance"] for b in banks)
     receivables = extract_receivables(models, uid)
+
+    # Gerencia sections
+    weeks = get_week_ranges(16)
+    sla = extract_sla(models, uid, weeks)
+    riesgo = extract_riesgo(models, uid)
 
     data = {
         "updated": datetime.now().isoformat(),
@@ -473,11 +653,14 @@ def main():
         "banks": banks,
         "total_cash": total_cash,
         "receivables": receivables,
+        "sla": sla,
+        "riesgo": riesgo,
         "gerencia_goals": {
             "margen_contado_meta": 0.12,
             "margen_credito_meta": 0.09,
             "visitas_semana": 30,
             "clientes_nuevos_semana": 2,
+            "sla_target": 95,
         },
     }
 

@@ -261,6 +261,7 @@ function renderGerencia(){
   const mc=last.margin_contado||0, mcr=last.margin_credito||0;
   const mMeta=G.margen_contado_meta||0.12, crMeta=G.margen_credito_meta||0.09;
   const visMeta=G.visitas_semana||30, cnMeta=G.clientes_nuevos_semana||2;
+  const slaTgt=G.sla_target||95;
   const dv=last.ppto>0?last.litros/last.ppto:0;
 
   let h='<div class="kpi-grid">';
@@ -272,34 +273,67 @@ function renderGerencia(){
   h+=kpi('Clientes Nuevos',fNum(last.clientes_nuevos||0),null,(last.clientes_nuevos||0)>=cnMeta?'c-green':'c-red',`Meta: ${cnMeta}/sem`);
   h+='</div>';
 
-  // Margin charts — contado vs crédito side by side
+  // ═══ SECTION 1: COMERCIAL — Margin by payment term ═══
+  h+='<div class="section-label">Comercial — Margen por Plazo de Pago</div>';
+  const mbt=last.margin_by_term||{};
+  const termOrder=['Prepago','1 Día','7 Días','15 Días','30 Días','45 Días','60 Días','90 Días','150 Días'];
+  const sortedTerms=Object.keys(mbt).sort((a,b)=>(mbt[a].days||0)-(mbt[b].days||0));
+  if(sortedTerms.length>0){
+    h+='<div class="table-card"><table><thead><tr><th>Plazo</th><th class="r">Margen</th><th class="r">#Facturas</th><th class="r">Normalizado</th></tr></thead><tbody>';
+    sortedTerms.forEach(t=>{
+      const d=mbt[t];
+      h+=`<tr><td class="hi">${t}</td><td class="r">${fP(d.margin)}</td><td class="r">${d.count}</td><td class="r">${fP(d.normalizado)}</td></tr>`;
+    });
+    h+='</tbody></table><div class="note">Normalizado = margen + (30 − días) / 30 pp · Ref: 30 días = 0 ajuste</div></div>';
+  }
+  // Full weekly margin table with contado/crédito + per-term detail
+  h+='<div class="section-label">Resumen Márgenes por Semana</div>';
+  h+='<div class="table-card"><table><thead><tr>';
+  h+='<th>Semana</th><th class="r">M.Contado</th><th class="r">M.Crédito</th><th class="r">#Fact</th><th class="r">M.Promedio</th>';
+  h+='</tr></thead><tbody>';
+  D.weeks.slice(0,fN).forEach((w,i)=>{
+    const sel=i===selW;
+    const wmc=w.margin_contado||0, wmcr=w.margin_credito||0;
+    const wm=w.margin||0;
+    const fc=(w.facturas_contado||0)+(w.facturas_credito||0);
+    h+=`<tr style="${sel?'background:var(--accent-light)':''}">`;
+    h+=`<td class="${sel?'hi':''}">${w.label}${w.parcial?' *':''}</td>`;
+    h+=`<td class="r ${wmc>=mMeta?'ok':wmc>=mMeta*.85?'':'bad'}">${fP(wmc)}</td>`;
+    h+=`<td class="r ${wmcr>=crMeta?'ok':wmcr>=crMeta*.85?'':'bad'}">${fP(wmcr)}</td>`;
+    h+=`<td class="r">${fc||w.facturas||'—'}</td>`;
+    h+=`<td class="r">${fP(wm)}</td>`;
+    h+=`</tr>`;
+    // Expandable per-term detail
+    const bt=w.margin_by_term;
+    if(bt&&Object.keys(bt).length>0){
+      const terms=Object.keys(bt).sort((a,b)=>(bt[a].days||0)-(bt[b].days||0));
+      terms.forEach(t=>{
+        const d=bt[t];
+        h+=`<tr style="font-size:10px;color:var(--text3)${sel?';background:var(--accent-light)':''}">`;
+        h+=`<td style="padding-left:24px">${t}</td><td class="r">${fP(d.margin)}</td><td class="r">${fP(d.normalizado)}</td><td class="r">${d.count}</td><td></td></tr>`;
+      });
+    }
+  });
+  h+='</tbody></table><div class="note">Sub-filas: margen y normalizado por plazo · margin_zone ponderado · Jue→Mié</div></div>';
+
+  // Margin charts
   h+='<div class="chart-row two">';
   h+='<div class="chart-card"><div class="chart-title">Margen Contado % <span class="badge">meta '+fP(mMeta)+'</span></div><div class="chart-wrap"><canvas id="cMgC"></canvas></div></div>';
   h+='<div class="chart-card"><div class="chart-title">Margen Crédito % <span class="badge">meta '+fP(crMeta)+'</span></div><div class="chart-wrap"><canvas id="cMgCr"></canvas></div></div>';
   h+='</div>';
 
-  // Metas chart — litros cumplimiento
-  h+='<div class="chart-row two">';
-  h+='<div class="chart-card"><div class="chart-title">Visitas por semana <span class="badge">CRM Ruta</span></div><div class="chart-wrap"><canvas id="cVis"></canvas></div></div>';
-  h+='<div class="chart-card"><div class="chart-title">Clientes Nuevos por semana <span class="badge">1ra factura</span></div><div class="chart-wrap"><canvas id="cCN"></canvas></div></div>';
-  h+='</div>';
-
-  // ── Table: Gerencia detail ──
-  h+='<div class="section-label">Resumen Gerencia por Semana</div>';
+  // ═══ SECTION 2: METAS ═══
+  h+='<div class="section-label">Metas — Litros, Visitas y Clientes Nuevos</div>';
   h+='<div class="table-card"><table><thead><tr>';
-  h+='<th>Semana</th><th class="r">M.Contado</th><th class="r">#Fact.C</th><th class="r">M.Crédito</th><th class="r">#Fact.Cr</th>';
-  h+='<th class="r">Litros</th><th class="r">%Ppto</th><th class="r">Visitas</th><th class="r">Cotiz.Canc.</th><th class="r">Cli.Nuevos</th>';
+  h+='<th>Semana</th><th class="r">Litros Ppto</th><th class="r">Litros Real</th><th class="r">%</th>';
+  h+='<th class="r">Visitas</th><th class="r">Cotiz.Canc.</th><th class="r">Cli.Nuevos</th>';
   h+='</tr></thead><tbody>';
   D.weeks.slice(0,fN).forEach((w,i)=>{
     const sel=i===selW;
     const dv2=w.ppto>0?w.litros/w.ppto:0;
-    const wmc=w.margin_contado||0, wmcr=w.margin_credito||0;
     h+=`<tr style="${sel?'background:var(--accent-light)':''}">`;
     h+=`<td class="${sel?'hi':''}">${w.label}${w.parcial?' *':''}</td>`;
-    h+=`<td class="r ${wmc>=mMeta?'ok':wmc>=mMeta*.85?'':'bad'}">${fP(wmc)}</td>`;
-    h+=`<td class="r">${w.facturas_contado!=null?w.facturas_contado:'—'}</td>`;
-    h+=`<td class="r ${wmcr>=crMeta?'ok':wmcr>=crMeta*.85?'':'bad'}">${fP(wmcr)}</td>`;
-    h+=`<td class="r">${w.facturas_credito!=null?w.facturas_credito:'—'}</td>`;
+    h+=`<td class="r">${fK(w.ppto)}</td>`;
     h+=`<td class="r">${fK(w.litros)}</td>`;
     h+=`<td class="r ${dv2>=.8?'ok':'bad'}">${(dv2*100).toFixed(0)}%</td>`;
     h+=`<td class="r">${w.visitas!=null?w.visitas:'—'}</td>`;
@@ -307,14 +341,68 @@ function renderGerencia(){
     h+=`<td class="r">${w.clientes_nuevos!=null?w.clientes_nuevos:'—'}</td>`;
     h+=`</tr>`;
   });
-  h+='</tbody></table><div class="note">* Parcial · Margen = margin_zone ponderado por monto_neto · Semana comercial Jue→Mié</div></div>';
+  h+='</tbody></table></div>';
+
+  h+='<div class="chart-row two">';
+  h+='<div class="chart-card"><div class="chart-title">Visitas por semana <span class="badge">CRM Ruta</span></div><div class="chart-wrap"><canvas id="cVis"></canvas></div></div>';
+  h+='<div class="chart-card"><div class="chart-title">Clientes Nuevos por semana <span class="badge">1ra factura</span></div><div class="chart-wrap"><canvas id="cCN"></canvas></div></div>';
+  h+='</div>';
+
+  // ═══ SECTION 3: SLA ENTREGA ═══
+  const sla=D.sla||[];
+  if(sla.length>0){
+    h+='<div class="section-label">SLA Entrega — Cumplimiento por Zona</div>';
+    // KPI for most recent week
+    const slaW=sla[0];
+    const zones=Object.keys(slaW.zones||{}).sort();
+    const allTotal=Object.values(slaW.zones||{}).reduce((s,z)=>s+z.total,0);
+    const allOT=Object.values(slaW.zones||{}).reduce((s,z)=>s+z.on_time,0);
+    const allPct=allTotal>0?allOT/allTotal*100:100;
+    h+='<div class="kpi-grid">';
+    h+=kpi('SLA Global',allPct.toFixed(1)+'%',null,allPct>=slaTgt?'c-green':allPct>=90?'c-amber':'c-red',`${allOT}/${allTotal} entregas a tiempo · meta ${slaTgt}%`);
+    zones.slice(0,5).forEach(z=>{
+      const zd=slaW.zones[z];
+      h+=kpi(z,zd.pct.toFixed(1)+'%',null,zd.pct>=slaTgt?'c-green':zd.pct>=90?'c-amber':'c-red',`${zd.on_time}/${zd.total} · ${zd.late} fuera`);
+    });
+    h+='</div>';
+    // SLA table — all weeks × zones
+    h+='<div class="table-card"><table><thead><tr><th>Semana</th>';
+    const allZones=new Set();
+    sla.forEach(s=>Object.keys(s.zones||{}).forEach(z=>allZones.add(z)));
+    const zList=[...allZones].sort();
+    zList.forEach(z=>h+=`<th class="r">${z}</th>`);
+    h+='</tr></thead><tbody>';
+    sla.forEach(s=>{
+      h+=`<tr><td class="hi">${s.label}</td>`;
+      zList.forEach(z=>{
+        const zd=(s.zones||{})[z];
+        if(!zd) {h+='<td class="r">—</td>';return;}
+        const cls=zd.pct>=slaTgt?'ok':zd.pct>=90?'':'bad';
+        h+=`<td class="r ${cls}">${zd.pct.toFixed(0)}% <span style="font-size:9px;color:var(--text3)">(${zd.total})</span></td>`;
+      });
+      h+=`</tr>`;
+    });
+    h+='</tbody></table><div class="note">Meta: '+slaTgt+'% entregas dentro de 24 hrs · stock.picking outgoing</div></div>';
+  }
+
+  // ═══ SECTION 4: RIESGO VIGENTE ═══
+  const rg=D.riesgo;
+  if(rg){
+    h+='<div class="section-label">Riesgo Vigente — Cobertura Crédito</div>';
+    h+='<div class="kpi-grid">';
+    h+=kpi('No Cubierto',fM(rg.no_cubierto),null,'c-red',`${rg.no_cubierto_count} ventas · ${rg.pct_monto.toFixed(1)}% del total`);
+    h+=kpi('Cubierto',fM(rg.cubierto),null,'c-green',`${rg.cubierto_count} ventas · ${(100-rg.pct_monto).toFixed(1)}% del total`);
+    h+=kpi('Riesgo % Monto',rg.pct_monto.toFixed(1)+'%',null,rg.pct_monto<=10?'c-green':rg.pct_monto<=15?'c-amber':'c-red','meta <10%');
+    h+=kpi('Riesgo % Ventas',rg.pct_count.toFixed(1)+'%',null,rg.pct_count<=10?'c-green':rg.pct_count<=15?'c-amber':'c-red','meta <10%');
+    h+='</div>';
+  }
+
   el.innerHTML=h;
 
-  // Charts
+  // ═══ CHARTS ═══
   const labels=wk.map(w=>w.label.split('-')[0]);
   const gC='rgba(0,0,0,.04)', tC='#9c9b96';
 
-  // Margen Contado
   dc('cMgC');charts.cMgC=new Chart(document.getElementById('cMgC'),{type:'bar',
     data:{labels,datasets:[
       {data:wk.map(w=>+((w.margin_contado||0)*100).toFixed(2)),
@@ -322,7 +410,6 @@ function renderGerencia(){
       {label:'Meta',data:wk.map(()=>mMeta*100),type:'line',borderColor:C.amber,backgroundColor:'transparent',pointRadius:0,borderWidth:2,borderDash:[5,3],tension:0}
     ]},options:co(tC,gC,v=>v.toFixed(1)+'%')});
 
-  // Margen Crédito
   dc('cMgCr');charts.cMgCr=new Chart(document.getElementById('cMgCr'),{type:'bar',
     data:{labels,datasets:[
       {data:wk.map(w=>+((w.margin_credito||0)*100).toFixed(2)),
@@ -330,14 +417,12 @@ function renderGerencia(){
       {label:'Meta',data:wk.map(()=>crMeta*100),type:'line',borderColor:C.amber,backgroundColor:'transparent',pointRadius:0,borderWidth:2,borderDash:[5,3],tension:0}
     ]},options:co(tC,gC,v=>v.toFixed(1)+'%')});
 
-  // Visitas
   dc('cVis');charts.cVis=new Chart(document.getElementById('cVis'),{type:'bar',
     data:{labels,datasets:[
       {data:wk.map(w=>w.visitas||0),backgroundColor:wk.map(w=>(w.visitas||0)>=visMeta?C.blue+'88':C.red+'55'),borderRadius:5},
       {label:'Meta',data:wk.map(()=>visMeta),type:'line',borderColor:C.amber,backgroundColor:'transparent',pointRadius:0,borderWidth:2,borderDash:[5,3],tension:0}
     ]},options:co(tC,gC,v=>''+v)});
 
-  // Clientes Nuevos
   dc('cCN');charts.cCN=new Chart(document.getElementById('cCN'),{type:'bar',
     data:{labels,datasets:[
       {data:wk.map(w=>w.clientes_nuevos||0),backgroundColor:wk.map(w=>(w.clientes_nuevos||0)>=cnMeta?C.green+'88':C.red+'55'),borderRadius:5},
