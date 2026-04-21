@@ -156,12 +156,13 @@ function renderVentas(){
   const last=D.weeks[selW], prev=D.weeks[selW+1]||last;
   const dv=last.ppto>0?last.litros/last.ppto:0;
   let h='<div class="kpi-grid">';
+  const mc=last.margin_contado||0, mcr=last.margin_credito||0;
   h+=kpi('Venta Semana',fM(last.ventas),pD(last.ventas,prev.ventas),'c-accent',`${last.facturas} fact · ${last.clientes} cli`);
-  h+=kpi('Litros',fK(last.litros),pD(last.litros,prev.litros),'c-blue',`$${fNum(last.precio)}/L neto`);
+  h+=kpi('Litros',fK(last.litros),pD(last.litros,prev.litros),'c-blue',`$${fNum(last.precio_bruto||last.precio_neto||last.precio||0)}/L bruto`);
   h+=kpi('Litros vs Ppto',(dv*100).toFixed(0)+'%',null,dv>=.8?'c-green':dv>=.6?'c-amber':'c-red',`Meta: ${fK(last.ppto)} · Real: ${fK(last.litros)}`);
-  h+=kpi('Margen Bruto',fP(last.margin),pD(last.margin,prev.margin),last.margin>=.10?'c-green':'c-red','margin_zone ponderado');
-  h+=kpi('Recaudación',fM(last.recaud),pD(last.recaud,prev.recaud||1),'c-purple',`Cheques: ${fM(last.cheques)}`);
-  h+=kpi('Caja Total',fM(D.total_cash),null,D.total_cash>30e6?'c-green':'c-red',`${D.banks.length} cuentas`);
+  h+=kpi('Margen Contado',fP(mc),pD(mc,prev.margin_contado||0),mc>=.12?'c-green':mc>=.10?'c-amber':'c-red','meta 12%');
+  h+=kpi('Margen Crédito',fP(mcr),pD(mcr,prev.margin_credito||0),mcr>=.09?'c-green':mcr>=.07?'c-amber':'c-red','meta 9%');
+  h+=kpi('Recaudación',fM(last.recaud),pD(last.recaud,prev.recaud||1),'c-purple',`Transf: ${fM(last.transf)} · Cheq: ${fM(last.cheques)} · Fact: ${fM(last.factoring)}`);
   h+='</div>';
   h+='<div class="chart-row two">';
   h+='<div class="chart-card"><div class="chart-title">Litros por semana <span class="badge">Jue→Mié</span></div><div class="chart-wrap"><canvas id="cLitros"></canvas></div></div>';
@@ -179,20 +180,22 @@ function renderVentas(){
   }
   h+='<div class="section-label">Resumen semanal</div>';
   h+='<div class="table-card"><table><thead><tr>';
-  h+='<th>Semana</th><th class="r">Ventas</th><th class="r">Litros</th><th class="r">Ppto</th><th class="r">Desv.</th><th class="r">Margen</th><th class="r">$/L</th><th class="r">Recaud.</th><th class="r">Compras</th>';
+  h+='<th>Semana</th><th class="r">Ventas</th><th class="r">Litros</th><th class="r">Desv.</th><th class="r">M.Contado</th><th class="r">M.Crédito</th><th class="r">$/L</th><th class="r">Recaud.</th><th class="r">Compras</th><th class="r">Cheq.Cart.</th>';
   h+='</tr></thead><tbody>';
   D.weeks.slice(0,fN).forEach((w,i)=>{
     const dv2=w.ppto>0?w.litros/w.ppto:0;
     const sel=i===selW;
+    const wmc=w.margin_contado||0, wmcr=w.margin_credito||0;
     h+=`<tr style="${sel?'background:var(--accent-light)':''}"><td class="${sel?'hi':''}">${w.label}${w.parcial?' *':''}</td>`;
     h+=`<td class="r">${fM(w.ventas)}</td>`;
     h+=`<td class="r">${fK(w.litros)}</td>`;
-    h+=`<td class="r" style="color:var(--text3)">${fK(w.ppto)}</td>`;
     h+=`<td class="r ${dv2>=.8?'ok':'bad'}">${(dv2*100).toFixed(0)}%</td>`;
-    h+=`<td class="r ${w.margin>=.10?'ok':''}">${fP(w.margin)}</td>`;
-    h+=`<td class="r">$${fNum(w.precio)}</td>`;
+    h+=`<td class="r ${wmc>=.12?'ok':wmc>=.10?'':'bad'}">${fP(wmc)}</td>`;
+    h+=`<td class="r ${wmcr>=.09?'ok':wmcr>=.07?'':'bad'}">${fP(wmcr)}</td>`;
+    h+=`<td class="r">$${fNum(w.precio_bruto||w.precio_neto||w.precio||0)}</td>`;
     h+=`<td class="r">${fM(w.recaud)}</td>`;
-    h+=`<td class="r">${fM(w.compras_enap||0)}</td></tr>`;
+    h+=`<td class="r">${fM(w.compras_odoo||w.compras_enap||0)}</td>`;
+    h+=`<td class="r">${fM(w.cheq_cartera_saldo||0)}</td></tr>`;
   });
   h+='</tbody></table><div class="note">* Parcial · Margen = margin_zone (Odoo) · NC descontadas · Semana comercial Jue→Mié</div></div>';
   el.innerHTML=h;
@@ -219,7 +222,7 @@ function renderVentas(){
   dc('cR');charts.cR=new Chart(document.getElementById('cRecaud'),{type:'bar',
     data:{labels,datasets:[
       {label:'Recaudación',data:wk.map(w=>Math.round(w.recaud/1e6)),backgroundColor:C.purple+'55',borderRadius:5},
-      {label:'Compras ENAP',data:wk.map(w=>Math.round((w.compras_enap||0)/1e6)),type:'line',borderColor:C.red,backgroundColor:'transparent',pointRadius:2,pointBackgroundColor:C.red,borderWidth:2,tension:.3}
+      {label:'Compras ENAP',data:wk.map(w=>Math.round((w.compras_odoo||w.compras_enap||0)/1e6)),type:'line',borderColor:C.red,backgroundColor:'transparent',pointRadius:2,pointBackgroundColor:C.red,borderWidth:2,tension:.3}
     ]},options:co(tC,gC,v=>'$'+v+'M')});
   // Daily chart
   const dy=D.daily||[];

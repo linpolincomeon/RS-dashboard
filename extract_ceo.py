@@ -1,8 +1,17 @@
 #!/usr/bin/env python3
 """
 CEO Dashboard — Odoo Data Extractor
-Extracts weekly (Thu-Wed) + receivables + CRM data.
+Extracts weekly (Thu-Wed) sales, recaudación, compras, cheques, margins.
 Outputs ceo-data.json for the static dashboard on GitHub Pages.
+
+Data sources confirmed with TomEnergy accounting team (April 2026):
+- Recaudación: account.bank.statement.line (Banco de Chile, journal 112)
+- Cheques en cartera: account.move.line on journal 114
+- Compras: account.move in_invoice for ENAP + ADQUIM + ADGREEN
+- Margen contado/crédito: split by payment_term_id (1 day/prepago vs 15+ days)
+- Cotizaciones canceladas: sale.order state=cancel
+- Visitas: crm.lead in stage "Ruta" updated in the week
+- Precio promedio: price_total / quantity on diesel B1 lines (bruto con IVA+IEC)
 """
 import xmlrpc.client
 import json
@@ -14,7 +23,14 @@ ODOO_DB = os.environ.get("ODOO_DB", "PRODUCCION")
 ODOO_USER = os.environ.get("ODOO_USER", "p@tomenergy.cl")
 ODOO_KEY = os.environ.get("ODOO_KEY", "f4188f3cbe069a9f5ce60325fa17a2c5333176d1")
 
-# Weekly budget in litros (monthly / 4)
+# Known IDs
+BANCO_CHILE_JOURNAL = 112
+CHEQUES_CARTERA_JOURNAL = 114
+DIESEL_B1_PRODUCT = 14
+ENAP_PARTNER = 5667
+ADQUIM_PARTNER = 15299
+
+# Weekly budget in litros
 WEEKLY_BUDGET = {
     "2025-01": 159285, "2025-02": 161493, "2025-03": 168496,
     "2025-04": 211569, "2025-05": 150215, "2025-06": 112982,
@@ -26,10 +42,12 @@ WEEKLY_BUDGET = {
     "2026-10": 338728, "2026-11": 348706, "2026-12": 438672,
 }
 
+# Factoring threshold — ignore small transfers that match pattern
+FACTORING_MIN_AMOUNT = 1_000_000
+
 
 def get_week_budget(start_date_str):
-    key = start_date_str[:7]
-    return WEEKLY_BUDGET.get(key, 270000)
+    return WEEKLY_BUDGET.get(start_date_str[:7], 270000)
 
 
 def connect():
@@ -60,13 +78,54 @@ def fetch_all(models, uid, model, domain, fields):
     return all_recs
 
 
+def s_count(models, uid, model, domain):
+    return models.execute_kw(ODOO_DB, uid, ODOO_KEY, model, "search_count", [domain])
+
+
+# ── Lookup helpers (run once at startup) ──
+def lookup_supplier_ids(models, uid):
+    """Find ADGREEN partner_id dynamically."""
+    adgreen = sr(models, uid, "res.partner",
+                 [["name", "ilike", "adgreen"]], ["id", "name"], limit=3)
+    adgreen_id = adgreen[0]["id"] if adgreen else None
+    ids = [ENAP_PARTNER, ADQUIM_PARTNER]
+    if adgreen_id:
+        ids.append(adgreen_id)
+        print(f"  Suppliers: ENAP={ENAP_PARTNER}, ADQUIM={ADQUIM_PARTNER}, ADGREEN={adgreen_id}")
+    else:
+        print(f"  Suppliers: ENAP={ENAP_PARTNER}, ADQUIM={ADQUIM_PARTNER} (ADGREEN not found)")
+    return ids
+
+
+def lookup_contado_term_ids(models, uid):
+    """Find payment term IDs that are 'contado' (1 day or prepago)."""
+    terms = sr(models, uid, "account.payment.term", [], ["id", "name"], limit=50)
+    contado_ids = []
+    for t in terms:
+        name = (t["name"] or "").lower()
+        if "prepago" in name or "inmediato" in name or "contado" in name:
+            contado_ids.append(t["id"])
+        elif "1 d" in name or "1d" in name:
+            contado_ids.append(t["id"])
+    print(f"  Contado payment terms: {contado_ids}")
+    return contado_ids
+
+
+def lookup_ruta_stage_id(models, uid):
+    """Find CRM stage 'Ruta'."""
+    stages = sr(models, uid, "crm.stage", [["name", "ilike", "ruta"]], ["id", "name"], limit=3)
+    if stages:
+        print(f"  Ruta stage: id={stages[0]['id']}")
+        return stages[0]["id"]
+    return None
+
+
 # ── Week ranges: Thursday to Wednesday ──
 def get_week_ranges(n_weeks=16):
     today = datetime.now()
     days_since_thu = (today.weekday() - 3) % 7
     this_thu = today - timedelta(days=days_since_thu)
     this_thu = this_thu.replace(hour=0, minute=0, second=0, microsecond=0)
-
     weeks = []
     for w in range(n_weeks):
         start = this_thu - timedelta(weeks=w)
@@ -78,8 +137,26 @@ def get_week_ranges(n_weeks=16):
     return weeks
 
 
+# ── Classify bank statement line into cheque / factoring / transfer ──
+def classify_bsl(ref, amount):
+    """
+    Cheques: ref contains dep.cheq, dep. docto (but NOT 'efectivo')
+    Factoring: Fingo, or Security-style 'Transferencia De Otro Banco Via Spav'
+               (only if amount >= FACTORING_MIN_AMOUNT)
+    Transfer: everything else
+    """
+    r = (ref or "").lower()
+    if ("dep.cheq" in r or "dep. docto" in r) and "efectivo" not in r:
+        return "cheques"
+    if "fingo" in r or "factoring" in r:
+        return "factoring"
+    if "otro banco via spav" in r and amount >= FACTORING_MIN_AMOUNT:
+        return "factoring"
+    return "transf"
+
+
 # ── WEEKLY EXTRACTION ──
-def extract_weekly(models, uid):
+def extract_weekly(models, uid, supplier_ids, contado_term_ids, ruta_stage_id):
     print("Extracting weekly data (16 weeks, Thu-Wed)...")
     weeks = get_week_ranges(16)
     results = []
@@ -87,15 +164,16 @@ def extract_weekly(models, uid):
     for i, wd in enumerate(weeks):
         print(f"  Week {i+1}/16: {wd['label']}...", end=" ")
 
-        # Customer invoices
+        # ── Customer invoices ──
         invoices = sr(models, uid, "account.move", [
             ["move_type", "=", "out_invoice"],
             ["state", "=", "posted"],
             ["invoice_date", ">=", wd["start"]],
             ["invoice_date", "<=", wd["end"]],
-        ], ["amount_total", "amount_untaxed", "margin_zone", "partner_id"])
+        ], ["amount_total", "amount_untaxed", "margin_zone",
+            "partner_id", "invoice_payment_term_id"])
 
-        # Credit notes to subtract
+        # Credit notes
         refunds = sr(models, uid, "account.move", [
             ["move_type", "=", "out_refund"],
             ["state", "=", "posted"],
@@ -107,26 +185,39 @@ def extract_weekly(models, uid):
         neto = sum(x["amount_untaxed"] for x in invoices) - sum(r["amount_untaxed"] for r in refunds)
         clientes = len(set(x["partner_id"][0] for x in invoices if x["partner_id"]))
 
-        # Weighted average margin_zone
+        # ── Margin: overall + contado vs crédito ──
         sum_mn, sum_n = 0, 0
+        sum_mn_c, sum_n_c = 0, 0   # contado
+        sum_mn_cr, sum_n_cr = 0, 0  # crédito
         for inv in invoices:
             mz = inv.get("margin_zone") or 0
             au = inv.get("amount_untaxed") or 0
-            if mz and au > 0:
-                sum_mn += mz * au
-                sum_n += au
-        margin = sum_mn / sum_n if sum_n > 0 else 0
+            if not mz or au <= 0:
+                continue
+            sum_mn += mz * au
+            sum_n += au
+            term_id = inv.get("invoice_payment_term_id")
+            tid = term_id[0] if term_id else None
+            if tid in contado_term_ids:
+                sum_mn_c += mz * au
+                sum_n_c += au
+            else:
+                sum_mn_cr += mz * au
+                sum_n_cr += au
 
-        # Invoice lines for litros
+        margin = sum_mn / sum_n if sum_n > 0 else 0
+        margin_contado = sum_mn_c / sum_n_c if sum_n_c > 0 else 0
+        margin_credito = sum_mn_cr / sum_n_cr if sum_n_cr > 0 else 0
+
+        # ── Invoice lines for litros + precio bruto ──
         lines = sr(models, uid, "account.move.line", [
             ["move_id.move_type", "=", "out_invoice"],
             ["move_id.state", "=", "posted"],
             ["move_id.invoice_date", ">=", wd["start"]],
             ["move_id.invoice_date", "<=", wd["end"]],
             ["display_type", "=", "product"],
-        ], ["quantity", "price_subtotal"], 5000)
+        ], ["quantity", "price_subtotal", "price_total", "product_id"], 5000)
 
-        # Refund lines to subtract
         ref_lines = sr(models, uid, "account.move.line", [
             ["move_id.move_type", "=", "out_refund"],
             ["move_id.state", "=", "posted"],
@@ -137,37 +228,79 @@ def extract_weekly(models, uid):
 
         litros = round(sum(l["quantity"] for l in lines) - sum(l["quantity"] for l in ref_lines))
         neto_lineas = sum(l["price_subtotal"] for l in lines) - sum(l["price_subtotal"] for l in ref_lines)
-        precio = round(neto_lineas / litros) if litros > 0 else 0
+        precio_neto = round(neto_lineas / litros) if litros > 0 else 0
 
-        # Recaudación from bank statement lines (Banco de Chile = journal 112)
-        # This is the correct source — account.payment only has cheques en cartera
-        RECAUD_JOURNALS = [112]  # Banco de Chile
+        # Precio bruto promedio (IVA+IEC) — solo diesel B1
+        b1_lines = [l for l in lines
+                     if l.get("product_id") and l["product_id"][0] == DIESEL_B1_PRODUCT
+                     and l.get("quantity", 0) > 0]
+        b1_total = sum(l.get("price_total", 0) for l in b1_lines)
+        b1_qty = sum(l["quantity"] for l in b1_lines)
+        precio_bruto = round(b1_total / b1_qty) if b1_qty > 0 else 0
+
+        # ── Recaudación from BSL Banco de Chile ──
         bsl = sr(models, uid, "account.bank.statement.line", [
             ["date", ">=", wd["start"]],
             ["date", "<=", wd["end"]],
             ["amount", ">", 0],
-            ["journal_id", "in", RECAUD_JOURNALS],
-        ], ["amount", "payment_ref", "journal_id"], 2000)
+            ["journal_id", "=", BANCO_CHILE_JOURNAL],
+        ], ["amount", "payment_ref"], 2000)
 
         cheques, transf, factoring = 0, 0, 0
         for line in bsl:
-            ref = (line.get("payment_ref") or "").lower()
-            if "fingo" in ref or "factoring" in ref or "factor" in ref:
-                factoring += line["amount"]
-            elif "dep.cheq" in ref or "dep. docto" in ref:
+            cat = classify_bsl(line.get("payment_ref"), line["amount"])
+            if cat == "cheques":
                 cheques += line["amount"]
+            elif cat == "factoring":
+                factoring += line["amount"]
             else:
                 transf += line["amount"]
         recaud = sum(line["amount"] for line in bsl)
 
-        # Vendor bills (compras ENAP)
+        # ── Compras (ENAP + ADQUIM + ADGREEN) ──
         compras = sr(models, uid, "account.move", [
             ["move_type", "=", "in_invoice"],
             ["state", "=", "posted"],
             ["invoice_date", ">=", wd["start"]],
             ["invoice_date", "<=", wd["end"]],
-        ], ["amount_total"], 500)
-        compras_enap = sum(c["amount_total"] for c in compras)
+            ["partner_id", "in", supplier_ids],
+        ], ["amount_total_in_currency_signed"], 500)
+        compras_total = sum(abs(c.get("amount_total_in_currency_signed", 0)) for c in compras)
+
+        # ── Cheques en cartera ──
+        # "después de subir" = all cheques in cartera journal up to end of week
+        cheq_cartera = sr(models, uid, "account.move.line", [
+            ["journal_id", "=", CHEQUES_CARTERA_JOURNAL],
+            ["parent_state", "=", "posted"],
+            ["date", "<=", wd["end"]],
+        ], ["debit", "credit"], 2000)
+        cheq_cartera_saldo = sum(l["debit"] - l["credit"] for l in cheq_cartera)
+
+        # "recibidos esta semana" = cheques entered in cartera during this week
+        cheq_recibidos = sr(models, uid, "account.move.line", [
+            ["journal_id", "=", CHEQUES_CARTERA_JOURNAL],
+            ["parent_state", "=", "posted"],
+            ["date", ">=", wd["start"]],
+            ["date", "<=", wd["end"]],
+            ["debit", ">", 0],
+        ], ["debit"], 500)
+        cheq_recibidos_total = sum(l["debit"] for l in cheq_recibidos)
+
+        # ── Cotizaciones canceladas ──
+        cotiz_cancel = s_count(models, uid, "sale.order", [
+            ["state", "=", "cancel"],
+            ["date_order", ">=", wd["start"]],
+            ["date_order", "<=", wd["end"] + " 23:59:59"],
+        ])
+
+        # ── Visitas (leads in stage Ruta updated this week) ──
+        visitas = 0
+        if ruta_stage_id:
+            visitas = s_count(models, uid, "crm.lead", [
+                ["stage_id", "=", ruta_stage_id],
+                ["write_date", ">=", wd["start"]],
+                ["write_date", "<=", wd["end"] + " 23:59:59"],
+            ])
 
         ppto = get_week_budget(wd["start"])
 
@@ -178,8 +311,11 @@ def extract_weekly(models, uid):
             "ventas": round(ventas),
             "neto": round(neto),
             "litros": litros,
-            "precio": precio,
+            "precio_neto": precio_neto,
+            "precio_bruto": precio_bruto,
             "margin": round(margin, 5),
+            "margin_contado": round(margin_contado, 5),
+            "margin_credito": round(margin_credito, 5),
             "facturas": len(invoices),
             "nc": len(refunds),
             "clientes": clientes,
@@ -187,11 +323,15 @@ def extract_weekly(models, uid):
             "cheques": round(cheques),
             "transf": round(transf),
             "factoring": round(factoring),
-            "compras_enap": round(compras_enap),
+            "compras_odoo": round(compras_total),
+            "cheq_cartera_saldo": round(cheq_cartera_saldo),
+            "cheq_recibidos": round(cheq_recibidos_total),
+            "cotiz_canceladas": cotiz_cancel,
+            "visitas": visitas,
             "ppto": ppto,
             "parcial": i == 0,
         })
-        print(f"{len(invoices)} fact, {litros}L, margin {margin:.2%}")
+        print(f"{len(invoices)} fact, {litros}L, margin {margin:.2%}, recaud {recaud/1e6:.1f}M")
 
     return results
 
@@ -201,34 +341,28 @@ def extract_daily(models, uid):
     print("Extracting daily sales (16 business days)...")
     results = []
     days_es = ["Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"]
-    count = 0
-    d = 0
+    count, d = 0, 0
     while count < 16:
         dt = datetime.now() - timedelta(days=d)
         d += 1
-        if dt.weekday() >= 5:  # skip weekends
+        if dt.weekday() >= 5:
             continue
         date_str = dt.strftime("%Y-%m-%d")
-
         lines = sr(models, uid, "account.move.line", [
             ["move_id.move_type", "=", "out_invoice"],
             ["move_id.state", "=", "posted"],
             ["move_id.invoice_date", "=", date_str],
             ["display_type", "=", "product"],
         ], ["quantity", "price_subtotal"], 1000)
-
         litros = round(sum(l["quantity"] for l in lines))
         neto = round(sum(l["price_subtotal"] for l in lines))
-
         results.append({
             "date": dt.strftime("%d%b").lower(),
             "day": days_es[dt.weekday()],
-            "litros": litros,
-            "neto": neto,
+            "litros": litros, "neto": neto,
         })
         count += 1
         print(f"  {date_str} ({days_es[dt.weekday()]}): {litros}L")
-
     return results
 
 
@@ -238,22 +372,18 @@ def extract_bank_balances(models, uid):
     journals = sr(models, uid, "account.journal", [
         ["type", "in", ["bank", "cash"]],
     ], ["name", "type", "default_account_id"])
-
     account_ids = [j["default_account_id"][0] for j in journals if j["default_account_id"]]
-
     balances = models.execute_kw(
         ODOO_DB, uid, ODOO_KEY,
         "account.move.line", "read_group",
         [[["account_id", "in", account_ids], ["parent_state", "=", "posted"]]],
         {"fields": ["balance:sum"], "groupby": ["account_id"], "lazy": True}
     )
-
     results = []
     for b in balances:
         name = b["account_id"][1] if b["account_id"] else "Unknown"
         clean_name = name.split(" ", 2)[-1] if "." in name.split(" ")[0] else name
         results.append({"name": clean_name, "balance": round(b["balance"])})
-
     return sorted(results, key=lambda x: -x["balance"])
 
 
@@ -265,12 +395,10 @@ def extract_receivables(models, uid):
          ["payment_state", "in", ["not_paid", "partial"]], ["amount_residual", ">", 0]],
         ["partner_id", "invoice_date_due", "amount_total", "amount_residual"])
     print(f"  {len(invoices)} open invoices")
-
     today = datetime.now()
     total_due = overdue = current = 0
     aging = {"0-30": 0, "31-60": 0, "61-90": 0, "90+": 0}
     debtor_map = {}
-
     for inv in invoices:
         res = inv["amount_residual"] or 0
         total_due += res
@@ -286,9 +414,7 @@ def extract_receivables(models, uid):
             current += res
         cn = inv["partner_id"][1] if inv["partner_id"] else "N/A"
         debtor_map[cn] = debtor_map.get(cn, 0) + res
-
     debtors = [{"name": n, "amount": round(a)} for n, a in sorted(debtor_map.items(), key=lambda x: -x[1])[:20]]
-
     return {
         "open_invoices": len(invoices), "total_due": round(total_due),
         "current": round(current), "overdue": round(overdue),
@@ -302,7 +428,13 @@ def main():
     print("=== CEO Dashboard · Odoo Extraction ===")
     models, uid = connect()
 
-    weekly = extract_weekly(models, uid)
+    # Dynamic lookups
+    print("Looking up IDs...")
+    supplier_ids = lookup_supplier_ids(models, uid)
+    contado_term_ids = lookup_contado_term_ids(models, uid)
+    ruta_stage_id = lookup_ruta_stage_id(models, uid)
+
+    weekly = extract_weekly(models, uid, supplier_ids, contado_term_ids, ruta_stage_id)
     daily = extract_daily(models, uid)
     banks = extract_bank_balances(models, uid)
     total_cash = sum(b["balance"] for b in banks)
