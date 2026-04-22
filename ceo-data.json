@@ -1,30 +1,30 @@
 {
-  "updated": "2026-04-22T12:12:29.292928",
+  "updated": "2026-04-22T16:25:42.093027",
   "weeks": [
     {
       "label": "16apr-22apr",
       "start": "2026-04-16",
       "end": "2026-04-22",
-      "ventas": 276109684,
-      "neto": 228929615,
-      "litros": 178143,
+      "ventas": 301139701,
+      "neto": 249292687,
+      "litros": 194025,
       "precio_neto": 1285,
-      "precio_bruto": 1553,
-      "margin": 0.07627,
+      "precio_bruto": 1555,
+      "margin": 0.0774,
       "margin_contado": 0.06267,
-      "margin_credito": 0.0795,
-      "facturas": 90,
+      "margin_credito": 0.08055,
+      "facturas": 98,
       "nc": 4,
-      "clientes": 66,
-      "recaud": 382807857,
+      "clientes": 71,
+      "recaud": 392663454,
       "cheques": 34326852,
-      "transf": 153968914,
+      "transf": 163824511,
       "factoring": 194512091,
-      "compras_odoo": 121667945,
+      "compras_odoo": 186654813,
       "cheq_cartera_saldo": 0,
       "cheq_recibidos": 15786899,
       "facturas_contado": 18,
-      "facturas_credito": 72,
+      "facturas_credito": 80,
       "margin_by_term": {
         "Prepago": {
           "margin": 0.04975,
@@ -51,26 +51,26 @@
           "days": 15
         },
         "30 Días": {
-          "margin": 0.07912,
-          "normalizado": 0.07912,
-          "count": 56,
+          "margin": 0.08027,
+          "normalizado": 0.08027,
+          "count": 62,
           "days": 30
         },
         "45 Días": {
-          "margin": 0.10282,
-          "normalizado": 0.09782,
-          "count": 1,
+          "margin": 0.10267,
+          "normalizado": 0.09767,
+          "count": 2,
           "days": 45
         },
         "60 Días": {
-          "margin": 0.07967,
-          "normalizado": 0.06967,
-          "count": 4,
+          "margin": 0.08044,
+          "normalizado": 0.07044,
+          "count": 5,
           "days": 60
         }
       },
-      "cotiz_canceladas": 9,
-      "visitas": 4,
+      "cotiz_canceladas": 10,
+      "visitas": 6,
       "clientes_nuevos": 6,
       "ppto": 326422,
       "parcial": true
@@ -1226,8 +1226,8 @@
     {
       "date": "22apr",
       "day": "Mié",
-      "litros": 0,
-      "neto": 0
+      "litros": 15882,
+      "neto": 20363072
     },
     {
       "date": "21apr",
@@ -1322,16 +1322,16 @@
   ],
   "banks": [
     {
-      "name": "DE CHILE",
-      "balance": 27668622
-    },
-    {
       "name": "ITAU",
       "balance": 22692677
     },
     {
       "name": "ESTADO",
       "balance": 5715282
+    },
+    {
+      "name": "DE CHILE",
+      "balance": 3834691
     },
     {
       "name": "CAJA",
@@ -1350,15 +1350,15 @@
       "balance": -838790
     }
   ],
-  "total_cash": 59817912,
+  "total_cash": 35983981,
   "receivables": {
-    "open_invoices": 301,
-    "total_due": 651107155,
-    "current": 568420075,
-    "overdue": 82687080,
-    "pct_overdue": 12.7,
+    "open_invoices": 300,
+    "total_due": 664707575,
+    "current": 584997495,
+    "overdue": 79710080,
+    "pct_overdue": 12.0,
     "aging": {
-      "0-30": 66001716,
+      "0-30": 63024716,
       "31-60": 6919801,
       "61-90": 0,
       "90+": 9765563
@@ -1385,8 +1385,8 @@
         "amount": 18353601
       },
       {
-        "name": "AGRICOLA AGROBOSQUES SAN ISIDRO S.A.",
-        "amount": 16100053
+        "name": "PATRICIO VISCAY ALBORNOZ",
+        "amount": 17413191
       },
       {
         "name": "TRANSPORTE SANTA ELENITA SPA",
@@ -1397,12 +1397,12 @@
         "amount": 15411835
       },
       {
-        "name": "PATRICIO VISCAY ALBORNOZ",
-        "amount": 13735441
-      },
-      {
         "name": "SERVICIOS AGRICOLAS HERNANDEZ LIMITADA",
         "amount": 13275000
+      },
+      {
+        "name": "AGRICOLA AGROBOSQUES SAN ISIDRO S.A.",
+        "amount": 13025053
       },
       {
         "name": "SOC. DE TRANSPORTES TRACMAVI LTDA.",
@@ -1425,6 +1425,10 @@
         "amount": 10672299
       },
       {
+        "name": "ALFREDO ALFONSO OPAZO MUÑOZ",
+        "amount": 9387189
+      },
+      {
         "name": "AGROSERVICIOS JR SPA",
         "amount": 9338001
       },
@@ -1439,10 +1443,6 @@
       {
         "name": "SOC AGRICOLA SANTA TERESA SPA",
         "amount": 8747662
-      },
-      {
-        "name": "VALENZUELA LEIVA MAX",
-        "amount": 7895000
       }
     ]
   },
@@ -1960,8 +1960,8 @@
   "riesgo": {
     "cubierto": 0,
     "cubierto_count": 0,
-    "no_cubierto": 651107155,
-    "no_cubierto_count": 301,
+    "no_cubierto": 664707575,
+    "no_cubierto_count": 300,
     "pct_monto": 100.0,
     "pct_count": 100.0
   },
