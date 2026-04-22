@@ -1,32 +1,32 @@
 {
-  "updated": "2026-04-22T16:47:35.595768",
+  "updated": "2026-04-22T19:32:28.288855",
   "weeks": [
     {
       "label": "16apr-22apr",
       "start": "2026-04-16",
       "end": "2026-04-22",
-      "ventas": 301932701,
-      "neto": 249937963,
-      "litros": 194525,
-      "litros_retail": 34990,
-      "litros_volumen": 161488,
-      "precio_neto": 1285,
+      "ventas": 305785700,
+      "neto": 253070225,
+      "litros": 197025,
+      "litros_retail": 35490,
+      "litros_volumen": 163488,
+      "precio_neto": 1284,
       "precio_bruto": 1555,
-      "margin": 0.07745,
-      "margin_contado": 0.06267,
-      "margin_credito": 0.08061,
-      "facturas": 99,
+      "margin": 0.07729,
+      "margin_contado": 0.06297,
+      "margin_credito": 0.08036,
+      "facturas": 101,
       "nc": 4,
-      "clientes": 72,
-      "recaud": 392663454,
+      "clientes": 74,
+      "recaud": 446785153,
       "cheques": 34326852,
-      "transf": 163824511,
-      "factoring": 194512091,
+      "transf": 183268471,
+      "factoring": 229189830,
       "compras_odoo": 186654813,
       "cheq_cartera_saldo": 0,
       "cheq_recibidos": 15786899,
-      "facturas_contado": 18,
-      "facturas_credito": 81,
+      "facturas_contado": 19,
+      "facturas_credito": 82,
       "margin_by_term": {
         "Prepago": {
           "margin": 0.04975,
@@ -35,9 +35,9 @@
           "days": 0
         },
         "1 Día": {
-          "margin": 0.06859,
-          "normalizado": 0.07825,
-          "count": 15,
+          "margin": 0.0689,
+          "normalizado": 0.07857,
+          "count": 16,
           "days": 1
         },
         "7 Días": {
@@ -53,9 +53,9 @@
           "days": 15
         },
         "30 Días": {
-          "margin": 0.08034,
-          "normalizado": 0.08034,
-          "count": 63,
+          "margin": 0.08001,
+          "normalizado": 0.08001,
+          "count": 64,
           "days": 30
         },
         "45 Días": {
@@ -72,7 +72,7 @@
         }
       },
       "cotiz_canceladas": 10,
-      "visitas": 9,
+      "visitas": 11,
       "clientes_nuevos": 6,
       "ppto": 269236,
       "ppto_retail": 199235,
@@ -1290,8 +1290,8 @@
     {
       "date": "22apr",
       "day": "Mié",
-      "litros": 16882,
-      "neto": 21648582
+      "litros": 21332,
+      "neto": 27336916
     },
     {
       "date": "21apr",
@@ -1386,16 +1386,16 @@
   ],
   "banks": [
     {
+      "name": "DE CHILE",
+      "balance": 40956390
+    },
+    {
       "name": "ITAU",
       "balance": 22692677
     },
     {
       "name": "ESTADO",
       "balance": 5715282
-    },
-    {
-      "name": "DE CHILE",
-      "balance": 3834691
     },
     {
       "name": "CAJA",
@@ -1414,15 +1414,15 @@
       "balance": -838790
     }
   ],
-  "total_cash": 35983981,
+  "total_cash": 73105680,
   "receivables": {
-    "open_invoices": 302,
-    "total_due": 666287575,
-    "current": 586577495,
-    "overdue": 79710080,
-    "pct_overdue": 12.0,
+    "open_invoices": 301,
+    "total_due": 661227314,
+    "current": 588408234,
+    "overdue": 72819080,
+    "pct_overdue": 11.0,
     "aging": {
-      "0-30": 63024716,
+      "0-30": 56133716,
       "31-60": 6919801,
       "61-90": 0,
       "90+": 9765563
@@ -1454,7 +1454,7 @@
       },
       {
         "name": "TRANSPORTE SANTA ELENITA SPA",
-        "amount": 15596291
+        "amount": 17140991
       },
       {
         "name": "SAMUEL BUDINICH SPA",
@@ -1505,8 +1505,8 @@
         "amount": 8824001
       },
       {
-        "name": "SOC AGRICOLA SANTA TERESA SPA",
-        "amount": 8747662
+        "name": "VALENZUELA LEIVA MAX",
+        "amount": 7895000
       }
     ]
   },
@@ -1686,348 +1686,172 @@
           ]
         }
       }
-    },
-    {
-      "label": "26mar-01apr",
-      "zones": {
-        "Curicó": {
-          "total": 4,
-          "on_time": 2,
-          "late": 2,
-          "pct": 50.0,
-          "late_clients": [
-            "AGRICOLA LA CAMPANA SPA, AGRICOLA LA CAMPANA - VILLA PRAT",
-            "JOSE RODRIGO ORMAZABAL VIDAL, JOSE RODRIGO ORMAZABAL- Flabia"
-          ]
-        },
-        "Linares": {
-          "total": 1,
-          "on_time": 1,
-          "late": 0,
-          "pct": 100.0,
-          "late_clients": []
-        },
-        "Otro": {
-          "total": 92,
-          "on_time": 45,
-          "late": 47,
-          "pct": 48.91,
-          "late_clients": [
-            "CUERPO DE BOMBEROS CODEGUA",
-            "DISTRIBUIDORA MAULE SPA, DISTRIBUIDORA MAULE SPA",
-            "INGENERIA Y CONSTRUCCIONES FEBLANCA SPA, PLANTA CAUQUENES",
-            "JOSE EDGARDO RAMON MEZA BANADOS, MEZA BANADOS JOSE - CANDELARIA-Nadia",
-            "JOSE EDGARDO RAMON MEZA BANADOS, MEZA BANADOS JOSE - EL BOSQUE LA PUNTA-Nadia"
-          ]
-        },
-        "Parral": {
-          "total": 1,
-          "on_time": 0,
-          "late": 1,
-          "pct": 0.0,
-          "late_clients": [
-            "SAMUEL SEGUNDO HERNANDEZ NORAMBUENA, SAMUEL HERNANDEZ"
-          ]
-        },
-        "San Fdo": {
-          "total": 5,
-          "on_time": 3,
-          "late": 2,
-          "pct": 60.0,
-          "late_clients": [
-            "LUIS ENRIQUE VASQUEZ TORREALBA, LUIS VASQUEZ- Yesenia Orostegui",
-            "SOCIEDAD AGRICOLA GAJARDO SPA, SOCIEDAD AGRICOLA GAJARDO SPA- Fernando"
-          ]
-        },
-        "Talca": {
-          "total": 11,
-          "on_time": 6,
-          "late": 5,
-          "pct": 54.55,
-          "late_clients": [
-            "MAQUINARIAS Y ARIDOS SAN PEDRO SPA., MAQUINARIAS Y ARIDOS SAN PEDRO-Alberto",
-            "AGROMORANDE S A, AGROMORANDE-PENCAHUE-Analia",
-            "PATRICIO VISCAY ALBORNOZ, PATRICIO VISCAY-C14 SUR",
-            "MADERAS LARA LIMITADA, Delivery Address",
-            "SOC. DE TRANSPORTES TRACMAVI LTDA., SOC, DE TRANSPORTES TRACMAVI-Cristopher"
-          ]
-        }
-      }
-    },
-    {
-      "label": "19mar-25mar",
-      "zones": {
-        "Curicó": {
-          "total": 12,
-          "on_time": 9,
-          "late": 3,
-          "pct": 75.0,
-          "late_clients": [
-            "JOSE RODRIGO ORMAZABAL VIDAL, JOSE RODRIGO ORMAZABAL- Flabia",
-            "AGRICOLA RIOJARA LIMITADA, AGRICOLA RIO JARA -CAMARICO -Nestor",
-            "PROVEAGRO SERVICIOS SPA, PROVEAGRO-LOS VIDALES"
-          ]
-        },
-        "Linares": {
-          "total": 1,
-          "on_time": 0,
-          "late": 1,
-          "pct": 0.0,
-          "late_clients": [
-            "FRANCISCO AUGUSTO MENDEZ MUNOZ, DIRECCION FRANCISCO MENDEZ"
-          ]
-        },
-        "Otro": {
-          "total": 121,
-          "on_time": 69,
-          "late": 52,
-          "pct": 57.02,
-          "late_clients": [
-            "SYNGENTA S.A., SYNGENTA-CASONA PARCELA 4",
-            "AGRICOLA EL COLORADO LTDA, AGRICOLA EL COLORADO-Mauricio",
-            "AGRICOLA EL BUEN PASTOR LIMITADA, AGRICOLA BUEN PASTOR OK",
-            "CRISTIAN LOPEZ AMARO, CRISTIAN LOPEZ AMARO- SAN CLEMENTE",
-            "INVERSIONES FRUTICOLAS S.A., HUERTO SAN AGUSTIN"
-          ]
-        },
-        "Parral": {
-          "total": 7,
-          "on_time": 1,
-          "late": 6,
-          "pct": 14.29,
-          "late_clients": [
-            "GABRIEL ANTONIO HERNANDEZ ESPINOZA, MARCELO HERNANDEZ",
-            "SOCIEDAD AGRICOLA GANADERA DE TRANSPORTE Y DE PRESTACION DE SERVICIOS DE MAQUINARIA AGRICOLA SAN LORENZO LIMITADA, MARCELO HERNANDEZ",
-            "JUAN CARLOS HERNANDEZ ESPINOZA, MARCELO HERNANDEZ",
-            "VALENTIN GONZALO HERNANDEZ ESPINOZA, MARCELO HERANDEZ",
-            "GABRIEL OCTAVIO HERNANDEZ MUNOZ, MARCELO HERNANDEZ, DUEÑO"
-          ]
-        },
-        "Rancagua": {
-          "total": 2,
-          "on_time": 1,
-          "late": 1,
-          "pct": 50.0,
-          "late_clients": [
-            "AGRICOLA CODENUT S A, AGRICOLA CODENUT- RANCAGUA"
-          ]
-        },
-        "San Fdo": {
-          "total": 7,
-          "on_time": 6,
-          "late": 1,
-          "pct": 85.71,
-          "late_clients": [
-            "SERVICIOS DE MAQUINARIA SUSANA DEL C. FUENZALIDA V. EIRL, SERVICIOS DE MAQUINARIA SUSANA DEL CARMEN-Richard Vera"
-          ]
-        },
-        "Talca": {
-          "total": 10,
-          "on_time": 4,
-          "late": 6,
-          "pct": 40.0,
-          "late_clients": [
-            "MAQUINARIAS Y ARIDOS SAN PEDRO SPA., MAQUINARIAS Y ARIDOS SAN PEDRO-Alberto",
-            "PATRICIO VISCAY ALBORNOZ, PATRICIO VISCAY-C14 SUR",
-            "MAQUINARIAS Y ARIDOS SAN PEDRO SPA., MAQUINARIAS Y ARIDOS SAN PEDRO-Alberto",
-            "SOC. EDUC. COLEGIO PARTICULAR MONTESSORI, Montessori Casa",
-            "AGROMORANDE S A, AGROMORANDE-YERBAS BUENAS"
-          ]
-        }
-      }
-    },
-    {
-      "label": "12mar-18mar",
-      "zones": {
-        "Curicó": {
-          "total": 12,
-          "on_time": 6,
-          "late": 6,
-          "pct": 50.0,
-          "late_clients": [
-            "AGRICOLA SANDURR LIMITADA., AGRICOLA SANDUR-TENO.Margarita",
-            "AGRICOLA LA CAMPANA SPA, AGRICOLA LA CAMPANA - VILLA PRAT",
-            "JOSE RODRIGO ORMAZABAL VIDAL, JOSE RODRIGO ORMAZABAL- Flabia",
-            "TRANSPORTES MARGARETH MARTINEZ SCHNETTLER E.I.R.L, TRANSPORTES MARGARETH MARTINEZ SCHNETTLER E.I.R.L-LOS VIDALES",
-            "TRANSPORTES Y CARGAS MARTINEZ DIAZ LIMITADA, TRANSPORTES Y CARGAS MARTINEZ DIAZ LIMITADA-LOS VIDALES"
-          ]
-        },
-        "Otro": {
-          "total": 101,
-          "on_time": 66,
-          "late": 35,
-          "pct": 65.35,
-          "late_clients": [
-            "CARLOS LAGOS AGUILERA, CARLOS LAGOS AGUILERA-Carlos",
-            "AGRICOLA ANA MARIA SPA, ANA MARIA HUERTO ROMERAL",
-            "AGRICOLA KUNAKO SPA, AGRICOLA KUNAKO- QUINAHUE-Patricia",
-            "AGRICOLA Y COMERCIAL LA CAPELLANIA S.A., AGRICOLA LA CAPELLANIA, CHEPICA FUNDO SANTA ADIRANA",
-            "TRANSPORTES CORNEJO SPA, MARCELO CORNEJO CHEPICA"
-          ]
-        },
-        "Rancagua": {
-          "total": 1,
-          "on_time": 1,
-          "late": 0,
-          "pct": 100.0,
-          "late_clients": []
-        },
-        "San Fdo": {
-          "total": 7,
-          "on_time": 6,
-          "late": 1,
-          "pct": 85.71,
-          "late_clients": [
-            "SOCIEDAD AGRICOLA GAJARDO SPA, SOCIEDAD AGRICOLA GAJARDO SPA- Fernando"
-          ]
-        },
-        "Talca": {
-          "total": 8,
-          "on_time": 5,
-          "late": 3,
-          "pct": 62.5,
-          "late_clients": [
-            "AGROMORANDE S A, AGROMORANDE-YERBAS BUENAS",
-            "PATRICIO VISCAY ALBORNOZ, PATRICIO VISCAY-C14 SUR",
-            "MAQUINARIAS Y ARIDOS SAN PEDRO SPA., MAQUINARIAS Y ARIDOS SAN PEDRO-Alberto"
-          ]
-        }
-      }
-    },
-    {
-      "label": "05mar-11mar",
-      "zones": {
-        "Curicó": {
-          "total": 9,
-          "on_time": 6,
-          "late": 3,
-          "pct": 66.67,
-          "late_clients": [
-            "AGRICOLA SANDURR LIMITADA., AGRICOLA SANDUR-TENO.Margarita",
-            "AGRICOLA RIOJARA LIMITADA, AGRICOLA RIO JARA -CAMARICO -Nestor",
-            "JOSE RODRIGO ORMAZABAL VIDAL, JOSE RODRIGO ORMAZABAL- Flabia"
-          ]
-        },
-        "Linares": {
-          "total": 1,
-          "on_time": 1,
-          "late": 0,
-          "pct": 100.0,
-          "late_clients": []
-        },
-        "Otro": {
-          "total": 125,
-          "on_time": 82,
-          "late": 43,
-          "pct": 65.6,
-          "late_clients": [
-            "ARCE LIZANA FRANCISCO ROLANDO, FRANCISCO ARCE",
-            "CARLOS ANDRES URETA GAJARDO, CARLOS ANDRES URETA GAJARDO- Carlos",
-            "AMERICO SEBASTIAN PINO SEPULVEDA, SEBASTIAN PINO, PALMILLA",
-            "SERGIO ENRIQUE PASTENE JORQUERA, SERGIO PASTENE",
-            "AGROCOMERCIAL CARLOS LABBE PRIETO SPA, CARLOS LABBE, FUNDO LOS GOMEROS"
-          ]
-        },
-        "Rancagua": {
-          "total": 1,
-          "on_time": 1,
-          "late": 0,
-          "pct": 100.0,
-          "late_clients": []
-        },
-        "San Fdo": {
-          "total": 9,
-          "on_time": 8,
-          "late": 1,
-          "pct": 88.89,
-          "late_clients": [
-            "SOCIEDAD AGRICOLA GAJARDO SPA, SOCIEDAD AGRICOLA GAJARDO SPA- Fernando"
-          ]
-        },
-        "Talca": {
-          "total": 5,
-          "on_time": 3,
-          "late": 2,
-          "pct": 60.0,
-          "late_clients": [
-            "INDUSTRIA DE VIBRADOS INDEPENDENCIA LTDA, INDUSTRIA DE VIBRADOS INDEPENDENCIA-VILLA LOS ANGELES, MAULE ok",
-            "MAQUINARIAS Y ARIDOS SAN PEDRO SPA., MAQUINARIAS Y ARIDOS SAN PEDRO-Alberto"
-          ]
-        }
-      }
-    },
-    {
-      "label": "26feb-04mar",
-      "zones": {
-        "Curicó": {
-          "total": 11,
-          "on_time": 7,
-          "late": 4,
-          "pct": 63.64,
-          "late_clients": [
-            "AGRICOLA LA CAMPANA SPA, AGRICOLA LA CAMPANA - VILLA PRAT",
-            "JOSE MIGUEL RIERA ROMAN, Jose Miguel Riera- José Miguel",
-            "JOSE RODRIGO ORMAZABAL VIDAL, JOSE RODRIGO ORMAZABAL- Flabia",
-            "AGRICOLA SARMIENTO SA, AGRICOLA SARMIENTO - HUERTO SARMIENTO"
-          ]
-        },
-        "Otro": {
-          "total": 126,
-          "on_time": 61,
-          "late": 65,
-          "pct": 48.41,
-          "late_clients": [
-            "SOCIEDAD COMERCIAL AGRICOLA JG LIMITADA, AGRICOLA JG - SAN CLEMENTE Nadja",
-            "AGRICOLA SANTA SOFIA SA, AGRICOLA SANTA SOFIA LA MONTAÑA",
-            "LUIS ANTONIO REYES FUENTES, LUIS ANTONIO REYES FUENTES-SAGRADA FAMILIA Luis Reyes",
-            "SERVICIO Y ARRIENDO DE MAQUINARIA PBM SPA, PEDRO BEAZA, HUELAÑE",
-            "MHM SPA, MHM SPA Campo- Macarena"
-          ]
-        },
-        "Parral": {
-          "total": 1,
-          "on_time": 1,
-          "late": 0,
-          "pct": 100.0,
-          "late_clients": []
-        },
-        "Rancagua": {
-          "total": 1,
-          "on_time": 1,
-          "late": 0,
-          "pct": 100.0,
-          "late_clients": []
-        },
-        "San Fdo": {
-          "total": 4,
-          "on_time": 2,
-          "late": 2,
-          "pct": 50.0,
-          "late_clients": [
-            "FRUTICOLA AGUA BUENA LTDA, CASA DE DON DARIO",
-            "HERIBERTO RAMIREZ GONZALEZ"
-          ]
-        },
-        "Talca": {
-          "total": 10,
-          "on_time": 8,
-          "late": 2,
-          "pct": 80.0,
-          "late_clients": [
-            "AGROMORANDE S A, AGROMORANDE-PENCAHUE-Analia",
-            "AGROMORANDE S A, AGROMORANDE-MELOZAL- Analia"
-          ]
-        }
-      }
     }
   ],
   "riesgo": {
     "cubierto": 0,
     "cubierto_count": 0,
-    "no_cubierto": 666287575,
+    "no_cubierto": 663208514,
     "no_cubierto_count": 302,
     "pct_monto": 100.0,
     "pct_count": 100.0
+  },
+  "churn": [
+    {
+      "label": "16apr-22apr",
+      "lost": [
+        "AGRICOLA CODENUT S A",
+        "AGRICOLA LA CAMPANA SPA",
+        "AGRICOLA XIONGDI SPA",
+        "AGROPELLIN SPA",
+        "AGRÍCOLA MARIAGRI SPA",
+        "JOSE ANDRES IBAÑEZ CUEVAS",
+        "JOSE RODRIGO ORMAZABAL VIDAL",
+        "JOSE SANTIAGO TRONCOSO SALAZAR",
+        "KEVIN FRANK DONOSO VERA",
+        "LA FEÑA SPA",
+        "RAMON ADRIAN PARADA VILLALOBOS",
+        "RODRIGO VALDERRAMA LABRA",
+        "SERVICIO Y ARRIENDO DE MAQUINARIA PBM SPA",
+        "SERVICIOS MONTEAGRO SPA",
+        "SERVICIOS REVIVA SPA",
+        "SITROL SPA",
+        "SOCIEDAD FORESTAL Y AGRICOLA LAS PITRAS DE PAULA LIMITADA",
+        "TRANSPORTES OSSES ROJAS SPA",
+        "VINOS TERRA MAULE, COMPANIA LIMITADA",
+        "VITIVINICOLA INVINA LTDA"
+      ],
+      "lost_count": 57,
+      "pct": 63.3,
+      "prev_count": 90,
+      "cur_count": 76
+    },
+    {
+      "label": "09apr-15apr",
+      "lost": [
+        "AGRICOLA AGROBOSQUES SAN ISIDRO S.A.",
+        "AGRICOLA BUNSTER Y TAGLE LIMITADA",
+        "AGRICOLA COLLADO IBACACHE LIMITADA",
+        "AGRICOLA TINGUIRIRICA LIMITADA",
+        "AGRICOLA TRICAHUE LTDA",
+        "AGRÍCOLA CORVAL II SPA",
+        "ALEX PRADO FRUTAS Y TRANSPORTES SPA",
+        "ALEXIS FABIAN TORRES BARRUETO",
+        "CIA CHILENA DE FOSFOROS S A",
+        "COMERCIAL LO FIGUEROA SPA",
+        "ESTEBAN ALEJANDRO ESPINOZA ZUNIGA",
+        "EXPORTACIONES MEYER LIMITADA",
+        "LUIS ARTEMIO JORQUERA JORQUERA",
+        "SERVICIOS AGRICOLAS LUIS PULGAR E.I.R.L.",
+        "SERVICIOS DE MAQUINARIA SUSANA DEL C. FUENZALIDA V. EIRL",
+        "SOC AGRICOLA LOS LINGUES LTDA",
+        "TRANSPORTES JORGE MARTINEZ SCHNETTLER E.I.R.L.",
+        "TRANSPORTES Y CARGAS MARTINEZ DIAZ LIMITADA",
+        "VIÑA VALDIVIESO LTDA.",
+        "YURIS DANIEL CORNEJO GAJARDO"
+      ],
+      "lost_count": 34,
+      "pct": 52.3,
+      "prev_count": 65,
+      "cur_count": 90
+    },
+    {
+      "label": "02apr-08apr",
+      "lost": [
+        "AGRICOLA LA CAMPANA SPA",
+        "AGRICOLA LO BELTRAN LIMITADA",
+        "AGRICOLA XIONGDI SPA",
+        "AGROMORANDE S A",
+        "AGROSERVICIOS JR SPA",
+        "AGRÍCOLA CANCEL LIMITADA",
+        "AGRÍCOLA LA RIGADA SPA",
+        "ARRIENDO DE VEHICULOS EMILIO ENRIQUE MORAGA ORELLANA E.I.R.L.",
+        "CAMPOSOL CHILE SPA",
+        "CRISGO SPA",
+        "CUERPO DE BOMBEROS CODEGUA",
+        "DISTRIBUIDORA MAULE SPA",
+        "JOSE SANTIAGO TRONCOSO SALAZAR",
+        "LUIS ENRIQUE VASQUEZ TORREALBA",
+        "RECSOL S.A",
+        "SAMUEL SEGUNDO HERNANDEZ NORAMBUENA",
+        "SERVICIO ARRIENDO MAQUINARIA AGRÍCOLA LUIS R. VERA GARRIDO EIRL",
+        "SOC. AGRIC. KAULEN WESTERMEYER SPA",
+        "VICTOR FAVIO VILCHES MARDONES",
+        "VINOS TERRA MAULE, COMPANIA LIMITADA"
+      ],
+      "lost_count": 57,
+      "pct": 66.3,
+      "prev_count": 86,
+      "cur_count": 65
+    },
+    {
+      "label": "26mar-01apr",
+      "lost": [
+        "ALEX PRADO FRUTAS Y TRANSPORTES SPA",
+        "CISTERNA ESPINOZA GERARDO ALFONSO",
+        "FRANCISCO AUGUSTO MENDEZ MUNOZ",
+        "GABRIEL ANTONIO HERNANDEZ ESPINOZA",
+        "GABRIEL OCTAVIO HERNANDEZ MUNOZ",
+        "JOSE MANUEL HERRERA BARROS",
+        "JOSE TORRES FUENTES",
+        "JUAN CARLOS HERNANDEZ ESPINOZA",
+        "JULIO ENRIQUE RUBILAR ROMERO",
+        "KARIN HUTTNER MUNIZAGA",
+        "KEVIN FRANK DONOSO VERA",
+        "LABRA E HIJAS SPA",
+        "LUIS ALFREDO CORNEJO GALLARDO",
+        "MANUEL ANTONIO MENDEZ MUÑOZ",
+        "MARCELO OCTAVIO HERNANDEZ ESPINOZA",
+        "PATRICIO IVAN HERNANDEZ ESPINOZA",
+        "SERVICIOS AGRÍCOLAS RC SPA",
+        "SOCIEDAD AGRICOLA GANADERA DE TRANSPORTE Y DE PRESTACION DE SERVICIOS DE MAQUINARIA AGRICOLA SAN LORENZO LIMITADA",
+        "SOCIEDAD FRUTICOLA MIRAFLORES SPA",
+        "VALENTIN GONZALO HERNANDEZ ESPINOZA"
+      ],
+      "lost_count": 110,
+      "pct": 82.7,
+      "prev_count": 133,
+      "cur_count": 86
+    },
+    {
+      "label": "19mar-25mar",
+      "lost": [
+        "AGRICOLA ALFA S.A",
+        "AGRICOLA LA CAMPANA SPA",
+        "AGRICOLA LO BELTRAN LIMITADA",
+        "AGRICOLA TERRANDES S A",
+        "AGRICOLA TOMOR LIMITADA",
+        "AGRICOLA TRABUN LTDA.",
+        "AGRICOLA Y COMERCIAL DON CARLOS",
+        "AGRICOLA Y FRUTICOLA ATHENEA LTDA",
+        "ALTO HORIZONTE SPA",
+        "CRISGO SPA",
+        "EDELMIRA INES PEREZ ZUNIGA",
+        "IMPORTADORA  Y EXPORTADORA MAVELI  LIMITADA",
+        "JOSE RODOLFO FARFAN LOPEZ",
+        "RAMON ADRIAN PARADA VILLALOBOS",
+        "RODRIGO VALDERRAMA LABRA",
+        "RUBEN BERNARDO FAUNDEZ ARAVENA",
+        "SERVICIOS AGRÍCOLAS M Y R SPA",
+        "TRANSPORTES BIDIMAR SPA",
+        "TRANSPORTES MARGARETH MARTINEZ SCHNETTLER E.I.R.L",
+        "TRANSPORTES Y CARGAS MARTINEZ DIAZ LIMITADA"
+      ],
+      "lost_count": 74,
+      "pct": 67.9,
+      "prev_count": 109,
+      "cur_count": 133
+    }
+  ],
+  "enap": {
+    "month": "2026-04",
+    "target_litros": 300000,
+    "mtd_litros": 299843,
+    "compliance_pct": 99.9,
+    "projected_litros": 408877,
+    "projected_pct": 136.3,
+    "days_elapsed": 22,
+    "days_in_month": 30
   },
   "gerencia_goals": {
     "margen_contado_meta": 0.085,
