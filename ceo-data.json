@@ -1,5 +1,5 @@
 {
-  "updated": "2026-04-21T23:55:41.501738",
+  "updated": "2026-04-22T12:12:29.292928",
   "weeks": [
     {
       "label": "16apr-22apr",
@@ -1224,6 +1224,12 @@
   ],
   "daily": [
     {
+      "date": "22apr",
+      "day": "Mié",
+      "litros": 0,
+      "neto": 0
+    },
+    {
       "date": "21apr",
       "day": "Mar",
       "litros": 41480,
@@ -1312,12 +1318,6 @@
       "day": "Mié",
       "litros": 37803,
       "neto": 45740290
-    },
-    {
-      "date": "31mar",
-      "day": "Mar",
-      "litros": 25933,
-      "neto": 30735099
     }
   ],
   "banks": [
@@ -1354,12 +1354,12 @@
   "receivables": {
     "open_invoices": 301,
     "total_due": 651107155,
-    "current": 572912575,
-    "overdue": 78194580,
-    "pct_overdue": 12.0,
+    "current": 568420075,
+    "overdue": 82687080,
+    "pct_overdue": 12.7,
     "aging": {
-      "0-30": 62357016,
-      "31-60": 6072001,
+      "0-30": 66001716,
+      "31-60": 6919801,
       "61-90": 0,
       "90+": 9765563
     },
@@ -1451,10 +1451,10 @@
       "label": "16apr-22apr",
       "zones": {
         "Curicó": {
-          "total": 3,
-          "on_time": 0,
+          "total": 6,
+          "on_time": 3,
           "late": 3,
-          "pct": 0.0,
+          "pct": 50.0,
           "late_clients": [
             "TRANSPORTES MARGARETH MARTINEZ SCHNETTLER E.I.R.L, TRANSPORTES MARGARETH MARTINEZ SCHNETTLER E.I.R.L-LOS VIDALES",
             "AGRICOLA SANTA CAROLINA SPA, AGRICOLA SANTA CAROLINA-LOS VIDALES",
@@ -1462,16 +1462,16 @@
           ]
         },
         "Otro": {
-          "total": 67,
-          "on_time": 28,
-          "late": 39,
-          "pct": 41.79,
+          "total": 86,
+          "on_time": 38,
+          "late": 48,
+          "pct": 44.19,
           "late_clients": [
+            "SOCIEDAD COMERCIAL AGRICOLA JG LIMITADA, AGRICOLA JG -  SAN JUAN SAGRADA FAMILIA Nadja",
             "INVERSIONES FRUTICOLAS S.A., HUERTO SAN AGUSTIN",
             "TRANSPORTES GERMAN MIRANDA EIRL, ARIEL MIRANDA",
             "AGRICOLA LOS ALPES LTDA, AGRICOLA LOS ALPES - AURORA - SAN CLEMENTE",
-            "AGRICOLA LOS ALPES LTDA, AGRICOLA LOS ALPES - MIRAFLORES - SAN CLEMENTE",
-            "AGRICOLA TINGUIRIRICA LIMITADA, FUNDO CUNAQUITO SIN NUMERO - AGRICOLA TINGUIRIRICA"
+            "AGRICOLA LOS ALPES LTDA, AGRICOLA LOS ALPES - MIRAFLORES - SAN CLEMENTE"
           ]
         },
         "San Fdo": {
