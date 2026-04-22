@@ -578,7 +578,7 @@ def extract_sla(models, uid, weeks):
     """Delivery SLA per zone per week from stock.picking."""
     print("Extracting SLA delivery data...")
     sla_data = []
-    for i, wd in enumerate(weeks[:8]):  # SLA for last 8 weeks only
+    for i, wd in enumerate(weeks[:3]):  # SLA for last 3 weeks only
         # Outgoing deliveries completed this week
         pickings = sr(models, uid, "stock.picking", [
             ["picking_type_code", "=", "outgoing"],
@@ -630,6 +630,123 @@ def extract_sla(models, uid, weeks):
         total_ot = sum(s["on_time"] for s in week_sla.values())
         print(f"  {wd['label']}: {total_p} pickings, {total_ot} on time")
     return sla_data
+
+
+# ── CHURN: clients who bought last week but NOT this week ──
+def extract_churn(models, uid, weeks):
+    """For each week, find partners in previous week's invoices NOT in current week's."""
+    print("Extracting churn data...")
+    churn_data = []
+    for i, wd in enumerate(weeks[:5]):  # 5 weeks to match margin display
+        # Current week partners
+        cur_invs = sr(models, uid, "account.move", [
+            ["move_type", "=", "out_invoice"],
+            ["state", "=", "posted"],
+            ["invoice_date", ">=", wd["start"]],
+            ["invoice_date", "<=", wd["end"]],
+        ], ["partner_id"], 2000)
+        cur_partners = set(inv["partner_id"][0] for inv in cur_invs if inv.get("partner_id"))
+
+        # Previous week partners
+        prev_wd = weeks[i + 1] if i + 1 < len(weeks) else None
+        if not prev_wd:
+            churn_data.append({"label": wd["label"], "lost": [], "pct": 0, "prev_count": 0, "cur_count": len(cur_partners)})
+            continue
+        prev_invs = sr(models, uid, "account.move", [
+            ["move_type", "=", "out_invoice"],
+            ["state", "=", "posted"],
+            ["invoice_date", ">=", prev_wd["start"]],
+            ["invoice_date", "<=", prev_wd["end"]],
+        ], ["partner_id"], 2000)
+        prev_partners = set(inv["partner_id"][0] for inv in prev_invs if inv.get("partner_id"))
+
+        # Churned = in previous but not in current
+        churned_ids = prev_partners - cur_partners
+        pct = round(len(churned_ids) / len(prev_partners) * 100, 1) if prev_partners else 0
+
+        # Get names for churned partners (up to 20)
+        lost_names = []
+        if churned_ids:
+            batch = list(churned_ids)[:20]
+            partners = sr(models, uid, "res.partner", [["id", "in", batch]], ["name"], limit=20)
+            lost_names = [p["name"] for p in partners]
+
+        churn_data.append({
+            "label": wd["label"],
+            "lost": lost_names,
+            "lost_count": len(churned_ids),
+            "pct": pct,
+            "prev_count": len(prev_partners),
+            "cur_count": len(cur_partners),
+        })
+        print(f"  {wd['label']}: {len(churned_ids)} lost of {len(prev_partners)} ({pct}%)")
+    return churn_data
+
+
+# ── ENAP COMPLIANCE: MTD purchases vs monthly target ──
+# Monthly ENAP committed volumes by zone (litros) — from contracts
+ENAP_MONTHLY_TARGETS = {
+    # Format: "YYYY-MM": {"zone": litros_committed, ...}
+    # Fill with actual contract data; these are placeholders
+    "2026-04": {"total": 300000},
+    "2026-05": {"total": 250000},
+    "2026-06": {"total": 230000},
+}
+
+
+def extract_enap_compliance(models, uid):
+    """Month-to-date purchases from ENAP vs monthly target, with projection."""
+    print("Extracting ENAP compliance...")
+    today = datetime.now()
+    month_start = today.replace(day=1).strftime("%Y-%m-%d")
+    month_key = today.strftime("%Y-%m")
+    today_str = today.strftime("%Y-%m-%d")
+
+    # MTD purchase lines from ENAP
+    enap_bills = sr(models, uid, "account.move", [
+        ["move_type", "=", "in_invoice"],
+        ["state", "=", "posted"],
+        ["partner_id", "=", ENAP_PARTNER],
+        ["invoice_date", ">=", month_start],
+        ["invoice_date", "<=", today_str],
+    ], ["id"], 500)
+
+    enap_bill_ids = [b["id"] for b in enap_bills]
+    total_litros = 0
+    if enap_bill_ids:
+        lines = sr(models, uid, "account.move.line", [
+            ["move_id", "in", enap_bill_ids],
+            ["display_type", "=", "product"],
+        ], ["quantity"], 2000)
+        total_litros = round(sum(l["quantity"] for l in lines))
+
+    # Target for this month
+    target = ENAP_MONTHLY_TARGETS.get(month_key, {})
+    target_total = target.get("total", 0)
+
+    # Days elapsed / total days in month
+    import calendar
+    days_in_month = calendar.monthrange(today.year, today.month)[1]
+    days_elapsed = today.day
+    pct_month = days_elapsed / days_in_month
+
+    # Projection
+    projected = round(total_litros / pct_month) if pct_month > 0 else 0
+    compliance_pct = round(total_litros / target_total * 100, 1) if target_total > 0 else 0
+    projected_pct = round(projected / target_total * 100, 1) if target_total > 0 else 0
+
+    result = {
+        "month": month_key,
+        "target_litros": target_total,
+        "mtd_litros": total_litros,
+        "compliance_pct": compliance_pct,
+        "projected_litros": projected,
+        "projected_pct": projected_pct,
+        "days_elapsed": days_elapsed,
+        "days_in_month": days_in_month,
+    }
+    print(f"  ENAP {month_key}: {total_litros}L MTD / {target_total}L target ({compliance_pct}%), projected {projected}L ({projected_pct}%)")
+    return result
 
 
 # ── RIESGO VIGENTE (credit risk) ──
@@ -707,6 +824,8 @@ def main():
     weeks = get_week_ranges(16)
     sla = extract_sla(models, uid, weeks)
     riesgo = extract_riesgo(models, uid)
+    churn = extract_churn(models, uid, weeks)
+    enap = extract_enap_compliance(models, uid)
 
     data = {
         "updated": datetime.now().isoformat(),
@@ -717,6 +836,8 @@ def main():
         "receivables": receivables,
         "sla": sla,
         "riesgo": riesgo,
+        "churn": churn,
+        "enap": enap,
         "gerencia_goals": {
             "margen_contado_meta": 0.085,
             "margen_credito_meta": 0.06,
