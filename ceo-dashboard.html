@@ -18,6 +18,7 @@
   --amber:#854f0b;--amber-light:#faeeda;
   --red:#a32d2d;--red-light:#fcebeb;
   --purple:#6b3fa0;--purple-light:#f3edfc;
+  --teal:#0f7b6c;--teal-light:#e1f8f3;
   --border:#e5e4df;--border2:#d3d1c7;
   --radius:10px;--radius-lg:14px;
 }
@@ -51,6 +52,7 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(-
 .kpi.c-amber::before{background:var(--amber)}
 .kpi.c-red::before{background:var(--red)}
 .kpi.c-purple::before{background:var(--purple)}
+.kpi.c-teal::before{background:var(--teal)}
 .kpi-label{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px;font-weight:500}
 .kpi-val{font-size:26px;font-weight:700;letter-spacing:-0.03em;line-height:1.1}
 .kpi-delta{font-size:11px;margin-top:4px;font-weight:500}
@@ -119,7 +121,7 @@ const fP=n=>!n&&n!==0?'—':(n*100).toFixed(1)+'%';
 const pD=(c,p)=>(!c||!p)?null:((c-p)/Math.abs(p))*100;
 const dH=d=>{if(d==null)return'';const u=d>=0;return`<div class="kpi-delta ${u?'up':'dn'}">${u?'▲':'▼'} ${Math.abs(d).toFixed(1)}%</div>`};
 function setupTabs(){
-  const tabDefs=[['ventas','Ventas'],['gerencia','Gerencia'],['cobranza','Cobranza'],['caja','Caja']];
+  const tabDefs=[['ventas','RS'],['gerencia','Gerencia'],['cobranza','Cobranza'],['caja','Caja']];
   document.getElementById('tabs').innerHTML=tabDefs.map(([k,l])=>
     `<button class="tab ${k===curTab?'active':''}" onclick="switchTab('${k}')">${l}</button>`
   ).join('');
@@ -151,45 +153,43 @@ function render(){
   else renderCaja();
   setupTabs();
 }
-// ── VENTAS ──
+// ── RS (was Ventas) ──
 function renderVentas(){
   const el=document.getElementById('p-ventas');
   const wk=[...D.weeks.slice(0,fN)].reverse();
   const last=D.weeks[selW], prev=D.weeks[selW+1]||last;
+  const G=D.gerencia_goals||{};
+  const mRetail=G.margen_contado_meta||0.085, mVol=G.margen_credito_meta||0.06;
   const dv=last.ppto>0?last.litros/last.ppto:0;
-  let h='<div class="kpi-grid">';
   const mc=last.margin_contado||0, mcr=last.margin_credito||0;
-  const hasNewMargins=last.margin_contado!==undefined&&last.margin_contado!==null;
-  h+=kpi('Venta Semana',fM(last.ventas),pD(last.ventas,prev.ventas),'c-accent',`${last.facturas} fact · ${last.clientes} cli`);
-  h+=kpi('Litros',fK(last.litros),pD(last.litros,prev.litros),'c-blue',`$${fNum(last.precio_bruto||last.precio_neto||last.precio||0)}/L bruto`);
+  const hasNM=last.margin_contado!==undefined&&last.margin_contado!==null;
+  let h='<div class="kpi-grid">';
+  h+=kpi('Venta Semana',fM(last.ventas),pD(last.ventas,prev.ventas),'c-accent',`$${fNum(last.precio_bruto||last.precio_neto||last.precio||0)}/L bruto`);
+  h+=kpi('Litros',fK(last.litros),pD(last.litros,prev.litros),'c-blue',`Retail: ${fK(last.litros_retail||0)} · Vol: ${fK(last.litros_volumen||0)}`);
+  h+=kpi('Nº Compras',fNum(last.facturas),pD(last.facturas,prev.facturas),'c-purple',`${last.facturas_contado||'—'} contado · ${last.facturas_credito||'—'} crédito`);
+  h+=kpi('Nº Clientes',fNum(last.clientes),pD(last.clientes,prev.clientes),'c-teal','clientes únicos');
   h+=kpi('Litros vs Ppto',(dv*100).toFixed(0)+'%',null,dv>=.8?'c-green':dv>=.6?'c-amber':'c-red',`Meta: ${fK(last.ppto)} · Real: ${fK(last.litros)}`);
-  if(hasNewMargins){
-    h+=kpi('Margen Contado',fP(mc),pD(mc,prev.margin_contado||0),mc>=.12?'c-green':mc>=.10?'c-amber':'c-red','meta 12%');
-    h+=kpi('Margen Crédito',fP(mcr),pD(mcr,prev.margin_credito||0),mcr>=.09?'c-green':mcr>=.07?'c-amber':'c-red','meta 9%');
+  if(hasNM){
+    h+=kpi('Margen Retail',fP(mc),pD(mc,prev.margin_contado||0),mc>=mRetail?'c-green':mc>=mRetail*.9?'c-amber':'c-red',`meta ${fP(mRetail)}`);
+    h+=kpi('Margen Volumen',fP(mcr),pD(mcr,prev.margin_credito||0),mcr>=mVol?'c-green':mcr>=mVol*.9?'c-amber':'c-red',`meta ${fP(mVol)}`);
   } else {
-    h+=kpi('Margen Bruto',fP(last.margin),pD(last.margin,prev.margin),last.margin>=.10?'c-green':'c-red','margin_zone ponderado');
+    h+=kpi('Margen Bruto',fP(last.margin),pD(last.margin,prev.margin),last.margin>=.085?'c-green':'c-red','margin_zone ponderado');
   }
-  h+=kpi('Recaudación',fM(last.recaud),pD(last.recaud,prev.recaud||1),'c-purple',`Transf: ${fM(last.transf||0)} · Cheq: ${fM(last.cheques)} · Fact: ${fM(last.factoring||0)}`);
+  h+=kpi('Recaudación',fM(last.recaud),pD(last.recaud,prev.recaud||1),'c-purple',`Transf: ${fM(last.transf||0)} · Cheq: ${fM(last.cheques||0)} · Fact: ${fM(last.factoring||0)}`);
   h+='</div>';
+  // Charts: Litros Retail + Margen Retail, Litros Volumen + Margen Volumen
   h+='<div class="chart-row two">';
-  h+='<div class="chart-card"><div class="chart-title">Litros por semana <span class="badge">Jue→Mié</span></div><div class="chart-wrap"><canvas id="cLitros"></canvas></div></div>';
-  h+='<div class="chart-card"><div class="chart-title">Litros vs Presupuesto <span class="badge">Real vs Meta</span></div><div class="chart-wrap"><canvas id="cPpto"></canvas></div></div>';
+  h+='<div class="chart-card"><div class="chart-title">Litros Retail + Margen <span class="badge">Contado · meta '+fP(mRetail)+'</span></div><div class="chart-wrap"><canvas id="cRetail"></canvas></div></div>';
+  h+='<div class="chart-card"><div class="chart-title">Litros Volumen + Margen <span class="badge">Crédito · meta '+fP(mVol)+'</span></div><div class="chart-wrap"><canvas id="cVolumen"></canvas></div></div>';
   h+='</div><div class="chart-row two">';
-  h+='<div class="chart-card"><div class="chart-title">Margen bruto % <span class="badge">margin_zone</span></div><div class="chart-wrap"><canvas id="cMargin"></canvas></div></div>';
-  h+='<div class="chart-card"><div class="chart-title">Recaudación vs Compras ENAP <span class="badge">CLP</span></div><div class="chart-wrap"><canvas id="cRecaud"></canvas></div></div>';
+  h+='<div class="chart-card"><div class="chart-title">Recaudación vs Compras <span class="badge">CLP</span></div><div class="chart-wrap"><canvas id="cRecaud"></canvas></div></div>';
+  h+='<div class="chart-card"><div class="chart-title">Venta diaria en litros <span class="badge">16 días hábiles</span></div><div class="chart-wrap"><canvas id="cDaily"></canvas></div></div>';
   h+='</div>';
-  // Daily sales chart
-  const dyData=D.daily||[];
-  if(dyData.length>0){
-    h+='<div class="chart-row" style="grid-template-columns:1fr;margin-top:1rem">';
-    h+='<div class="chart-card"><div class="chart-title">Venta diaria en litros <span class="badge">Últimos 16 días hábiles</span></div><div class="chart-wrap"><canvas id="cDaily"></canvas></div></div>';
-    h+='</div>';
-  }
+  // ── Table: Resumen semanal ──
   h+='<div class="section-label">Resumen semanal</div>';
-  h+='<div class="table-card"><table><thead><tr>';
-  const hasNM=D.weeks[0].margin_contado!==undefined&&D.weeks[0].margin_contado!==null;
-  h+='<th>Semana</th><th class="r">Ventas</th><th class="r">Litros</th><th class="r">Desv.</th>';
-  if(hasNM){h+='<th class="r">M.Contado</th><th class="r">M.Crédito</th>';}else{h+='<th class="r">Margen</th>';}
+  h+='<div class="table-card" style="overflow-x:auto"><table><thead><tr>';
+  h+='<th>Semana</th><th class="r">Ventas</th><th class="r">Litros</th><th class="r">Desv.</th><th class="r">Nº Comp.</th><th class="r">Nº Cli.</th>';
+  if(hasNM){h+='<th class="r">M.Retail</th><th class="r">M.Volumen</th>';}else{h+='<th class="r">Margen</th>';}
   h+='<th class="r">$/L</th><th class="r">Recaud.</th><th class="r">Compras</th>';
   if(hasNM) h+='<th class="r">Cheq.Cart.</th>';
   h+='</tr></thead><tbody>';
@@ -200,45 +200,51 @@ function renderVentas(){
     h+=`<td class="r">${fM(w.ventas)}</td>`;
     h+=`<td class="r">${fK(w.litros)}</td>`;
     h+=`<td class="r ${dv2>=.8?'ok':'bad'}">${(dv2*100).toFixed(0)}%</td>`;
+    h+=`<td class="r">${w.facturas||'—'}</td>`;
+    h+=`<td class="r">${w.clientes||'—'}</td>`;
     if(hasNM){
       const wmc=w.margin_contado||0, wmcr=w.margin_credito||0;
-      h+=`<td class="r ${wmc>=.12?'ok':wmc>=.10?'':'bad'}">${fP(wmc)}</td>`;
-      h+=`<td class="r ${wmcr>=.09?'ok':wmcr>=.07?'':'bad'}">${fP(wmcr)}</td>`;
+      h+=`<td class="r ${wmc>=mRetail?'ok':wmc>=mRetail*.9?'':'bad'}">${fP(wmc)}</td>`;
+      h+=`<td class="r ${wmcr>=mVol?'ok':wmcr>=mVol*.9?'':'bad'}">${fP(wmcr)}</td>`;
     } else {
-      h+=`<td class="r ${w.margin>=.10?'ok':''}">${fP(w.margin)}</td>`;
+      h+=`<td class="r ${w.margin>=.085?'ok':''}">${fP(w.margin)}</td>`;
     }
     h+=`<td class="r">$${fNum(w.precio_bruto||w.precio_neto||w.precio||0)}</td>`;
     h+=`<td class="r">${fM(w.recaud)}</td>`;
     h+=`<td class="r">${fM(w.compras_odoo||w.compras_enap||0)}</td>`;
-    if(hasNM) h+=`<td class="r">${fM(w.cheq_cartera_saldo||0)}</td>`;
+    if(hasNM) h+=`<td class="r">${w.cheq_cartera_saldo?fM(w.cheq_cartera_saldo):'—'}</td>`;
     h+=`</tr>`;
   });
   h+='</tbody></table><div class="note">* Parcial · Margen = margin_zone (Odoo) · NC descontadas · Semana comercial Jue→Mié</div></div>';
   el.innerHTML=h;
-  // Charts
+  // ── Charts ──
   const labels=wk.map(w=>w.label.split('-')[0]);
   const gC='rgba(0,0,0,.04)', tC='#9c9b96';
-  // Litros por semana — bars + presupuesto dashed line
-  dc('cL');charts.cL=new Chart(document.getElementById('cLitros'),{type:'bar',
+  // Chart options with dual Y axes (litros left, margin % right)
+  const dualOpt=(tC,gC)=>({responsive:true,maintainAspectRatio:false,
+    plugins:{legend:{display:true,labels:{font:{size:10,family:'DM Sans'},boxWidth:10}},tooltip:{titleFont:{family:'DM Sans'},bodyFont:{family:'DM Sans'},backgroundColor:'#1a1a18',cornerRadius:8,padding:10}},
+    scales:{x:{ticks:{color:tC,font:{size:9,family:'DM Sans'},maxRotation:50},grid:{display:false}},
+            y:{position:'left',ticks:{color:tC,font:{size:9,family:'DM Sans'},callback:v=>fK(v)},grid:{color:gC}},
+            y1:{position:'right',ticks:{color:tC,font:{size:9,family:'DM Sans'},callback:v=>v.toFixed(1)+'%'},grid:{drawOnChartArea:false}}}});
+  // Litros Retail + Margen Retail
+  dc('cRet');charts.cRet=new Chart(document.getElementById('cRetail'),{type:'bar',
     data:{labels,datasets:[
-      {label:'Litros',data:wk.map(w=>w.litros),backgroundColor:wk.map((_,i)=>i===wk.length-1?C.accent+'cc':C.accent+'44'),borderRadius:5,order:1},
-      {label:'Presupuesto',data:wk.map(w=>w.ppto),type:'line',borderColor:C.amber,backgroundColor:'transparent',pointRadius:0,borderWidth:2,borderDash:[6,4],tension:0,order:0}
-    ]},
-    options:co(tC,gC,v=>fK(v))});
-  // Litros vs Presupuesto — colored bars + ppto line
-  dc('cP');charts.cP=new Chart(document.getElementById('cPpto'),{type:'bar',
+      {label:'Litros Retail',data:wk.map(w=>w.litros_retail||0),backgroundColor:C.accent+'55',borderRadius:5,yAxisID:'y',order:1},
+      {label:'Margen Retail %',data:wk.map(w=>+((w.margin_contado||0)*100).toFixed(2)),type:'line',borderColor:C.green,backgroundColor:'transparent',pointRadius:3,pointBackgroundColor:C.green,borderWidth:2,tension:.3,yAxisID:'y1',order:0},
+      {label:'Meta '+fP(mRetail),data:wk.map(()=>mRetail*100),type:'line',borderColor:C.amber,backgroundColor:'transparent',pointRadius:0,borderWidth:1.5,borderDash:[5,3],tension:0,yAxisID:'y1',order:0}
+    ]},options:dualOpt(tC,gC)});
+  // Litros Volumen + Margen Volumen
+  dc('cVol');charts.cVol=new Chart(document.getElementById('cVolumen'),{type:'bar',
     data:{labels,datasets:[
-      {label:'Real',data:wk.map(w=>w.litros),backgroundColor:wk.map(w=>w.litros>=w.ppto?C.green+'88':C.red+'66'),borderRadius:5},
-      {label:'Presupuesto',data:wk.map(w=>w.ppto),type:'line',borderColor:C.amber,backgroundColor:'transparent',pointRadius:0,borderWidth:2,borderDash:[5,3],tension:0}
-    ]},options:co(tC,gC,v=>fK(v))});
-  dc('cM');charts.cM=new Chart(document.getElementById('cMargin'),{type:'bar',
-    data:{labels,datasets:[{data:wk.map(w=>+(w.margin*100).toFixed(2)),
-      backgroundColor:wk.map(w=>w.margin>=.12?C.green+'88':w.margin>=.10?C.blue+'66':C.red+'66'),borderRadius:5}]},
-    options:co(tC,gC,v=>v.toFixed(1)+'%')});
+      {label:'Litros Volumen',data:wk.map(w=>w.litros_volumen||0),backgroundColor:C.blue+'55',borderRadius:5,yAxisID:'y',order:1},
+      {label:'Margen Volumen %',data:wk.map(w=>+((w.margin_credito||0)*100).toFixed(2)),type:'line',borderColor:C.green,backgroundColor:'transparent',pointRadius:3,pointBackgroundColor:C.green,borderWidth:2,tension:.3,yAxisID:'y1',order:0},
+      {label:'Meta '+fP(mVol),data:wk.map(()=>mVol*100),type:'line',borderColor:C.amber,backgroundColor:'transparent',pointRadius:0,borderWidth:1.5,borderDash:[5,3],tension:0,yAxisID:'y1',order:0}
+    ]},options:dualOpt(tC,gC)});
+  // Recaudación vs Compras
   dc('cR');charts.cR=new Chart(document.getElementById('cRecaud'),{type:'bar',
     data:{labels,datasets:[
       {label:'Recaudación',data:wk.map(w=>Math.round(w.recaud/1e6)),backgroundColor:C.purple+'55',borderRadius:5},
-      {label:'Compras ENAP',data:wk.map(w=>Math.round((w.compras_odoo||w.compras_enap||0)/1e6)),type:'line',borderColor:C.red,backgroundColor:'transparent',pointRadius:2,pointBackgroundColor:C.red,borderWidth:2,tension:.3}
+      {label:'Compras',data:wk.map(w=>Math.round((w.compras_odoo||w.compras_enap||0)/1e6)),type:'line',borderColor:C.red,backgroundColor:'transparent',pointRadius:2,pointBackgroundColor:C.red,borderWidth:2,tension:.3}
     ]},options:co(tC,gC,v=>'$'+v+'M')});
   // Daily chart
   const dy=D.daily||[];

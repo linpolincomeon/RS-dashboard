@@ -259,13 +259,20 @@ def extract_weekly(models, uid, supplier_ids, contado_term_ids, ruta_stage_id, t
             }
 
         # ── Invoice lines for litros + precio bruto ──
+        # Build set of contado invoice IDs for litros split
+        contado_inv_ids = set()
+        for inv in invoices:
+            tid = inv.get("invoice_payment_term_id")
+            if tid and tid[0] in contado_term_ids:
+                contado_inv_ids.add(inv["id"])
+
         lines = sr(models, uid, "account.move.line", [
             ["move_id.move_type", "=", "out_invoice"],
             ["move_id.state", "=", "posted"],
             ["move_id.invoice_date", ">=", wd["start"]],
             ["move_id.invoice_date", "<=", wd["end"]],
             ["display_type", "=", "product"],
-        ], ["quantity", "price_subtotal", "price_total", "product_id"], 5000)
+        ], ["quantity", "price_subtotal", "price_total", "product_id", "move_id"], 5000)
 
         ref_lines = sr(models, uid, "account.move.line", [
             ["move_id.move_type", "=", "out_refund"],
@@ -278,6 +285,17 @@ def extract_weekly(models, uid, supplier_ids, contado_term_ids, ruta_stage_id, t
         litros = round(sum(l["quantity"] for l in lines) - sum(l["quantity"] for l in ref_lines))
         neto_lineas = sum(l["price_subtotal"] for l in lines) - sum(l["price_subtotal"] for l in ref_lines)
         precio_neto = round(neto_lineas / litros) if litros > 0 else 0
+
+        # Litros split: retail (contado) vs volumen (crédito)
+        litros_retail, litros_volumen = 0, 0
+        for l in lines:
+            mid = l["move_id"][0] if l.get("move_id") else None
+            if mid in contado_inv_ids:
+                litros_retail += l["quantity"]
+            else:
+                litros_volumen += l["quantity"]
+        litros_retail = round(litros_retail)
+        litros_volumen = round(litros_volumen)
 
         # Precio bruto promedio (IVA+IEC) — solo diesel B1
         b1_lines = [l for l in lines
@@ -377,6 +395,8 @@ def extract_weekly(models, uid, supplier_ids, contado_term_ids, ruta_stage_id, t
             "ventas": round(ventas),
             "neto": round(neto),
             "litros": litros,
+            "litros_retail": litros_retail,
+            "litros_volumen": litros_volumen,
             "precio_neto": precio_neto,
             "precio_bruto": precio_bruto,
             "margin": round(margin, 5),
