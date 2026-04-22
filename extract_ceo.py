@@ -30,16 +30,48 @@ DIESEL_B1_PRODUCT = 14
 ENAP_PARTNER = 5667
 ADQUIM_PARTNER = 15299
 
-# Weekly budget in litros
-WEEKLY_BUDGET = {
-    "2025-01": 159285, "2025-02": 161493, "2025-03": 168496,
-    "2025-04": 211569, "2025-05": 150215, "2025-06": 112982,
-    "2025-07": 179067, "2025-08": 182676, "2025-09": 184083,
-    "2025-10": 214286, "2025-11": 207258, "2025-12": 212548,
-    "2026-01": 266438, "2026-02": 272593, "2026-03": 283811,
-    "2026-04": 326422, "2026-05": 258823, "2026-06": 216688,
-    "2026-07": 276926, "2026-08": 271233, "2026-09": 263225,
-    "2026-10": 338728, "2026-11": 348706, "2026-12": 438672,
+# Monthly budgets — total, retail, volumen (from RS tab Google Sheet)
+# Weeks per month for converting to weekly: ~4.33 but we use actual weeks
+MONTHLY_BUDGET = {
+    # 2024
+    "2024-01": {"total": 578139, "retail": 0, "volumen": 0},
+    "2024-02": {"total": 573930, "retail": 0, "volumen": 0},
+    "2024-03": {"total": 587495, "retail": 0, "volumen": 0},
+    "2024-04": {"total": 722391, "retail": 0, "volumen": 0},
+    "2024-05": {"total": 470135, "retail": 0, "volumen": 0},
+    "2024-06": {"total": 307000, "retail": 0, "volumen": 0},
+    "2024-07": {"total": 516000, "retail": 0, "volumen": 0},
+    "2024-08": {"total": 491306, "retail": 0, "volumen": 0},
+    "2024-09": {"total": 459331, "retail": 0, "volumen": 0},
+    "2024-10": {"total": 581133, "retail": 0, "volumen": 0},
+    "2024-11": {"total": 470872, "retail": 0, "volumen": 0},
+    "2024-12": {"total": 453294, "retail": 0, "volumen": 0},
+    # 2025
+    "2025-01": {"total": 595457, "retail": 0, "volumen": 0},
+    "2025-02": {"total": 603713, "retail": 0, "volumen": 0},
+    "2025-03": {"total": 629891, "retail": 0, "volumen": 0},
+    "2025-04": {"total": 790911, "retail": 0, "volumen": 0},
+    "2025-05": {"total": 561553, "retail": 0, "volumen": 0},
+    "2025-06": {"total": 422363, "retail": 0, "volumen": 0},
+    "2025-07": {"total": 669410, "retail": 0, "volumen": 0},
+    "2025-08": {"total": 682900, "retail": 0, "volumen": 0},
+    "2025-09": {"total": 688159, "retail": 0, "volumen": 0},
+    "2025-10": {"total": 801070, "retail": 0, "volumen": 0},
+    "2025-11": {"total": 774796, "retail": 0, "volumen": 0},
+    "2025-12": {"total": 794572, "retail": 0, "volumen": 0},
+    # 2026
+    "2026-01": {"total": 951565, "retail": 742221, "volumen": 209344},
+    "2026-02": {"total": 973546, "retail": 759366, "volumen": 214180},
+    "2026-03": {"total": 1013609, "retail": 770343, "volumen": 243266},
+    "2026-04": {"total": 1165794, "retail": 862687, "volumen": 303106},
+    "2026-05": {"total": 924369, "retail": 665545, "volumen": 258823},
+    "2026-06": {"total": 773884, "retail": 541719, "volumen": 232165},
+    "2026-07": {"total": 989023, "retail": 672535, "volumen": 316487},
+    "2026-08": {"total": 968691, "retail": 639336, "volumen": 329355},
+    "2026-09": {"total": 940090, "retail": 601658, "volumen": 338432},
+    "2026-10": {"total": 1209742, "retail": 871309, "volumen": 338432},
+    "2026-11": {"total": 1245378, "retail": 906946, "volumen": 338432},
+    "2026-12": {"total": 1566686, "retail": 1228254, "volumen": 338432},
 }
 
 # Factoring threshold — ignore small transfers that match pattern
@@ -47,7 +79,15 @@ FACTORING_MIN_AMOUNT = 1_000_000
 
 
 def get_week_budget(start_date_str):
-    return WEEKLY_BUDGET.get(start_date_str[:7], 270000)
+    """Convert monthly budget to weekly (÷ 4.33 weeks/month)."""
+    key = start_date_str[:7]
+    mb = MONTHLY_BUDGET.get(key, {"total": 270000, "retail": 0, "volumen": 0})
+    wks = 4.33  # avg weeks per month
+    return {
+        "total": round(mb["total"] / wks),
+        "retail": round(mb["retail"] / wks),
+        "volumen": round(mb["volumen"] / wks),
+    }
 
 
 def connect():
@@ -386,7 +426,7 @@ def extract_weekly(models, uid, supplier_ids, contado_term_ids, ruta_stage_id, t
             if prev == 0:
                 clientes_nuevos += 1
 
-        ppto = get_week_budget(wd["start"])
+        wb = get_week_budget(wd["start"])
 
         results.append({
             "label": wd["label"],
@@ -418,7 +458,9 @@ def extract_weekly(models, uid, supplier_ids, contado_term_ids, ruta_stage_id, t
             "cotiz_canceladas": cotiz_cancel,
             "visitas": visitas,
             "clientes_nuevos": clientes_nuevos,
-            "ppto": ppto,
+            "ppto": wb["total"],
+            "ppto_retail": wb["retail"],
+            "ppto_volumen": wb["volumen"],
             "parcial": i == 0,
         })
         print(f"{len(invoices)} fact ({fact_contado}c/{fact_credito}cr), {litros}L, margin {margin:.2%}, recaud {recaud/1e6:.1f}M, {clientes_nuevos} nuevos")
