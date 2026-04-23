@@ -1,23 +1,23 @@
 {
-  "updated": "2026-04-22T20:18:05.373443",
+  "updated": "2026-04-23T00:01:46.723895",
   "weeks": [
     {
       "label": "16apr-22apr",
       "start": "2026-04-16",
       "end": "2026-04-22",
-      "ventas": 311693600,
-      "neto": 257877784,
-      "litros": 200745,
-      "litros_retail": 35490,
-      "litros_volumen": 167208,
+      "ventas": 321817760,
+      "neto": 266114422,
+      "litros": 207165,
+      "litros_retail": 37990,
+      "litros_volumen": 171128,
       "precio_neto": 1285,
-      "precio_bruto": 1555,
-      "margin": 0.07766,
-      "margin_contado": 0.06297,
-      "margin_credito": 0.08073,
-      "facturas": 104,
+      "precio_bruto": 1556,
+      "margin": 0.0779,
+      "margin_contado": 0.06223,
+      "margin_credito": 0.08133,
+      "facturas": 108,
       "nc": 4,
-      "clientes": 76,
+      "clientes": 79,
       "recaud": 446785153,
       "cheques": 34326852,
       "transf": 183268471,
@@ -25,13 +25,13 @@
       "compras_odoo": 186654813,
       "cheq_cartera_saldo": 0,
       "cheq_recibidos": 15786899,
-      "facturas_contado": 19,
-      "facturas_credito": 85,
+      "facturas_contado": 20,
+      "facturas_credito": 88,
       "margin_by_term": {
         "Prepago": {
-          "margin": 0.04975,
-          "normalizado": 0.05975,
-          "count": 3,
+          "margin": 0.05003,
+          "normalizado": 0.06003,
+          "count": 4,
           "days": 0
         },
         "1 Día": {
@@ -53,9 +53,9 @@
           "days": 15
         },
         "30 Días": {
-          "margin": 0.08026,
-          "normalizado": 0.08026,
-          "count": 66,
+          "margin": 0.08107,
+          "normalizado": 0.08107,
+          "count": 69,
           "days": 30
         },
         "45 Días": {
@@ -72,8 +72,8 @@
         }
       },
       "cotiz_canceladas": 10,
-      "visitas": 10,
-      "clientes_nuevos": 6,
+      "visitas": 11,
+      "clientes_nuevos": 7,
       "ppto": 269236,
       "ppto_retail": 199235,
       "ppto_volumen": 70001,
@@ -1288,10 +1288,16 @@
   ],
   "daily": [
     {
+      "date": "23apr",
+      "day": "Jue",
+      "litros": 0,
+      "neto": 0
+    },
+    {
       "date": "22apr",
       "day": "Mié",
-      "litros": 25102,
-      "neto": 32035893
+      "litros": 29022,
+      "neto": 37184807
     },
     {
       "date": "21apr",
@@ -1376,12 +1382,6 @@
       "day": "Jue",
       "litros": 28718,
       "neto": 33314300
-    },
-    {
-      "date": "01apr",
-      "day": "Mié",
-      "litros": 37803,
-      "neto": 45740290
     }
   ],
   "banks": [
@@ -1417,12 +1417,12 @@
   "total_cash": 73105680,
   "receivables": {
     "open_invoices": 303,
-    "total_due": 667008514,
-    "current": 594189434,
-    "overdue": 72819080,
-    "pct_overdue": 10.9,
+    "total_due": 671240173,
+    "current": 586869594,
+    "overdue": 84370579,
+    "pct_overdue": 12.6,
     "aging": {
-      "0-30": 56133716,
+      "0-30": 67685215,
       "31-60": 6919801,
       "61-90": 0,
       "90+": 9765563
@@ -1511,6 +1511,10 @@
     ]
   },
   "sla": [
+    {
+      "label": "23apr-29apr",
+      "zones": {}
+    },
     {
       "label": "16apr-22apr",
       "zones": {
@@ -1620,83 +1624,46 @@
           ]
         }
       }
-    },
-    {
-      "label": "02apr-08apr",
-      "zones": {
-        "Curicó": {
-          "total": 6,
-          "on_time": 1,
-          "late": 5,
-          "pct": 16.67,
-          "late_clients": [
-            "JOSE RODRIGO ORMAZABAL VIDAL, JOSE RODRIGO ORMAZABAL- Flabia",
-            "AGRICOLA SANTA BRIGIDA LTDA, AGRICOLA SANTA BRIGIDA LTDA-Carmen",
-            "PROVEAGRO SERVICIOS SPA, PROVEAGRO-LOS VIDALES",
-            "TRANSPORTES Y CARGAS MARTINEZ DIAZ LIMITADA, TRANSPORTES Y CARGAS MARTINEZ DIAZ LIMITADA-LOS VIDALES",
-            "TRANSPORTES JORGE MARTINEZ SCHNETTLER E.I.R.L., TRANSPORTES JORGE MARTINEZ- LOS VIDALES"
-          ]
-        },
-        "Linares": {
-          "total": 1,
-          "on_time": 0,
-          "late": 1,
-          "pct": 0.0,
-          "late_clients": [
-            "SOC AGRICOLA SANTA TERESA SPA, SOC AGRICOLA SANTA TERESA- LINARES"
-          ]
-        },
-        "Otro": {
-          "total": 75,
-          "on_time": 46,
-          "late": 29,
-          "pct": 61.33,
-          "late_clients": [
-            "EMPRESAS TUCAPEL S A, FIDEL CONCHA, TUCPAEL RETIRO",
-            "CARLOS ENRIQUE MELLA HINOJOSA, CARLOS ENRIQUE MELLA HINOJOSA-Carlos",
-            "ARRIGONI AMBIENTAL NFU SPA, ARRIGONI AMBIENTAL NFU SPA-Constanza Arrigoni",
-            "AGRICOLA LA HACIENDA LTDA, AGRICOLA LA HACIENDA-MOLINA",
-            "SOC AGRICOLA GRANJA SAN RAFAEL LIMITADA, SAN GREGORIO"
-          ]
-        },
-        "Rancagua": {
-          "total": 1,
-          "on_time": 1,
-          "late": 0,
-          "pct": 100.0,
-          "late_clients": []
-        },
-        "San Fdo": {
-          "total": 5,
-          "on_time": 3,
-          "late": 2,
-          "pct": 60.0,
-          "late_clients": [
-            "SERVICIOS DE MAQUINARIA SUSANA DEL C. FUENZALIDA V. EIRL, SERVICIOS DE MAQUINARIA SUSANA DEL CARMEN-Richard Vera",
-            "SERVICIOS DE MAQUINARIA SUSANA DEL C. FUENZALIDA V. EIRL, SERVICIOS DE MAQUINARIA SUSANA DEL CARMEN-Richard Vera"
-          ]
-        },
-        "Talca": {
-          "total": 3,
-          "on_time": 2,
-          "late": 1,
-          "pct": 66.67,
-          "late_clients": [
-            "PATRICIO VISCAY ALBORNOZ, PATRICIO VISCAY-C14 SUR"
-          ]
-        }
-      }
     }
   ],
   "riesgo": {
     "cubierto": 0,
     "cubierto_count": 0,
-    "no_cubierto": 667008514,
+    "no_cubierto": 671240173,
     "no_cubierto_count": 303,
     "pct_monto": 100.0,
     "pct_count": 100.0
   },
   "churn": [
+    {
+      "label": "23apr-29apr",
+      "lost": [
+        "AGRICOLA LOS BOLDOS SPA",
+        "AGROINDUSTRIAL SIRACUSA S A",
+        "AGROMORANDE S A",
+        "AGRÍCOLA CANCEL LIMITADA",
+        "AGRÍCOLA CORVAL II SPA",
+        "ALEX PRADO FRUTAS Y TRANSPORTES SPA",
+        "ALFREDO ALFONSO OPAZO MUÑOZ",
+        "ALIMENTOS Y FRUTOS S.A.",
+        "ANDES SOLAR SA",
+        "BOMBAS DE HORMIGON G&P SPA",
+        "LUIS ANTONIO REYES FUENTES",
+        "MADERAS LARA LIMITADA",
+        "MAESTRANZA Y SERVICIOS INTEGRALES METALMECANICOS CACHAPOAL S A",
+        "SERVICIOS AGRÍCOLAS M Y R SPA",
+        "TRANSPORTE SANTA ELENITA SPA",
+        "TRANSPORTES GERMAN MIRANDA EIRL",
+        "TRANSPORTES JORGE MARTINEZ SCHNETTLER E.I.R.L.",
+        "TRANSPORTES MARGARETH MARTINEZ SCHNETTLER E.I.R.L",
+        "TRANSPORTES Y CARGAS MARTINEZ DIAZ LIMITADA",
+        "VIÑA MATORI SPA."
+      ],
+      "lost_count": 79,
+      "pct": 100.0,
+      "prev_count": 79,
+      "cur_count": 0
+    },
     {
       "label": "16apr-22apr",
       "lost": [
@@ -1724,7 +1691,7 @@
       "lost_count": 57,
       "pct": 63.3,
       "prev_count": 90,
-      "cur_count": 77
+      "cur_count": 79
     },
     {
       "label": "09apr-15apr",
@@ -1812,35 +1779,6 @@
       "pct": 82.7,
       "prev_count": 133,
       "cur_count": 86
-    },
-    {
-      "label": "19mar-25mar",
-      "lost": [
-        "AGRICOLA ALFA S.A",
-        "AGRICOLA LA CAMPANA SPA",
-        "AGRICOLA LO BELTRAN LIMITADA",
-        "AGRICOLA TERRANDES S A",
-        "AGRICOLA TOMOR LIMITADA",
-        "AGRICOLA TRABUN LTDA.",
-        "AGRICOLA Y COMERCIAL DON CARLOS",
-        "AGRICOLA Y FRUTICOLA ATHENEA LTDA",
-        "ALTO HORIZONTE SPA",
-        "CRISGO SPA",
-        "EDELMIRA INES PEREZ ZUNIGA",
-        "IMPORTADORA  Y EXPORTADORA MAVELI  LIMITADA",
-        "JOSE RODOLFO FARFAN LOPEZ",
-        "RAMON ADRIAN PARADA VILLALOBOS",
-        "RODRIGO VALDERRAMA LABRA",
-        "RUBEN BERNARDO FAUNDEZ ARAVENA",
-        "SERVICIOS AGRÍCOLAS M Y R SPA",
-        "TRANSPORTES BIDIMAR SPA",
-        "TRANSPORTES MARGARETH MARTINEZ SCHNETTLER E.I.R.L",
-        "TRANSPORTES Y CARGAS MARTINEZ DIAZ LIMITADA"
-      ],
-      "lost_count": 74,
-      "pct": 67.9,
-      "prev_count": 109,
-      "cur_count": 133
     }
   ],
   "enap": {
@@ -1848,9 +1786,9 @@
     "target_litros": 300000,
     "mtd_litros": 299843,
     "compliance_pct": 99.9,
-    "projected_litros": 408877,
-    "projected_pct": 136.3,
-    "days_elapsed": 22,
+    "projected_litros": 391100,
+    "projected_pct": 130.4,
+    "days_elapsed": 23,
     "days_in_month": 30
   },
   "gerencia_goals": {
