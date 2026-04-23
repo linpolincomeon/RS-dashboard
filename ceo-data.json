@@ -1,32 +1,32 @@
 {
-  "updated": "2026-04-23T16:55:13.150977",
+  "updated": "2026-04-23T19:45:20.309372",
   "weeks": [
     {
       "label": "23apr-29apr",
       "start": "2026-04-23",
       "end": "2026-04-29",
-      "ventas": 8691101,
-      "neto": 6580115,
-      "litros": 5500,
+      "ventas": 11235167,
+      "neto": 8510456,
+      "litros": 7078,
       "litros_retail": 1000,
-      "litros_volumen": 4500,
-      "precio_neto": 1196,
-      "precio_bruto": 1580,
-      "margin": 0.0865,
+      "litros_volumen": 6078,
+      "precio_neto": 1202,
+      "precio_bruto": 1587,
+      "margin": 0.09041,
       "margin_contado": 0.07903,
-      "margin_credito": 0.08815,
-      "facturas": 4,
+      "margin_credito": 0.09225,
+      "facturas": 7,
       "nc": 0,
-      "clientes": 4,
-      "recaud": 15475835,
-      "cheques": 0,
-      "transf": 11181834,
+      "clientes": 7,
+      "recaud": 23944837,
+      "cheques": 1527000,
+      "transf": 18123836,
       "factoring": 4294001,
       "compras_odoo": 0,
       "cheq_cartera_saldo": 0,
       "cheq_recibidos": 0,
       "facturas_contado": 1,
-      "facturas_credito": 3,
+      "facturas_credito": 6,
       "margin_by_term": {
         "1 Día": {
           "margin": 0.07903,
@@ -34,10 +34,16 @@
           "count": 1,
           "days": 1
         },
+        "15 Días": {
+          "margin": 0.10912,
+          "normalizado": 0.11412,
+          "count": 1,
+          "days": 15
+        },
         "30 Días": {
-          "margin": 0.08815,
-          "normalizado": 0.08815,
-          "count": 3,
+          "margin": 0.09136,
+          "normalizado": 0.09136,
+          "count": 5,
           "days": 30
         }
       },
@@ -1260,8 +1266,8 @@
     {
       "date": "23apr",
       "day": "Jue",
-      "litros": 5500,
-      "neto": 6580115
+      "litros": 7078,
+      "neto": 8510456
     },
     {
       "date": "22apr",
@@ -1360,12 +1366,12 @@
       "balance": 22692677
     },
     {
-      "name": "ESTADO",
-      "balance": 5715282
+      "name": "DE CHILE",
+      "balance": 12510062
     },
     {
-      "name": "DE CHILE",
-      "balance": 4041060
+      "name": "ESTADO",
+      "balance": 5715282
     },
     {
       "name": "CAJA",
@@ -1384,15 +1390,15 @@
       "balance": -838790
     }
   ],
-  "total_cash": 36190350,
+  "total_cash": 44659352,
   "receivables": {
-    "open_invoices": 287,
-    "total_due": 630380632,
-    "current": 550874798,
-    "overdue": 79505834,
-    "pct_overdue": 12.6,
+    "open_invoices": 283,
+    "total_due": 624455696,
+    "current": 548576862,
+    "overdue": 75878834,
+    "pct_overdue": 12.2,
     "aging": {
-      "0-30": 62820470,
+      "0-30": 59193470,
       "31-60": 6919801,
       "61-90": 0,
       "90+": 9765563
@@ -1622,158 +1628,259 @@
   "riesgo": {
     "cubierto": 0,
     "cubierto_count": 0,
-    "no_cubierto": 630380632,
-    "no_cubierto_count": 287,
+    "no_cubierto": 624455696,
+    "no_cubierto_count": 283,
     "pct_monto": 100.0,
     "pct_count": 100.0
   },
-  "churn": [
-    {
-      "label": "23apr-29apr",
-      "lost": [
-        "AGRICOLA LOS BOLDOS SPA",
-        "AGROINDUSTRIAL SIRACUSA S A",
-        "AGROMORANDE S A",
-        "AGRÍCOLA CANCEL LIMITADA",
-        "AGRÍCOLA CORVAL II SPA",
-        "ALEX PRADO FRUTAS Y TRANSPORTES SPA",
-        "ALFREDO ALFONSO OPAZO MUÑOZ",
-        "ANDES SOLAR SA",
-        "BOMBAS DE HORMIGON G&P SPA",
-        "LUIS ANTONIO REYES FUENTES",
-        "MADERAS LARA LIMITADA",
-        "MAESTRANZA Y SERVICIOS INTEGRALES METALMECANICOS CACHAPOAL S A",
-        "SERVICIOS AGRÍCOLAS M Y R SPA",
-        "TRANSPORTE SANTA ELENITA SPA",
-        "TRANSPORTES GERMAN MIRANDA EIRL",
-        "TRANSPORTES JORGE MARTINEZ SCHNETTLER E.I.R.L.",
-        "TRANSPORTES MARGARETH MARTINEZ SCHNETTLER E.I.R.L",
-        "TRANSPORTES Y CARGAS MARTINEZ DIAZ LIMITADA",
-        "VALENZUELA LEIVA MAX",
-        "VIÑA MATORI SPA."
-      ],
-      "lost_count": 77,
-      "pct": 97.5,
-      "prev_count": 79,
-      "cur_count": 4
-    },
-    {
-      "label": "16apr-22apr",
-      "lost": [
-        "AGRICOLA CODENUT S A",
-        "AGRICOLA LA CAMPANA SPA",
-        "AGRICOLA XIONGDI SPA",
-        "AGROPELLIN SPA",
-        "AGRÍCOLA MARIAGRI SPA",
-        "JOSE ANDRES IBAÑEZ CUEVAS",
-        "JOSE RODRIGO ORMAZABAL VIDAL",
-        "JOSE SANTIAGO TRONCOSO SALAZAR",
-        "KEVIN FRANK DONOSO VERA",
-        "LA FEÑA SPA",
-        "RAMON ADRIAN PARADA VILLALOBOS",
-        "RODRIGO VALDERRAMA LABRA",
-        "SERVICIO Y ARRIENDO DE MAQUINARIA PBM SPA",
-        "SERVICIOS MONTEAGRO SPA",
-        "SERVICIOS REVIVA SPA",
-        "SITROL SPA",
-        "SOCIEDAD FORESTAL Y AGRICOLA LAS PITRAS DE PAULA LIMITADA",
-        "TRANSPORTES OSSES ROJAS SPA",
-        "VINOS TERRA MAULE, COMPANIA LIMITADA",
-        "VITIVINICOLA INVINA LTDA"
-      ],
-      "lost_count": 57,
-      "pct": 63.3,
-      "prev_count": 90,
-      "cur_count": 79
-    },
-    {
-      "label": "09apr-15apr",
-      "lost": [
-        "AGRICOLA AGROBOSQUES SAN ISIDRO S.A.",
-        "AGRICOLA BUNSTER Y TAGLE LIMITADA",
-        "AGRICOLA COLLADO IBACACHE LIMITADA",
-        "AGRICOLA TINGUIRIRICA LIMITADA",
-        "AGRICOLA TRICAHUE LTDA",
-        "AGRÍCOLA CORVAL II SPA",
-        "ALEX PRADO FRUTAS Y TRANSPORTES SPA",
-        "ALEXIS FABIAN TORRES BARRUETO",
-        "CIA CHILENA DE FOSFOROS S A",
-        "COMERCIAL LO FIGUEROA SPA",
-        "ESTEBAN ALEJANDRO ESPINOZA ZUNIGA",
-        "EXPORTACIONES MEYER LIMITADA",
-        "LUIS ARTEMIO JORQUERA JORQUERA",
-        "SERVICIOS AGRICOLAS LUIS PULGAR E.I.R.L.",
-        "SERVICIOS DE MAQUINARIA SUSANA DEL C. FUENZALIDA V. EIRL",
-        "SOC AGRICOLA LOS LINGUES LTDA",
-        "TRANSPORTES JORGE MARTINEZ SCHNETTLER E.I.R.L.",
-        "TRANSPORTES Y CARGAS MARTINEZ DIAZ LIMITADA",
-        "VIÑA VALDIVIESO LTDA.",
-        "YURIS DANIEL CORNEJO GAJARDO"
-      ],
-      "lost_count": 34,
-      "pct": 52.3,
-      "prev_count": 65,
-      "cur_count": 90
-    },
-    {
-      "label": "02apr-08apr",
-      "lost": [
-        "AGRICOLA LA CAMPANA SPA",
-        "AGRICOLA LO BELTRAN LIMITADA",
-        "AGRICOLA XIONGDI SPA",
-        "AGROMORANDE S A",
-        "AGROSERVICIOS JR SPA",
-        "AGRÍCOLA CANCEL LIMITADA",
-        "AGRÍCOLA LA RIGADA SPA",
-        "ARRIENDO DE VEHICULOS EMILIO ENRIQUE MORAGA ORELLANA E.I.R.L.",
-        "CAMPOSOL CHILE SPA",
-        "CRISGO SPA",
-        "CUERPO DE BOMBEROS CODEGUA",
-        "DISTRIBUIDORA MAULE SPA",
-        "JOSE SANTIAGO TRONCOSO SALAZAR",
-        "LUIS ENRIQUE VASQUEZ TORREALBA",
-        "RECSOL S.A",
-        "SAMUEL SEGUNDO HERNANDEZ NORAMBUENA",
-        "SERVICIO ARRIENDO MAQUINARIA AGRÍCOLA LUIS R. VERA GARRIDO EIRL",
-        "SOC. AGRIC. KAULEN WESTERMEYER SPA",
-        "VICTOR FAVIO VILCHES MARDONES",
-        "VINOS TERRA MAULE, COMPANIA LIMITADA"
-      ],
-      "lost_count": 57,
-      "pct": 66.3,
-      "prev_count": 86,
-      "cur_count": 65
-    },
-    {
-      "label": "26mar-01apr",
-      "lost": [
-        "ALEX PRADO FRUTAS Y TRANSPORTES SPA",
-        "CISTERNA ESPINOZA GERARDO ALFONSO",
-        "FRANCISCO AUGUSTO MENDEZ MUNOZ",
-        "GABRIEL ANTONIO HERNANDEZ ESPINOZA",
-        "GABRIEL OCTAVIO HERNANDEZ MUNOZ",
-        "JOSE MANUEL HERRERA BARROS",
-        "JOSE TORRES FUENTES",
-        "JUAN CARLOS HERNANDEZ ESPINOZA",
-        "JULIO ENRIQUE RUBILAR ROMERO",
-        "KARIN HUTTNER MUNIZAGA",
-        "KEVIN FRANK DONOSO VERA",
-        "LABRA E HIJAS SPA",
-        "LUIS ALFREDO CORNEJO GALLARDO",
-        "MANUEL ANTONIO MENDEZ MUÑOZ",
-        "MARCELO OCTAVIO HERNANDEZ ESPINOZA",
-        "PATRICIO IVAN HERNANDEZ ESPINOZA",
-        "SERVICIOS AGRÍCOLAS RC SPA",
-        "SOCIEDAD AGRICOLA GANADERA DE TRANSPORTE Y DE PRESTACION DE SERVICIOS DE MAQUINARIA AGRICOLA SAN LORENZO LIMITADA",
-        "SOCIEDAD FRUTICOLA MIRAFLORES SPA",
-        "VALENTIN GONZALO HERNANDEZ ESPINOZA"
-      ],
-      "lost_count": 110,
-      "pct": 82.7,
-      "prev_count": 133,
-      "cur_count": 86
-    }
-  ],
+  "churn": {
+    "active_clients": 416,
+    "churned_count": 204,
+    "pct": 49.0,
+    "churned": [
+      {
+        "name": "HECTOR ALEXIS SEPULVEDA VERGARA",
+        "freq": "Irregular / Poca data",
+        "freq_days": 15,
+        "last_invoice": "2025-08-26",
+        "days_since": 240,
+        "threshold": 30
+      },
+      {
+        "name": "SOCIEDAD AGRICOLA LIRCAY SPA.",
+        "freq": "Irregular / Poca data",
+        "freq_days": 15,
+        "last_invoice": "2025-08-28",
+        "days_since": 238,
+        "threshold": 30
+      },
+      {
+        "name": "JUAN RAMON VALDEBENITO BRAVO",
+        "freq": "Irregular / Poca data",
+        "freq_days": 15,
+        "last_invoice": "2025-09-03",
+        "days_since": 232,
+        "threshold": 30
+      },
+      {
+        "name": "INVERSIONES Y ASESORIAS ARGO LIMITADA",
+        "freq": "Irregular / Poca data",
+        "freq_days": 15,
+        "last_invoice": "2025-09-04",
+        "days_since": 231,
+        "threshold": 30
+      },
+      {
+        "name": "AGRICOLA EL ARRAYAN LIMITADA",
+        "freq": "Irregular / Poca data",
+        "freq_days": 15,
+        "last_invoice": "2025-09-05",
+        "days_since": 230,
+        "threshold": 30
+      },
+      {
+        "name": "SUCESION LUIS PIZARRO",
+        "freq": "Irregular / Poca data",
+        "freq_days": 15,
+        "last_invoice": "2025-09-16",
+        "days_since": 219,
+        "threshold": 30
+      },
+      {
+        "name": "JUAN RAMON MORALES PALMA",
+        "freq": "Irregular / Poca data",
+        "freq_days": 15,
+        "last_invoice": "2025-09-17",
+        "days_since": 218,
+        "threshold": 30
+      },
+      {
+        "name": "HERRERA HERMANOS LIMITADA",
+        "freq": "Irregular / Poca data",
+        "freq_days": 15,
+        "last_invoice": "2025-09-17",
+        "days_since": 218,
+        "threshold": 30
+      },
+      {
+        "name": "HECTOR BERMUDEZ E I R L",
+        "freq": "Irregular / Poca data",
+        "freq_days": 15,
+        "last_invoice": "2025-09-17",
+        "days_since": 218,
+        "threshold": 30
+      },
+      {
+        "name": "TRANSPORTES RAFAEL MOYA Y COMPANIA LIMITADA.",
+        "freq": "Irregular / Poca data",
+        "freq_days": 15,
+        "last_invoice": "2025-09-17",
+        "days_since": 218,
+        "threshold": 30
+      },
+      {
+        "name": "AGRICOLA EL PARQUE SPA",
+        "freq": "Irregular / Poca data",
+        "freq_days": 15,
+        "last_invoice": "2025-09-23",
+        "days_since": 212,
+        "threshold": 30
+      },
+      {
+        "name": "FREDY ALADINO QUINTERO SILVA",
+        "freq": "Irregular / Poca data",
+        "freq_days": 15,
+        "last_invoice": "2025-09-26",
+        "days_since": 209,
+        "threshold": 30
+      },
+      {
+        "name": "COMERCIALIZADORA ECONUT LTDA",
+        "freq": "Bimensual (Quincenal)",
+        "freq_days": 15,
+        "last_invoice": "2025-09-26",
+        "days_since": 209,
+        "threshold": 30
+      },
+      {
+        "name": "AGROFRUTICOLA SAN ANDRES DE CORDILLERILLA LTDA",
+        "freq": "Irregular / Poca data",
+        "freq_days": 15,
+        "last_invoice": "2025-09-29",
+        "days_since": 206,
+        "threshold": 30
+      },
+      {
+        "name": "MIGUEL ARCADIO CHAVEZ MENDEZ",
+        "freq": "Irregular / Poca data",
+        "freq_days": 15,
+        "last_invoice": "2025-09-30",
+        "days_since": 205,
+        "threshold": 30
+      },
+      {
+        "name": "AGRICOLA EL MEMBRILLO SPA",
+        "freq": "Irregular / Poca data",
+        "freq_days": 15,
+        "last_invoice": "2025-10-02",
+        "days_since": 203,
+        "threshold": 30
+      },
+      {
+        "name": "RAMON PARRAGUEZ LOPEZ",
+        "freq": "Irregular / Poca data",
+        "freq_days": 15,
+        "last_invoice": "2025-10-03",
+        "days_since": 202,
+        "threshold": 30
+      },
+      {
+        "name": "AGRICOLA VILLASECA LTDA",
+        "freq": "Irregular / Poca data",
+        "freq_days": 15,
+        "last_invoice": "2025-10-06",
+        "days_since": 199,
+        "threshold": 30
+      },
+      {
+        "name": "SERVICIOS E INVERSIONES KOALA S.A.",
+        "freq": "Irregular / Poca data",
+        "freq_days": 15,
+        "last_invoice": "2025-10-06",
+        "days_since": 199,
+        "threshold": 30
+      },
+      {
+        "name": "RAQUEL ROJAS SEPULVEDA",
+        "freq": "Irregular / Poca data",
+        "freq_days": 15,
+        "last_invoice": "2025-10-06",
+        "days_since": 199,
+        "threshold": 30
+      },
+      {
+        "name": "SOCIEDAD AGRICOLA EL ASTA SPA",
+        "freq": "Irregular (Promedio: 26 días)",
+        "freq_days": 26,
+        "last_invoice": "2025-10-08",
+        "days_since": 197,
+        "threshold": 52
+      },
+      {
+        "name": "ALFREDO ROSALINO MUÑOZ ENCINA",
+        "freq": "Irregular / Poca data",
+        "freq_days": 15,
+        "last_invoice": "2025-10-09",
+        "days_since": 196,
+        "threshold": 30
+      },
+      {
+        "name": "JUAN FLORENTINO LEIVA LARA",
+        "freq": "Irregular / Poca data",
+        "freq_days": 15,
+        "last_invoice": "2025-10-15",
+        "days_since": 190,
+        "threshold": 30
+      },
+      {
+        "name": "AGRÍCOLA SAN JOSE DE PERALILLO S.A",
+        "freq": "Irregular (Promedio: 18 días)",
+        "freq_days": 18,
+        "last_invoice": "2025-10-16",
+        "days_since": 189,
+        "threshold": 36
+      },
+      {
+        "name": "MIGUEL VIAL Y CIA LTDA",
+        "freq": "Irregular (Promedio: 34 días)",
+        "freq_days": 34,
+        "last_invoice": "2025-10-16",
+        "days_since": 189,
+        "threshold": 68
+      },
+      {
+        "name": "SOCIEDAD AGRICOLA GRANT Y GAETE LIMITADA",
+        "freq": "Irregular / Poca data",
+        "freq_days": 15,
+        "last_invoice": "2025-10-20",
+        "days_since": 185,
+        "threshold": 30
+      },
+      {
+        "name": "ISMAEL DE LA CRUZ VERGARA CISTERNA",
+        "freq": "Irregular (Promedio: 12 días)",
+        "freq_days": 12,
+        "last_invoice": "2025-10-20",
+        "days_since": 185,
+        "threshold": 24
+      },
+      {
+        "name": "OCTAVIO SEGUNDO ORTEGA VILLALOBOS",
+        "freq": "Irregular / Poca data",
+        "freq_days": 15,
+        "last_invoice": "2025-10-20",
+        "days_since": 185,
+        "threshold": 30
+      },
+      {
+        "name": "ERNALDO CLEMENTE ESCOBAR MONDACA",
+        "freq": "Irregular / Poca data",
+        "freq_days": 15,
+        "last_invoice": "2025-10-20",
+        "days_since": 185,
+        "threshold": 30
+      },
+      {
+        "name": "LEOPOLDO ANTONIO RIVERA RODRIGUEZ",
+        "freq": "Irregular (Promedio: 38 días)",
+        "freq_days": 38,
+        "last_invoice": "2025-10-20",
+        "days_since": 185,
+        "threshold": 76
+      }
+    ],
+    "multiplier": 2
+  },
   "enap": {
     "month": "2026-04",
     "target_litros": 300000,
