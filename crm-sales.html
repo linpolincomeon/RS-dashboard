@@ -262,7 +262,7 @@ function renderVentas() {
   for (const [u, v] of Object.entries(lbu)) { if (isAllowed(u)) totLitros += v; }
   for (const [u, g] of Object.entries(VG)) { if (isAllowed(u)) goalLitros += (g.litros_mes || 0); }
 
-  const sumA = obj => { if (!obj) return 0; return Object.entries(obj).filter(([k]) => isAllowed(k)).reduce((a, [, v]) => a + v, 0); };
+  const sumA = obj => { if (!obj) return 0; return Object.entries(obj).filter(([k]) => isAllowed(k) && !isCS(k)).reduce((a, [, v]) => a + v, 0); };
   const wLeads = week ? sumA(week.stages?.leads?.by_user) : 0;
   const wCotiz = week ? sumA(week.stages?.cotizacion?.by_user) : 0;
   const wCierre = week ? sumA(week.stages?.cierre?.by_user) : 0;
@@ -326,22 +326,45 @@ function renderWeeklyChart() {
 }
 
 // — Ranking Table —
+// Builds from ALL sources: executives, litros_by_user, vendor_goals
+// so every salesperson appears even if they have no CRM pipeline leads.
 function renderRanking() {
   const tbody = document.getElementById('rankingBody'); tbody.innerHTML = '';
-  const execs = (D.executives || []).filter(e => isAllowed(e.name));
   const T = (D.ventas || {}).totals || {};
+  const lbu = T.litros_by_user || {};
   const pf = getProratedFactor(D.ventas?.month_start || new Date());
   const week = getCurrentWeek();
 
-  const rows = execs.map(e => {
-    const n = e.name, lt = (T.litros_by_user || {})[n] || 0, g = getGoal(n);
+  // Build unified set of allowed vendor names from all sources
+  const nameSet = new Set();
+  (D.executives || []).forEach(e => { if (isAllowed(e.name)) nameSet.add(e.name); });
+  Object.keys(lbu).forEach(n => { if (isAllowed(n)) nameSet.add(n); });
+  Object.keys(D.vendor_goals || {}).forEach(n => { if (isAllowed(n)) nameSet.add(n); });
+
+  // Build exec lookup for CRM activity metrics
+  const execMap = {};
+  (D.executives || []).forEach(e => { execMap[norm(e.name)] = e; });
+
+  // Lookup helper: find value in a by_user dict using normalized name matching
+  const findInByUser = (byUser, name) => {
+    if (!byUser) return 0;
+    if (byUser[name] !== undefined) return byUser[name];
+    const nn = norm(name);
+    for (const [k, v] of Object.entries(byUser)) { if (norm(k) === nn) return v; }
+    return 0;
+  };
+
+  const rows = [...nameSet].map(n => {
+    const lt = findInByUser(lbu, n);
+    const g = getGoal(n);
     const gL = g.litros_mes || 0, pM = gL * pf;
     const ltP = gL > 0 ? Math.round((lt / pM) * 100) : 0;
-    const leU = week?.stages?.leads?.by_user?.[n] || 0, leG = g.leads_semana || 0;
-    const coU = week?.stages?.cotizacion?.by_user?.[n] || 0, coG = g.cotizaciones_semana || 0;
-    const ciU = week?.stages?.cierre?.by_user?.[n] || 0, ciG = g.contactos_semana || 0;
-    return { name: n, ltP, leP: leG > 0 ? Math.round(leU / leG * 100) + '%' : '—', coP: coG > 0 ? Math.round(coU / coG * 100) + '%' : '—', ciP: ciG > 0 ? Math.round(ciU / ciG * 100) + '%' : '—', m7: e.moved || 0, m30: e.moved_30d || 0 };
-  }).sort((a, b) => b.ltP - a.ltP);
+    const leU = findInByUser(week?.stages?.leads?.by_user, n), leG = g.leads_semana || 0;
+    const coU = findInByUser(week?.stages?.cotizacion?.by_user, n), coG = g.cotizaciones_semana || 0;
+    const ciU = findInByUser(week?.stages?.cierre?.by_user, n), ciG = g.contactos_semana || 0;
+    const ex = execMap[norm(n)] || {};
+    return { name: n, lt, ltP, leP: leG > 0 ? Math.round(leU / leG * 100) + '%' : '—', coP: coG > 0 ? Math.round(coU / coG * 100) + '%' : '—', ciP: ciG > 0 ? Math.round(ciU / ciG * 100) + '%' : '—', m7: ex.moved || 0, m30: ex.moved_30d || 0 };
+  }).sort((a, b) => b.lt - a.lt);
 
   rows.forEach((r, i) => {
     const lc = r.ltP >= 100 ? 'tag-g' : r.ltP >= 60 ? 'tag-y' : 'tag-r';
@@ -372,10 +395,10 @@ function renderMargenCharts() {
       scales: { x: { beginAtZero: true, max: 15, ticks: { callback: v => v + '%' }, grid: { color: '#f0f0f0' } }, y: { grid: { display: false } } } }
   });
 
-  // Margen por Ejecutivo (filtered to allowed)
+  // Margen por Ejecutivo (filtered to allowed, excluding CS team)
   const mu = T.margin_by_user || {};
   const eLabels = [], eData = [];
-  for (const [k, v] of Object.entries(mu)) { if (isAllowed(k)) { eLabels.push(k.split(' ').slice(0, 2).join(' ')); eData.push(v); } }
+  for (const [k, v] of Object.entries(mu)) { if (isAllowed(k) && !isCS(k)) { eLabels.push(k.split(' ').slice(0, 2).join(' ')); eData.push(v); } }
   const ctx2 = document.getElementById('chartMargenExec').getContext('2d');
   if (chartMargenExec) chartMargenExec.destroy();
   chartMargenExec = new Chart(ctx2, {
