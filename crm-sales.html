@@ -241,6 +241,18 @@ function switchTab(tab) {
 
 function render() {
   if (!D) return;
+  // Default to last COMPLETE week if current week just started (< 2 days of data)
+  const fw = D.funnel_weeks || [];
+  if (fw.length > 1 && selectedWeek === 0) {
+    const w0 = fw[0];
+    const stages = w0.stages || {};
+    const leadsVal = stages.leads?.value || 0;
+    const cotizVal = stages.cotizacion?.value || 0;
+    // If current week has very little data, auto-select previous complete week
+    if (w0.is_current && leadsVal + cotizVal <= 2) {
+      selectedWeek = 1;
+    }
+  }
   const w = getCurrentWeek();
   if (w && w.label) document.getElementById('weekBadge').textContent = w.label;
   renderWeekSelector();
@@ -450,11 +462,20 @@ function renderMovimientos() {
   });
 }
 
-// — Clientes Nuevos —
+// — Clientes Nuevos (filtered to selected week) —
 function renderClientesNuevos() {
   const detail = (D.ventas || {}).new_clients?.detail || [];
-  const filtered = detail.filter(c => isAllowed(c.vendedor));
-  document.getElementById('ncCount').textContent = filtered.length;
+  const week = getCurrentWeek();
+  const ws = week?.week_start || '', we = week?.week_end || '';
+  // Filter to selected week AND allowed vendors
+  const filtered = detail.filter(c => {
+    if (!isAllowed(c.vendedor)) return false;
+    if (ws && we && c.fecha) return c.fecha >= ws && c.fecha <= we;
+    return true;
+  });
+  // Also count monthly total for badge
+  const monthTotal = detail.filter(c => isAllowed(c.vendedor)).length;
+  document.getElementById('ncCount').textContent = filtered.length + (monthTotal > filtered.length ? ` (${monthTotal} mes)` : '');
   const tbody = document.getElementById('ncBody'); tbody.innerHTML = '';
   if (filtered.length === 0) { document.getElementById('noNC').style.display = 'block'; return; }
   document.getElementById('noNC').style.display = 'none';
