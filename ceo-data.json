@@ -1,6 +1,41 @@
 {
-  "updated": "2026-04-23T00:01:46.723895",
+  "updated": "2026-04-23T12:11:23.661567",
   "weeks": [
+    {
+      "label": "23apr-29apr",
+      "start": "2026-04-23",
+      "end": "2026-04-29",
+      "ventas": 0,
+      "neto": 0,
+      "litros": 0,
+      "litros_retail": 0,
+      "litros_volumen": 0,
+      "precio_neto": 0,
+      "precio_bruto": 0,
+      "margin": 0,
+      "margin_contado": 0,
+      "margin_credito": 0,
+      "facturas": 0,
+      "nc": 0,
+      "clientes": 0,
+      "recaud": 0,
+      "cheques": 0,
+      "transf": 0,
+      "factoring": 0,
+      "compras_odoo": 0,
+      "cheq_cartera_saldo": 0,
+      "cheq_recibidos": 0,
+      "facturas_contado": 0,
+      "facturas_credito": 0,
+      "margin_by_term": {},
+      "cotiz_canceladas": 0,
+      "visitas": 0,
+      "clientes_nuevos": 0,
+      "ppto": 269236,
+      "ppto_retail": 199235,
+      "ppto_volumen": 70001,
+      "parcial": true
+    },
     {
       "label": "16apr-22apr",
       "start": "2026-04-16",
@@ -77,7 +112,7 @@
       "ppto": 269236,
       "ppto_retail": 199235,
       "ppto_volumen": 70001,
-      "parcial": true
+      "parcial": false
     },
     {
       "label": "09apr-15apr",
@@ -1206,84 +1241,6 @@
       "ppto_retail": 171414,
       "ppto_volumen": 48347,
       "parcial": false
-    },
-    {
-      "label": "01jan-07jan",
-      "start": "2026-01-01",
-      "end": "2026-01-07",
-      "ventas": 152753692,
-      "neto": 103053251,
-      "litros": 160051,
-      "litros_retail": 33085,
-      "litros_volumen": 129566,
-      "precio_neto": 644,
-      "precio_bruto": 953,
-      "margin": 0.11588,
-      "margin_contado": 0.10119,
-      "margin_credito": 0.11952,
-      "facturas": 102,
-      "nc": 3,
-      "clientes": 81,
-      "recaud": 249501801,
-      "cheques": 16642815,
-      "transf": 152493672,
-      "factoring": 80365314,
-      "compras_odoo": 151152360,
-      "cheq_cartera_saldo": 0,
-      "cheq_recibidos": 10576271,
-      "facturas_contado": 19,
-      "facturas_credito": 83,
-      "margin_by_term": {
-        "Prepago": {
-          "margin": 0.11525,
-          "normalizado": 0.12525,
-          "count": 6,
-          "days": 0
-        },
-        "1 Día": {
-          "margin": 0.09652,
-          "normalizado": 0.10619,
-          "count": 13,
-          "days": 1
-        },
-        "7 Días": {
-          "margin": 0.07703,
-          "normalizado": 0.0847,
-          "count": 3,
-          "days": 7
-        },
-        "15 Días": {
-          "margin": 0.09609,
-          "normalizado": 0.10109,
-          "count": 4,
-          "days": 15
-        },
-        "30 Días": {
-          "margin": 0.12287,
-          "normalizado": 0.12287,
-          "count": 66,
-          "days": 30
-        },
-        "45 Días": {
-          "margin": 0.12375,
-          "normalizado": 0.11875,
-          "count": 4,
-          "days": 45
-        },
-        "60 Días": {
-          "margin": 0.11963,
-          "normalizado": 0.10963,
-          "count": 6,
-          "days": 60
-        }
-      },
-      "cotiz_canceladas": 69,
-      "visitas": 0,
-      "clientes_nuevos": 3,
-      "ppto": 219761,
-      "ppto_retail": 171414,
-      "ppto_volumen": 48347,
-      "parcial": false
     }
   ],
   "daily": [
@@ -1513,7 +1470,30 @@
   "sla": [
     {
       "label": "23apr-29apr",
-      "zones": {}
+      "zones": {
+        "Otro": {
+          "total": 18,
+          "on_time": 10,
+          "late": 8,
+          "pct": 55.56,
+          "late_clients": [
+            "EMPRESAS TUCAPEL S A, FIDEL CONCHA, TUCPAEL RETIRO",
+            "EMPRESAS TUCAPEL S A, FIDEL CONCHA, TUCPAEL RETIRO",
+            "EXPORTADORA MELIFEN LTDA., EXPORTADORA MELIFEN, BENJAMIN",
+            "AGRÍCOLA CORVAL II SPA, AGRICOLA CORVAL II-Mauricio",
+            "MAESTRANZA Y SERVICIOS INTEGRALES METALMECANICOS CACHAPOAL S A, MAESTRANZA"
+          ]
+        },
+        "Talca": {
+          "total": 1,
+          "on_time": 0,
+          "late": 1,
+          "pct": 0.0,
+          "late_clients": [
+            "PATRICIO VISCAY ALBORNOZ, PATRICIO VISCAY-C14 SUR"
+          ]
+        }
+      }
     },
     {
       "label": "16apr-22apr",
