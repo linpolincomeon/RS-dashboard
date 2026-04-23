@@ -301,27 +301,27 @@ function renderGerencia(){
   h+='</tbody></table>';
   h+=`<div class="note">Meta Contado: ${fP(mMeta)} · Meta Crédito: ${fP(crMeta)} · Normalizado = margen + (30 − días) / 30 pp · Jue→Mié</div></div>`;
 
-  // ═══ SECTION 2: CHURN CLIENTES ═══
-  const churn=D.churn||[];
-  h+='<div class="section-label">Churn Clientes — Semanal</div>';
-  if(churn.length>0){
+  // ═══ SECTION 2: CHURN CLIENTES (frequency-based) ═══
+  const churn=D.churn||{};
+  h+='<div class="section-label">Churn Clientes — Basado en Frecuencia de Compra</div>';
+  if(churn.active_clients){
     h+='<div class="kpi-grid">';
-    const ch0=churn[0];
-    h+=kpi('Churn Semana',ch0.pct+'%',null,ch0.pct<=10?'c-green':ch0.pct<=20?'c-amber':'c-red',`${ch0.lost_count||ch0.lost.length} clientes perdidos de ${ch0.prev_count}`);
-    h+=kpi('Clientes Activos',fNum(ch0.cur_count),null,'c-blue','compraron esta semana');
+    h+=kpi('Churn',churn.pct+'%',null,churn.pct<=10?'c-green':churn.pct<=20?'c-amber':'c-red',`${churn.churned_count} clientes perdidos`);
+    h+=kpi('Clientes Activos',fNum(churn.active_clients),null,'c-blue','con frecuencia conocida (8 meses)');
     h+='</div>';
-    h+='<div class="table-card"><table><thead><tr><th>Semana</th><th class="r">Churn %</th><th class="r">Perdidos</th><th class="r">Sem. Anterior</th><th class="r">Sem. Actual</th><th>Clientes Perdidos</th></tr></thead><tbody>';
-    churn.forEach(c=>{
-      const lostNames=(c.lost||[]).slice(0,5).join(', ')||(c.lost_count===0?'—':'...');
-      h+=`<tr><td class="hi">${c.label}</td>`;
-      h+=`<td class="r ${c.pct<=10?'ok':c.pct<=20?'':'bad'}">${c.pct}%</td>`;
-      h+=`<td class="r">${c.lost_count||c.lost.length}</td>`;
-      h+=`<td class="r">${c.prev_count}</td>`;
-      h+=`<td class="r">${c.cur_count}</td>`;
-      h+=`<td style="font-size:10px;color:var(--text3);max-width:300px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${lostNames}</td>`;
-      h+=`</tr>`;
-    });
-    h+='</tbody></table><div class="note">Churn = clientes que compraron semana anterior pero NO esta semana · No acumulado</div></div>';
+    const list=churn.churned||[];
+    if(list.length>0){
+      h+='<div class="table-card"><table><thead><tr><th>Cliente</th><th class="r">Frecuencia</th><th class="r">Última Factura</th><th class="r">Días Sin Comprar</th><th class="r">Umbral</th></tr></thead><tbody>';
+      list.forEach(c=>{
+        h+=`<tr><td class="hi">${c.name}</td>`;
+        h+=`<td class="r">${c.freq||'—'}</td>`;
+        h+=`<td class="r">${c.last_invoice}</td>`;
+        h+=`<td class="r bad">${c.days_since}</td>`;
+        h+=`<td class="r">${c.threshold} días</td>`;
+        h+=`</tr>`;
+      });
+      h+='</tbody></table><div class="note">Churn = días sin comprar > ${churn.multiplier||2}x frecuencia esperada · Campo: frecuencia_facturacion · Últimos 8 meses</div></div>';
+    }
   } else {
     h+='<div class="chart-card" style="text-align:center;padding:2rem;color:var(--text3)">Sin datos de churn</div>';
   }

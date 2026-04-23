@@ -632,55 +632,115 @@ def extract_sla(models, uid, weeks):
     return sla_data
 
 
-# ── CHURN: clients who bought last week but NOT this week ──
+# ── CHURN: frequency-based, using res.partner.frecuencia_facturacion ──
+FREQ_MAP = {
+    "diaria": 1, "diario": 1,
+    "semanal": 7,
+    "quincenal": 15,
+    "mensual": 30,
+    "bimensual": 60, "bimestral": 60,
+    "trimestral": 90,
+}
+CHURN_MULTIPLIER = 2  # churned if days_since_last > freq * multiplier
+IRREGULAR_DEFAULT_DAYS = 15
+
+
+def parse_frecuencia(val):
+    """Parse frecuencia_facturacion char field into expected days between purchases."""
+    import re
+    if not val:
+        return None
+    low = val.lower().strip()
+    # Check known keywords first
+    for key, days in FREQ_MAP.items():
+        if key in low:
+            return days
+    # Irregular with number: "Irregular (cada 23 días)" or "Irregular (12.5)"
+    m = re.search(r"(\d+[\.,]?\d*)", low)
+    if m:
+        return round(float(m.group(1).replace(",", ".")))
+    # Irregular without number
+    if "irregular" in low:
+        return IRREGULAR_DEFAULT_DAYS
+    return None
+
+
 def extract_churn(models, uid, weeks):
-    """For each week, find partners in previous week's invoices NOT in current week's."""
-    print("Extracting churn data...")
-    churn_data = []
-    for i, wd in enumerate(weeks[:5]):  # 5 weeks to match margin display
-        # Current week partners
-        cur_invs = sr(models, uid, "account.move", [
-            ["move_type", "=", "out_invoice"],
-            ["state", "=", "posted"],
-            ["invoice_date", ">=", wd["start"]],
-            ["invoice_date", "<=", wd["end"]],
-        ], ["partner_id"], 2000)
-        cur_partners = set(inv["partner_id"][0] for inv in cur_invs if inv.get("partner_id"))
+    """
+    Frequency-based churn: for each active customer, read their
+    frecuencia_facturacion from res.partner, find their last invoice date,
+    and flag as churned if days_since_last_invoice > frequency * 2.
+    """
+    print("Extracting churn data (frequency-based)...")
+    today = datetime.now()
 
-        # Previous week partners
-        prev_wd = weeks[i + 1] if i + 1 < len(weeks) else None
-        if not prev_wd:
-            churn_data.append({"label": wd["label"], "lost": [], "pct": 0, "prev_count": 0, "cur_count": len(cur_partners)})
+    # Get all partners with invoices in last 8 months
+    eight_months_ago = (today - timedelta(days=240)).strftime("%Y-%m-%d")
+    recent_invs = fetch_all(models, uid, "account.move",
+        [["move_type", "=", "out_invoice"], ["state", "=", "posted"],
+         ["invoice_date", ">=", eight_months_ago]],
+        ["partner_id", "invoice_date"])
+
+    # Build last_invoice_date per partner
+    partner_last = {}  # pid -> last invoice date string
+    for inv in recent_invs:
+        pid = inv["partner_id"][0] if inv.get("partner_id") else None
+        if not pid:
             continue
-        prev_invs = sr(models, uid, "account.move", [
-            ["move_type", "=", "out_invoice"],
-            ["state", "=", "posted"],
-            ["invoice_date", ">=", prev_wd["start"]],
-            ["invoice_date", "<=", prev_wd["end"]],
-        ], ["partner_id"], 2000)
-        prev_partners = set(inv["partner_id"][0] for inv in prev_invs if inv.get("partner_id"))
+        dt = inv.get("invoice_date", "")
+        if dt > partner_last.get(pid, ""):
+            partner_last[pid] = dt
 
-        # Churned = in previous but not in current
-        churned_ids = prev_partners - cur_partners
-        pct = round(len(churned_ids) / len(prev_partners) * 100, 1) if prev_partners else 0
+    active_pids = list(partner_last.keys())
+    print(f"  {len(active_pids)} partners with invoices in last 8 months")
 
-        # Get names for churned partners (up to 20)
-        lost_names = []
-        if churned_ids:
-            batch = list(churned_ids)[:20]
-            partners = sr(models, uid, "res.partner", [["id", "in", batch]], ["name"], limit=20)
-            lost_names = [p["name"] for p in partners]
+    # Read frecuencia_facturacion for all active partners
+    partner_freq = {}  # pid -> {name, freq_raw, freq_days}
+    for offset in range(0, len(active_pids), 200):
+        batch = active_pids[offset:offset + 200]
+        partners = sr(models, uid, "res.partner", [["id", "in", batch]],
+                       ["id", "name", "frecuencia_facturacion"], limit=200)
+        for p in partners:
+            freq_raw = p.get("frecuencia_facturacion") or ""
+            freq_days = parse_frecuencia(freq_raw)
+            partner_freq[p["id"]] = {
+                "name": p["name"],
+                "freq_raw": freq_raw,
+                "freq_days": freq_days,
+            }
 
-        churn_data.append({
-            "label": wd["label"],
-            "lost": lost_names,
-            "lost_count": len(churned_ids),
-            "pct": pct,
-            "prev_count": len(prev_partners),
-            "cur_count": len(cur_partners),
-        })
-        print(f"  {wd['label']}: {len(churned_ids)} lost of {len(prev_partners)} ({pct}%)")
-    return churn_data
+    # Determine churned partners
+    churned = []
+    active_count = 0
+    today_str = today.strftime("%Y-%m-%d")
+    for pid, last_date in partner_last.items():
+        info = partner_freq.get(pid)
+        if not info or not info["freq_days"]:
+            continue  # skip partners without frequency data
+        active_count += 1
+        days_since = (today - datetime.strptime(last_date, "%Y-%m-%d")).days
+        threshold = info["freq_days"] * CHURN_MULTIPLIER
+        if days_since > threshold:
+            churned.append({
+                "name": info["name"],
+                "freq": info["freq_raw"],
+                "freq_days": info["freq_days"],
+                "last_invoice": last_date,
+                "days_since": days_since,
+                "threshold": threshold,
+            })
+
+    churned.sort(key=lambda x: -x["days_since"])
+    pct = round(len(churned) / active_count * 100, 1) if active_count > 0 else 0
+    print(f"  Churn: {len(churned)} of {active_count} active clients ({pct}%)")
+
+    return {
+        "active_clients": active_count,
+        "churned_count": len(churned),
+        "pct": pct,
+        "churned": churned[:30],  # top 30 by days since last invoice
+        "multiplier": CHURN_MULTIPLIER,
+    }
 
 
 # ── ENAP COMPLIANCE: MTD purchases vs monthly target ──
@@ -824,7 +884,7 @@ def main():
     weeks = get_week_ranges(16)
     sla = extract_sla(models, uid, weeks)
     riesgo = extract_riesgo(models, uid)
-    churn = extract_churn(models, uid, weeks)
+    churn = extract_churn(models, uid)
     enap = extract_enap_compliance(models, uid)
 
     data = {
