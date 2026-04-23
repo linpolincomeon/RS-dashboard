@@ -1,35 +1,48 @@
 {
-  "updated": "2026-04-23T12:11:23.661567",
+  "updated": "2026-04-23T16:55:13.150977",
   "weeks": [
     {
       "label": "23apr-29apr",
       "start": "2026-04-23",
       "end": "2026-04-29",
-      "ventas": 0,
-      "neto": 0,
-      "litros": 0,
-      "litros_retail": 0,
-      "litros_volumen": 0,
-      "precio_neto": 0,
-      "precio_bruto": 0,
-      "margin": 0,
-      "margin_contado": 0,
-      "margin_credito": 0,
-      "facturas": 0,
+      "ventas": 8691101,
+      "neto": 6580115,
+      "litros": 5500,
+      "litros_retail": 1000,
+      "litros_volumen": 4500,
+      "precio_neto": 1196,
+      "precio_bruto": 1580,
+      "margin": 0.0865,
+      "margin_contado": 0.07903,
+      "margin_credito": 0.08815,
+      "facturas": 4,
       "nc": 0,
-      "clientes": 0,
-      "recaud": 0,
+      "clientes": 4,
+      "recaud": 15475835,
       "cheques": 0,
-      "transf": 0,
-      "factoring": 0,
+      "transf": 11181834,
+      "factoring": 4294001,
       "compras_odoo": 0,
       "cheq_cartera_saldo": 0,
       "cheq_recibidos": 0,
-      "facturas_contado": 0,
-      "facturas_credito": 0,
-      "margin_by_term": {},
-      "cotiz_canceladas": 0,
-      "visitas": 0,
+      "facturas_contado": 1,
+      "facturas_credito": 3,
+      "margin_by_term": {
+        "1 Día": {
+          "margin": 0.07903,
+          "normalizado": 0.0887,
+          "count": 1,
+          "days": 1
+        },
+        "30 Días": {
+          "margin": 0.08815,
+          "normalizado": 0.08815,
+          "count": 3,
+          "days": 30
+        }
+      },
+      "cotiz_canceladas": 1,
+      "visitas": 2,
       "clientes_nuevos": 0,
       "ppto": 269236,
       "ppto_retail": 199235,
@@ -53,11 +66,11 @@
       "facturas": 108,
       "nc": 4,
       "clientes": 79,
-      "recaud": 446785153,
+      "recaud": 449105764,
       "cheques": 34326852,
-      "transf": 183268471,
+      "transf": 185589082,
       "factoring": 229189830,
-      "compras_odoo": 186654813,
+      "compras_odoo": 272849814,
       "cheq_cartera_saldo": 0,
       "cheq_recibidos": 15786899,
       "facturas_contado": 20,
@@ -107,7 +120,7 @@
         }
       },
       "cotiz_canceladas": 10,
-      "visitas": 11,
+      "visitas": 9,
       "clientes_nuevos": 7,
       "ppto": 269236,
       "ppto_retail": 199235,
@@ -1247,8 +1260,8 @@
     {
       "date": "23apr",
       "day": "Jue",
-      "litros": 0,
-      "neto": 0
+      "litros": 5500,
+      "neto": 6580115
     },
     {
       "date": "22apr",
@@ -1343,16 +1356,16 @@
   ],
   "banks": [
     {
-      "name": "DE CHILE",
-      "balance": 40956390
-    },
-    {
       "name": "ITAU",
       "balance": 22692677
     },
     {
       "name": "ESTADO",
       "balance": 5715282
+    },
+    {
+      "name": "DE CHILE",
+      "balance": 4041060
     },
     {
       "name": "CAJA",
@@ -1371,15 +1384,15 @@
       "balance": -838790
     }
   ],
-  "total_cash": 73105680,
+  "total_cash": 36190350,
   "receivables": {
-    "open_invoices": 303,
-    "total_due": 671240173,
-    "current": 586869594,
-    "overdue": 84370579,
+    "open_invoices": 287,
+    "total_due": 630380632,
+    "current": 550874798,
+    "overdue": 79505834,
     "pct_overdue": 12.6,
     "aging": {
-      "0-30": 67685215,
+      "0-30": 62820470,
       "31-60": 6919801,
       "61-90": 0,
       "90+": 9765563
@@ -1392,10 +1405,6 @@
       {
         "name": "JOSE RODRIGO ORMAZABAL VIDAL",
         "amount": 41483702
-      },
-      {
-        "name": "AURORA AUSTRALIS SA",
-        "amount": 20222000
       },
       {
         "name": "INGENERIA Y CONSTRUCCIONES FEBLANCA SPA",
@@ -1464,6 +1473,10 @@
       {
         "name": "ANDES SOLAR SA",
         "amount": 8765676
+      },
+      {
+        "name": "VALENZUELA LEIVA MAX",
+        "amount": 7895000
       }
     ]
   },
@@ -1609,8 +1622,8 @@
   "riesgo": {
     "cubierto": 0,
     "cubierto_count": 0,
-    "no_cubierto": 671240173,
-    "no_cubierto_count": 303,
+    "no_cubierto": 630380632,
+    "no_cubierto_count": 287,
     "pct_monto": 100.0,
     "pct_count": 100.0
   },
@@ -1625,7 +1638,6 @@
         "AGRÍCOLA CORVAL II SPA",
         "ALEX PRADO FRUTAS Y TRANSPORTES SPA",
         "ALFREDO ALFONSO OPAZO MUÑOZ",
-        "ALIMENTOS Y FRUTOS S.A.",
         "ANDES SOLAR SA",
         "BOMBAS DE HORMIGON G&P SPA",
         "LUIS ANTONIO REYES FUENTES",
@@ -1637,12 +1649,13 @@
         "TRANSPORTES JORGE MARTINEZ SCHNETTLER E.I.R.L.",
         "TRANSPORTES MARGARETH MARTINEZ SCHNETTLER E.I.R.L",
         "TRANSPORTES Y CARGAS MARTINEZ DIAZ LIMITADA",
+        "VALENZUELA LEIVA MAX",
         "VIÑA MATORI SPA."
       ],
-      "lost_count": 79,
-      "pct": 100.0,
+      "lost_count": 77,
+      "pct": 97.5,
       "prev_count": 79,
-      "cur_count": 0
+      "cur_count": 4
     },
     {
       "label": "16apr-22apr",
@@ -1764,10 +1777,10 @@
   "enap": {
     "month": "2026-04",
     "target_litros": 300000,
-    "mtd_litros": 299843,
-    "compliance_pct": 99.9,
-    "projected_litros": 391100,
-    "projected_pct": 130.4,
+    "mtd_litros": 329845,
+    "compliance_pct": 109.9,
+    "projected_litros": 430233,
+    "projected_pct": 143.4,
     "days_elapsed": 23,
     "days_in_month": 30
   },
