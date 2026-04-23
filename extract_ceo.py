@@ -665,7 +665,7 @@ def parse_frecuencia(val):
     return None
 
 
-def extract_churn(models, uid, weeks):
+def extract_churn(models, uid):
     """
     Frequency-based churn: for each active customer, read their
     frecuencia_facturacion from res.partner, find their last invoice date,
