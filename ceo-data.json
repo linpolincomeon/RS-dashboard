@@ -1,37 +1,37 @@
 {
-  "updated": "2026-04-24T12:08:12.519089",
+  "updated": "2026-04-24T15:25:46.888443",
   "weeks": [
     {
       "label": "23apr-29apr",
       "start": "2026-04-23",
       "end": "2026-04-29",
-      "ventas": 14082707,
-      "neto": 10670566,
-      "litros": 8848,
-      "litros_retail": 1000,
-      "litros_volumen": 7848,
-      "precio_neto": 1206,
-      "precio_bruto": 1592,
-      "margin": 0.09272,
-      "margin_contado": 0.07903,
-      "margin_credito": 0.09443,
-      "facturas": 9,
+      "ventas": 34352165,
+      "neto": 25993378,
+      "litros": 21853,
+      "litros_retail": 2500,
+      "litros_volumen": 19353,
+      "precio_neto": 1189,
+      "precio_bruto": 1572,
+      "margin": 0.08391,
+      "margin_contado": 0.07579,
+      "margin_credito": 0.08495,
+      "facturas": 19,
       "nc": 0,
-      "clientes": 9,
-      "recaud": 29437837,
+      "clientes": 17,
+      "recaud": 53582335,
       "cheques": 1527000,
-      "transf": 23616836,
+      "transf": 47761334,
       "factoring": 4294001,
       "compras_odoo": 0,
       "cheq_cartera_saldo": 0,
       "cheq_recibidos": 44644216,
-      "facturas_contado": 1,
-      "facturas_credito": 8,
+      "facturas_contado": 2,
+      "facturas_credito": 17,
       "margin_by_term": {
         "1 Día": {
-          "margin": 0.07903,
-          "normalizado": 0.0887,
-          "count": 1,
+          "margin": 0.07579,
+          "normalizado": 0.08546,
+          "count": 2,
           "days": 1
         },
         "15 Días": {
@@ -41,15 +41,15 @@
           "days": 15
         },
         "30 Días": {
-          "margin": 0.09383,
-          "normalizado": 0.09383,
-          "count": 7,
+          "margin": 0.08455,
+          "normalizado": 0.08455,
+          "count": 16,
           "days": 30
         }
       },
       "cotiz_canceladas": 1,
-      "visitas": 2,
-      "clientes_nuevos": 0,
+      "visitas": 11,
+      "clientes_nuevos": 3,
       "ppto": 269236,
       "ppto_retail": 199235,
       "ppto_volumen": 70001,
@@ -204,7 +204,7 @@
         }
       },
       "cotiz_canceladas": 23,
-      "visitas": 2,
+      "visitas": 1,
       "clientes_nuevos": 9,
       "ppto": 269236,
       "ppto_retail": 199235,
@@ -360,7 +360,7 @@
         }
       },
       "cotiz_canceladas": 28,
-      "visitas": 1,
+      "visitas": 0,
       "clientes_nuevos": 10,
       "ppto": 234090,
       "ppto_retail": 177908,
@@ -444,7 +444,7 @@
         }
       },
       "cotiz_canceladas": 49,
-      "visitas": 38,
+      "visitas": 36,
       "clientes_nuevos": 16,
       "ppto": 234090,
       "ppto_retail": 177908,
@@ -1266,8 +1266,8 @@
     {
       "date": "24apr",
       "day": "Vie",
-      "litros": 2170,
-      "neto": 2589521
+      "litros": 13975,
+      "neto": 16501075
     },
     {
       "date": "23apr",
@@ -1367,15 +1367,15 @@
     },
     {
       "name": "DE CHILE",
-      "balance": 17883062
-    },
-    {
-      "name": "ESTADO",
-      "balance": 5715282
+      "balance": 21782890
     },
     {
       "name": "CAJA",
       "balance": 3291177
+    },
+    {
+      "name": "ESTADO",
+      "balance": 1228576
     },
     {
       "name": "BCI",
@@ -1390,15 +1390,15 @@
       "balance": -838790
     }
   ],
-  "total_cash": 50032352,
+  "total_cash": 49445474,
   "receivables": {
-    "open_invoices": 271,
-    "total_due": 583807880,
-    "current": 484613436,
-    "overdue": 99194444,
-    "pct_overdue": 17.0,
+    "open_invoices": 272,
+    "total_due": 583159640,
+    "current": 490480295,
+    "overdue": 92679345,
+    "pct_overdue": 15.9,
     "aging": {
-      "0-30": 82509080,
+      "0-30": 75993981,
       "31-60": 6919801,
       "61-90": 0,
       "90+": 9765563
@@ -1429,6 +1429,10 @@
         "amount": 15411835
       },
       {
+        "name": "SOC AGRICOLA GRANJA SAN RAFAEL LIMITADA",
+        "amount": 14291081
+      },
+      {
         "name": "SERVICIOS AGRICOLAS HERNANDEZ LIMITADA",
         "amount": 13275000
       },
@@ -1441,10 +1445,6 @@
         "amount": 12765902
       },
       {
-        "name": "EXPORTADORA ANAKENA LTDA",
-        "amount": 12006498
-      },
-      {
         "name": "AGROINDUSTRIAL SIRACUSA S A",
         "amount": 11617500
       },
@@ -1453,16 +1453,12 @@
         "amount": 11424000
       },
       {
-        "name": "AGRICOLA MANTOS VERDES LIMITADA",
-        "amount": 10672299
+        "name": "EMPRESAS TUCAPEL S A",
+        "amount": 11298828
       },
       {
         "name": "ALFREDO ALFONSO OPAZO MUÑOZ",
         "amount": 9387189
-      },
-      {
-        "name": "SOC AGRICOLA GRANJA SAN RAFAEL LIMITADA",
-        "amount": 9358561
       },
       {
         "name": "AGROSERVICIOS JR SPA",
@@ -1477,12 +1473,16 @@
         "amount": 8824001
       },
       {
-        "name": "ANDES SOLAR SA",
-        "amount": 8765676
-      },
-      {
         "name": "HUGO PATRICIO CATALAN ZAVALLA",
         "amount": 8036560
+      },
+      {
+        "name": "VALENZUELA LEIVA MAX",
+        "amount": 7895000
+      },
+      {
+        "name": "ANDES SOLAR SA",
+        "amount": 7673676
       }
     ]
   },
@@ -1642,15 +1642,15 @@
   "riesgo": {
     "cubierto": 0,
     "cubierto_count": 0,
-    "no_cubierto": 583807880,
-    "no_cubierto_count": 271,
+    "no_cubierto": 583159640,
+    "no_cubierto_count": 272,
     "pct_monto": 100.0,
     "pct_count": 100.0
   },
   "churn": {
-    "active_clients": 415,
+    "active_clients": 416,
     "churned_count": 219,
-    "pct": 52.8,
+    "pct": 52.6,
     "churned": [
       {
         "name": "SOCIEDAD AGRICOLA LIRCAY SPA.",
