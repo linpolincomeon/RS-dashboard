@@ -1,37 +1,37 @@
 {
-  "updated": "2026-04-24T16:15:38.783584",
+  "updated": "2026-04-24T20:02:46.360723",
   "weeks": [
     {
       "label": "23apr-29apr",
       "start": "2026-04-23",
       "end": "2026-04-29",
-      "ventas": 38451365,
-      "neto": 29096146,
-      "litros": 24453,
-      "litros_retail": 3000,
-      "litros_volumen": 21453,
-      "precio_neto": 1190,
-      "precio_bruto": 1572,
-      "margin": 0.08421,
-      "margin_contado": 0.07493,
-      "margin_credito": 0.08549,
-      "facturas": 23,
+      "ventas": 66688416,
+      "neto": 50450922,
+      "litros": 42503,
+      "litros_retail": 8000,
+      "litros_volumen": 34503,
+      "precio_neto": 1187,
+      "precio_bruto": 1569,
+      "margin": 0.08269,
+      "margin_contado": 0.05895,
+      "margin_credito": 0.08798,
+      "facturas": 34,
       "nc": 0,
-      "clientes": 21,
-      "recaud": 53582335,
-      "cheques": 1527000,
-      "transf": 47761334,
+      "clientes": 32,
+      "recaud": 98759741,
+      "cheques": 16488957,
+      "transf": 77976783,
       "factoring": 4294001,
       "compras_odoo": 0,
       "cheq_cartera_saldo": 0,
       "cheq_recibidos": 44644216,
-      "facturas_contado": 3,
-      "facturas_credito": 20,
+      "facturas_contado": 4,
+      "facturas_credito": 30,
       "margin_by_term": {
         "1 Día": {
-          "margin": 0.07493,
-          "normalizado": 0.0846,
-          "count": 3,
+          "margin": 0.05895,
+          "normalizado": 0.06862,
+          "count": 4,
           "days": 1
         },
         "15 Días": {
@@ -41,10 +41,16 @@
           "days": 15
         },
         "30 Días": {
-          "margin": 0.08627,
-          "normalizado": 0.08627,
-          "count": 18,
+          "margin": 0.0887,
+          "normalizado": 0.0887,
+          "count": 27,
           "days": 30
+        },
+        "60 Días": {
+          "margin": 0.0854,
+          "normalizado": 0.0754,
+          "count": 1,
+          "days": 60
         }
       },
       "cotiz_canceladas": 1,
@@ -1266,8 +1272,8 @@
     {
       "date": "24apr",
       "day": "Vie",
-      "litros": 16575,
-      "neto": 19603843
+      "litros": 34625,
+      "neto": 40958619
     },
     {
       "date": "23apr",
@@ -1362,12 +1368,12 @@
   ],
   "banks": [
     {
-      "name": "ITAU",
-      "balance": 22692677
+      "name": "DE CHILE",
+      "balance": 46742686
     },
     {
-      "name": "DE CHILE",
-      "balance": 21782890
+      "name": "ITAU",
+      "balance": 22692677
     },
     {
       "name": "CAJA",
@@ -1390,13 +1396,13 @@
       "balance": -838790
     }
   ],
-  "total_cash": 49445474,
+  "total_cash": 74405270,
   "receivables": {
-    "open_invoices": 276,
-    "total_due": 587258840,
-    "current": 494579495,
+    "open_invoices": 283,
+    "total_due": 603149141,
+    "current": 510469796,
     "overdue": 92679345,
-    "pct_overdue": 15.8,
+    "pct_overdue": 15.4,
     "aging": {
       "0-30": 75993981,
       "31-60": 6919801,
@@ -1429,6 +1435,10 @@
         "amount": 15411835
       },
       {
+        "name": "SOC. DE TRANSPORTES TRACMAVI LTDA.",
+        "amount": 15354752
+      },
+      {
         "name": "SOC AGRICOLA GRANJA SAN RAFAEL LIMITADA",
         "amount": 14291081
       },
@@ -1439,10 +1449,6 @@
       {
         "name": "AGRICOLA AGROBOSQUES SAN ISIDRO S.A.",
         "amount": 13025053
-      },
-      {
-        "name": "SOC. DE TRANSPORTES TRACMAVI LTDA.",
-        "amount": 12765902
       },
       {
         "name": "AGROINDUSTRIAL SIRACUSA S A",
@@ -1642,15 +1648,15 @@
   "riesgo": {
     "cubierto": 0,
     "cubierto_count": 0,
-    "no_cubierto": 587258840,
-    "no_cubierto_count": 276,
+    "no_cubierto": 603149141,
+    "no_cubierto_count": 283,
     "pct_monto": 100.0,
     "pct_count": 100.0
   },
   "churn": {
     "active_clients": 416,
-    "churned_count": 218,
-    "pct": 52.4,
+    "churned_count": 217,
+    "pct": 52.2,
     "churned": [
       {
         "name": "SOCIEDAD AGRICOLA LIRCAY SPA.",
