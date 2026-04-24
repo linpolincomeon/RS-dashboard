@@ -1,5 +1,5 @@
 {
-  "updated": "2026-04-24T16:20:48.155072",
+  "updated": "2026-04-24T16:38:26.068130",
   "week": {
     "start": "2026-04-23",
     "end": "2026-04-29",
@@ -745,8 +745,8 @@
       "exec": "MUÑOZ ENCALADA JOAQUIN",
       "exec_id": 262,
       "value": 2000,
-      "days_in_stage": 1,
-      "days_since_activity": 1,
+      "days_in_stage": 2,
+      "days_since_activity": 2,
       "last_update": "2026-04-22",
       "origin": "—",
       "created": "2026-04-22"
@@ -759,7 +759,7 @@
       "exec": "MUÑOZ ENCALADA JOAQUIN",
       "exec_id": 262,
       "value": 0,
-      "days_in_stage": 1,
+      "days_in_stage": 2,
       "days_since_activity": 1,
       "last_update": "2026-04-22",
       "origin": "—",
@@ -1641,7 +1641,7 @@
       "exec": "Toro González Sebastian Enrique",
       "exec_id": 56,
       "value": 24000,
-      "days_in_stage": 34,
+      "days_in_stage": 35,
       "days_since_activity": 32,
       "last_update": "2026-03-23",
       "origin": "—",
@@ -3212,7 +3212,7 @@
       "exec_id": 56,
       "value": 0,
       "days_in_stage": 16,
-      "days_since_activity": 15,
+      "days_since_activity": 16,
       "last_update": "2026-04-08",
       "origin": "—",
       "created": "2026-03-27"
@@ -3352,8 +3352,8 @@
       "exec_id": 56,
       "value": 10000,
       "days_in_stage": 22,
-      "days_since_activity": 8,
-      "last_update": "2026-04-16",
+      "days_since_activity": 0,
+      "last_update": "2026-04-24",
       "origin": "—",
       "created": "2026-03-19"
     },
@@ -3379,8 +3379,8 @@
       "exec": "Comber Sigall Pauline",
       "exec_id": 52,
       "value": 0,
-      "days_in_stage": 22,
-      "days_since_activity": 22,
+      "days_in_stage": 23,
+      "days_since_activity": 23,
       "last_update": "2026-04-01",
       "origin": "—",
       "created": "2026-04-01"
@@ -5633,7 +5633,7 @@
       "exec": "Vanessa Vazquez",
       "exec_id": 67,
       "value": 0,
-      "days_in_stage": 185,
+      "days_in_stage": 186,
       "days_since_activity": 87,
       "last_update": "2026-01-27",
       "origin": "—",
@@ -6068,21 +6068,6 @@
       "action": "Llamar o enviar mail"
     },
     {
-      "id": 55,
-      "name": "WEBER",
-      "stage": "Cotizado",
-      "stage_class": "cotizado",
-      "exec": "MUÑOZ ENCALADA JOAQUIN",
-      "exec_id": 262,
-      "value": 0,
-      "days_in_stage": 260,
-      "days_since_activity": 0,
-      "last_update": "2026-04-23",
-      "origin": "—",
-      "created": "2025-08-06",
-      "action": "Seguimiento cotización"
-    },
-    {
       "id": 61,
       "name": "VIÑEDOS PUERTA",
       "stage": "Contactado",
@@ -6090,7 +6075,7 @@
       "exec": "Toro González Sebastian Enrique",
       "exec_id": 56,
       "value": 0,
-      "days_in_stage": 259,
+      "days_in_stage": 260,
       "days_since_activity": 32,
       "last_update": "2026-03-23",
       "origin": "—",
@@ -6105,7 +6090,7 @@
       "exec": "Toro González Sebastian Enrique",
       "exec_id": 56,
       "value": 0,
-      "days_in_stage": 259,
+      "days_in_stage": 260,
       "days_since_activity": 32,
       "last_update": "2026-03-23",
       "origin": "—",
@@ -6120,11 +6105,26 @@
       "exec": "Toro González Sebastian Enrique",
       "exec_id": 56,
       "value": 0,
-      "days_in_stage": 259,
+      "days_in_stage": 260,
       "days_since_activity": 32,
       "last_update": "2026-03-23",
       "origin": "—",
       "created": "2025-07-24",
+      "action": "Seguimiento cotización"
+    },
+    {
+      "id": 55,
+      "name": "WEBER",
+      "stage": "Cotizado",
+      "stage_class": "cotizado",
+      "exec": "MUÑOZ ENCALADA JOAQUIN",
+      "exec_id": 262,
+      "value": 0,
+      "days_in_stage": 260,
+      "days_since_activity": 0,
+      "last_update": "2026-04-23",
+      "origin": "—",
+      "created": "2025-08-06",
       "action": "Seguimiento cotización"
     },
     {
@@ -7208,14 +7208,23 @@
           }
         },
         "cotizacion": {
-          "value": 18,
+          "value": 19,
           "goal": 8,
           "by_user": {
-            "TomEnergy": 12,
+            "TomEnergy": 13,
             "Toro González Sebastian Enrique": 5,
             "MUÑOZ ENCALADA JOAQUIN": 1
           },
           "detail": [
+            {
+              "name": "S30401",
+              "cliente": "AGRICOLA LAS PERDICES LTDA",
+              "vendedor": "TomEnergy",
+              "monto": 1228.0,
+              "litros": 1,
+              "estado": "draft",
+              "fecha": "2026-04-24"
+            },
             {
               "name": "S30398",
               "cliente": "ARCE LIZANA FRANCISCO ROLANDO",
@@ -8685,12 +8694,12 @@
     "month_start": "2026-04-01",
     "month_end": "2026-04-30",
     "totals": {
-      "total_litros": 595538,
-      "total_venta_neta": 755120436,
-      "invoice_count": 373,
+      "total_litros": 597538,
+      "total_venta_neta": 757445642,
+      "invoice_count": 374,
       "nc_count": 17,
       "litros_by_user": {
-        "Toro González Sebastian Enrique": 175084,
+        "Toro González Sebastian Enrique": 177084,
         "MUÑOZ ENCALADA JOAQUIN": 13500,
         "Comber Sigall Pauline": 398554,
         "Toledo Núñez Madelaine Camila": 4400,
@@ -8698,7 +8707,7 @@
         "De Trenqualye Merino Andre Jean": 2000
       },
       "venta_by_user": {
-        "Toro González Sebastian Enrique": 217551805,
+        "Toro González Sebastian Enrique": 219877011,
         "MUÑOZ ENCALADA JOAQUIN": 17066534,
         "Comber Sigall Pauline": 509677584,
         "Toledo Núñez Madelaine Camila": 5734472,
@@ -8708,9 +8717,9 @@
       "margin_retail_pct": 8.8,
       "margin_volume_pct": 6.35,
       "retail_venta": 601257885,
-      "volume_venta": 163558325,
+      "volume_venta": 165883531,
       "litros_by_zone": {
-        "Talca": 168077,
+        "Talca": 170077,
         "Curico": 138670,
         "Rancagua": 108059,
         "Chillan": 74174,
@@ -8718,7 +8727,7 @@
         "VI Costa": 38200
       },
       "venta_by_zone": {
-        "Talca": 214365600,
+        "Talca": 216690806,
         "Curico": 175596165,
         "Rancagua": 139753168,
         "San Fernando": 93154870,
@@ -8726,8 +8735,8 @@
         "VI Costa": 49238178
       },
       "margin_by_zone": {
-        "Chillan": 6.6,
         "Talca": 8.3,
+        "Chillan": 6.6,
         "Rancagua": 9.4,
         "Curico": 7.4,
         "VI Costa": 9.2,
@@ -8757,11 +8766,17 @@
         "Comber Sigall Pauline": 2
       },
       "litros_by_user": {
-        "Toro González Sebastian Enrique": 101212,
+        "Toro González Sebastian Enrique": 103212,
         "MUÑOZ ENCALADA JOAQUIN": 6000,
         "Comber Sigall Pauline": 5000
       },
       "detail": [
+        {
+          "cliente": "CIA AGRICOLA Y FORESTAL EL ALAMO LIMITADA",
+          "vendedor": "Toro González Sebastian Enrique",
+          "fecha": "2026-04-24",
+          "litros": 21000
+        },
         {
           "cliente": "INVERSIONES LABBE ALESSANDRINI LTDA",
           "vendedor": "Toro González Sebastian Enrique",
@@ -8803,12 +8818,6 @@
           "vendedor": "MUÑOZ ENCALADA JOAQUIN",
           "fecha": "2026-04-21",
           "litros": 2000
-        },
-        {
-          "cliente": "CIA AGRICOLA Y FORESTAL EL ALAMO LIMITADA",
-          "vendedor": "Toro González Sebastian Enrique",
-          "fecha": "2026-04-21",
-          "litros": 19000
         },
         {
           "cliente": "SERGIO IGNACIO VERGARA HERNANDEZ",
@@ -8944,8 +8953,8 @@
       },
       {
         "label": "23/4-29/4",
-        "litros": 24453,
-        "venta_neta": 29096146
+        "litros": 26453,
+        "venta_neta": 31421352
       }
     ],
     "weekly_history": [
@@ -9011,7 +9020,7 @@
       },
       {
         "label": "23/4-29/4",
-        "litros": 24453
+        "litros": 26453
       }
     ]
   },
@@ -9350,7 +9359,7 @@
       },
       {
         "label": "23/4-29/4",
-        "litros": 24453
+        "litros": 26453
       }
     ],
     "sla": {
