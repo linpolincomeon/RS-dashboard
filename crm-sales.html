@@ -267,12 +267,17 @@ function renderVentas() {
   const V = D.ventas || {}, T = V.totals || {}, VG = D.vendor_goals || {};
   const lbu = T.litros_by_user || {};
   const week = getCurrentWeek();
-  const pf = getProratedFactor(V.month_start || new Date());
+  const CG = D.company_goals || {};
 
-  // — KPI Cards —
-  let totLitros = 0, goalLitros = 0;
-  for (const [u, v] of Object.entries(lbu)) { if (isAllowed(u)) totLitros += v; }
-  for (const [u, g] of Object.entries(VG)) { if (isAllowed(u)) goalLitros += (g.litros_mes || 0); }
+  // — Weekly litros from weekly_history (matches week selector index) —
+  const hist = (V.weekly_history || []).slice().reverse(); // newest first
+  const wkLitros = hist[selectedWeek]?.litros || 0;
+  const wkBudget = hist[selectedWeek] ? getWeeklyBudget(hist[selectedWeek].label) : 0;
+  const wkPct = wkBudget > 0 ? Math.round((wkLitros / wkBudget) * 100) : 0;
+
+  // — Monthly totals for context —
+  let monthLitros = 0;
+  for (const [u, v] of Object.entries(lbu)) { if (isAllowed(u)) monthLitros += v; }
 
   const sumA = obj => { if (!obj) return 0; return Object.entries(obj).filter(([k]) => isAllowed(k) && !isCS(k)).reduce((a, [, v]) => a + v, 0); };
   const wLeads = week ? sumA(week.stages?.leads?.by_user) : 0;
@@ -280,15 +285,14 @@ function renderVentas() {
   const wCierre = week ? sumA(week.stages?.cierre?.by_user) : 0;
   const mRetail = T.margin_retail_pct || 0;
   const mVol = T.margin_volume_pct || 0;
-  const CG = D.company_goals || {};
 
   let kh = '';
-  kh += mkKpi('c-red', 'Litros Equipo', fL(totLitros), `${pct(totLitros, goalLitros)}% de meta`, totLitros, goalLitros);
+  kh += mkKpi('c-red', 'Litros Semana', fL(wkLitros), `${wkPct}% de meta · Mes: ${fL(monthLitros)}`, wkLitros, wkBudget);
   kh += mkKpi('c-green', 'Leads Semana', wLeads, week ? `Semana ${week.label}` : '', null, null);
   kh += mkKpi('c-yellow', 'Cotizaciones Semana', wCotiz, week ? `Semana ${week.label}` : '', null, null);
   kh += mkKpi('c-blue', 'Cierres Semana', wCierre, week ? `Semana ${week.label}` : '', null, null);
-  kh += mkKpi('c-red', 'Margen Retail', mRetail + '%', `Meta: ${CG.margen_retail || 8.5}%`, mRetail, CG.margen_retail || 8.5);
-  kh += mkKpi('c-yellow', 'Margen Volumen', mVol + '%', `Meta: ${CG.margen_volumen || 6}%`, mVol, CG.margen_volumen || 6);
+  kh += mkKpi('c-red', 'Margen Retail', mRetail + '%', `Meta: ${CG.margen_retail || 8.5}% · Mes`, mRetail, CG.margen_retail || 8.5);
+  kh += mkKpi('c-yellow', 'Margen Volumen', mVol + '%', `Meta: ${CG.margen_volumen || 6}% · Mes`, mVol, CG.margen_volumen || 6);
   document.getElementById('kpiRow').innerHTML = kh;
 
   renderWeeklyChart();
@@ -369,7 +373,8 @@ function renderRanking() {
   const rows = [...nameSet].map(n => {
     const lt = findInByUser(lbu, n);
     const g = getGoal(n);
-    const gL = g.litros_mes || 0, pM = gL * pf;
+    const gL = g.litros_mes || 0;
+    const pM = gL > 0 ? gL * pf : 1;
     const ltP = gL > 0 ? Math.round((lt / pM) * 100) : 0;
     const leU = findInByUser(week?.stages?.leads?.by_user, n), leG = g.leads_semana || 0;
     const coU = findInByUser(week?.stages?.cotizacion?.by_user, n), coG = g.cotizaciones_semana || 0;
