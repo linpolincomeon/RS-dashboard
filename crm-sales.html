@@ -184,7 +184,7 @@ let selectedWeek = 0;
 let chartWeekly = null, chartMargenZona = null, chartMargenExec = null;
 
 const ALLOWED_VENDORS = [
-  'toro gonzález sebastian enrique','carlos labbe','muñoz encalada joaquin','joaquin muñoz','yeniré ron','yenire ron'
+  'toro gonzález sebastian enrique','carlos labbe','muñoz encalada joaquin','yeniré ron','yenire ron'
 ];
 const CS_TEAM = ['comber sigall pauline','mauro boccardo','tomenergy'];
 
@@ -422,10 +422,16 @@ function renderVendedores() {
     const ltGoal = g.litros_mes || 0;
     const ltGoalPro = Math.round(ltGoal * pf);
 
+    // Ganados CRM = won_deals whose last_update falls in selected week, for this vendor
+    const wonAll = D.won_deals || [];
+    const nn = norm(u);
+    const vGanados = wonAll.filter(w => ws && we && (w.last_update || '') >= ws && (w.last_update || '') <= we && norm(w.exec || '') === nn).length;
+
     const metrics = [
       { lbl: 'Oportunidades', val: fLeads, goal: g.leads_semana || 15, type: 'sem' },
       { lbl: 'Contactos efectivos', val: fContacto, goal: g.contactos_semana || 10, type: 'sem' },
       { lbl: 'Cotizaciones', val: fQuotes, goal: g.cotizaciones_semana || 8, type: 'sem' },
+      { lbl: 'Ganados CRM', val: vGanados, goal: 0, type: 'sem' },
       { lbl: 'Clientes nuevos', val: fNewCl, goal: g.clientes_nuevos_mes || 2, type: 'mes' },
       { lbl: 'Litros', val: lt, goal: ltGoalPro, type: 'mes', fmt: fL, fullGoal: ltGoal },
     ];
@@ -457,13 +463,13 @@ function renderVendedores() {
     }
 
     // Weekly detail: leads, cotizaciones, cierres, new clients for THIS vendor
-    const nn = norm(u);
     const vLeads = allLeadDetail.filter(l => norm(l.vendedor || '') === nn);
     const vQuotes = allQuoteDetail.filter(q => norm(q.vendedor || '') === nn);
     const vCierres = allCierreDetail.filter(c => norm(c.vendedor || '') === nn);
     const vNewCl = allNewClDetail.filter(c => norm(c.vendedor || '') === nn);
 
-    const hasDetail = vLeads.length || vQuotes.length || vCierres.length || vNewCl.length;
+    const vGanadosList = wonAll.filter(w => ws && we && (w.last_update || '') >= ws && (w.last_update || '') <= we && norm(w.exec || '') === nn);
+    const hasDetail = vLeads.length || vQuotes.length || vCierres.length || vNewCl.length || vGanadosList.length;
     if (hasDetail) {
       h += '<div class="vdetail"><details><summary>Ver detalle semanal</summary>';
       if (vLeads.length) {
@@ -476,8 +482,13 @@ function renderVendedores() {
         vQuotes.forEach(q => { h += `<tr><td class="bold">${H(q.cliente || q.name)}</td><td>${fC(q.monto)}</td><td>${fL(q.litros)}</td></tr>`; });
         h += '</table></div>';
       }
+      if (vGanadosList.length) {
+        h += '<div style="margin-top:6px"><strong style="font-size:11px">Ganados CRM (etapa Ganado):</strong><table>';
+        vGanadosList.forEach(w => { h += `<tr><td class="bold">${H(w.name)}</td><td style="color:var(--dim)">${w.last_update || ''}</td></tr>`; });
+        h += '</table></div>';
+      }
       if (vCierres.length) {
-        h += '<div style="margin-top:6px"><strong style="font-size:11px">Cierres (1ª venta):</strong><table>';
+        h += '<div style="margin-top:6px"><strong style="font-size:11px">Clientes nuevos (1ª factura):</strong><table>';
         vCierres.forEach(c => { h += `<tr><td class="bold">${H(c.partner)}</td><td>${fC(c.amount)}</td></tr>`; });
         h += '</table></div>';
       }
