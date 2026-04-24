@@ -1,23 +1,23 @@
 {
-  "updated": "2026-04-24T20:02:46.360723",
+  "updated": "2026-04-24T23:58:06.109376",
   "weeks": [
     {
       "label": "23apr-29apr",
       "start": "2026-04-23",
       "end": "2026-04-29",
-      "ventas": 66688416,
-      "neto": 50450922,
-      "litros": 42503,
-      "litros_retail": 8000,
-      "litros_volumen": 34503,
-      "precio_neto": 1187,
-      "precio_bruto": 1569,
-      "margin": 0.08269,
-      "margin_contado": 0.05895,
-      "margin_credito": 0.08798,
-      "facturas": 34,
+      "ventas": 71049115,
+      "neto": 53760286,
+      "litros": 45203,
+      "litros_retail": 9000,
+      "litros_volumen": 36203,
+      "precio_neto": 1189,
+      "precio_bruto": 1572,
+      "margin": 0.08422,
+      "margin_contado": 0.06327,
+      "margin_credito": 0.08925,
+      "facturas": 36,
       "nc": 0,
-      "clientes": 32,
+      "clientes": 34,
       "recaud": 98759741,
       "cheques": 16488957,
       "transf": 77976783,
@@ -25,13 +25,13 @@
       "compras_odoo": 0,
       "cheq_cartera_saldo": 0,
       "cheq_recibidos": 44644216,
-      "facturas_contado": 4,
-      "facturas_credito": 30,
+      "facturas_contado": 5,
+      "facturas_credito": 31,
       "margin_by_term": {
         "1 Día": {
-          "margin": 0.05895,
-          "normalizado": 0.06862,
-          "count": 4,
+          "margin": 0.06327,
+          "normalizado": 0.07294,
+          "count": 5,
           "days": 1
         },
         "15 Días": {
@@ -41,9 +41,9 @@
           "days": 15
         },
         "30 Días": {
-          "margin": 0.0887,
-          "normalizado": 0.0887,
-          "count": 27,
+          "margin": 0.09003,
+          "normalizado": 0.09003,
+          "count": 28,
           "days": 30
         },
         "60 Días": {
@@ -1272,8 +1272,8 @@
     {
       "date": "24apr",
       "day": "Vie",
-      "litros": 34625,
-      "neto": 40958619
+      "litros": 37325,
+      "neto": 44267983
     },
     {
       "date": "23apr",
@@ -1398,13 +1398,13 @@
   ],
   "total_cash": 74405270,
   "receivables": {
-    "open_invoices": 283,
-    "total_due": 603149141,
-    "current": 510469796,
-    "overdue": 92679345,
-    "pct_overdue": 15.4,
+    "open_invoices": 281,
+    "total_due": 601656640,
+    "current": 512298855,
+    "overdue": 89357785,
+    "pct_overdue": 14.9,
     "aging": {
-      "0-30": 75993981,
+      "0-30": 72672421,
       "31-60": 6919801,
       "61-90": 0,
       "90+": 9765563
@@ -1412,7 +1412,7 @@
     "top_debtors": [
       {
         "name": "JOSE RODRIGO ORMAZABAL VIDAL",
-        "amount": 38702702
+        "amount": 35921702
       },
       {
         "name": "FORESTAL PUIHUA SPA",
@@ -1483,12 +1483,12 @@
         "amount": 8241158
       },
       {
-        "name": "HUGO PATRICIO CATALAN ZAVALLA",
-        "amount": 8036560
-      },
-      {
         "name": "VALENZUELA LEIVA MAX",
         "amount": 7895000
+      },
+      {
+        "name": "ANDES SOLAR SA",
+        "amount": 7673676
       }
     ]
   },
@@ -1497,10 +1497,10 @@
       "label": "23apr-29apr",
       "zones": {
         "Otro": {
-          "total": 25,
-          "on_time": 15,
-          "late": 10,
-          "pct": 60.0,
+          "total": 50,
+          "on_time": 28,
+          "late": 22,
+          "pct": 56.0,
           "late_clients": [
             "EMPRESAS TUCAPEL S A, FIDEL CONCHA, TUCPAEL RETIRO",
             "EMPRESAS TUCAPEL S A, FIDEL CONCHA, TUCPAEL RETIRO",
@@ -1510,11 +1510,13 @@
           ]
         },
         "Rancagua": {
-          "total": 1,
+          "total": 2,
           "on_time": 1,
-          "late": 0,
-          "pct": 100.0,
-          "late_clients": []
+          "late": 1,
+          "pct": 50.0,
+          "late_clients": [
+            "SOCIEDAD AGRÍCOLA SANTA ANITA SPA, AGRICOLA SANTA ANITA, MOLINA"
+          ]
         },
         "San Fdo": {
           "total": 1,
@@ -1524,12 +1526,13 @@
           "late_clients": []
         },
         "Talca": {
-          "total": 1,
+          "total": 2,
           "on_time": 0,
-          "late": 1,
+          "late": 2,
           "pct": 0.0,
           "late_clients": [
-            "PATRICIO VISCAY ALBORNOZ, PATRICIO VISCAY-C14 SUR"
+            "PATRICIO VISCAY ALBORNOZ, PATRICIO VISCAY-C14 SUR",
+            "SOC. DE TRANSPORTES TRACMAVI LTDA., SOC, DE TRANSPORTES TRACMAVI-Cristopher"
           ]
         }
       }
@@ -1648,8 +1651,8 @@
   "riesgo": {
     "cubierto": 0,
     "cubierto_count": 0,
-    "no_cubierto": 603149141,
-    "no_cubierto_count": 283,
+    "no_cubierto": 601656640,
+    "no_cubierto_count": 281,
     "pct_monto": 100.0,
     "pct_count": 100.0
   },
