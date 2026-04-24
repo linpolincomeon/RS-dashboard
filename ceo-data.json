@@ -1,23 +1,23 @@
 {
-  "updated": "2026-04-24T00:02:41.268746",
+  "updated": "2026-04-24T12:08:12.519089",
   "weeks": [
     {
       "label": "23apr-29apr",
       "start": "2026-04-23",
       "end": "2026-04-29",
-      "ventas": 12528767,
-      "neto": 9492303,
-      "litros": 7878,
+      "ventas": 14082707,
+      "neto": 10670566,
+      "litros": 8848,
       "litros_retail": 1000,
-      "litros_volumen": 6878,
-      "precio_neto": 1205,
-      "precio_bruto": 1590,
-      "margin": 0.09206,
+      "litros_volumen": 7848,
+      "precio_neto": 1206,
+      "precio_bruto": 1592,
+      "margin": 0.09272,
       "margin_contado": 0.07903,
-      "margin_credito": 0.09392,
-      "facturas": 8,
+      "margin_credito": 0.09443,
+      "facturas": 9,
       "nc": 0,
-      "clientes": 8,
+      "clientes": 9,
       "recaud": 29437837,
       "cheques": 1527000,
       "transf": 23616836,
@@ -26,7 +26,7 @@
       "cheq_cartera_saldo": 0,
       "cheq_recibidos": 44644216,
       "facturas_contado": 1,
-      "facturas_credito": 7,
+      "facturas_credito": 8,
       "margin_by_term": {
         "1 Día": {
           "margin": 0.07903,
@@ -41,9 +41,9 @@
           "days": 15
         },
         "30 Días": {
-          "margin": 0.09321,
-          "normalizado": 0.09321,
-          "count": 6,
+          "margin": 0.09383,
+          "normalizado": 0.09383,
+          "count": 7,
           "days": 30
         }
       },
@@ -1266,8 +1266,8 @@
     {
       "date": "24apr",
       "day": "Vie",
-      "litros": 0,
-      "neto": 0
+      "litros": 2170,
+      "neto": 2589521
     },
     {
       "date": "23apr",
@@ -1392,11 +1392,11 @@
   ],
   "total_cash": 50032352,
   "receivables": {
-    "open_invoices": 269,
-    "total_due": 580386740,
-    "current": 481192296,
+    "open_invoices": 271,
+    "total_due": 583807880,
+    "current": 484613436,
     "overdue": 99194444,
-    "pct_overdue": 17.1,
+    "pct_overdue": 17.0,
     "aging": {
       "0-30": 82509080,
       "31-60": 6919801,
@@ -1504,6 +1504,13 @@
           ]
         },
         "Rancagua": {
+          "total": 1,
+          "on_time": 1,
+          "late": 0,
+          "pct": 100.0,
+          "late_clients": []
+        },
+        "San Fdo": {
           "total": 1,
           "on_time": 1,
           "late": 0,
@@ -1635,15 +1642,15 @@
   "riesgo": {
     "cubierto": 0,
     "cubierto_count": 0,
-    "no_cubierto": 580386740,
-    "no_cubierto_count": 269,
+    "no_cubierto": 583807880,
+    "no_cubierto_count": 271,
     "pct_monto": 100.0,
     "pct_count": 100.0
   },
   "churn": {
     "active_clients": 415,
-    "churned_count": 220,
-    "pct": 53.0,
+    "churned_count": 219,
+    "pct": 52.8,
     "churned": [
       {
         "name": "SOCIEDAD AGRICOLA LIRCAY SPA.",
@@ -1870,19 +1877,19 @@
         "threshold": 30
       },
       {
-        "name": "LEOPOLDO ANTONIO RIVERA RODRIGUEZ",
-        "freq": "Irregular (Promedio: 38 días)",
-        "freq_days": 38,
-        "last_invoice": "2025-10-20",
-        "days_since": 186,
-        "threshold": 76
-      },
-      {
         "name": "HUGO HERNAN DONOSO POBLETE",
         "freq": "Irregular / Poca data",
         "freq_days": 15,
         "last_invoice": "2025-10-21",
         "days_since": 185,
+        "threshold": 30
+      },
+      {
+        "name": "AGROCONSTRUCCION SPA",
+        "freq": "Bimensual (Quincenal)",
+        "freq_days": 15,
+        "last_invoice": "2025-10-22",
+        "days_since": 184,
         "threshold": 30
       }
     ],
