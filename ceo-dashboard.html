@@ -161,7 +161,8 @@ function renderVentas(){
   const G=D.gerencia_goals||{};
   const mRetail=G.margen_contado_meta||0.085, mVol=G.margen_credito_meta||0.06;
   const dv=last.ppto>0?last.litros/last.ppto:0;
-  const mc=last.margin_contado||0, mcr=last.margin_credito||0;
+  // In TomEnergy: contado = volumen (big clients pay upfront), crédito = retail (small clients on credit)
+  const mcVol=last.margin_contado||0, mcrRetail=last.margin_credito||0;
   const hasNM=last.margin_contado!==undefined&&last.margin_contado!==null;
   let h='<div class="kpi-grid">';
   h+=kpi('Venta Semana',fM(last.ventas),pD(last.ventas,prev.ventas),'c-accent',`$${fNum(last.precio_bruto||last.precio_neto||last.precio||0)}/L bruto`);
@@ -170,8 +171,8 @@ function renderVentas(){
   h+=kpi('Nº Clientes',fNum(last.clientes),pD(last.clientes,prev.clientes),'c-teal','clientes únicos');
   h+=kpi('Litros vs Ppto',(dv*100).toFixed(0)+'%',null,dv>=.8?'c-green':dv>=.6?'c-amber':'c-red',`Meta: ${fK(last.ppto)} · Real: ${fK(last.litros)}`);
   if(hasNM){
-    h+=kpi('Margen Retail',fP(mc),pD(mc,prev.margin_contado||0),mc>=mRetail?'c-green':mc>=mRetail*.9?'c-amber':'c-red',`meta ${fP(mRetail)}`);
-    h+=kpi('Margen Volumen',fP(mcr),pD(mcr,prev.margin_credito||0),mcr>=mVol?'c-green':mcr>=mVol*.9?'c-amber':'c-red',`meta ${fP(mVol)}`);
+    h+=kpi('Margen Retail',fP(mcrRetail),pD(mcrRetail,prev.margin_credito||0),mcrRetail>=mRetail?'c-green':mcrRetail>=mRetail*.9?'c-amber':'c-red',`meta ${fP(mRetail)}`);
+    h+=kpi('Margen Volumen',fP(mcVol),pD(mcVol,prev.margin_contado||0),mcVol>=mVol?'c-green':mcVol>=mVol*.9?'c-amber':'c-red',`meta ${fP(mVol)}`);
   } else {
     h+=kpi('Margen Bruto',fP(last.margin),pD(last.margin,prev.margin),last.margin>=.085?'c-green':'c-red','margin_zone ponderado');
   }
@@ -203,9 +204,9 @@ function renderVentas(){
     h+=`<td class="r">${w.facturas||'—'}</td>`;
     h+=`<td class="r">${w.clientes||'—'}</td>`;
     if(hasNM){
-      const wmc=w.margin_contado||0, wmcr=w.margin_credito||0;
-      h+=`<td class="r ${wmc>=mRetail?'ok':wmc>=mRetail*.9?'':'bad'}">${fP(wmc)}</td>`;
-      h+=`<td class="r ${wmcr>=mVol?'ok':wmcr>=mVol*.9?'':'bad'}">${fP(wmcr)}</td>`;
+      const wRetail=w.margin_credito||0, wVol=w.margin_contado||0;
+      h+=`<td class="r ${wRetail>=mRetail?'ok':wRetail>=mRetail*.9?'':'bad'}">${fP(wRetail)}</td>`;
+      h+=`<td class="r ${wVol>=mVol?'ok':wVol>=mVol*.9?'':'bad'}">${fP(wVol)}</td>`;
     } else {
       h+=`<td class="r ${w.margin>=.085?'ok':''}">${fP(w.margin)}</td>`;
     }
@@ -262,10 +263,11 @@ function renderGerencia(){
   h+='<div class="section-label">Márgenes Aperturados — Últimas 5 Semanas</div>';
   const mWeeks=D.weeks.slice(0,5);
   h+='<div class="table-card"><table><thead><tr>';
-  h+='<th>Periodo</th><th class="r">Margen Contado</th><th class="r">Margen Crédito</th><th class="r">Cant. Facturas</th><th class="r">Margen Promedio</th><th class="r">Normalizado</th>';
+  h+='<th>Periodo</th><th class="r">Margen Retail</th><th class="r">Margen Volumen</th><th class="r">Cant. Facturas</th><th class="r">Margen Promedio</th><th class="r">Normalizado</th>';
   h+='</tr></thead><tbody>';
   mWeeks.forEach((w,i)=>{
-    const wmc=w.margin_contado||0, wmcr=w.margin_credito||0, wm=w.margin||0;
+    // contado=volumen, crédito=retail in TomEnergy
+    const wRetail=w.margin_credito||0, wVol=w.margin_contado||0, wm=w.margin||0;
     const fc=(w.facturas_contado||0)+(w.facturas_credito||0);
     // Weighted normalizado across all terms
     const bt=w.margin_by_term||{};
@@ -276,8 +278,8 @@ function renderGerencia(){
     const sel=i===selW;
     h+=`<tr style="${sel?'background:var(--accent-light);font-weight:600':''}">`;
     h+=`<td class="hi">${w.label}${w.parcial?' *':''}</td>`;
-    h+=`<td class="r ${wmc>=mMeta?'ok':wmc>=mMeta*.9?'':'bad'}">${fP(wmc)}</td>`;
-    h+=`<td class="r ${wmcr>=crMeta?'ok':wmcr>=crMeta*.9?'':'bad'}">${fP(wmcr)}</td>`;
+    h+=`<td class="r ${wRetail>=mMeta?'ok':wRetail>=mMeta*.9?'':'bad'}">${fP(wRetail)}</td>`;
+    h+=`<td class="r ${wVol>=crMeta?'ok':wVol>=crMeta*.9?'':'bad'}">${fP(wVol)}</td>`;
     h+=`<td class="r">${fc||w.facturas||'—'}</td>`;
     h+=`<td class="r">${fP(wm)}</td>`;
     h+=`<td class="r">${fP(normAvg)}</td>`;

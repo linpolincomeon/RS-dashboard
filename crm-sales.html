@@ -286,11 +286,21 @@ function renderVentas() {
   const mRetail = T.margin_retail_pct || 0;
   const mVol = T.margin_volume_pct || 0;
 
+  // Ganados = won_deals whose last_update falls within selected week
+  const ws = week?.week_start || '', we = week?.week_end || '';
+  const wonAll = D.won_deals || [];
+  const wGanados = wonAll.filter(w => {
+    if (!ws || !we) return false;
+    const lu = w.last_update || '';
+    return lu >= ws && lu <= we && (isAllowed(w.exec) || isCS(w.exec));
+  });
+
   let kh = '';
   kh += mkKpi('c-red', 'Litros Semana', fL(wkLitros), `${wkPct}% de meta · Mes: ${fL(monthLitros)}`, wkLitros, wkBudget);
   kh += mkKpi('c-green', 'Leads Semana', wLeads, week ? `Semana ${week.label}` : '', null, null);
   kh += mkKpi('c-yellow', 'Cotizaciones Semana', wCotiz, week ? `Semana ${week.label}` : '', null, null);
-  kh += mkKpi('c-blue', 'Cierres Semana', wCierre, week ? `Semana ${week.label}` : '', null, null);
+  kh += mkKpi('c-blue', 'Cierres Semana', wCierre, week ? `1ª venta · ${week.label}` : '', null, null);
+  kh += mkKpi('c-green', 'Ganados Semana', wGanados.length, week ? `CRM etapa Ganado · ${week.label}` : '', null, null);
   kh += mkKpi('c-red', 'Margen Retail', mRetail + '%', `Meta: ${CG.margen_retail || 8.5}% · Mes`, mRetail, CG.margen_retail || 8.5);
   kh += mkKpi('c-yellow', 'Margen Volumen', mVol + '%', `Meta: ${CG.margen_volumen || 6}% · Mes`, mVol, CG.margen_volumen || 6);
   document.getElementById('kpiRow').innerHTML = kh;
