@@ -64,7 +64,21 @@ tr:hover td{background:#fafaf8}
 .cs-stat{text-align:center;min-width:80px}
 .cs-stat .cs-val{font-size:22px;font-weight:700}
 .cs-stat .cs-lbl{font-size:11px;color:var(--dim);text-transform:uppercase}
-@media(max-width:900px){.grid-2{grid-template-columns:1fr}}
+.vcard{background:var(--card);border-radius:12px;padding:18px;box-shadow:0 1px 3px rgba(0,0,0,.04);margin-bottom:14px}
+.vcard .vh{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.vcard .vn{font-weight:700;font-size:15px}
+.vm{display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid #f5f5f5;font-size:12px}
+.vm:last-child{border-bottom:none}
+.vm .ml{color:var(--dim)}
+.vm .mv{display:flex;align-items:center;gap:6px;font-weight:600}
+.minibar{width:55px;height:4px;background:#eee;border-radius:2px;overflow:hidden;display:inline-block}
+.minibar-f{height:100%;border-radius:2px}
+.vgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px;margin-bottom:20px}
+.vdetail{margin-top:8px;padding-top:8px;border-top:1px solid #f0f0f0}
+.vdetail summary{font-size:11px;color:var(--dim);cursor:pointer;font-weight:600;text-transform:uppercase;letter-spacing:.3px}
+.vdetail table{font-size:11px;margin-top:6px}
+.vdetail td{padding:3px 6px}
+@media(max-width:900px){.grid-2{grid-template-columns:1fr}.vgrid{grid-template-columns:1fr}}
 @media(max-width:800px){.kpi-row{grid-template-columns:repeat(2,1fr)}.chart-cont{padding:12px}}
 @media(max-width:500px){.kpi-row{grid-template-columns:1fr}.topbar{flex-direction:column;gap:10px;text-align:center}.topbar-right{width:100%;justify-content:center;flex-wrap:wrap}}
 </style>
@@ -90,11 +104,15 @@ tr:hover td{background:#fafaf8}
     <div class="tab-bar">
       <button class="tab-btn active" onclick="switchTab('ventas')">Ventas</button>
       <button class="tab-btn" onclick="switchTab('funnel')">🎯 Funnel</button>
+      <button class="tab-btn" onclick="switchTab('vendedores')">👤 Vendedores</button>
       <button class="tab-btn" onclick="switchTab('fidelizacion')">Fidelización / CS</button>
     </div>
 
-    <!-- ═══ TAB 0: FUNNEL ═══ -->
+    <!-- ═══ TAB: FUNNEL ═══ -->
     <div class="tab-panel" id="tab-funnel"></div>
+
+    <!-- ═══ TAB: VENDEDORES ═══ -->
+    <div class="tab-panel" id="tab-vendedores"></div>
 
     <!-- ═══ TAB 1: VENTAS ═══ -->
     <div class="tab-panel active" id="tab-ventas">
@@ -233,8 +251,8 @@ function selectWeek(idx) {
   if (w) document.getElementById('weekBadge').textContent = w.label;
   renderWeekSelector();
   renderVentas();
-  // Re-render funnel if it's the active tab
   if (document.getElementById('tab-funnel').classList.contains('active')) renderFunnel();
+  if (document.getElementById('tab-vendedores').classList.contains('active')) renderVendedores();
 }
 
 const EXEC_COUNT = 4;
@@ -247,6 +265,7 @@ function switchTab(tab) {
   document.getElementById('tab-' + tab).classList.add('active');
   document.querySelector(`.tab-btn[onclick*="${tab}"]`).classList.add('active');
   if (tab === 'funnel' && D) renderFunnel();
+  if (tab === 'vendedores' && D) renderVendedores();
   if (tab === 'fidelizacion' && D) renderFidelizacion();
 }
 
@@ -344,6 +363,134 @@ function renderFunnel() {
     { label: 'Cotizaciones', data: weeks.map(w => (w.stages.cotizacion || {}).value || 0), borderColor: '#ca8a04', tension: .3, borderWidth: 2, pointRadius: 4, pointBackgroundColor: '#ca8a04' },
     { label: 'Cierres', data: weeks.map(w => (w.stages.cierre || {}).value || 0), borderColor: '#16a34a', tension: .3, borderWidth: 2, pointRadius: 4, pointBackgroundColor: '#16a34a' },
   ] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { font: { family: 'DM Sans', size: 11 } } } }, scales: { x: { grid: { display: false } }, y: { beginAtZero: true, grid: { color: '#f0f0f0' } } } } });
+}
+
+// ═══════════════════════════════════════
+// VENDEDORES TAB
+// ═══════════════════════════════════════
+function renderVendedores() {
+  const fw = D.funnel_weeks || [], V = D.ventas || {}, T = V.totals || {}, nc = V.new_clients || {}, VG = D.vendor_goals || {};
+  const cw = fw[selectedWeek] || fw[0];
+  if (!cw) { document.getElementById('tab-vendedores').innerHTML = '<div class="nodata">Sin datos</div>'; return; }
+  const st = cw.stages || {};
+  const ws = cw.week_start || '', we = cw.week_end || '';
+
+  // All allowed vendors (deduplicated)
+  const nameMap = {};
+  const addN = n => { const nn = norm(n); if (!nameMap[nn]) nameMap[nn] = n; };
+  Object.keys(VG).forEach(n => { if (isAllowed(n)) addN(n); });
+  Object.keys(T.litros_by_user || {}).forEach(n => { if (isAllowed(n)) addN(n); });
+  (D.executives || []).forEach(e => { if (isAllowed(e.name)) addN(e.name); });
+  const vendors = Object.values(nameMap);
+
+  const findIn = (byUser, name) => {
+    if (!byUser) return 0;
+    if (byUser[name] !== undefined) return byUser[name];
+    const nn = norm(name);
+    for (const [k, v] of Object.entries(byUser)) { if (norm(k) === nn) return v; }
+    return 0;
+  };
+
+  // Prorated factor
+  const mStart = V.month_start ? new Date(V.month_start + 'T00:00:00') : null;
+  const mEnd = V.month_end ? new Date(V.month_end + 'T00:00:00') : null;
+  const now = new Date(D.updated || Date.now());
+  let pf = 1;
+  if (mStart && mEnd) {
+    const dim = Math.round((mEnd - mStart) / 86400000) + 1;
+    const de = Math.min(Math.round((now - mStart) / 86400000) + 1, dim);
+    pf = de / dim;
+  }
+
+  // Detail data
+  const allLeadDetail = (st.leads && st.leads.detail) || [];
+  const allQuoteDetail = (st.cotizacion && st.cotizacion.detail) || [];
+  const allCierreDetail = (st.cierre && st.cierre.detail) || [];
+  const allNewClDetail = (nc.detail || []).filter(c => ws && we ? c.fecha >= ws && c.fecha <= we : true);
+
+  let h = '<div class="vgrid">';
+
+  vendors.forEach(u => {
+    const g = getGoal(u);
+    const lt = findIn(T.litros_by_user || {}, u);
+    const mg = findIn(T.margin_by_user || {}, u);
+    const fLeads = findIn((st.leads || {}).by_user, u);
+    const fContacto = findIn((st.contacto || {}).by_user, u);
+    const fQuotes = findIn((st.cotizacion || {}).by_user, u);
+    const fClose = findIn((st.cierre || {}).by_user, u);
+    const fNewCl = findIn(nc.by_user || {}, u);
+    const ltGoal = g.litros_mes || 0;
+    const ltGoalPro = Math.round(ltGoal * pf);
+
+    const metrics = [
+      { lbl: 'Oportunidades', val: fLeads, goal: g.leads_semana || 15, type: 'sem' },
+      { lbl: 'Contactos efectivos', val: fContacto, goal: g.contactos_semana || 10, type: 'sem' },
+      { lbl: 'Cotizaciones', val: fQuotes, goal: g.cotizaciones_semana || 8, type: 'sem' },
+      { lbl: 'Clientes nuevos', val: fNewCl, goal: g.clientes_nuevos_mes || 2, type: 'mes' },
+      { lbl: 'Litros', val: lt, goal: ltGoalPro, type: 'mes', fmt: fL, fullGoal: ltGoal },
+    ];
+
+    const scored = metrics.filter(m => m.goal > 0);
+    const overall = scored.length ? Math.round(scored.reduce((s, m) => s + Math.min((m.val / Math.max(m.goal, 1)) * 100, 100), 0) / scored.length) : 0;
+    const oc = clr(overall, 80);
+
+    h += `<div class="vcard"><div class="vh"><div class="vn">${H(u)}</div><span class="tag ${tagC(oc)}">${overall}% global</span></div>`;
+
+    metrics.filter(m => m.goal > 0 || m.val > 0).forEach(m => {
+      const p = Math.min(pct(m.val, Math.max(m.goal, 1)), 100);
+      const c = m.goal > 0 ? clr(m.val, m.goal) : 'y';
+      const pctVal = m.goal > 0 ? pct(m.val, m.goal) + '%' : '—';
+      const disp = m.fmt ? m.fmt(m.val) : m.val;
+      const fullRef = m.fullGoal ? ` <small>(mes: ${m.fmt ? m.fmt(m.fullGoal) : m.fullGoal})</small>` : '';
+      h += `<div class="vm"><span class="ml">${m.lbl} <small style="color:var(--text3)">${m.type}</small></span>`;
+      h += `<span class="mv"><span style="color:${barC(c)};font-size:15px">${pctVal}</span>`;
+      h += `<small>${disp} / ${m.fmt ? m.fmt(m.goal) : m.goal}</small>${fullRef}`;
+      h += `<span class="minibar"><span class="minibar-f" style="width:${p}%;background:${barC(c)}"></span></span></span></div>`;
+    });
+
+    if (mg > 0) {
+      const mc = mg >= 8.5 ? 'g' : mg >= 6 ? 'y' : 'r';
+      h += `<div class="vm"><span class="ml">Margen %</span><span class="mv"><span class="tag ${tagC(mc)}">${mg}%</span></span></div>`;
+    }
+
+    // Weekly detail: leads, cotizaciones, cierres, new clients for THIS vendor
+    const nn = norm(u);
+    const vLeads = allLeadDetail.filter(l => norm(l.vendedor || '') === nn);
+    const vQuotes = allQuoteDetail.filter(q => norm(q.vendedor || '') === nn);
+    const vCierres = allCierreDetail.filter(c => norm(c.vendedor || '') === nn);
+    const vNewCl = allNewClDetail.filter(c => norm(c.vendedor || '') === nn);
+
+    const hasDetail = vLeads.length || vQuotes.length || vCierres.length || vNewCl.length;
+    if (hasDetail) {
+      h += '<div class="vdetail"><details><summary>Ver detalle semanal</summary>';
+      if (vLeads.length) {
+        h += '<div style="margin-top:6px"><strong style="font-size:11px">Leads creados:</strong><table>';
+        vLeads.forEach(l => { h += `<tr><td class="bold">${H(l.name)}</td><td>${H(l.etapa)}</td><td style="color:var(--dim)">${l.fecha}</td></tr>`; });
+        h += '</table></div>';
+      }
+      if (vQuotes.length) {
+        h += '<div style="margin-top:6px"><strong style="font-size:11px">Cotizaciones:</strong><table>';
+        vQuotes.forEach(q => { h += `<tr><td class="bold">${H(q.cliente || q.name)}</td><td>${fC(q.monto)}</td><td>${fL(q.litros)}</td></tr>`; });
+        h += '</table></div>';
+      }
+      if (vCierres.length) {
+        h += '<div style="margin-top:6px"><strong style="font-size:11px">Cierres (1ª venta):</strong><table>';
+        vCierres.forEach(c => { h += `<tr><td class="bold">${H(c.partner)}</td><td>${fC(c.amount)}</td></tr>`; });
+        h += '</table></div>';
+      }
+      if (vNewCl.length) {
+        h += '<div style="margin-top:6px"><strong style="font-size:11px">Clientes nuevos:</strong><table>';
+        vNewCl.forEach(c => { h += `<tr><td class="bold">${H(c.cliente)}</td><td>${fL(c.litros)}</td><td style="color:var(--dim)">${c.fecha}</td></tr>`; });
+        h += '</table></div>';
+      }
+      h += '</details></div>';
+    }
+
+    h += '</div>';
+  });
+
+  h += '</div>';
+  document.getElementById('tab-vendedores').innerHTML = h;
 }
 
 // ═══════════════════════════════════════
