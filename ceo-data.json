@@ -1,23 +1,23 @@
 {
-  "updated": "2026-04-24T15:25:46.888443",
+  "updated": "2026-04-24T16:15:38.783584",
   "weeks": [
     {
       "label": "23apr-29apr",
       "start": "2026-04-23",
       "end": "2026-04-29",
-      "ventas": 34352165,
-      "neto": 25993378,
-      "litros": 21853,
-      "litros_retail": 2500,
-      "litros_volumen": 19353,
-      "precio_neto": 1189,
+      "ventas": 38451365,
+      "neto": 29096146,
+      "litros": 24453,
+      "litros_retail": 3000,
+      "litros_volumen": 21453,
+      "precio_neto": 1190,
       "precio_bruto": 1572,
-      "margin": 0.08391,
-      "margin_contado": 0.07579,
-      "margin_credito": 0.08495,
-      "facturas": 19,
+      "margin": 0.08421,
+      "margin_contado": 0.07493,
+      "margin_credito": 0.08549,
+      "facturas": 23,
       "nc": 0,
-      "clientes": 17,
+      "clientes": 21,
       "recaud": 53582335,
       "cheques": 1527000,
       "transf": 47761334,
@@ -25,30 +25,30 @@
       "compras_odoo": 0,
       "cheq_cartera_saldo": 0,
       "cheq_recibidos": 44644216,
-      "facturas_contado": 2,
-      "facturas_credito": 17,
+      "facturas_contado": 3,
+      "facturas_credito": 20,
       "margin_by_term": {
         "1 Día": {
-          "margin": 0.07579,
-          "normalizado": 0.08546,
-          "count": 2,
+          "margin": 0.07493,
+          "normalizado": 0.0846,
+          "count": 3,
           "days": 1
         },
         "15 Días": {
-          "margin": 0.10912,
-          "normalizado": 0.11412,
-          "count": 1,
+          "margin": 0.07077,
+          "normalizado": 0.07577,
+          "count": 2,
           "days": 15
         },
         "30 Días": {
-          "margin": 0.08455,
-          "normalizado": 0.08455,
-          "count": 16,
+          "margin": 0.08627,
+          "normalizado": 0.08627,
+          "count": 18,
           "days": 30
         }
       },
       "cotiz_canceladas": 1,
-      "visitas": 11,
+      "visitas": 9,
       "clientes_nuevos": 3,
       "ppto": 269236,
       "ppto_retail": 199235,
@@ -1266,8 +1266,8 @@
     {
       "date": "24apr",
       "day": "Vie",
-      "litros": 13975,
-      "neto": 16501075
+      "litros": 16575,
+      "neto": 19603843
     },
     {
       "date": "23apr",
@@ -1392,11 +1392,11 @@
   ],
   "total_cash": 49445474,
   "receivables": {
-    "open_invoices": 272,
-    "total_due": 583159640,
-    "current": 490480295,
+    "open_invoices": 276,
+    "total_due": 587258840,
+    "current": 494579495,
     "overdue": 92679345,
-    "pct_overdue": 15.9,
+    "pct_overdue": 15.8,
     "aging": {
       "0-30": 75993981,
       "31-60": 6919801,
@@ -1422,7 +1422,7 @@
       },
       {
         "name": "INGENERIA Y CONSTRUCCIONES FEBLANCA SPA",
-        "amount": 15850499
+        "amount": 17065699
       },
       {
         "name": "SAMUEL BUDINICH SPA",
@@ -1473,16 +1473,16 @@
         "amount": 8824001
       },
       {
+        "name": "JOSE EDGARDO RAMON MEZA BANADOS",
+        "amount": 8241158
+      },
+      {
         "name": "HUGO PATRICIO CATALAN ZAVALLA",
         "amount": 8036560
       },
       {
         "name": "VALENZUELA LEIVA MAX",
         "amount": 7895000
-      },
-      {
-        "name": "ANDES SOLAR SA",
-        "amount": 7673676
       }
     ]
   },
@@ -1642,15 +1642,15 @@
   "riesgo": {
     "cubierto": 0,
     "cubierto_count": 0,
-    "no_cubierto": 583159640,
-    "no_cubierto_count": 272,
+    "no_cubierto": 587258840,
+    "no_cubierto_count": 276,
     "pct_monto": 100.0,
     "pct_count": 100.0
   },
   "churn": {
     "active_clients": 416,
-    "churned_count": 219,
-    "pct": 52.6,
+    "churned_count": 218,
+    "pct": 52.4,
     "churned": [
       {
         "name": "SOCIEDAD AGRICOLA LIRCAY SPA.",
@@ -1845,14 +1845,6 @@
         "threshold": 68
       },
       {
-        "name": "SOCIEDAD AGRICOLA GRANT Y GAETE LIMITADA",
-        "freq": "Irregular / Poca data",
-        "freq_days": 15,
-        "last_invoice": "2025-10-20",
-        "days_since": 186,
-        "threshold": 30
-      },
-      {
         "name": "ISMAEL DE LA CRUZ VERGARA CISTERNA",
         "freq": "Irregular (Promedio: 12 días)",
         "freq_days": 12,
@@ -1890,6 +1882,14 @@
         "freq_days": 15,
         "last_invoice": "2025-10-22",
         "days_since": 184,
+        "threshold": 30
+      },
+      {
+        "name": "JHOVANY ALEXANDER MOLINA GOMEZ",
+        "freq": "Irregular / Poca data",
+        "freq_days": 15,
+        "last_invoice": "2025-10-24",
+        "days_since": 182,
         "threshold": 30
       }
     ],
