@@ -361,11 +361,14 @@ function renderRanking() {
   const pf = getProratedFactor(D.ventas?.month_start || new Date());
   const week = getCurrentWeek();
 
-  // Build unified set of allowed vendor names from all sources
-  const nameSet = new Set();
-  (D.executives || []).forEach(e => { if (isAllowed(e.name)) nameSet.add(e.name); });
-  Object.keys(lbu).forEach(n => { if (isAllowed(n)) nameSet.add(n); });
-  Object.keys(D.vendor_goals || {}).forEach(n => { if (isAllowed(n)) nameSet.add(n); });
+  // Build unified set of allowed vendor names, deduplicated by norm()
+  const nameMap = {}; // norm(name) -> best display name
+  const addName = n => { const nn = norm(n); if (!nameMap[nn]) nameMap[nn] = n; };
+  // Priority: executives first (Odoo canonical), then litros, then goals
+  Object.keys(D.vendor_goals || {}).forEach(n => { if (isAllowed(n)) addName(n); });
+  Object.keys(lbu).forEach(n => { if (isAllowed(n)) addName(n); });
+  (D.executives || []).forEach(e => { if (isAllowed(e.name)) addName(e.name); });
+  const vendorNames = Object.values(nameMap);
 
   // Build exec lookup for CRM activity metrics
   const execMap = {};
@@ -380,26 +383,40 @@ function renderRanking() {
     return 0;
   };
 
-  const rows = [...nameSet].map(n => {
+  // Sum across ALL weeks for leads/cotiz/cierre (monthly cumulative)
+  const fw = D.funnel_weeks || [];
+  const sumAllWeeks = (stageName, name) => {
+    let total = 0;
+    fw.forEach(w => { total += findInByUser(w.stages?.[stageName]?.by_user, name); });
+    return total;
+  };
+
+  const rows = vendorNames.map(n => {
     const lt = findInByUser(lbu, n);
     const g = getGoal(n);
     const gL = g.litros_mes || 0;
     const pM = gL > 0 ? gL * pf : 1;
     const ltP = gL > 0 ? Math.round((lt / pM) * 100) : 0;
-    const leU = findInByUser(week?.stages?.leads?.by_user, n), leG = g.leads_semana || 0;
-    const coU = findInByUser(week?.stages?.cotizacion?.by_user, n), coG = g.cotizaciones_semana || 0;
-    const ciU = findInByUser(week?.stages?.cierre?.by_user, n), ciG = g.contactos_semana || 0;
+    // Weekly metrics for selected week
+    const leW = findInByUser(week?.stages?.leads?.by_user, n);
+    const coW = findInByUser(week?.stages?.cotizacion?.by_user, n);
+    const ciW = findInByUser(week?.stages?.cierre?.by_user, n);
+    // Monthly cumulative (sum of all 4 weeks)
+    const leM = sumAllWeeks('leads', n);
+    const coM = sumAllWeeks('cotizacion', n);
+    const ciM = sumAllWeeks('cierre', n);
     const ex = execMap[norm(n)] || {};
-    return { name: n, lt, ltP, leP: leG > 0 ? Math.round(leU / leG * 100) + '%' : '—', coP: coG > 0 ? Math.round(coU / coG * 100) + '%' : '—', ciP: ciG > 0 ? Math.round(ciU / ciG * 100) + '%' : '—', m7: ex.moved || 0, m30: ex.moved_30d || 0 };
+    return { name: n, lt, ltP, leW, coW, ciW, leM, coM, ciM, m7: ex.moved || 0, m30: ex.moved_30d || 0 };
   }).sort((a, b) => b.lt - a.lt);
+
+  // Update table header to show Mes columns
+  const thead = tbody.closest('table').querySelector('thead tr');
+  thead.innerHTML = '<th>#</th><th>Ejecutivo</th><th>Litros Mes</th><th>Leads Sem</th><th>Leads Mes</th><th>Cotiz. Sem</th><th>Cierres Mes</th><th>Mov. 7d</th><th>Mov. 30d</th>';
 
   rows.forEach((r, i) => {
     const lc = r.ltP >= 100 ? 'tag-g' : r.ltP >= 60 ? 'tag-y' : 'tag-r';
-    const leC = r.leP === '—' ? '' : parseInt(r.leP) >= 100 ? 'tag-g' : parseInt(r.leP) >= 60 ? 'tag-y' : 'tag-r';
-    const coC = r.coP === '—' ? '' : parseInt(r.coP) >= 100 ? 'tag-g' : parseInt(r.coP) >= 60 ? 'tag-y' : 'tag-r';
-    const ciC = r.ciP === '—' ? '' : parseInt(r.ciP) >= 100 ? 'tag-g' : parseInt(r.ciP) >= 60 ? 'tag-y' : 'tag-r';
     const tr = document.createElement('tr');
-    tr.innerHTML = `<td><strong>${i + 1}</strong></td><td>${H(r.name)}</td><td><span class="tag ${lc}">${r.ltP}%</span></td><td><span class="tag ${leC}">${r.leP}</span></td><td><span class="tag ${coC}">${r.coP}</span></td><td><span class="tag ${ciC}">${r.ciP}</span></td><td><strong>${r.m7}</strong></td><td><strong>${r.m30}</strong></td>`;
+    tr.innerHTML = `<td><strong>${i + 1}</strong></td><td>${H(r.name)}</td><td><span class="tag ${lc}">${fL(r.lt)} (${r.ltP}%)</span></td><td><strong>${r.leW}</strong></td><td><strong>${r.leM}</strong></td><td><strong>${r.coW}</strong></td><td><strong>${r.ciM}</strong></td><td><strong>${r.m7}</strong></td><td><strong>${r.m30}</strong></td>`;
     tbody.appendChild(tr);
   });
 }
