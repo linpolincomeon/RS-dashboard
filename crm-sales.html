@@ -184,7 +184,7 @@ let selectedWeek = 0;
 let chartWeekly = null, chartMargenZona = null, chartMargenExec = null;
 
 const ALLOWED_VENDORS = [
-  'toro gonzález sebastian enrique','carlos labbe','joaquin muñoz','yeniré ron','yenire ron'
+  'toro gonzález sebastian enrique','carlos labbe','muñoz encalada joaquin','joaquin muñoz','yeniré ron','yenire ron'
 ];
 const CS_TEAM = ['comber sigall pauline','mauro boccardo','tomenergy'];
 
@@ -439,18 +439,21 @@ function renderVendedores() {
     metrics.filter(m => m.goal > 0 || m.val > 0).forEach(m => {
       const p = Math.min(pct(m.val, Math.max(m.goal, 1)), 100);
       const c = m.goal > 0 ? clr(m.val, m.goal) : 'y';
-      const pctVal = m.goal > 0 ? pct(m.val, m.goal) + '%' : '—';
-      const disp = m.fmt ? m.fmt(m.val) : m.val;
-      const fullRef = m.fullGoal ? ` <small>(mes: ${m.fmt ? m.fmt(m.fullGoal) : m.fullGoal})</small>` : '';
-      h += `<div class="vm"><span class="ml">${m.lbl} <small style="color:var(--text3)">${m.type}</small></span>`;
-      h += `<span class="mv"><span style="color:${barC(c)};font-size:15px">${pctVal}</span>`;
-      h += `<small>${disp} / ${m.fmt ? m.fmt(m.goal) : m.goal}</small>${fullRef}`;
-      h += `<span class="minibar"><span class="minibar-f" style="width:${p}%;background:${barC(c)}"></span></span></span></div>`;
+      const dot = c === 'g' ? '🟢' : c === 'y' ? '🟡' : '🔴';
+      if (m.lbl === 'Litros') {
+        // Litros: show percentage only
+        const ltPct = m.goal > 0 ? pct(m.val, m.goal) + '%' : '—';
+        h += `<div class="vm"><span class="ml">${m.lbl}</span><span class="mv"><span style="color:${barC(c)};font-size:16px;font-weight:700">${ltPct}</span> <span class="minibar" style="width:70px"><span class="minibar-f" style="width:${p}%;background:${barC(c)}"></span></span></span></div>`;
+      } else {
+        // Other metrics: traffic light + absolute number
+        h += `<div class="vm"><span class="ml">${m.lbl}</span><span class="mv">${dot} <strong>${m.val}</strong></span></div>`;
+      }
     });
 
     if (mg > 0) {
       const mc = mg >= 8.5 ? 'g' : mg >= 6 ? 'y' : 'r';
-      h += `<div class="vm"><span class="ml">Margen %</span><span class="mv"><span class="tag ${tagC(mc)}">${mg}%</span></span></div>`;
+      const mdot = mc === 'g' ? '🟢' : mc === 'y' ? '🟡' : '🔴';
+      h += `<div class="vm"><span class="ml">Margen</span><span class="mv">${mdot} <strong>${mg}%</strong></span></div>`;
     }
 
     // Weekly detail: leads, cotizaciones, cierres, new clients for THIS vendor
