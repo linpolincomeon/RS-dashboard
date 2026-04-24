@@ -89,8 +89,12 @@ tr:hover td{background:#fafaf8}
   <div id="content" style="display:none">
     <div class="tab-bar">
       <button class="tab-btn active" onclick="switchTab('ventas')">Ventas</button>
+      <button class="tab-btn" onclick="switchTab('funnel')">🎯 Funnel</button>
       <button class="tab-btn" onclick="switchTab('fidelizacion')">Fidelización / CS</button>
     </div>
+
+    <!-- ═══ TAB 0: FUNNEL ═══ -->
+    <div class="tab-panel" id="tab-funnel"></div>
 
     <!-- ═══ TAB 1: VENTAS ═══ -->
     <div class="tab-panel active" id="tab-ventas">
@@ -229,13 +233,20 @@ function selectWeek(idx) {
   if (w) document.getElementById('weekBadge').textContent = w.label;
   renderWeekSelector();
   renderVentas();
+  // Re-render funnel if it's the active tab
+  if (document.getElementById('tab-funnel').classList.contains('active')) renderFunnel();
 }
+
+const EXEC_COUNT = 4;
+const fC = n => n ? '$' + Math.round(n).toLocaleString('es-CL') : '$0';
+const emoji = (v, g) => { const p = (v / g) * 100; return p >= 100 ? '✅' : p >= 60 ? '⚠️' : '🔴'; };
 
 function switchTab(tab) {
   document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
   document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
   document.getElementById('tab-' + tab).classList.add('active');
   document.querySelector(`.tab-btn[onclick*="${tab}"]`).classList.add('active');
+  if (tab === 'funnel' && D) renderFunnel();
   if (tab === 'fidelizacion' && D) renderFidelizacion();
 }
 
@@ -257,6 +268,82 @@ function render() {
   if (w && w.label) document.getElementById('weekBadge').textContent = w.label;
   renderWeekSelector();
   renderVentas();
+}
+
+// ═══════════════════════════════════════
+// FUNNEL TAB
+// ═══════════════════════════════════════
+function renderFunnel() {
+  const fw = D.funnel_weeks || [];
+  const cw = fw[selectedWeek] || fw[0];
+  if (!cw) { document.getElementById('tab-funnel').innerHTML = '<div class="nodata">Sin datos de funnel</div>'; return; }
+  const st = cw.stages, fg = D.funnel_goals || {};
+  const STG = [
+    { key: 'leads', icon: '🎯', c: 'c-red' }, { key: 'contacto', icon: '📞', c: 'c-yellow' },
+    { key: 'cotizacion', icon: '📄', c: 'c-blue' }, { key: 'seguimiento', icon: '📨', c: 'c-green' },
+    { key: 'cierre', icon: '🤝', c: 'c-green' }, { key: 'retencion', icon: '♻️', c: 'c-blue' }
+  ];
+  let h = '<div class="kpi-row">';
+  STG.forEach(s => {
+    const d = st[s.key] || {}, g = fg[s.key] || {};
+    const val = d.value ?? 0, perExecGoal = d.goal || g.goal || 1, unit = d.unit || g.unit || '', lbl = g.label || s.key;
+    const isPct = unit === '%';
+    const goal = isPct ? perExecGoal : perExecGoal * EXEC_COUNT;
+    const sub = isPct ? `Meta: ${goal}${unit} ${emoji(val, goal)}` : `Meta: ${goal}${unit} (${perExecGoal}×${EXEC_COUNT} ejec.) ${emoji(val, goal)}`;
+    h += mkKpi(s.c, `${s.icon} ${lbl}`, `${val}${unit}`, sub, val, goal);
+  });
+  h += '</div>';
+
+  h += '<div class="grid-2">';
+  h += '<div class="chart-cont"><h3>Funnel Actual vs Meta</h3><canvas id="cFunnel" style="max-height:250px"></canvas></div>';
+  h += '<div class="chart-cont"><h3>Tendencia 4 Semanas</h3><canvas id="cTrend" style="max-height:250px"></canvas></div>';
+  h += '</div>';
+
+  // Leads table
+  const ld = (st.leads && st.leads.detail) || [];
+  if (ld.length) {
+    h += '<div class="sec"><div class="sec-h"><h2>Leads Ingresados</h2></div><div class="sec-b" style="padding:0;overflow-x:auto"><table><thead><tr><th>Lead</th><th>Empresa</th><th>Vendedor</th><th>Etapa</th><th>Fecha</th></tr></thead><tbody>';
+    ld.forEach(l => { h += `<tr><td class="bold">${H(l.name)}</td><td>${H(l.empresa)}</td><td>${H(l.vendedor)}</td><td>${H(l.etapa)}</td><td>${l.fecha}</td></tr>`; });
+    h += '</tbody></table></div></div>';
+  }
+  // Cotizaciones table
+  const qd = (st.cotizacion && st.cotizacion.detail) || [];
+  if (qd.length) {
+    h += '<div class="sec"><div class="sec-h"><h2>Cotizaciones</h2></div><div class="sec-b" style="padding:0;overflow-x:auto"><table><thead><tr><th>Nº</th><th>Cliente</th><th>Vendedor</th><th>Monto</th><th>Estado</th></tr></thead><tbody>';
+    qd.forEach(q => { h += `<tr><td class="bold">${H(q.name)}</td><td>${H(q.cliente)}</td><td>${H(q.vendedor)}</td><td>${fC(q.monto)}</td><td><span class="tag ${q.estado === 'sent' ? 'tag-g' : 'tag-y'}">${q.estado === 'sent' ? 'Enviada' : 'Borrador'}</span></td></tr>`; });
+    h += '</tbody></table></div></div>';
+  }
+  // Cierres table
+  const cd = (st.cierre && st.cierre.detail) || [];
+  if (cd.length) {
+    h += '<div class="sec"><div class="sec-h"><h2>Cierres (Clientes Nuevos)</h2></div><div class="sec-b" style="padding:0;overflow-x:auto"><table><thead><tr><th>Cliente</th><th>Vendedor</th><th>Orden</th><th>Monto</th></tr></thead><tbody>';
+    cd.forEach(c => { h += `<tr><td class="bold">${H(c.partner)}</td><td>${H(c.vendedor)}</td><td>${H(c.order)}</td><td>${fC(c.amount)}</td></tr>`; });
+    h += '</tbody></table></div></div>';
+  }
+
+  document.getElementById('tab-funnel').innerHTML = h;
+
+  // Charts
+  const labels = STG.map(s => (fg[s.key] || {}).label || s.key);
+  const vals = STG.map(s => (st[s.key] || {}).value || 0);
+  const goals = STG.map(s => {
+    const perExec = (st[s.key] || {}).goal || (fg[s.key] || {}).goal || 1;
+    const u = (st[s.key] || {}).unit || (fg[s.key] || {}).unit || '';
+    return u === '%' ? perExec : perExec * EXEC_COUNT;
+  });
+  const elFun = document.getElementById('cFunnel');
+  if (elFun) new Chart(elFun, { type: 'bar', data: { labels, datasets: [
+    { label: 'Actual', data: vals, backgroundColor: vals.map((v, i) => { const c = clr(v, goals[i]); return c === 'g' ? 'rgba(22,163,74,.5)' : c === 'y' ? 'rgba(202,138,4,.5)' : 'rgba(200,54,14,.5)'; }), borderRadius: 6, barPercentage: .55 },
+    { label: 'Meta', data: goals, backgroundColor: 'rgba(0,0,0,.06)', borderRadius: 6, barPercentage: .55 }
+  ] }, options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { font: { family: 'DM Sans', size: 11 } } } }, scales: { x: { grid: { display: false } }, y: { grid: { display: false }, ticks: { font: { family: 'DM Sans', weight: 600 } } } } } });
+
+  const weeks = fw.slice().reverse();
+  const elTr = document.getElementById('cTrend');
+  if (elTr) new Chart(elTr, { type: 'line', data: { labels: weeks.map(w => w.label), datasets: [
+    { label: 'Leads', data: weeks.map(w => (w.stages.leads || {}).value || 0), borderColor: '#c8360e', backgroundColor: 'rgba(200,54,14,.06)', fill: true, tension: .3, borderWidth: 2, pointRadius: 4, pointBackgroundColor: '#c8360e' },
+    { label: 'Cotizaciones', data: weeks.map(w => (w.stages.cotizacion || {}).value || 0), borderColor: '#ca8a04', tension: .3, borderWidth: 2, pointRadius: 4, pointBackgroundColor: '#ca8a04' },
+    { label: 'Cierres', data: weeks.map(w => (w.stages.cierre || {}).value || 0), borderColor: '#16a34a', tension: .3, borderWidth: 2, pointRadius: 4, pointBackgroundColor: '#16a34a' },
+  ] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { font: { family: 'DM Sans', size: 11 } } } }, scales: { x: { grid: { display: false } }, y: { beginAtZero: true, grid: { color: '#f0f0f0' } } } } });
 }
 
 // ═══════════════════════════════════════
