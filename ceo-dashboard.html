@@ -161,9 +161,8 @@ function renderVentas(){
   const G=D.gerencia_goals||{};
   const mRetail=G.margen_contado_meta||0.085, mVol=G.margen_credito_meta||0.06;
   const dv=last.ppto>0?last.litros/last.ppto:0;
-  // In TomEnergy: contado = volumen (big clients pay upfront), crédito = retail (small clients on credit)
-  const mcVol=last.margin_contado||0, mcrRetail=last.margin_credito||0;
-  const hasNM=last.margin_contado!==undefined&&last.margin_contado!==null;
+  const mcrRetail=last.margin_retail||0, mcVol=last.margin_volumen||0;
+  const hasNM=last.margin_retail!==undefined&&last.margin_retail!==null;
   let h='<div class="kpi-grid">';
   h+=kpi('Venta Semana',fM(last.ventas),pD(last.ventas,prev.ventas),'c-accent',`$${fNum(last.precio_bruto||last.precio_neto||last.precio||0)}/L bruto`);
   h+=kpi('Litros',fK(last.litros),pD(last.litros,prev.litros),'c-blue',`Retail: ${fK(last.litros_retail||0)} · Vol: ${fK(last.litros_volumen||0)}`);
@@ -171,8 +170,8 @@ function renderVentas(){
   h+=kpi('Nº Clientes',fNum(last.clientes),pD(last.clientes,prev.clientes),'c-teal','clientes únicos');
   h+=kpi('Litros vs Ppto',(dv*100).toFixed(0)+'%',null,dv>=.8?'c-green':dv>=.6?'c-amber':'c-red',`Meta: ${fK(last.ppto)} · Real: ${fK(last.litros)}`);
   if(hasNM){
-    h+=kpi('Margen Retail',fP(mcrRetail),pD(mcrRetail,prev.margin_credito||0),mcrRetail>=mRetail?'c-green':mcrRetail>=mRetail*.9?'c-amber':'c-red',`meta ${fP(mRetail)}`);
-    h+=kpi('Margen Volumen',fP(mcVol),pD(mcVol,prev.margin_contado||0),mcVol>=mVol?'c-green':mcVol>=mVol*.9?'c-amber':'c-red',`meta ${fP(mVol)}`);
+    h+=kpi('Margen Retail',fP(mcrRetail),pD(mcrRetail,prev.margin_retail||0),mcrRetail>=mRetail?'c-green':mcrRetail>=mRetail*.9?'c-amber':'c-red',`meta ${fP(mRetail)}`);
+    h+=kpi('Margen Volumen',fP(mcVol),pD(mcVol,prev.margin_volumen||0),mcVol>=mVol?'c-green':mcVol>=mVol*.9?'c-amber':'c-red',`meta ${fP(mVol)}`);
   } else {
     h+=kpi('Margen Bruto',fP(last.margin),pD(last.margin,prev.margin),last.margin>=.085?'c-green':'c-red','margin_zone ponderado');
   }
@@ -204,7 +203,7 @@ function renderVentas(){
     h+=`<td class="r">${w.facturas||'—'}</td>`;
     h+=`<td class="r">${w.clientes||'—'}</td>`;
     if(hasNM){
-      const wRetail=w.margin_credito||0, wVol=w.margin_contado||0;
+      const wRetail=w.margin_retail||0, wVol=w.margin_volumen||0;
       h+=`<td class="r ${wRetail>=mRetail?'ok':wRetail>=mRetail*.9?'':'bad'}">${fP(wRetail)}</td>`;
       h+=`<td class="r ${wVol>=mVol?'ok':wVol>=mVol*.9?'':'bad'}">${fP(wVol)}</td>`;
     } else {
@@ -227,7 +226,6 @@ function renderVentas(){
       {label:'Litros Retail',data:wk.map(w=>w.litros_retail||0),backgroundColor:wk.map(w=>(w.litros_retail||0)>=(w.ppto_retail||0)?C.green+'77':C.accent+'55'),borderRadius:5},
       {label:'Presupuesto',data:wk.map(w=>w.ppto_retail||0),type:'line',borderColor:C.amber,backgroundColor:'transparent',pointRadius:0,borderWidth:2,borderDash:[5,3],tension:0}
     ]},options:co(tC,gC,v=>fK(v))});
-  // Litros Volumen vs Presupuesto
   dc('cVol');charts.cVol=new Chart(document.getElementById('cVolumen'),{type:'bar',
     data:{labels,datasets:[
       {label:'Litros Volumen',data:wk.map(w=>w.litros_volumen||0),backgroundColor:wk.map(w=>(w.litros_volumen||0)>=(w.ppto_volumen||0)?C.green+'77':C.blue+'55'),borderRadius:5},
@@ -239,15 +237,19 @@ function renderVentas(){
       {label:'Recaudación',data:wk.map(w=>Math.round(w.recaud/1e6)),backgroundColor:C.purple+'55',borderRadius:5},
       {label:'Compras',data:wk.map(w=>Math.round((w.compras_odoo||w.compras_enap||0)/1e6)),type:'line',borderColor:C.red,backgroundColor:'transparent',pointRadius:2,pointBackgroundColor:C.red,borderWidth:2,tension:.3}
     ]},options:co(tC,gC,v=>'$'+v+'M')});
-  // Daily chart
+  // Daily chart with budget line (weekly ppto / 5 days)
   const dy=D.daily||[];
   if(dy.length>0){
     const dRev=[...dy].reverse();
     const dLabels=dRev.map(d=>d.date+' '+d.day);
+    const dailyBudget=Math.round((last.ppto||0)/5);
     dc('cD');charts.cD=new Chart(document.getElementById('cDaily'),{type:'bar',
-      data:{labels:dLabels,datasets:[{data:dRev.map(d=>d.litros),
-        backgroundColor:dRev.map(d=>d.day==='Lun'?C.blue+'88':d.litros>50000?C.accent+'77':C.accent+'44'),
-        borderRadius:5}]},
+      data:{labels:dLabels,datasets:[
+        {label:'Litros',data:dRev.map(d=>d.litros),
+        backgroundColor:dRev.map(d=>d.litros>=dailyBudget?C.green+'66':d.day==='Lun'?C.blue+'88':C.accent+'44'),
+        borderRadius:5},
+        {label:'Presupuesto diario',data:dRev.map(()=>dailyBudget),type:'line',borderColor:C.amber,backgroundColor:'transparent',pointRadius:0,borderWidth:2,borderDash:[5,3],tension:0}
+      ]},
       options:co(tC,gC,v=>fK(v))});
   }
 }
@@ -257,142 +259,147 @@ function renderGerencia(){
   const G=D.gerencia_goals||{};
   const mMeta=G.margen_contado_meta||0.085, crMeta=G.margen_credito_meta||0.06;
   const slaTgt=G.sla_target||95;
+  const w=D.weeks[selW];
   let h='';
 
-  // ═══ SECTION 1: MÁRGENES APERTURADOS — 5 weeks only ═══
-  h+='<div class="section-label">Márgenes Aperturados — Últimas 5 Semanas</div>';
-  const mWeeks=D.weeks.slice(0,5);
-  h+='<div class="table-card"><table><thead><tr>';
-  h+='<th>Periodo</th><th class="r">Margen Retail</th><th class="r">Margen Volumen</th><th class="r">Cant. Facturas</th><th class="r">Margen Promedio</th><th class="r">Normalizado</th>';
-  h+='</tr></thead><tbody>';
-  mWeeks.forEach((w,i)=>{
-    // contado=volumen, crédito=retail in TomEnergy
-    const wRetail=w.margin_credito||0, wVol=w.margin_contado||0, wm=w.margin||0;
-    const fc=(w.facturas_contado||0)+(w.facturas_credito||0);
-    // Weighted normalizado across all terms
-    const bt=w.margin_by_term||{};
-    const terms=Object.keys(bt);
-    let sumNW=0,sumNQ=0;
-    terms.forEach(t=>{const d=bt[t];if(d.normalizado&&d.count){sumNW+=d.normalizado*(d.count);sumNQ+=d.count;}});
-    const normAvg=sumNQ>0?sumNW/sumNQ:0;
-    const sel=i===selW;
-    h+=`<tr style="${sel?'background:var(--accent-light);font-weight:600':''}">`;
-    h+=`<td class="hi">${w.label}${w.parcial?' *':''}</td>`;
-    h+=`<td class="r ${wRetail>=mMeta?'ok':wRetail>=mMeta*.9?'':'bad'}">${fP(wRetail)}</td>`;
-    h+=`<td class="r ${wVol>=crMeta?'ok':wVol>=crMeta*.9?'':'bad'}">${fP(wVol)}</td>`;
-    h+=`<td class="r">${fc||w.facturas||'—'}</td>`;
-    h+=`<td class="r">${fP(wm)}</td>`;
-    h+=`<td class="r">${fP(normAvg)}</td>`;
-    h+=`</tr>`;
-    // Expandable per-term sub-rows
-    if(terms.length>0){
-      const sorted=terms.sort((a,b)=>(bt[a].days||0)-(bt[b].days||0));
-      sorted.forEach(t=>{
-        const d=bt[t];
-        h+=`<tr style="font-size:10px;color:var(--text3)${sel?';background:var(--accent-light)':''}">`;
-        h+=`<td style="padding-left:24px">${t}</td>`;
-        h+=`<td class="r">${d.margin!=null?fP(d.margin):'—'}</td>`;
-        h+=`<td class="r">—</td>`;
-        h+=`<td class="r">${d.count}</td>`;
-        h+=`<td class="r">—</td>`;
-        h+=`<td class="r">${fP(d.normalizado)}</td>`;
-        h+=`</tr>`;
-      });
-    }
-  });
-  h+='</tbody></table>';
-  h+=`<div class="note">Meta Contado: ${fP(mMeta)} · Meta Crédito: ${fP(crMeta)} · Normalizado = margen + (30 − días) / 30 pp · Jue→Mié</div></div>`;
+  // ═══ SECTION 1: MÁRGENES — solo semana seleccionada ═══
+  h+='<div class="section-label">Márgenes — '+w.label+(w.parcial?' (parcial)':'')+'</div>';
+  const wRetail=w.margin_retail||0, wVol=w.margin_volumen||0, wm=w.margin||0;
+  const fc=(w.facturas_contado||0)+(w.facturas_credito||0);
+  h+='<div class="kpi-grid">';
+  h+=kpi('Margen Retail',fP(wRetail),null,wRetail>=mMeta?'c-green':wRetail>=mMeta*.9?'c-amber':'c-red',`meta ${fP(mMeta)} · ${fc||w.facturas||0} facturas`);
+  h+=kpi('Margen Volumen',fP(wVol),null,wVol>=crMeta?'c-green':wVol>=crMeta*.9?'c-amber':'c-red',`meta ${fP(crMeta)}`);
+  h+=kpi('Margen Promedio',fP(wm),null,'c-blue','ponderado por monto');
+  h+='</div>';
+  // Per-term detail
+  const bt=w.margin_by_term||{};
+  const terms=Object.keys(bt);
+  if(terms.length>0){
+    h+='<div class="table-card"><table><thead><tr><th>Plazo de Pago</th><th class="r">Margen</th><th class="r">#Facturas</th><th class="r">Normalizado</th></tr></thead><tbody>';
+    terms.sort((a,b)=>(bt[a].days||0)-(bt[b].days||0)).forEach(t=>{
+      const d=bt[t];
+      h+=`<tr><td class="hi">${t}</td><td class="r">${fP(d.margin)}</td><td class="r">${d.count}</td><td class="r">${fP(d.normalizado)}</td></tr>`;
+    });
+    h+='</tbody></table><div class="note">Normalizado = margen + (30 − días) / 30 pp</div></div>';
+  }
 
-  // ═══ SECTION 2: CHURN CLIENTES (frequency-based) ═══
+  // ═══ SECTION 2: CHURN — mensual con gráfico histórico ═══
   const churn=D.churn||{};
-  h+='<div class="section-label">Churn Clientes — Basado en Frecuencia de Compra</div>';
+  h+='<div class="section-label">Churn Rate Mensual</div>';
   if(churn.active_clients){
     h+='<div class="kpi-grid">';
-    h+=kpi('Churn',churn.pct+'%',null,churn.pct<=10?'c-green':churn.pct<=20?'c-amber':'c-red',`${churn.churned_count} clientes perdidos`);
-    h+=kpi('Clientes Activos',fNum(churn.active_clients),null,'c-blue','con frecuencia conocida (8 meses)');
+    h+=kpi('Churn Actual',churn.pct+'%',null,churn.pct<=10?'c-green':churn.pct<=20?'c-amber':'c-red',`${churn.churned_count} de ${churn.active_clients} clientes`);
     h+='</div>';
+    // Historical churn chart
+    const churnHist=churn.history||[];
+    if(churnHist.length>0){
+      h+='<div class="chart-card"><div class="chart-title">Churn % Mensual <span class="badge">últimos 6 meses</span></div><div class="chart-wrap"><canvas id="cChurnHist"></canvas></div></div>';
+    }
+    // Churned client list
     const list=churn.churned||[];
     if(list.length>0){
-      h+='<div class="table-card"><table><thead><tr><th>Cliente</th><th class="r">Frecuencia</th><th class="r">Última Factura</th><th class="r">Días Sin Comprar</th><th class="r">Umbral</th></tr></thead><tbody>';
-      list.forEach(c=>{
-        h+=`<tr><td class="hi">${c.name}</td>`;
-        h+=`<td class="r">${c.freq||'—'}</td>`;
-        h+=`<td class="r">${c.last_invoice}</td>`;
-        h+=`<td class="r bad">${c.days_since}</td>`;
-        h+=`<td class="r">${c.threshold} días</td>`;
-        h+=`</tr>`;
+      h+='<div class="table-card"><table><thead><tr><th>Cliente</th><th class="r">Frecuencia</th><th class="r">Última Factura</th><th class="r">Días Sin Comprar</th></tr></thead><tbody>';
+      list.slice(0,20).forEach(c=>{
+        h+=`<tr><td class="hi">${c.name}</td><td class="r">${c.freq||'—'}</td><td class="r">${c.last_invoice}</td><td class="r bad">${c.days_since}d</td></tr>`;
       });
-      h+='</tbody></table><div class="note">Churn = días sin comprar > ${churn.multiplier||2}x frecuencia esperada · Campo: frecuencia_facturacion · Últimos 8 meses</div></div>';
+      h+='</tbody></table><div class="note">Churn = días sin comprar > 2× frecuencia esperada (campo frecuencia_facturacion)</div></div>';
     }
   } else {
     h+='<div class="chart-card" style="text-align:center;padding:2rem;color:var(--text3)">Sin datos de churn</div>';
   }
 
-  // ═══ SECTION 3: SLA OPERACIONES — 3 weeks rolling ═══
+  // ═══ SECTION 3: SLA OPERACIONES — solo 1 semana + listado atrasados ═══
   const sla=D.sla||[];
   if(sla.length>0){
-    h+='<div class="section-label">SLA Operaciones — Últimas 3 Semanas</div>';
+    h+='<div class="section-label">SLA Entrega — '+sla[0].label+'</div>';
     const slaW=sla[0];
     const allTotal=Object.values(slaW.zones||{}).reduce((s,z)=>s+z.total,0);
     const allOT=Object.values(slaW.zones||{}).reduce((s,z)=>s+z.on_time,0);
     const allPct=allTotal>0?allOT/allTotal*100:100;
+    const allLate=allTotal-allOT;
     h+='<div class="kpi-grid">';
-    h+=kpi('SLA Global',allPct.toFixed(1)+'%',null,allPct>=slaTgt?'c-green':allPct>=90?'c-amber':'c-red',`${allOT}/${allTotal} entregas a tiempo · meta ${slaTgt}%`);
-    const zones=Object.keys(slaW.zones||{}).sort();
-    zones.slice(0,5).forEach(z=>{
-      const zd=slaW.zones[z];
-      h+=kpi(z,zd.pct.toFixed(1)+'%',null,zd.pct>=slaTgt?'c-green':zd.pct>=90?'c-amber':'c-red',`${zd.on_time}/${zd.total} · ${zd.late} fuera`);
-    });
+    h+=kpi('SLA Global',allPct.toFixed(1)+'%',null,allPct>=slaTgt?'c-green':allPct>=90?'c-amber':'c-red',`${allOT} a tiempo / ${allTotal} total · meta ${slaTgt}%`);
+    h+=kpi('Entregas Atrasadas',''+allLate,null,allLate===0?'c-green':allLate<=3?'c-amber':'c-red','fuera de plazo (>24h)');
     h+='</div>';
-    // SLA table: weeks × zones
-    h+='<div class="table-card"><table><thead><tr><th>Semana</th>';
-    const allZones=new Set();
-    sla.forEach(s=>Object.keys(s.zones||{}).forEach(z=>allZones.add(z)));
-    const zList=[...allZones].sort();
-    zList.forEach(z=>h+=`<th class="r">${z}</th>`);
-    h+='<th class="r">Total</th></tr></thead><tbody>';
-    sla.forEach(s=>{
-      h+=`<tr><td class="hi">${s.label}</td>`;
-      let wT=0,wOT=0;
-      zList.forEach(z=>{
-        const zd=(s.zones||{})[z];
-        if(!zd){h+='<td class="r">—</td>';return;}
-        wT+=zd.total;wOT+=zd.on_time;
-        const cls=zd.pct>=slaTgt?'ok':zd.pct>=90?'':'bad';
-        h+=`<td class="r ${cls}">${zd.pct.toFixed(0)}% <span style="font-size:9px;color:var(--text3)">(${zd.total})</span></td>`;
-      });
-      const wPct=wT>0?(wOT/wT*100):100;
-      h+=`<td class="r hi">${wPct.toFixed(0)}%</td></tr>`;
+    // SLA by zone table
+    const zones=Object.keys(slaW.zones||{}).sort();
+    h+='<div class="table-card"><table><thead><tr><th>Zona</th><th class="r">Total</th><th class="r">A Tiempo</th><th class="r">Atrasados</th><th class="r">SLA %</th></tr></thead><tbody>';
+    zones.forEach(z=>{
+      const zd=slaW.zones[z];
+      const cls=zd.pct>=slaTgt?'ok':zd.pct>=90?'':'bad';
+      h+=`<tr><td class="hi">${z}</td><td class="r">${zd.total}</td><td class="r">${zd.on_time}</td><td class="r ${zd.late>0?'bad':''}">${zd.late}</td><td class="r ${cls}">${zd.pct.toFixed(0)}%</td></tr>`;
     });
-    h+='</tbody></table><div class="note">Meta: '+slaTgt+'% entregas dentro de 24 hrs · stock.picking outgoing · 3 semanas rolling</div></div>';
+    h+='</tbody></table>';
+    h+='<div class="note">SLA = entrega completada (date_done) dentro de 24h desde fecha programada (scheduled_date) · stock.picking outgoing</div></div>';
+    // Late deliveries detail list
+    let hasLate=false;
+    zones.forEach(z=>{
+      const zd=slaW.zones[z];
+      if(zd.late_clients&&zd.late_clients.length>0) hasLate=true;
+    });
+    if(hasLate){
+      h+='<div class="section-label">Entregas Atrasadas — Detalle</div>';
+      h+='<div class="table-card"><table><thead><tr><th>Cliente</th><th>Zona</th></tr></thead><tbody>';
+      zones.forEach(z=>{
+        const zd=slaW.zones[z];
+        (zd.late_clients||[]).forEach(c=>{
+          h+=`<tr><td class="hi">${c}</td><td>${z}</td></tr>`;
+        });
+      });
+      h+='</tbody></table></div>';
+    }
   }
 
-  // ═══ SECTION 4: CUMPLIMIENTO META ENAP ═══
+  // ═══ SECTION 4: CUMPLIMIENTO PROVEEDORES (ENAP + ADQUIM) ═══
   const enap=D.enap;
-  if(enap&&enap.target_litros>0){
-    h+='<div class="section-label">Cumplimiento Meta ENAP — '+enap.month+'</div>';
-    h+='<div class="kpi-grid">';
-    h+=kpi('MTD Litros',fK(enap.mtd_litros),null,enap.compliance_pct>=80?'c-green':enap.compliance_pct>=60?'c-amber':'c-red',`${enap.compliance_pct}% de meta · día ${enap.days_elapsed}/${enap.days_in_month}`);
-    h+=kpi('Meta Mes',fK(enap.target_litros),null,'c-blue','comprometido ENAP');
-    h+=kpi('Proyectado',fK(enap.projected_litros),null,enap.projected_pct>=95?'c-green':enap.projected_pct>=80?'c-amber':'c-red',`${enap.projected_pct}% de meta`);
-    h+='</div>';
-    // Progress bar
-    const pctBar=Math.min(enap.compliance_pct,100);
+  if(enap&&enap.total_target>0){
+    h+='<div class="section-label">Cumplimiento Proveedores — '+enap.month+' (día '+enap.days_elapsed+'/'+enap.days_in_month+')</div>';
     const pctExpected=Math.round(enap.days_elapsed/enap.days_in_month*100);
-    h+='<div class="chart-card" style="padding:1.5rem">';
-    h+=`<div style="font-size:12px;font-weight:600;margin-bottom:8px">Avance vs Esperado</div>`;
-    h+=`<div style="position:relative;height:28px;background:var(--surface2);border-radius:14px;overflow:hidden">`;
-    h+=`<div style="height:100%;width:${pctBar}%;background:${enap.compliance_pct>=pctExpected?C.green:C.red};border-radius:14px;transition:width .5s"></div>`;
-    h+=`<div style="position:absolute;left:${pctExpected}%;top:0;bottom:0;width:2px;background:${C.amber};z-index:1" title="Esperado ${pctExpected}%"></div>`;
-    h+=`</div>`;
-    h+=`<div style="display:flex;justify-content:space-between;margin-top:6px;font-size:10px;color:var(--text3)"><span>Real: ${enap.compliance_pct}%</span><span style="color:${C.amber}">Esperado: ${pctExpected}%</span><span>Proyectado: ${enap.projected_pct}%</span></div>`;
+    // Global KPIs
+    h+='<div class="kpi-grid">';
+    h+=kpi('Total MTD',fK(enap.total_mtd),null,enap.total_compliance_pct>=pctExpected?'c-green':enap.total_compliance_pct>=pctExpected*.8?'c-amber':'c-red',`${enap.total_compliance_pct}% de ${fK(enap.total_target)}`);
+    h+=kpi('Proyectado',fK(enap.total_projected),null,enap.total_projected_pct>=95?'c-green':enap.total_projected_pct>=80?'c-amber':'c-red',`${enap.total_projected_pct}% de meta`);
+    h+='</div>';
+    // Per-supplier detail
+    const suppliers=enap.suppliers||{};
+    h+='<div class="table-card"><table><thead><tr><th>Proveedor</th><th class="r">Meta Mes</th><th class="r">MTD Real</th><th class="r">Cumpl. %</th><th class="r">Proyectado</th><th class="r">Proy. %</th></tr></thead><tbody>';
+    for(const[name,s] of Object.entries(suppliers)){
+      const lbl=name==='enap'?'ENAP':'ADQUIM + ADGREEN';
+      const cc=s.compliance_pct>=pctExpected?'ok':s.compliance_pct>=pctExpected*.8?'':'bad';
+      const pc=s.projected_pct>=95?'ok':s.projected_pct>=80?'':'bad';
+      h+=`<tr><td class="hi">${lbl}</td><td class="r">${fK(s.target_total)}</td><td class="r">${fK(s.mtd_litros)}</td><td class="r ${cc}">${s.compliance_pct}%</td><td class="r">${fK(s.projected)}</td><td class="r ${pc}">${s.projected_pct}%</td></tr>`;
+      // Plant breakdown
+      const plants=s.plants||{};
+      for(const[plant,pd] of Object.entries(plants)){
+        if(pd.target>0) h+=`<tr style="font-size:10px;color:var(--text3)"><td style="padding-left:24px">${plant}</td><td class="r">${fK(pd.target)}</td><td colspan="4"></td></tr>`;
+      }
+    }
+    // Total row
+    h+=`<tr style="font-weight:700;border-top:2px solid var(--border)"><td>TOTAL</td><td class="r">${fK(enap.total_target)}</td><td class="r">${fK(enap.total_mtd)}</td><td class="r">${enap.total_compliance_pct}%</td><td class="r">${fK(enap.total_projected)}</td><td class="r">${enap.total_projected_pct}%</td></tr>`;
+    h+='</tbody></table>';
+    // Progress bar
+    const pctBar=Math.min(enap.total_compliance_pct,100);
+    h+=`<div style="margin-top:12px"><div style="position:relative;height:24px;background:var(--surface2);border-radius:12px;overflow:hidden">`;
+    h+=`<div style="height:100%;width:${pctBar}%;background:${enap.total_compliance_pct>=pctExpected?C.green:C.red};border-radius:12px"></div>`;
+    h+=`<div style="position:absolute;left:${pctExpected}%;top:0;bottom:0;width:2px;background:${C.amber}" title="Esperado ${pctExpected}%"></div>`;
+    h+=`</div><div style="display:flex;justify-content:space-between;margin-top:4px;font-size:10px;color:var(--text3)"><span>Real: ${enap.total_compliance_pct}%</span><span style="color:${C.amber}">Esperado: ${pctExpected}%</span><span>Proyectado: ${enap.total_projected_pct}%</span></div></div>`;
     h+='</div>';
   } else if(enap){
-    h+='<div class="section-label">Cumplimiento Meta ENAP</div>';
-    h+='<div class="chart-card" style="text-align:center;padding:2rem;color:var(--text3)">Sin meta ENAP configurada para '+enap.month+'</div>';
+    h+='<div class="section-label">Cumplimiento Proveedores</div>';
+    h+='<div class="chart-card" style="text-align:center;padding:2rem;color:var(--text3)">Sin metas configuradas para '+(enap.month||'este mes')+'</div>';
   }
 
   el.innerHTML=h;
+
+  // Render churn history chart
+  const churnHist2=(D.churn||{}).history||[];
+  if(churnHist2.length>0&&document.getElementById('cChurnHist')){
+    const gC2='rgba(0,0,0,.04)',tC2='#9c9b96';
+    dc('cCH');charts.cCH=new Chart(document.getElementById('cChurnHist'),{type:'bar',
+      data:{labels:churnHist2.map(h=>h.month),datasets:[
+        {label:'Churn %',data:churnHist2.map(h=>h.pct),backgroundColor:churnHist2.map(h=>h.pct<=10?C.green+'77':h.pct<=20?C.amber+'77':C.red+'77'),borderRadius:5},
+      ]},options:co(tC2,gC2,v=>v+'%')});
+  }
 }
 // ── COBRANZA ──
 function renderCobranza(){
