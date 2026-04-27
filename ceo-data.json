@@ -1,32 +1,32 @@
 {
-  "updated": "2026-04-27T12:28:00.794468",
+  "updated": "2026-04-27T16:55:08.139575",
   "weeks": [
     {
       "label": "23apr-29apr",
       "start": "2026-04-23",
       "end": "2026-04-29",
-      "ventas": 73983144,
-      "neto": 55979925,
-      "litros": 47073,
+      "ventas": 91697140,
+      "neto": 69418977,
+      "litros": 58073,
       "litros_retail": 9000,
-      "litros_volumen": 38073,
-      "precio_neto": 1189,
-      "precio_bruto": 1572,
-      "margin": 0.08427,
+      "litros_volumen": 49073,
+      "precio_neto": 1195,
+      "precio_bruto": 1579,
+      "margin": 0.08838,
       "margin_contado": 0.06327,
-      "margin_credito": 0.08906,
-      "facturas": 37,
+      "margin_credito": 0.09281,
+      "facturas": 44,
       "nc": 0,
-      "clientes": 35,
-      "recaud": 98759741,
+      "clientes": 42,
+      "recaud": 130542243,
       "cheques": 16488957,
-      "transf": 77976783,
+      "transf": 109759285,
       "factoring": 4294001,
-      "compras_odoo": 0,
+      "compras_odoo": 36091376,
       "cheq_cartera_saldo": 0,
       "cheq_recibidos": 44644216,
       "facturas_contado": 5,
-      "facturas_credito": 32,
+      "facturas_credito": 39,
       "margin_by_term": {
         "1 Día": {
           "margin": 0.06327,
@@ -41,10 +41,16 @@
           "days": 15
         },
         "30 Días": {
-          "margin": 0.08979,
-          "normalizado": 0.08979,
-          "count": 29,
+          "margin": 0.09326,
+          "normalizado": 0.09326,
+          "count": 34,
           "days": 30
+        },
+        "45 Días": {
+          "margin": 0.09623,
+          "normalizado": 0.09123,
+          "count": 2,
+          "days": 45
         },
         "60 Días": {
           "margin": 0.0854,
@@ -53,8 +59,8 @@
           "days": 60
         }
       },
-      "cotiz_canceladas": 1,
-      "visitas": 9,
+      "cotiz_canceladas": 2,
+      "visitas": 8,
       "clientes_nuevos": 3,
       "ppto": 269236,
       "ppto_retail": 199235,
@@ -1272,8 +1278,8 @@
     {
       "date": "27apr",
       "day": "Lun",
-      "litros": 0,
-      "neto": 0
+      "litros": 11000,
+      "neto": 13439052
     },
     {
       "date": "24apr",
@@ -1368,12 +1374,12 @@
   ],
   "banks": [
     {
-      "name": "DE CHILE",
-      "balance": 46742686
-    },
-    {
       "name": "ITAU",
       "balance": 22692677
+    },
+    {
+      "name": "DE CHILE",
+      "balance": 17059689
     },
     {
       "name": "CAJA",
@@ -1396,15 +1402,15 @@
       "balance": -838790
     }
   ],
-  "total_cash": 74405270,
+  "total_cash": 44722273,
   "receivables": {
-    "open_invoices": 282,
-    "total_due": 604590669,
-    "current": 418254849,
-    "overdue": 186335820,
-    "pct_overdue": 30.8,
+    "open_invoices": 278,
+    "total_due": 603514965,
+    "current": 434753645,
+    "overdue": 168761320,
+    "pct_overdue": 28.0,
     "aging": {
-      "0-30": 164542456,
+      "0-30": 146967956,
       "31-60": 12027801,
       "61-90": 0,
       "90+": 9765563
@@ -1412,7 +1418,7 @@
     "top_debtors": [
       {
         "name": "JOSE RODRIGO ORMAZABAL VIDAL",
-        "amount": 35921702
+        "amount": 28285701
       },
       {
         "name": "FORESTAL PUIHUA SPA",
@@ -1428,7 +1434,7 @@
       },
       {
         "name": "INGENERIA Y CONSTRUCCIONES FEBLANCA SPA",
-        "amount": 17065699
+        "amount": 15850499
       },
       {
         "name": "SAMUEL BUDINICH SPA",
@@ -1475,20 +1481,20 @@
         "amount": 9083999
       },
       {
+        "name": "MAQUINARIAS Y ARIDOS SAN PEDRO SPA.",
+        "amount": 9026979
+      },
+      {
         "name": "VICTOR FAVIO VILCHES MARDONES",
         "amount": 8824001
       },
       {
-        "name": "JOSE EDGARDO RAMON MEZA BANADOS",
-        "amount": 8241158
+        "name": "AGRICOLA TRICAHUE LIMITADA",
+        "amount": 8668001
       },
       {
         "name": "VALENZUELA LEIVA MAX",
         "amount": 7895000
-      },
-      {
-        "name": "ANDES SOLAR SA",
-        "amount": 7673676
       }
     ]
   },
@@ -1651,15 +1657,15 @@
   "riesgo": {
     "cubierto": 0,
     "cubierto_count": 0,
-    "no_cubierto": 604590669,
-    "no_cubierto_count": 282,
+    "no_cubierto": 605043964,
+    "no_cubierto_count": 279,
     "pct_monto": 100.0,
     "pct_count": 100.0
   },
   "churn": {
     "active_clients": 415,
-    "churned_count": 236,
-    "pct": 56.9,
+    "churned_count": 233,
+    "pct": 56.1,
     "churned": [
       {
         "name": "JUAN RAMON VALDEBENITO BRAVO",
@@ -1907,10 +1913,10 @@
   "enap": {
     "month": "2026-04",
     "target_litros": 300000,
-    "mtd_litros": 329845,
-    "compliance_pct": 109.9,
-    "projected_litros": 366494,
-    "projected_pct": 122.2,
+    "mtd_litros": 339931,
+    "compliance_pct": 113.3,
+    "projected_litros": 377701,
+    "projected_pct": 125.9,
     "days_elapsed": 27,
     "days_in_month": 30
   },
