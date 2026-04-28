@@ -232,6 +232,10 @@ tr:hover td{background:#fafaf8}
           <table><thead><tr><th>Cliente</th><th>Ejecutivo</th><th>Litros</th><th>Fecha</th></tr></thead><tbody id="csClientesAcumuladoBody"></tbody></table>
           <div class="nodata" id="noClientesAcumulado" style="display:none">Sin clientes ganados este mes</div></div></div>
       </div>
+
+      <!-- Graduating clients (new → fidelización) -->
+      <div class="sec"><div class="sec-h"><h2>🔄 Transición a Fidelización</h2><span style="font-size:12px;color:var(--dim)">Clientes con 3+ meses desde primera compra</span></div>
+        <div class="sec-b" style="padding:0;overflow-x:auto" id="csGraduatingContainer"></div></div>
     </div>
 
     <!-- ═══ TAB: MES VENCIDO ═══ -->
@@ -1459,6 +1463,22 @@ function renderCS() {
   } else {
     semanalCont.style.display = 'none';
     acumuladoCont.style.display = 'block';
+  }
+
+  // Graduating clients table (new → fidelización after 3 months)
+  const grad = D.graduating || [];
+  const gradContainer = document.getElementById('csGraduatingContainer');
+  if (gradContainer) {
+    if (grad.length === 0) {
+      gradContainer.innerHTML = '<div class="nodata">Sin clientes en transición</div>';
+    } else {
+      let gh = '<table><thead><tr><th>Cliente</th><th>Primera Compra</th><th>Días</th><th>Vendedor Actual</th><th>Facturas</th><th>Monto Total</th></tr></thead><tbody>';
+      grad.forEach(function(c) {
+        gh += '<tr><td class="bold">' + H(c.name) + '</td><td>' + c.first_invoice + '</td><td><strong>' + c.days_since + 'd</strong></td><td>' + H(c.vendedor) + '</td><td>' + c.total_invoices + '</td><td>' + fL(c.total_amount) + '</td></tr>';
+      });
+      gh += '</tbody></table>';
+      gradContainer.innerHTML = gh;
+    }
   }
 }
 
