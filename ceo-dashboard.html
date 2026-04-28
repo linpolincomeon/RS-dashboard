@@ -163,7 +163,32 @@ function renderVentas(){
   const dv=last.ppto>0?last.litros/last.ppto:0;
   const mcrRetail=last.margin_retail||0, mcVol=last.margin_volumen||0;
   const hasNM=last.margin_retail!==undefined&&last.margin_retail!==null;
-  let h='<div class="kpi-grid">';
+  // ── Executive Summary (copy-paste for board) ──
+  const pctBud=(dv*100).toFixed(0);
+  const mrStr=hasNM?`${(mcrRetail*100).toFixed(1)}% (meta ${(mRetail*100).toFixed(1)}%)`:`${(last.margin*100).toFixed(1)}%`;
+  const mvStr=hasNM?`${(mcVol*100).toFixed(1)}% (meta ${(mVol*100).toFixed(1)}%)`:'—';
+  const prevChg=prev&&prev.litros>0?((last.litros-prev.litros)/prev.litros*100).toFixed(0):'—';
+  const sumText=`📊 TomEnergy — Resumen Semanal RS
+Semana: ${last.label}${last.parcial?' (parcial)':''}
+
+💰 Venta: ${fM(last.ventas)} | $/L bruto: $${fNum(last.precio_bruto||last.precio_neto||0)}
+⛽ Litros: ${fK(last.litros)} (${pctBud}% ppto) | Retail: ${fK(last.litros_retail||0)} · Volumen: ${fK(last.litros_volumen||0)}
+📈 vs semana anterior: ${prevChg>0?'+':''}${prevChg}%
+📊 Margen Retail: ${mrStr}
+📊 Margen Volumen: ${mvStr}
+🧾 Facturas: ${last.facturas} | Clientes: ${last.clientes}
+💵 Recaudación: ${fM(last.recaud)} (Transf: ${fM(last.transf||0)} · Cheq: ${fM(last.cheques||0)} · Fact: ${fM(last.factoring||0)})
+🛒 Compras: ${fM(last.compras_odoo||0)}`;
+
+  h+=`<div class="chart-card" style="margin-bottom:1.5rem;position:relative">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+      <div class="chart-title" style="margin:0">Resumen Ejecutivo — ${last.label}</div>
+      <button class="btn" onclick="navigator.clipboard.writeText(document.getElementById('execSum').dataset.text).then(()=>{this.textContent='✓ Copiado';setTimeout(()=>this.textContent='📋 Copiar',2000)})">📋 Copiar</button>
+    </div>
+    <pre id="execSum" data-text="${sumText.replace(/"/g,'&quot;')}" style="font-family:'DM Sans',sans-serif;font-size:12px;line-height:1.8;color:var(--text2);white-space:pre-wrap;margin:0">${sumText}</pre>
+  </div>`;
+
+  h+='<div class="kpi-grid">';
   h+=kpi('Venta Semana',fM(last.ventas),pD(last.ventas,prev.ventas),'c-accent',`$${fNum(last.precio_bruto||last.precio_neto||last.precio||0)}/L bruto`);
   h+=kpi('Litros',fK(last.litros),pD(last.litros,prev.litros),'c-blue',`Retail: ${fK(last.litros_retail||0)} · Vol: ${fK(last.litros_volumen||0)}`);
   h+=kpi('Nº Compras',fNum(last.facturas),pD(last.facturas,prev.facturas),'c-purple',`${last.facturas_contado||'—'} contado · ${last.facturas_credito||'—'} crédito`);
@@ -191,7 +216,6 @@ function renderVentas(){
   h+='<th>Semana</th><th class="r">Ventas</th><th class="r">Litros</th><th class="r">Desv.</th><th class="r">Nº Comp.</th><th class="r">Nº Cli.</th>';
   if(hasNM){h+='<th class="r">M.Retail</th><th class="r">M.Volumen</th>';}else{h+='<th class="r">Margen</th>';}
   h+='<th class="r">$/L</th><th class="r">Recaud.</th><th class="r">Compras</th>';
-  if(hasNM) h+='<th class="r">Cheq.Cart.</th>';
   h+='</tr></thead><tbody>';
   D.weeks.slice(0,fN).forEach((w,i)=>{
     const dv2=w.ppto>0?w.litros/w.ppto:0;
@@ -212,7 +236,6 @@ function renderVentas(){
     h+=`<td class="r">$${fNum(w.precio_bruto||w.precio_neto||w.precio||0)}</td>`;
     h+=`<td class="r">${fM(w.recaud)}</td>`;
     h+=`<td class="r">${fM(w.compras_odoo||w.compras_enap||0)}</td>`;
-    if(hasNM) h+=`<td class="r">${w.cheq_cartera_saldo?fM(w.cheq_cartera_saldo):'—'}</td>`;
     h+=`</tr>`;
   });
   h+='</tbody></table><div class="note">* Parcial · Margen = margin_zone (Odoo) · NC descontadas · Semana comercial Jue→Mié</div></div>';
@@ -283,12 +306,14 @@ function renderGerencia(){
     h+='</tbody></table><div class="note">Normalizado = margen + (30 − días) / 30 pp</div></div>';
   }
 
-  // ═══ SECTION 2: CHURN — mensual con gráfico histórico ═══
+  // ═══ SECTION 2: POSIBLE CHURN — stable clients who stopped buying ═══
   const churn=D.churn||{};
-  h+='<div class="section-label">Churn Rate Mensual</div>';
-  if(churn.active_clients){
+  h+='<div class="section-label">Posible Churn — Clientes Estables que Dejaron de Comprar</div>';
+  if(churn.eligible_clients){
+    const newThisWeek=(churn.churned||[]).filter(c=>c.new_this_week);
     h+='<div class="kpi-grid">';
-    h+=kpi('Churn Actual',churn.pct+'%',null,churn.pct<=10?'c-green':churn.pct<=20?'c-amber':'c-red',`${churn.churned_count} de ${churn.active_clients} clientes`);
+    h+=kpi('Nuevos esta semana',''+newThisWeek.length,null,newThisWeek.length===0?'c-green':newThisWeek.length<=3?'c-amber':'c-red','cruzaron umbral en últimos 7 días');
+    h+=kpi('Posible Churn Total',''+churn.churned_count,null,churn.churned_count<=10?'c-green':churn.churned_count<=20?'c-amber':'c-red',`${churn.pct}% de ${churn.eligible_clients} clientes estables`);
     h+='</div>';
     // Historical churn chart
     const churnHist=churn.history||[];
@@ -297,12 +322,15 @@ function renderGerencia(){
     }
     // Churned client list
     const list=churn.churned||[];
-    if(list.length>0){
-      h+='<div class="table-card"><table><thead><tr><th>Cliente</th><th class="r">Frecuencia</th><th class="r">Última Factura</th><th class="r">Días Sin Comprar</th></tr></thead><tbody>';
-      list.slice(0,20).forEach(c=>{
-        h+=`<tr><td class="hi">${c.name}</td><td class="r">${c.freq||'—'}</td><td class="r">${c.last_invoice}</td><td class="r bad">${c.days_since}d</td></tr>`;
+    // Show new this week first, then rest
+    const sortedList=[...list.filter(c=>c.new_this_week),...list.filter(c=>!c.new_this_week)];
+    if(sortedList.length>0){
+      h+='<div class="table-card"><table><thead><tr><th></th><th>Cliente</th><th class="r">Frecuencia</th><th class="r">Última Factura</th><th class="r">Días Sin Comprar</th></tr></thead><tbody>';
+      sortedList.slice(0,20).forEach(c=>{
+        const tag=c.new_this_week?'<span style="background:var(--accent-light);color:var(--accent);font-size:9px;font-weight:700;padding:2px 6px;border-radius:4px">NUEVO</span>':'';
+        h+=`<tr><td>${tag}</td><td class="hi">${c.name}</td><td class="r">${c.freq||'—'}</td><td class="r">${c.last_invoice}</td><td class="r bad">${c.days_since}d</td></tr>`;
       });
-      h+='</tbody></table><div class="note">Churn = días sin comprar > 2× frecuencia esperada (campo frecuencia_facturacion)</div></div>';
+      h+=`</tbody></table><div class="note">${churn.filters||'≥4 facturas en 8 meses, frecuencia ≤60d, silencio >2× frecuencia'} · Pendiente: confirmación manual del equipo</div></div>`;
     }
   } else {
     h+='<div class="chart-card" style="text-align:center;padding:2rem;color:var(--text3)">Sin datos de churn</div>';

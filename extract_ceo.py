@@ -645,7 +645,8 @@ def extract_sla(models, uid, weeks):
     return sla_data
 
 
-# ── CHURN: frequency-based, using res.partner.frecuencia_facturacion ──
+# ── CHURN: Posible Churn — stable clients who stopped buying ──
+# Criteria: min 4 invoices in 8 months, frequency ≤ 60 days, silent > 2× frequency
 FREQ_MAP = {
     "diaria": 1, "diario": 1,
     "semanal": 7,
@@ -654,8 +655,10 @@ FREQ_MAP = {
     "bimensual": 60, "bimestral": 60,
     "trimestral": 90,
 }
-CHURN_MULTIPLIER = 2  # churned if days_since_last > freq * multiplier
+CHURN_MULTIPLIER = 2
 IRREGULAR_DEFAULT_DAYS = 15
+MIN_INVOICES_FOR_CHURN = 4   # need stable purchase history
+MAX_FREQ_DAYS_FOR_CHURN = 60  # exclude seasonal (>60 day frequency)
 
 
 def parse_frecuencia(val):
@@ -664,15 +667,12 @@ def parse_frecuencia(val):
     if not val:
         return None
     low = val.lower().strip()
-    # Check known keywords first
     for key, days in FREQ_MAP.items():
         if key in low:
             return days
-    # Irregular with number: "Irregular (cada 23 días)" or "Irregular (12.5)"
     m = re.search(r"(\d+[\.,]?\d*)", low)
     if m:
         return round(float(m.group(1).replace(",", ".")))
-    # Irregular without number
     if "irregular" in low:
         return IRREGULAR_DEFAULT_DAYS
     return None
@@ -680,22 +680,23 @@ def parse_frecuencia(val):
 
 def extract_churn(models, uid):
     """
-    Frequency-based churn: for each active customer, read their
-    frecuencia_facturacion from res.partner, find their last invoice date,
-    and flag as churned if days_since_last_invoice > frequency * 2.
+    Posible Churn: clients with stable purchase history (≥4 invoices in 8 months,
+    frequency ≤60 days) who stopped buying for >2× their frequency.
+    Excludes seasonal/irregular clients to reduce false positives.
     """
-    print("Extracting churn data (frequency-based)...")
+    print("Extracting Posible Churn (stable clients only)...")
     today = datetime.now()
 
-    # Get all partners with invoices in last 8 months
+    # Get all invoices in last 8 months
     eight_months_ago = (today - timedelta(days=240)).strftime("%Y-%m-%d")
     recent_invs = fetch_all(models, uid, "account.move",
         [["move_type", "=", "out_invoice"], ["state", "=", "posted"],
          ["invoice_date", ">=", eight_months_ago]],
         ["partner_id", "invoice_date"])
 
-    # Build last_invoice_date per partner
-    partner_last = {}  # pid -> last invoice date string
+    # Build per-partner: last_invoice + invoice_count
+    partner_last = {}   # pid -> last invoice date string
+    partner_count = {}  # pid -> number of invoices in 8 months
     for inv in recent_invs:
         pid = inv["partner_id"][0] if inv.get("partner_id") else None
         if not pid:
@@ -703,12 +704,13 @@ def extract_churn(models, uid):
         dt = inv.get("invoice_date", "")
         if dt > partner_last.get(pid, ""):
             partner_last[pid] = dt
+        partner_count[pid] = partner_count.get(pid, 0) + 1
 
     active_pids = list(partner_last.keys())
     print(f"  {len(active_pids)} partners with invoices in last 8 months")
 
     # Read frecuencia_facturacion for all active partners
-    partner_freq = {}  # pid -> {name, freq_raw, freq_days}
+    partner_freq = {}
     for offset in range(0, len(active_pids), 200):
         batch = active_pids[offset:offset + 200]
         partners = sr(models, uid, "res.partner", [["id", "in", batch]],
@@ -722,15 +724,18 @@ def extract_churn(models, uid):
                 "freq_days": freq_days,
             }
 
-    # Determine churned partners
+    # Filter: only stable clients (≥4 invoices, frequency ≤60 days)
     churned = []
-    active_count = 0
-    today_str = today.strftime("%Y-%m-%d")
+    eligible_count = 0
     for pid, last_date in partner_last.items():
         info = partner_freq.get(pid)
         if not info or not info["freq_days"]:
-            continue  # skip partners without frequency data
-        active_count += 1
+            continue
+        if info["freq_days"] > MAX_FREQ_DAYS_FOR_CHURN:
+            continue  # seasonal — skip
+        if partner_count.get(pid, 0) < MIN_INVOICES_FOR_CHURN:
+            continue  # not enough history — skip
+        eligible_count += 1
         days_since = (today - datetime.strptime(last_date, "%Y-%m-%d")).days
         threshold = info["freq_days"] * CHURN_MULTIPLIER
         if days_since > threshold:
@@ -741,51 +746,58 @@ def extract_churn(models, uid):
                 "last_invoice": last_date,
                 "days_since": days_since,
                 "threshold": threshold,
+                "invoices_8m": partner_count.get(pid, 0),
             })
 
     churned.sort(key=lambda x: -x["days_since"])
-    pct = round(len(churned) / active_count * 100, 1) if active_count > 0 else 0
-    print(f"  Churn: {len(churned)} of {active_count} active clients ({pct}%)")
+    pct = round(len(churned) / eligible_count * 100, 1) if eligible_count > 0 else 0
 
-    # ── Monthly churn history (last 6 months) ──
-    # For each past month, calculate: how many active clients exceeded their frequency threshold
+    # Tag new churn this week (crossed threshold in last 7 days)
+    for c in churned:
+        days_over = c["days_since"] - c["threshold"]
+        c["new_this_week"] = days_over <= 7
+
+    new_this_week = sum(1 for c in churned if c["new_this_week"])
+    print(f"  Posible Churn: {len(churned)} total, {new_this_week} new this week")
+
+    # ── Monthly history (last 6 months) ──
     print("  Calculating monthly churn history...")
     churn_history = []
     for m_offset in range(6):
-        # Month boundaries
         ref = today.replace(day=1)
         for _ in range(m_offset):
             ref = (ref - timedelta(days=1)).replace(day=1)
         m_end = (ref + timedelta(days=32)).replace(day=1) - timedelta(days=1)
         m_label = ref.strftime("%b %Y")
-        m_end_str = m_end.strftime("%Y-%m-%d")
 
-        # Count churned at end of that month
         m_churned = 0
-        m_active = 0
+        m_eligible = 0
         for pid, last_date in partner_last.items():
             info = partner_freq.get(pid)
             if not info or not info["freq_days"]:
                 continue
-            days_since_at_month = (m_end - datetime.strptime(last_date, "%Y-%m-%d")).days
-            if days_since_at_month < 0:
-                continue  # invoice was after this month
-            m_active += 1
-            threshold = info["freq_days"] * CHURN_MULTIPLIER
-            if days_since_at_month > threshold:
+            if info["freq_days"] > MAX_FREQ_DAYS_FOR_CHURN:
+                continue
+            if partner_count.get(pid, 0) < MIN_INVOICES_FOR_CHURN:
+                continue
+            days_at_month = (m_end - datetime.strptime(last_date, "%Y-%m-%d")).days
+            if days_at_month < 0:
+                continue
+            m_eligible += 1
+            if days_at_month > info["freq_days"] * CHURN_MULTIPLIER:
                 m_churned += 1
-        m_pct = round(m_churned / m_active * 100, 1) if m_active > 0 else 0
-        churn_history.append({"month": m_label, "pct": m_pct, "churned": m_churned, "active": m_active})
-        print(f"    {m_label}: {m_churned}/{m_active} = {m_pct}%")
+        m_pct = round(m_churned / m_eligible * 100, 1) if m_eligible > 0 else 0
+        churn_history.append({"month": m_label, "pct": m_pct, "churned": m_churned, "eligible": m_eligible})
+        print(f"    {m_label}: {m_churned}/{m_eligible} = {m_pct}%")
 
-    churn_history.reverse()  # oldest first for chart
+    churn_history.reverse()
 
     return {
-        "active_clients": active_count,
+        "eligible_clients": eligible_count,
         "churned_count": len(churned),
         "pct": pct,
         "churned": churned[:30],
-        "multiplier": CHURN_MULTIPLIER,
+        "filters": f"≥{MIN_INVOICES_FOR_CHURN} facturas, frecuencia ≤{MAX_FREQ_DAYS_FOR_CHURN}d, silencio >{CHURN_MULTIPLIER}x freq",
         "history": churn_history,
     }
 
