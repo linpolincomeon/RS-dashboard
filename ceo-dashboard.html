@@ -107,6 +107,7 @@ tr:hover td{background:rgba(200,54,14,.02)}
     <div class="panel" id="p-gerencia"></div>
     <div class="panel" id="p-cobranza"></div>
     <div class="panel" id="p-caja"></div>
+    <div class="panel" id="p-resumen"></div>
   </div>
 </div>
 <div class="container"><div class="footer"><span>TomEnergy · CEO Dashboard</span><span id="ftr"></span></div></div>
@@ -121,11 +122,11 @@ const fP=n=>!n&&n!==0?'—':(n*100).toFixed(1)+'%';
 const pD=(c,p)=>(!c||!p)?null:((c-p)/Math.abs(p))*100;
 const dH=d=>{if(d==null)return'';const u=d>=0;return`<div class="kpi-delta ${u?'up':'dn'}">${u?'▲':'▼'} ${Math.abs(d).toFixed(1)}%</div>`};
 function setupTabs(){
-  const tabDefs=[['ventas','RS'],['gerencia','Gerencia'],['cobranza','Cobranza'],['caja','Caja']];
+  const tabDefs=[['ventas','RS'],['gerencia','Gerencia'],['cobranza','Cobranza'],['caja','Caja'],['resumen','Resumen']];
   document.getElementById('tabs').innerHTML=tabDefs.map(([k,l])=>
     `<button class="tab ${k===curTab?'active':''}" onclick="switchTab('${k}')">${l}</button>`
   ).join('');
-  if(curTab==='ventas'||curTab==='gerencia'||curTab==='caja'){
+  if(curTab==='ventas'||curTab==='gerencia'||curTab==='caja'||curTab==='resumen'){
     const ws=D.weeks[selW];
     document.getElementById('filters').innerHTML=[4,8,16].map(n=>
       `<button class="wf ${fN===n?'on':''}" onclick="setFilter(${n})">${n}S</button>`
@@ -150,6 +151,7 @@ function render(){
   if(curTab==='ventas') renderVentas();
   else if(curTab==='gerencia') renderGerencia();
   else if(curTab==='cobranza') renderCobranza();
+  else if(curTab==='resumen') renderResumen();
   else renderCaja();
   setupTabs();
 }
@@ -163,31 +165,6 @@ function renderVentas(){
   const dv=last.ppto>0?last.litros/last.ppto:0;
   const mcrRetail=last.margin_retail||0, mcVol=last.margin_volumen||0;
   const hasNM=last.margin_retail!==undefined&&last.margin_retail!==null;
-  // ── Executive Summary (copy-paste for board) ──
-  const pctBud=(dv*100).toFixed(0);
-  const mrStr=hasNM?`${(mcrRetail*100).toFixed(1)}% (meta ${(mRetail*100).toFixed(1)}%)`:`${(last.margin*100).toFixed(1)}%`;
-  const mvStr=hasNM?`${(mcVol*100).toFixed(1)}% (meta ${(mVol*100).toFixed(1)}%)`:'—';
-  const prevChg=prev&&prev.litros>0?((last.litros-prev.litros)/prev.litros*100).toFixed(0):'—';
-  const sumText=`📊 TomEnergy — Resumen Semanal RS
-Semana: ${last.label}${last.parcial?' (parcial)':''}
-
-💰 Venta: ${fM(last.ventas)} | $/L bruto: $${fNum(last.precio_bruto||last.precio_neto||0)}
-⛽ Litros: ${fK(last.litros)} (${pctBud}% ppto) | Retail: ${fK(last.litros_retail||0)} · Volumen: ${fK(last.litros_volumen||0)}
-📈 vs semana anterior: ${prevChg>0?'+':''}${prevChg}%
-📊 Margen Retail: ${mrStr}
-📊 Margen Volumen: ${mvStr}
-🧾 Facturas: ${last.facturas} | Clientes: ${last.clientes}
-💵 Recaudación: ${fM(last.recaud)} (Transf: ${fM(last.transf||0)} · Cheq: ${fM(last.cheques||0)} · Fact: ${fM(last.factoring||0)})
-🛒 Compras: ${fM(last.compras_odoo||0)}`;
-
-  h+=`<div class="chart-card" style="margin-bottom:1.5rem;position:relative">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
-      <div class="chart-title" style="margin:0">Resumen Ejecutivo — ${last.label}</div>
-      <button class="btn" onclick="navigator.clipboard.writeText(document.getElementById('execSum').dataset.text).then(()=>{this.textContent='✓ Copiado';setTimeout(()=>this.textContent='📋 Copiar',2000)})">📋 Copiar</button>
-    </div>
-    <pre id="execSum" data-text="${sumText.replace(/"/g,'&quot;')}" style="font-family:'DM Sans',sans-serif;font-size:12px;line-height:1.8;color:var(--text2);white-space:pre-wrap;margin:0">${sumText}</pre>
-  </div>`;
-
   h+='<div class="kpi-grid">';
   h+=kpi('Venta Semana',fM(last.ventas),pD(last.ventas,prev.ventas),'c-accent',`$${fNum(last.precio_bruto||last.precio_neto||last.precio||0)}/L bruto`);
   h+=kpi('Litros',fK(last.litros),pD(last.litros,prev.litros),'c-blue',`Retail: ${fK(last.litros_retail||0)} · Vol: ${fK(last.litros_volumen||0)}`);
@@ -428,6 +405,48 @@ function renderGerencia(){
         {label:'Churn %',data:churnHist2.map(h=>h.pct),backgroundColor:churnHist2.map(h=>h.pct<=10?C.green+'77':h.pct<=20?C.amber+'77':C.red+'77'),borderRadius:5},
       ]},options:co(tC2,gC2,v=>v+'%')});
   }
+}
+// ── RESUMEN EJECUTIVO ──
+function renderResumen(){
+  const el=document.getElementById('p-resumen');
+  const last=D.weeks[selW], prev=D.weeks[selW+1]||last;
+  const G=D.gerencia_goals||{};
+  const mRetail=G.margen_contado_meta||0.085, mVol=G.margen_credito_meta||0.06;
+  const dv=last.ppto>0?last.litros/last.ppto:0;
+  const mcrRetail=last.margin_retail||0, mcVol=last.margin_volumen||0;
+  const hasNM=last.margin_retail!==undefined&&last.margin_retail!==null;
+  const pctBud=(dv*100).toFixed(0);
+  const mrStr=hasNM?(mcrRetail*100).toFixed(1)+'% (meta '+(mRetail*100).toFixed(1)+'%)':(last.margin*100).toFixed(1)+'%';
+  const mvStr=hasNM?(mcVol*100).toFixed(1)+'% (meta '+(mVol*100).toFixed(1)+'%)':'--';
+  const prevChg=prev&&prev.litros>0?((last.litros-prev.litros)/prev.litros*100).toFixed(0):'--';
+  const lines=[
+    'TomEnergy -- Resumen Semanal RS',
+    'Semana: '+last.label+(last.parcial?' (parcial)':''),
+    '',
+    'Venta: '+fM(last.ventas)+' | $/L bruto: $'+fNum(last.precio_bruto||last.precio_neto||0),
+    'Litros: '+fK(last.litros)+' ('+pctBud+'% ppto) | Retail: '+fK(last.litros_retail||0)+' / Volumen: '+fK(last.litros_volumen||0),
+    'vs semana anterior: '+(prevChg>0?'+':'')+prevChg+'%',
+    'Margen Retail: '+mrStr,
+    'Margen Volumen: '+mvStr,
+    'Facturas: '+last.facturas+' | Clientes: '+last.clientes,
+    'Recaudacion: '+fM(last.recaud)+' (Transf: '+fM(last.transf||0)+' / Cheq: '+fM(last.cheques||0)+' / Fact: '+fM(last.factoring||0)+')',
+    'Compras: '+fM(last.compras_odoo||0),
+  ];
+  window._execSumText=lines.join('\n');
+  var h='<div class="chart-card" style="padding:2rem">';
+  h+='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem">';
+  h+='<h2 style="font-size:16px;font-weight:600">Resumen Ejecutivo — '+last.label+'</h2>';
+  h+='<button class="btn" style="font-size:13px;padding:8px 20px" onclick="navigator.clipboard.writeText(window._execSumText).then(function(){event.target.textContent=\'Copiado!\';setTimeout(function(){event.target.textContent=\'Copiar al portapapeles\'},2000)})">Copiar al portapapeles</button>';
+  h+='</div>';
+  h+='<div style="font-size:14px;line-height:2.2;color:var(--text)">';
+  lines.forEach(function(l){
+    if(!l){h+='<div style="height:12px"></div>';return;}
+    if(l.indexOf('TomEnergy')===0) h+='<div style="font-size:18px;font-weight:700;color:var(--accent)">'+l+'</div>';
+    else if(l.indexOf('Semana:')===0) h+='<div style="font-size:15px;font-weight:600;color:var(--text2)">'+l+'</div>';
+    else h+='<div>'+l+'</div>';
+  });
+  h+='</div></div>';
+  el.innerHTML=h;
 }
 // ── COBRANZA ──
 function renderCobranza(){
