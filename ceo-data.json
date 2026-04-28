@@ -1,5 +1,5 @@
 {
-  "updated": "2026-04-28T00:06:11.955410",
+  "updated": "2026-04-28T11:02:00.955057",
   "weeks": [
     {
       "label": "23apr-29apr",
@@ -1508,11 +1508,18 @@
     {
       "label": "23apr-29apr",
       "zones": {
+        "Curicó": {
+          "total": 1,
+          "on_time": 1,
+          "late": 0,
+          "pct": 100.0,
+          "late_clients": []
+        },
         "Otro": {
-          "total": 51,
-          "on_time": 28,
-          "late": 23,
-          "pct": 54.9,
+          "total": 64,
+          "on_time": 37,
+          "late": 27,
+          "pct": 57.81,
           "late_clients": [
             "EMPRESAS TUCAPEL S A, FIDEL CONCHA, TUCPAEL RETIRO",
             "EMPRESAS TUCAPEL S A, FIDEL CONCHA, TUCPAEL RETIRO",
@@ -1531,17 +1538,17 @@
           ]
         },
         "San Fdo": {
-          "total": 1,
-          "on_time": 1,
+          "total": 3,
+          "on_time": 3,
           "late": 0,
           "pct": 100.0,
           "late_clients": []
         },
         "Talca": {
-          "total": 2,
-          "on_time": 0,
+          "total": 3,
+          "on_time": 1,
           "late": 2,
-          "pct": 0.0,
+          "pct": 33.33,
           "late_clients": [
             "PATRICIO VISCAY ALBORNOZ, PATRICIO VISCAY-C14 SUR",
             "SOC. DE TRANSPORTES TRACMAVI LTDA., SOC, DE TRANSPORTES TRACMAVI-Cristopher"
@@ -1559,288 +1566,348 @@
     "pct_count": 100.0
   },
   "churn": {
-    "active_clients": 415,
-    "churned_count": 233,
-    "pct": 56.1,
+    "eligible_clients": 267,
+    "churned_count": 103,
+    "pct": 38.6,
     "churned": [
-      {
-        "name": "JUAN RAMON VALDEBENITO BRAVO",
-        "freq": "Irregular / Poca data",
-        "freq_days": 15,
-        "last_invoice": "2025-09-03",
-        "days_since": 237,
-        "threshold": 30
-      },
-      {
-        "name": "INVERSIONES Y ASESORIAS ARGO LIMITADA",
-        "freq": "Irregular / Poca data",
-        "freq_days": 15,
-        "last_invoice": "2025-09-04",
-        "days_since": 236,
-        "threshold": 30
-      },
-      {
-        "name": "AGRICOLA EL ARRAYAN LIMITADA",
-        "freq": "Irregular / Poca data",
-        "freq_days": 15,
-        "last_invoice": "2025-09-05",
-        "days_since": 235,
-        "threshold": 30
-      },
-      {
-        "name": "SUCESION LUIS PIZARRO",
-        "freq": "Irregular / Poca data",
-        "freq_days": 15,
-        "last_invoice": "2025-09-16",
-        "days_since": 224,
-        "threshold": 30
-      },
-      {
-        "name": "JUAN RAMON MORALES PALMA",
-        "freq": "Irregular / Poca data",
-        "freq_days": 15,
-        "last_invoice": "2025-09-17",
-        "days_since": 223,
-        "threshold": 30
-      },
-      {
-        "name": "HERRERA HERMANOS LIMITADA",
-        "freq": "Irregular / Poca data",
-        "freq_days": 15,
-        "last_invoice": "2025-09-17",
-        "days_since": 223,
-        "threshold": 30
-      },
-      {
-        "name": "HECTOR BERMUDEZ E I R L",
-        "freq": "Irregular / Poca data",
-        "freq_days": 15,
-        "last_invoice": "2025-09-17",
-        "days_since": 223,
-        "threshold": 30
-      },
-      {
-        "name": "TRANSPORTES RAFAEL MOYA Y COMPANIA LIMITADA.",
-        "freq": "Irregular / Poca data",
-        "freq_days": 15,
-        "last_invoice": "2025-09-17",
-        "days_since": 223,
-        "threshold": 30
-      },
-      {
-        "name": "AGRICOLA EL PARQUE SPA",
-        "freq": "Irregular / Poca data",
-        "freq_days": 15,
-        "last_invoice": "2025-09-23",
-        "days_since": 217,
-        "threshold": 30
-      },
-      {
-        "name": "FREDY ALADINO QUINTERO SILVA",
-        "freq": "Irregular / Poca data",
-        "freq_days": 15,
-        "last_invoice": "2025-09-26",
-        "days_since": 214,
-        "threshold": 30
-      },
-      {
-        "name": "COMERCIALIZADORA ECONUT LTDA",
-        "freq": "Bimensual (Quincenal)",
-        "freq_days": 15,
-        "last_invoice": "2025-09-26",
-        "days_since": 214,
-        "threshold": 30
-      },
-      {
-        "name": "AGROFRUTICOLA SAN ANDRES DE CORDILLERILLA LTDA",
-        "freq": "Irregular / Poca data",
-        "freq_days": 15,
-        "last_invoice": "2025-09-29",
-        "days_since": 211,
-        "threshold": 30
-      },
-      {
-        "name": "MIGUEL ARCADIO CHAVEZ MENDEZ",
-        "freq": "Irregular / Poca data",
-        "freq_days": 15,
-        "last_invoice": "2025-09-30",
-        "days_since": 210,
-        "threshold": 30
-      },
-      {
-        "name": "AGRICOLA EL MEMBRILLO SPA",
-        "freq": "Irregular / Poca data",
-        "freq_days": 15,
-        "last_invoice": "2025-10-02",
-        "days_since": 208,
-        "threshold": 30
-      },
-      {
-        "name": "RAMON PARRAGUEZ LOPEZ",
-        "freq": "Irregular / Poca data",
-        "freq_days": 15,
-        "last_invoice": "2025-10-03",
-        "days_since": 207,
-        "threshold": 30
-      },
-      {
-        "name": "AGRICOLA VILLASECA LTDA",
-        "freq": "Irregular / Poca data",
-        "freq_days": 15,
-        "last_invoice": "2025-10-06",
-        "days_since": 204,
-        "threshold": 30
-      },
-      {
-        "name": "SERVICIOS E INVERSIONES KOALA S.A.",
-        "freq": "Irregular / Poca data",
-        "freq_days": 15,
-        "last_invoice": "2025-10-06",
-        "days_since": 204,
-        "threshold": 30
-      },
-      {
-        "name": "RAQUEL ROJAS SEPULVEDA",
-        "freq": "Irregular / Poca data",
-        "freq_days": 15,
-        "last_invoice": "2025-10-06",
-        "days_since": 204,
-        "threshold": 30
-      },
-      {
-        "name": "SOCIEDAD AGRICOLA EL ASTA SPA",
-        "freq": "Irregular (Promedio: 26 días)",
-        "freq_days": 26,
-        "last_invoice": "2025-10-08",
-        "days_since": 202,
-        "threshold": 52
-      },
-      {
-        "name": "ALFREDO ROSALINO MUÑOZ ENCINA",
-        "freq": "Irregular / Poca data",
-        "freq_days": 15,
-        "last_invoice": "2025-10-09",
-        "days_since": 201,
-        "threshold": 30
-      },
-      {
-        "name": "JUAN FLORENTINO LEIVA LARA",
-        "freq": "Irregular / Poca data",
-        "freq_days": 15,
-        "last_invoice": "2025-10-15",
-        "days_since": 195,
-        "threshold": 30
-      },
-      {
-        "name": "AGRÍCOLA SAN JOSE DE PERALILLO S.A",
-        "freq": "Irregular (Promedio: 18 días)",
-        "freq_days": 18,
-        "last_invoice": "2025-10-16",
-        "days_since": 194,
-        "threshold": 36
-      },
-      {
-        "name": "MIGUEL VIAL Y CIA LTDA",
-        "freq": "Irregular (Promedio: 34 días)",
-        "freq_days": 34,
-        "last_invoice": "2025-10-16",
-        "days_since": 194,
-        "threshold": 68
-      },
       {
         "name": "ISMAEL DE LA CRUZ VERGARA CISTERNA",
         "freq": "Irregular (Promedio: 12 días)",
         "freq_days": 12,
         "last_invoice": "2025-10-20",
         "days_since": 190,
-        "threshold": 24
+        "threshold": 24,
+        "invoices_8m": 4,
+        "new_this_week": false
       },
       {
-        "name": "OCTAVIO SEGUNDO ORTEGA VILLALOBOS",
-        "freq": "Irregular / Poca data",
-        "freq_days": 15,
-        "last_invoice": "2025-10-20",
-        "days_since": 190,
-        "threshold": 30
+        "name": "JORGE LUIS GALLARDO LANZELLOTE",
+        "freq": "Irregular (Promedio: 10 días)",
+        "freq_days": 10,
+        "last_invoice": "2025-10-30",
+        "days_since": 180,
+        "threshold": 20,
+        "invoices_8m": 6,
+        "new_this_week": false
       },
       {
-        "name": "ERNALDO CLEMENTE ESCOBAR MONDACA",
-        "freq": "Irregular / Poca data",
-        "freq_days": 15,
-        "last_invoice": "2025-10-20",
-        "days_since": 190,
-        "threshold": 30
+        "name": "ERIKA DEL PILAR GUZMAN MANRIQUEZ",
+        "freq": "Semanal",
+        "freq_days": 7,
+        "last_invoice": "2025-11-06",
+        "days_since": 173,
+        "threshold": 14,
+        "invoices_8m": 12,
+        "new_this_week": false
       },
       {
-        "name": "HUGO HERNAN DONOSO POBLETE",
-        "freq": "Irregular / Poca data",
-        "freq_days": 15,
-        "last_invoice": "2025-10-21",
-        "days_since": 189,
-        "threshold": 30
+        "name": "JOSE VICTOR CALDERON PARRA",
+        "freq": "Irregular (Promedio: 21 días)",
+        "freq_days": 21,
+        "last_invoice": "2025-11-11",
+        "days_since": 168,
+        "threshold": 42,
+        "invoices_8m": 4,
+        "new_this_week": false
       },
       {
-        "name": "AGROCONSTRUCCION SPA",
+        "name": "JUAN ANTONIO HORMAZABAL MEZA",
         "freq": "Bimensual (Quincenal)",
         "freq_days": 15,
-        "last_invoice": "2025-10-22",
-        "days_since": 188,
-        "threshold": 30
+        "last_invoice": "2025-11-14",
+        "days_since": 165,
+        "threshold": 30,
+        "invoices_8m": 5,
+        "new_this_week": false
       },
       {
-        "name": "JHOVANY ALEXANDER MOLINA GOMEZ",
-        "freq": "Irregular / Poca data",
+        "name": "GERMAN HUMBERTO PEREZ PEREZ",
+        "freq": "Bimensual (Quincenal)",
         "freq_days": 15,
-        "last_invoice": "2025-10-24",
-        "days_since": 186,
-        "threshold": 30
+        "last_invoice": "2025-12-05",
+        "days_since": 144,
+        "threshold": 30,
+        "invoices_8m": 4,
+        "new_this_week": false
       },
       {
-        "name": "TRANSPORTE DE CARGA PRESTACION DE SERVICIO SPA",
+        "name": "AGRICOLA GORA LIMITADA",
+        "freq": "Semanal",
+        "freq_days": 7,
+        "last_invoice": "2025-12-09",
+        "days_since": 140,
+        "threshold": 14,
+        "invoices_8m": 5,
+        "new_this_week": false
+      },
+      {
+        "name": "EDGARDO ANTONIO VASQUEZ VALLEJOS",
+        "freq": "Bimensual (Quincenal)",
+        "freq_days": 15,
+        "last_invoice": "2025-12-11",
+        "days_since": 138,
+        "threshold": 30,
+        "invoices_8m": 7,
+        "new_this_week": false
+      },
+      {
+        "name": "EXPORTADORA YUCAY LTDA.",
+        "freq": "Mensual",
+        "freq_days": 30,
+        "last_invoice": "2025-12-16",
+        "days_since": 133,
+        "threshold": 60,
+        "invoices_8m": 4,
+        "new_this_week": false
+      },
+      {
+        "name": "ARRIENDO DE MAQUINARIA ALADINO DEL T. LUNA ARAVENA EIRL",
+        "freq": "Bimensual (Quincenal)",
+        "freq_days": 15,
+        "last_invoice": "2025-12-16",
+        "days_since": 133,
+        "threshold": 30,
+        "invoices_8m": 7,
+        "new_this_week": false
+      },
+      {
+        "name": "CRISTIAN HUGO FUENZALIDA MEZA",
+        "freq": "Irregular (Promedio: 4 días)",
+        "freq_days": 4,
+        "last_invoice": "2025-12-17",
+        "days_since": 132,
+        "threshold": 8,
+        "invoices_8m": 11,
+        "new_this_week": false
+      },
+      {
+        "name": "AGRICOLA EL CANELO LTDA",
+        "freq": "Irregular (Promedio: 23 días)",
+        "freq_days": 23,
+        "last_invoice": "2025-12-19",
+        "days_since": 130,
+        "threshold": 46,
+        "invoices_8m": 5,
+        "new_this_week": false
+      },
+      {
+        "name": "HUERTOS RIOJARA LIMITADA",
+        "freq": "Semanal",
+        "freq_days": 7,
+        "last_invoice": "2025-12-22",
+        "days_since": 127,
+        "threshold": 14,
+        "invoices_8m": 6,
+        "new_this_week": false
+      },
+      {
+        "name": "JOSE DELFIN MORALES",
+        "freq": "Irregular (Promedio: 9 días)",
+        "freq_days": 9,
+        "last_invoice": "2025-12-26",
+        "days_since": 123,
+        "threshold": 18,
+        "invoices_8m": 8,
+        "new_this_week": false
+      },
+      {
+        "name": "CARLOS PATRICIO TRONCOSO BASCUR",
+        "freq": "Irregular (Promedio: 24 días)",
+        "freq_days": 24,
+        "last_invoice": "2025-12-29",
+        "days_since": 120,
+        "threshold": 48,
+        "invoices_8m": 4,
+        "new_this_week": false
+      },
+      {
+        "name": "CAMILO LUCERO ZAMORA",
+        "freq": "Semanal",
+        "freq_days": 7,
+        "last_invoice": "2025-12-31",
+        "days_since": 118,
+        "threshold": 14,
+        "invoices_8m": 5,
+        "new_this_week": false
+      },
+      {
+        "name": "MOVIMIENTO DE TIERRA ERRAZURIZ SPA",
+        "freq": "Semanal",
+        "freq_days": 7,
+        "last_invoice": "2026-01-05",
+        "days_since": 113,
+        "threshold": 14,
+        "invoices_8m": 15,
+        "new_this_week": false
+      },
+      {
+        "name": "INVERSIONES LAS PEÑAS LIMITADA",
+        "freq": "Irregular (Promedio: 10 días)",
+        "freq_days": 10,
+        "last_invoice": "2026-01-05",
+        "days_since": 113,
+        "threshold": 20,
+        "invoices_8m": 13,
+        "new_this_week": false
+      },
+      {
+        "name": "SOCIEDAD AGRICOLA Y COMERCIAL BETHANIA DEL SUR LIMITADA",
+        "freq": "Bimensual (Quincenal)",
+        "freq_days": 15,
+        "last_invoice": "2026-01-09",
+        "days_since": 109,
+        "threshold": 30,
+        "invoices_8m": 7,
+        "new_this_week": false
+      },
+      {
+        "name": "AGRICOLA DANIEL ROJAS E HIJOS LIMITADA",
+        "freq": "Irregular (Promedio: 26 días)",
+        "freq_days": 26,
+        "last_invoice": "2026-01-09",
+        "days_since": 109,
+        "threshold": 52,
+        "invoices_8m": 5,
+        "new_this_week": false
+      },
+      {
+        "name": "PRESTACION DE SERV MAQUINARIA AGRICOLA RUBEN FAUNDEZ ARAVENA EIRL",
+        "freq": "Irregular (Promedio: 19 días)",
+        "freq_days": 19,
+        "last_invoice": "2026-01-12",
+        "days_since": 106,
+        "threshold": 38,
+        "invoices_8m": 7,
+        "new_this_week": false
+      },
+      {
+        "name": "HECTOR LEOPOLDO ORTEGA ESCOBAR",
+        "freq": "Mensual",
+        "freq_days": 30,
+        "last_invoice": "2026-01-12",
+        "days_since": 106,
+        "threshold": 60,
+        "invoices_8m": 5,
+        "new_this_week": false
+      },
+      {
+        "name": "TERESA DE JESUS AHUMADA MURILLO",
         "freq": "Irregular / Poca data",
         "freq_days": 15,
-        "last_invoice": "2025-10-27",
-        "days_since": 183,
-        "threshold": 30
+        "last_invoice": "2026-01-15",
+        "days_since": 103,
+        "threshold": 30,
+        "invoices_8m": 4,
+        "new_this_week": false
+      },
+      {
+        "name": "GERARD BRAAK S.P.A",
+        "freq": "Irregular (Promedio: 26 días)",
+        "freq_days": 26,
+        "last_invoice": "2026-01-16",
+        "days_since": 102,
+        "threshold": 52,
+        "invoices_8m": 6,
+        "new_this_week": false
+      },
+      {
+        "name": "RAMON ENRIQUE GALAZ DIAZ",
+        "freq": "Irregular / Poca data",
+        "freq_days": 15,
+        "last_invoice": "2026-01-20",
+        "days_since": 98,
+        "threshold": 30,
+        "invoices_8m": 4,
+        "new_this_week": false
+      },
+      {
+        "name": "AGRICOLA LUIS GUZMAN Y COMPANIA LIMITADA",
+        "freq": "Semanal",
+        "freq_days": 7,
+        "last_invoice": "2026-01-20",
+        "days_since": 98,
+        "threshold": 14,
+        "invoices_8m": 5,
+        "new_this_week": false
+      },
+      {
+        "name": "EDUARDO ALEJANDRO CABRERA FAUNDEZ",
+        "freq": "Mensual",
+        "freq_days": 30,
+        "last_invoice": "2026-01-30",
+        "days_since": 88,
+        "threshold": 60,
+        "invoices_8m": 4,
+        "new_this_week": false
+      },
+      {
+        "name": "SOCIEDAD AGRICOLA ALIAGA LIMITADA",
+        "freq": "Irregular / Poca data",
+        "freq_days": 15,
+        "last_invoice": "2026-01-30",
+        "days_since": 88,
+        "threshold": 30,
+        "invoices_8m": 4,
+        "new_this_week": false
+      },
+      {
+        "name": "AGRICOLA SAN LUIS SPA",
+        "freq": "Irregular / Poca data",
+        "freq_days": 15,
+        "last_invoice": "2026-01-30",
+        "days_since": 88,
+        "threshold": 30,
+        "invoices_8m": 6,
+        "new_this_week": false
+      },
+      {
+        "name": "AGRICOLA RODRIGO GARCIA SPA",
+        "freq": "Irregular (Promedio: 37 días)",
+        "freq_days": 37,
+        "last_invoice": "2026-01-30",
+        "days_since": 88,
+        "threshold": 74,
+        "invoices_8m": 5,
+        "new_this_week": false
       }
     ],
-    "multiplier": 2,
+    "filters": "≥4 facturas, frecuencia ≤60d, silencio >2x freq",
     "history": [
       {
         "month": "Nov 2025",
-        "pct": 64.0,
-        "churned": 32,
-        "active": 50
+        "pct": 60.0,
+        "churned": 3,
+        "eligible": 5
       },
       {
         "month": "Dec 2025",
-        "pct": 60.5,
-        "churned": 46,
-        "active": 76
+        "pct": 43.8,
+        "churned": 7,
+        "eligible": 16
       },
       {
         "month": "Jan 2026",
-        "pct": 65.7,
-        "churned": 69,
-        "active": 105
+        "pct": 50.0,
+        "churned": 15,
+        "eligible": 30
       },
       {
         "month": "Feb 2026",
-        "pct": 71.2,
-        "churned": 94,
-        "active": 132
+        "pct": 59.5,
+        "churned": 25,
+        "eligible": 42
       },
       {
         "month": "Mar 2026",
-        "pct": 45.3,
-        "churned": 126,
-        "active": 278
+        "pct": 28.5,
+        "churned": 41,
+        "eligible": 144
       },
       {
         "month": "Apr 2026",
-        "pct": 58.3,
-        "churned": 242,
-        "active": 415
+        "pct": 41.9,
+        "churned": 112,
+        "eligible": 267
       }
     ]
   },
