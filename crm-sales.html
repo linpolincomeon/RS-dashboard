@@ -248,7 +248,7 @@ let csSubTab = 'semanal'; // For CS tab sub-tabs
 let chartWeekly = null, chartMargenZona = null, chartMargenExec = null;
 
 const ALLOWED_VENDORS = [
-  'toro gonzález sebastian enrique','muñoz encalada joaquin','yeniré ron','yenire ron'
+  'toro gonzález sebastian enrique','muñoz encalada joaquin','ron yenire'
 ];
 const CS_TEAM = ['comber sigall pauline','mauro boccardo','tomenergy'];
 
@@ -262,7 +262,16 @@ function getGoal(name) {
   if (!D || !D.vendor_goals) return {};
   const d = D.vendor_goals[name]; if (d) return d;
   const nn = norm(name);
+  // Exact norm match first
   for (const [k, v] of Object.entries(D.vendor_goals)) { if (norm(k) === nn) return v; }
+  // Partial match: all words of the shorter name are contained in the longer one
+  const nWords = nn.split(' ');
+  for (const [k, v] of Object.entries(D.vendor_goals)) {
+    const kWords = norm(k).split(' ');
+    const shorter = nWords.length <= kWords.length ? nWords : kWords;
+    const longer = nWords.length <= kWords.length ? kWords : nWords;
+    if (shorter.every(w => longer.includes(w))) return v;
+  }
   return {};
 }
 
@@ -275,7 +284,16 @@ const findInByUser = (byUser, name) => {
   if (!byUser) return 0;
   if (byUser[name] !== undefined) return byUser[name];
   const nn = norm(name);
-  for (const [k, v] of Object.entries(byUser)) { if (norm(k) === nn) return v; }
+  const nWords = nn.split(' ');
+  for (const [k, v] of Object.entries(byUser)) {
+    const kn = norm(k);
+    if (kn === nn) return v;
+    // Partial match: shorter name's words all in longer
+    const kWords = kn.split(' ');
+    const shorter = nWords.length <= kWords.length ? nWords : kWords;
+    const longer = nWords.length <= kWords.length ? kWords : nWords;
+    if (shorter.length >= 2 && shorter.every(w => longer.includes(w))) return v;
+  }
   return 0;
 };
 const clr = (v, g) => { const p = g ? (v / g) * 100 : 0; return p >= 100 ? 'g' : p >= 60 ? 'y' : 'r'; };
@@ -599,7 +617,7 @@ function renderVendedores() {
 const EJECUTIVOS = [
   { key: 'toro', name: 'Toro', fullName: 'toro gonzález sebastian enrique' },
   { key: 'munoz', name: 'Muñoz', fullName: 'muñoz encalada joaquin' },
-  { key: 'ron', name: 'Ron', fullName: 'yeniré ron' }, // Matches both 'yeniré ron' and 'yenire ron'
+  { key: 'ron', name: 'Ron', fullName: 'ron yenire' },
   { key: 'freelancers', name: 'Freelancers', fullName: null }
 ];
 
@@ -889,20 +907,19 @@ function renderVentas() {
   const sumAll = obj => { if (!obj) return 0; return Object.entries(obj).reduce((a, [, v]) => a + v, 0); };
   const fw = D.funnel_weeks || [];
 
-  // Cotizaciones: count only estado='sent' from detail
-  const countSentCotiz = (wk) => {
-    const det = (wk.stages?.cotizacion?.detail || []);
-    return det.filter(q => q.estado === 'sent').length;
+  // Cotizaciones: count only sent
+  const countCotiz = (wk) => {
+    return (wk.stages?.cotizacion?.detail || []).filter(q => q.estado === 'sent').length;
   };
 
   let wLeads, wCotiz, wCierre;
   if (isAccum) {
     wLeads = fw.reduce((s, w) => s + sumAll(w.stages?.leads?.by_user), 0);
-    wCotiz = fw.reduce((s, w) => s + countSentCotiz(w), 0);
+    wCotiz = fw.reduce((s, w) => s + countCotiz(w), 0);
     wCierre = fw.reduce((s, w) => s + sumAll(w.stages?.cierre?.by_user), 0);
   } else {
     wLeads = week ? sumAll(week.stages?.leads?.by_user) : 0;
-    wCotiz = week ? countSentCotiz(week) : 0;
+    wCotiz = week ? countCotiz(week) : 0;
     wCierre = week ? sumAll(week.stages?.cierre?.by_user) : 0;
   }
   const leadsGoal = isAccum ? 45 * fw.length : 45;
