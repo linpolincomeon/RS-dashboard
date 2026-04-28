@@ -107,7 +107,7 @@ tr:hover td{background:#fafaf8}
       <button class="tab-btn" onclick="switchTab('ejecutivos')">👔 Ejecutivos</button>
       <button class="tab-btn" onclick="switchTab('funnel')">🎯 Funnel</button>
       <button class="tab-btn" onclick="switchTab('vendedores')">👤 Vendedores</button>
-      <button class="tab-btn" onclick="switchTab('fidelizacion')">Fidelización / CS</button>
+      <button class="tab-btn" onclick="switchTab('fidelizacion')">Churn & Rescate</button>
     </div>
 
     <!-- ═══ TAB: EJECUTIVOS ═══ -->
@@ -175,19 +175,33 @@ tr:hover td{background:#fafaf8}
       </div>
     </div>
 
-    <!-- ═══ TAB 2: FIDELIZACIÓN / CS ═══ -->
+    <!-- ═══ TAB 2: CHURN & RESCATE ═══ -->
     <div class="tab-panel" id="tab-fidelizacion">
-      <div class="kpi-row" id="csKpiRow"></div>
-      <div id="csExecCards"></div>
-      <div class="sec" id="wonSection"><div class="sec-h"><h2>✅ Clientes Ganados</h2></div><div class="sec-b">
-        <div style="max-height:400px;overflow-y:auto"><table><thead><tr><th>Cliente</th><th>Ejecutivo</th><th>Litros</th><th>Última Actualización</th></tr></thead><tbody id="wonBody"></tbody></table></div>
-        <div class="nodata" id="noWon" style="display:none">Sin ganados registrados</div></div></div>
-      <div class="sec" id="rescuedSection"><div class="sec-h"><h2>🏆 Clientes Rescatados</h2></div><div class="sec-b">
-        <table><thead><tr><th>Cliente</th><th>Ejecutivo</th><th>Litros Prom/Mes</th><th>Última Compra</th></tr></thead><tbody id="rescuedBody"></tbody></table>
-        <div class="nodata" id="noRescued" style="display:none">Sin rescates este mes</div></div></div>
-      <div class="sec" id="dormantSection"><div class="sec-h"><h2>🎯 Oportunidades por Recuperar (Durmientes)</h2></div>
-        <div class="sec-b" style="max-height:500px;overflow-y:auto"><table><thead><tr><th>Cliente</th><th>Ejecutivo Asignado</th><th>Litros Prom/Mes</th><th>Última Compra</th></tr></thead><tbody id="dormantBody"></tbody></table>
-        <div class="nodata" id="noDormant" style="display:none">Sin durmientes registrados</div></div></div>
+      <!-- KPI Row 1: 5 boxes -->
+      <div class="kpi-row" id="churnKpiRow"></div>
+
+      <!-- Explanation notes -->
+      <div id="churnNotes" style="background:var(--card);border-radius:12px;padding:16px;margin-bottom:24px;border-left:3px solid var(--yellow);font-size:12px;color:var(--dim);line-height:1.6"></div>
+
+      <!-- Nuevos Durmientes de la Semana -->
+      <div class="sec"><div class="sec-h"><h2>😴 Nuevos Durmientes de la Semana</h2></div><div class="sec-b" style="max-height:400px;overflow-y:auto">
+        <table><thead><tr><th>Prioridad</th><th>Cliente</th><th>Prom. Mensual 8M</th><th>Responsable</th><th>Fecha cambio</th></tr></thead><tbody id="newDormantBody"></tbody></table>
+        <div class="nodata" id="noNewDormant" style="display:none">Sin nuevos durmientes esta semana</div></div></div>
+
+      <!-- Nuevos Perdidos de la Semana -->
+      <div class="sec"><div class="sec-h"><h2>💀 Nuevos Perdidos de la Semana</h2></div><div class="sec-b" style="max-height:400px;overflow-y:auto">
+        <table><thead><tr><th>Prioridad</th><th>Cliente</th><th>Prom. Mensual 8M</th><th>Último vendedor</th><th>Fecha cambio</th></tr></thead><tbody id="newLostBody"></tbody></table>
+        <div class="nodata" id="noNewLost" style="display:none">Sin nuevos perdidos esta semana</div></div></div>
+
+      <!-- Lost clients this month (below Churn KPI) -->
+      <div class="sec"><div class="sec-h"><h2>📉 Clientes Perdidos (Mes Actual)</h2></div><div class="sec-b" style="max-height:400px;overflow-y:auto">
+        <table><thead><tr><th>Prioridad</th><th>Cliente</th><th>Prom. Mensual 8M</th><th>Último vendedor</th><th>Fecha cambio</th></tr></thead><tbody id="lostMonthBody"></tbody></table>
+        <div class="nodata" id="noLostMonth" style="display:none">Sin perdidos en el mes</div></div></div>
+
+      <!-- Todos los Durmientes -->
+      <div class="sec"><div class="sec-h"><h2>🎯 Todos los Durmientes</h2></div><div class="sec-b" style="max-height:500px;overflow-y:auto">
+        <table><thead><tr><th>Cliente</th><th>Prom. Mensual 8M</th><th>Responsable</th><th>Última actualización</th></tr></thead><tbody id="allDormantBody"></tbody></table>
+        <div class="nodata" id="noAllDormant" style="display:none">Sin durmientes registrados</div></div></div>
     </div>
   </div>
 </div>
@@ -1067,99 +1081,156 @@ function renderHotDealsAccum() {
 
 
 // ═══════════════════════════════════════
-// FIDELIZACIÓN TAB (unchanged)
+// CHURN & RESCATE TAB
 // ═══════════════════════════════════════
 function renderFidelizacion() {
   if (!D) return;
+
+  // Dedup helper
+  const _dedup = (list) => {
+    const m = new Map();
+    list.forEach(c => {
+      const k = (c.name || '').toUpperCase();
+      const prev = m.get(k);
+      if (!prev || (c.last_update || '') > (prev.last_update || '')) m.set(k, c);
+    });
+    return [...m.values()];
+  };
+
   const churn = D.churn || {}, summary = churn.summary || {};
-  const T = (D.ventas || {}).totals || {}, lbu = T.litros_by_user || {};
-  const detail = T.comber_mantencion_detail || {};
-  const retencion = (D.funnel_weeks || [])[0]?.stages?.retencion || {};
+  const week = getCurrentWeek() || {};
+  const weekStart = week.week_start || '';
+  const weekEnd = week.week_end || '';
 
-  const csLitros = detail.total || 0, dormantCount = summary.dormant || 0;
-  const rescuedCount = (summary.rescued_dormant || 0) + (summary.rescued_lost || 0);
-  const rescuePct = summary.rescue_pct || 0;
-  const retPct = retencion.value || 0, retGoal = retencion.goal || 90;
+  // Get current month dates
+  const now = new Date();
+  const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+  const monthStartStr = monthStart.toISOString().split('T')[0];
 
-  // Won deals for CS team
-  const csWonDeals = (D.won_deals || []).filter(w => isCS(w.exec));
-  const csWonCount = csWonDeals.length;
-
+  // KPI Row 1 (5 boxes)
   let kh = '';
-  kh += mkKpi('c-red', 'Litros CS (Comber+TomE)', fL(csLitros), `Comber: ${fL(detail.comber_own_litros||0)} · TomE: ${fL(detail.tomenergy_litros||0)}`, null, null);
-  kh += mkKpi('c-green', 'Ganados', csWonCount, 'clientes en etapa Ganado', null, null);
-  kh += mkKpi('c-blue', 'Tasa Rescate', rescuePct.toFixed(1) + '%', `${rescuedCount} rescatados`, null, null);
-  kh += mkKpi('c-yellow', 'Durmientes', dormantCount, 'clientes sin compra reciente', null, null);
-  document.getElementById('csKpiRow').innerHTML = kh;
+  kh += mkKpi('c-green', '👥 Activos', summary.active || 0, 'facturaron últimos 2 meses', null, null);
+  kh += mkKpi('c-yellow', '😴 Durmientes', summary.dormant || 0, 'fuera de ciclo, < 9 meses', null, null);
+  kh += mkKpi('c-red', '💀 Perdidos', summary.lost || 0, 'sin factura 9+ meses', null, null);
 
-  const csExecs = (D.executives || []).filter(e => isCS(e.name));
-  const dormByUser = (churn.by_user || {}).dormant || {};
-  const rescDormByUser = (churn.by_user || {}).rescued_dormant || {};
-  const rescLostByUser = (churn.by_user || {}).rescued_lost || {};
+  // Churn KPI: newly_lost / prev_month_clients
+  const churnPct = summary.churn_pct || 0;
+  const newlyLost = summary.newly_lost || 0;
+  const prevMonthClients = summary.prev_month_clients || 1;
+  const churnDet = `${newlyLost} / ${prevMonthClients}`;
+  kh += mkKpi('c-red', '📉 Churn', churnPct.toFixed(1) + '%', churnDet, null, null);
 
-  let eh = '';
-  const comberExec = csExecs.find(e => norm(e.name).includes('comber'));
-  const tomExec = csExecs.find(e => norm(e.name).includes('tomenergy'));
+  // Rescue rate: rescued / (dormant + rescued)
+  const rescuedCount = summary.rescued_count || 0;
+  const dormantCount = summary.dormant || 0;
+  const rescuePct = summary.rescue_pct || 0;
+  kh += mkKpi('c-green', '🏆 Tasa Rescate', rescuePct.toFixed(1) + '%', `${rescuedCount} rescatados`, null, null);
 
-  eh += `<div class="cs-card"><h4>${H(comberExec ? comberExec.name : 'Comber Sigall Pauline')} <span style="color:var(--dim);font-weight:400;font-size:12px">+ TomEnergy</span></h4><div class="cs-row">`;
-  eh += `<div class="cs-stat"><div class="cs-val">${fL(detail.comber_own_litros||0)}</div><div class="cs-lbl">Litros propios</div></div>`;
-  eh += `<div class="cs-stat"><div class="cs-val">${fL(detail.tomenergy_litros||0)}</div><div class="cs-lbl">Litros TomEnergy</div></div>`;
-  eh += `<div class="cs-stat"><div class="cs-val" style="color:var(--red)">${fL(detail.total||0)}</div><div class="cs-lbl">Total</div></div>`;
-  let comDorm = 0, tomDorm = 0, comResc = 0, tomResc = 0;
-  for (const [k, v] of Object.entries(dormByUser)) { if (norm(k).includes('comber')) comDorm += v; if (norm(k).includes('tomenergy')) tomDorm += v; }
-  for (const [k, v] of Object.entries(rescDormByUser)) { if (norm(k).includes('comber')) comResc += v; if (norm(k).includes('tomenergy')) tomResc += v; }
-  for (const [k, v] of Object.entries(rescLostByUser)) { if (norm(k).includes('comber')) comResc += v; if (norm(k).includes('tomenergy')) tomResc += v; }
-  const comWon = (comberExec?.won || 0) + (tomExec?.won || 0);
-  eh += `<div class="cs-stat"><div class="cs-val" style="color:var(--green)">${comWon}</div><div class="cs-lbl">Ganados</div></div>`;
-  eh += `<div class="cs-stat"><div class="cs-val">${comDorm + tomDorm}</div><div class="cs-lbl">Durmientes</div></div>`;
-  eh += `<div class="cs-stat"><div class="cs-val" style="color:var(--green)">${comResc + tomResc}</div><div class="cs-lbl">Rescatados</div></div>`;
-  const cm7 = (comberExec?.moved || 0) + (tomExec?.moved || 0), cm30 = (comberExec?.moved_30d || 0) + (tomExec?.moved_30d || 0);
-  eh += `<div class="cs-stat"><div class="cs-val">${cm7}</div><div class="cs-lbl">Mov. 7d</div></div>`;
-  eh += `<div class="cs-stat"><div class="cs-val">${cm30}</div><div class="cs-lbl">Mov. 30d</div></div>`;
-  eh += `</div></div>`;
+  document.getElementById('churnKpiRow').innerHTML = kh;
 
-  const mauroExec = csExecs.find(e => norm(e.name).includes('boccardo'));
-  const mn = mauroExec ? mauroExec.name : 'Mauro Boccardo';
-  const mL = mauroExec ? (lbu[mauroExec.name] || 0) : 0;
-  let mD = 0, mR = 0;
-  for (const [k, v] of Object.entries(dormByUser)) { if (norm(k).includes('boccardo')) mD += v; }
-  for (const [k, v] of Object.entries(rescDormByUser)) { if (norm(k).includes('boccardo')) mR += v; }
-  for (const [k, v] of Object.entries(rescLostByUser)) { if (norm(k).includes('boccardo')) mR += v; }
-  const mW = mauroExec?.won || 0;
-  eh += `<div class="cs-card"><h4>${H(mn)}</h4><div class="cs-row">`;
-  eh += `<div class="cs-stat"><div class="cs-val">${fL(mL)}</div><div class="cs-lbl">Litros</div></div>`;
-  eh += `<div class="cs-stat"><div class="cs-val" style="color:var(--green)">${mW}</div><div class="cs-lbl">Ganados</div></div>`;
-  eh += `<div class="cs-stat"><div class="cs-val">${mD}</div><div class="cs-lbl">Durmientes</div></div>`;
-  eh += `<div class="cs-stat"><div class="cs-val" style="color:var(--green)">${mR}</div><div class="cs-lbl">Rescatados</div></div>`;
-  eh += `<div class="cs-stat"><div class="cs-val">${mauroExec?.moved || 0}</div><div class="cs-lbl">Mov. 7d</div></div>`;
-  eh += `<div class="cs-stat"><div class="cs-val">${mauroExec?.moved_30d || 0}</div><div class="cs-lbl">Mov. 30d</div></div>`;
-  eh += `</div></div>`;
-  document.getElementById('csExecCards').innerHTML = eh;
+  // Explanation notes
+  let notes = '<strong>Definiciones:</strong><br>';
+  notes += '<strong>Perdidos:</strong> Clientes sin factura por más de 9 meses (etapa CRM: Perdido)<br>';
+  notes += '<strong>Churn:</strong> Clientes nuevos perdidos este mes / clientes activos mes anterior<br>';
+  notes += '<strong>Rescate:</strong> Rescatados = durmientes que volvieron a facturar / (durmientes + rescatados)';
+  document.getElementById('churnNotes').innerHTML = notes;
 
-  // Won deals table
-  const wb = document.getElementById('wonBody'); wb.innerHTML = '';
-  if (csWonDeals.length === 0) { document.getElementById('noWon').style.display = 'block'; }
-  else {
-    document.getElementById('noWon').style.display = 'none';
-    csWonDeals.sort((a, b) => (b.value || 0) - (a.value || 0));
-    csWonDeals.forEach(w => {
+  // Nuevos Durmientes de la Semana
+  const dormantListAll = churn.dormant_list || [];
+  const newDormantWeek = dormantListAll.filter(c => {
+    const lu = c.last_update || '';
+    return weekStart && weekEnd && lu >= weekStart && lu <= weekEnd;
+  });
+  const newDormantDedup = _dedup(newDormantWeek);
+  newDormantDedup.sort((a, b) => (b.avg_monthly_litros || 0) - (a.avg_monthly_litros || 0));
+
+  const ndb = document.getElementById('newDormantBody'); ndb.innerHTML = '';
+  if (newDormantDedup.length === 0) {
+    document.getElementById('noNewDormant').style.display = 'block';
+  } else {
+    document.getElementById('noNewDormant').style.display = 'none';
+    newDormantDedup.forEach(c => {
+      const l = c.avg_monthly_litros || 0;
+      const lTag = l >= 5000 ? '<span style="color:var(--red);font-weight:700">' + fL(l) + '</span>'
+        : l >= 1000 ? '<span style="color:var(--yellow);font-weight:700">' + fL(l) + '</span>'
+        : '<span style="color:var(--dim)">' + fL(l) + '</span>';
+      const priority = l >= 5000 ? '🔴' : l >= 1000 ? '🟡' : '⚪';
       const tr = document.createElement('tr');
-      tr.innerHTML = `<td class="bold">${H(w.name)}</td><td>${H(w.exec||'—')}</td><td>${fL(w.value)}</td><td>${w.last_update||'—'}</td>`;
-      wb.appendChild(tr);
+      tr.innerHTML = `<td>${priority}</td><td class="bold">${H(c.name)}</td><td>${lTag}</td><td>${H(c.user || '—')}</td><td>${c.last_update || '—'}</td>`;
+      ndb.appendChild(tr);
     });
   }
 
-  // Rescued table
-  const rescList = [...(churn.rescued_dormant_list || []), ...(churn.rescued_lost_list || [])];
-  const rb = document.getElementById('rescuedBody'); rb.innerHTML = '';
-  if (rescList.length === 0) { document.getElementById('noRescued').style.display = 'block'; }
-  else { document.getElementById('noRescued').style.display = 'none'; rescList.sort((a, b) => (b.avg_monthly_litros || 0) - (a.avg_monthly_litros || 0)); rescList.forEach(c => { const tr = document.createElement('tr'); tr.innerHTML = `<td class="bold">${H(c.name)}</td><td>${H(c.user||'—')}</td><td>${fL(c.avg_monthly_litros)}</td><td>${c.last_update||'—'}</td>`; rb.appendChild(tr); }); }
+  // Nuevos Perdidos de la Semana
+  const lostListAll = churn.lost_list || [];
+  const newLostWeek = lostListAll.filter(c => {
+    const lu = c.last_update || '';
+    return weekStart && weekEnd && lu >= weekStart && lu <= weekEnd;
+  });
+  const newLostDedup = _dedup(newLostWeek);
+  newLostDedup.sort((a, b) => (b.avg_monthly_litros || 0) - (a.avg_monthly_litros || 0));
 
-  // Dormant opportunities
-  const dl = churn.dormant_list || [];
-  const db = document.getElementById('dormantBody'); db.innerHTML = '';
-  if (dl.length === 0) { document.getElementById('noDormant').style.display = 'block'; }
-  else { document.getElementById('noDormant').style.display = 'none'; const s = [...dl].sort((a, b) => (b.avg_monthly_litros || 0) - (a.avg_monthly_litros || 0)); s.forEach(c => { const l = c.avg_monthly_litros || 0; const lt = l >= 5000 ? 'tag-r' : l >= 1000 ? 'tag-y' : ''; const tr = document.createElement('tr'); tr.innerHTML = `<td class="bold">${H(c.name)}</td><td>${H(c.user||'—')}</td><td>${lt ? `<span class="tag ${lt}">${fL(l)}</span>` : fL(l)}</td><td>${c.last_update||'—'}</td>`; db.appendChild(tr); }); }
+  const nlb = document.getElementById('newLostBody'); nlb.innerHTML = '';
+  if (newLostDedup.length === 0) {
+    document.getElementById('noNewLost').style.display = 'block';
+  } else {
+    document.getElementById('noNewLost').style.display = 'none';
+    newLostDedup.forEach(c => {
+      const l = c.avg_monthly_litros || 0;
+      const lTag = l >= 5000 ? '<span style="color:var(--red);font-weight:700">' + fL(l) + '</span>'
+        : l >= 1000 ? '<span style="color:var(--yellow);font-weight:700">' + fL(l) + '</span>'
+        : '<span style="color:var(--dim)">' + fL(l) + '</span>';
+      const priority = l >= 5000 ? '🔴' : l >= 1000 ? '🟡' : '⚪';
+      const tr = document.createElement('tr');
+      tr.innerHTML = `<td>${priority}</td><td class="bold">${H(c.name)}</td><td>${lTag}</td><td>${H(c.user || '—')}</td><td>${c.last_update || '—'}</td>`;
+      nlb.appendChild(tr);
+    });
+  }
+
+  // Lost clients this month (below Churn KPI)
+  const lostMonth = lostListAll.filter(c => {
+    const lu = c.last_update || '';
+    return lu >= monthStartStr;
+  });
+  const lostMonthDedup = _dedup(lostMonth);
+  lostMonthDedup.sort((a, b) => (b.avg_monthly_litros || 0) - (a.avg_monthly_litros || 0));
+
+  const lmb = document.getElementById('lostMonthBody'); lmb.innerHTML = '';
+  if (lostMonthDedup.length === 0) {
+    document.getElementById('noLostMonth').style.display = 'block';
+  } else {
+    document.getElementById('noLostMonth').style.display = 'none';
+    lostMonthDedup.forEach(c => {
+      const l = c.avg_monthly_litros || 0;
+      const lTag = l >= 5000 ? '<span style="color:var(--red);font-weight:700">' + fL(l) + '</span>'
+        : l >= 1000 ? '<span style="color:var(--yellow);font-weight:700">' + fL(l) + '</span>'
+        : '<span style="color:var(--dim)">' + fL(l) + '</span>';
+      const priority = l >= 5000 ? '🔴' : l >= 1000 ? '🟡' : '⚪';
+      const tr = document.createElement('tr');
+      tr.innerHTML = `<td>${priority}</td><td class="bold">${H(c.name)}</td><td>${lTag}</td><td>${H(c.user || '—')}</td><td>${c.last_update || '—'}</td>`;
+      lmb.appendChild(tr);
+    });
+  }
+
+  // Todos los Durmientes (all deduped, sorted by avg_monthly_litros desc)
+  const allDormantDedup = _dedup(dormantListAll);
+  allDormantDedup.sort((a, b) => (b.avg_monthly_litros || 0) - (a.avg_monthly_litros || 0));
+
+  const adb = document.getElementById('allDormantBody'); adb.innerHTML = '';
+  if (allDormantDedup.length === 0) {
+    document.getElementById('noAllDormant').style.display = 'block';
+  } else {
+    document.getElementById('noAllDormant').style.display = 'none';
+    allDormantDedup.forEach(c => {
+      const l = c.avg_monthly_litros || 0;
+      const lTag = l >= 5000 ? '<span style="color:var(--red);font-weight:700">' + fL(l) + '</span>'
+        : l >= 1000 ? '<span style="color:var(--yellow);font-weight:700">' + fL(l) + '</span>'
+        : '<span style="color:var(--dim)">' + fL(l) + '</span>';
+      const tr = document.createElement('tr');
+      tr.innerHTML = `<td class="bold">${H(c.name)}</td><td>${lTag}</td><td>${H(c.user || '—')}</td><td>${c.last_update || '—'}</td>`;
+      adb.appendChild(tr);
+    });
+  }
 }
 
 // ═══════════════════════════════════════
