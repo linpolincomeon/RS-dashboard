@@ -746,19 +746,26 @@ def extract_sales_data(models, uid, custom_start=None, custom_end=None, label_ov
             ["state", "=", "posted"],
             ["invoice_date", ">=", fmt(ws_d)],
             ["invoice_date", "<=", fmt(we_d)],
-        ], ["id"], limit=5000)
+        ], ["id", "invoice_user_id"], limit=5000)
+        wk_user_map = {i["id"]: safe_name(i.get("invoice_user_id")) or "Sin asignar" for i in wk_inv}
         wk_ids = [i["id"] for i in wk_inv]
         wk_l = 0
+        wk_lbu = defaultdict(float)
         if wk_ids:
             wk_lines = sr(models, uid, "account.move.line", [
                 ["move_id", "in", wk_ids],
                 ["product_id", "=", DIESEL_PRODUCT_ID],
-            ], ["quantity"], limit=5000)
+            ], ["quantity", "move_id"], limit=5000)
             for ln in wk_lines:
-                wk_l += ln.get("quantity", 0)
+                q = ln.get("quantity", 0)
+                wk_l += q
+                mid = safe_id(ln.get("move_id"))
+                user = wk_user_map.get(mid, "Sin asignar")
+                wk_lbu[user] += q
         weekly_history.append({
             "label": f"{ws_d.day}/{ws_d.month}-{we_d.day}/{we_d.month}",
             "litros": round(wk_l),
+            "litros_by_user": {k: round(v) for k, v in wk_lbu.items()},
         })
     weekly_history.reverse()  # oldest first
 
