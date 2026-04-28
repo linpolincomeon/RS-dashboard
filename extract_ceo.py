@@ -568,27 +568,15 @@ def extract_receivables(models, uid):
     }
 
 
-# ── SLA DELIVERY (stock.picking by zone) ──
-ZONE_MAP = {
-    "rancagua": "Rancagua", "san fernando": "San Fdo", "san fdo": "San Fdo",
-    "talca": "Talca", "curicó": "Curicó", "curico": "Curicó",
-    "parral": "Parral", "vi costa": "VI Costa", "linares": "Linares",
-}
-
-
-def classify_zone(city_or_zone):
-    """Map partner city/zone to dashboard zone."""
-    if not city_or_zone:
-        return "Otro"
-    low = city_or_zone.lower().strip()
-    for key, zone in ZONE_MAP.items():
-        if key in low:
-            return zone
-    return "Otro"
+# ── SLA DELIVERY (stock.picking by delivery_zone_id) ──
+# 6 zones: Talca, San Fernando, Curicó, Chillán, Rancagua, VI Costa
+VALID_ZONES = {"Talca", "San Fernando", "Curicó", "Chillán", "Rancagua", "VI Costa"}
 
 
 def extract_sla(models, uid, weeks):
-    """Delivery SLA per zone per week from stock.picking."""
+    """Delivery SLA per zone per week from stock.picking.
+    Zone from partner.delivery_zone_id (partner.delivery.zone model).
+    On time = date_done within 24h of scheduled_date."""
     print("Extracting SLA delivery data...")
     sla_data = []
     for i, wd in enumerate(weeks[:1]):  # SLA for current week only
@@ -598,18 +586,32 @@ def extract_sla(models, uid, weeks):
             ["state", "=", "done"],
             ["date_done", ">=", wd["start"] + " 00:00:00"],
             ["date_done", "<=", wd["end"] + " 23:59:59"],
-        ], ["partner_id", "scheduled_date", "date_done"], 2000)
+        ], ["partner_id", "scheduled_date", "date_done", "sale_id"], 2000)
+
+        # Get delivery_zone_id from sale.order (not res.partner)
+        sale_ids = list(set(p["sale_id"][0] for p in pickings if p.get("sale_id")))
+        sale_zone = {}  # sale_id -> zone name
+        for soff in range(0, len(sale_ids), 200):
+            batch = sale_ids[soff:soff + 200]
+            orders = sr(models, uid, "sale.order", [["id", "in", batch]],
+                         ["id", "delivery_zone_id"], limit=200)
+            for o in orders:
+                dz = o.get("delivery_zone_id")
+                if dz:
+                    sale_zone[o["id"]] = dz[1]  # [id, name]
+
+        # Map picking -> zone via sale_id
+        picking_zone = {}
+        for p in pickings:
+            sid = p["sale_id"][0] if p.get("sale_id") else None
+            picking_zone[p["id"]] = sale_zone.get(sid, "Sin Zona") if sid else "Sin Zona"
 
         zone_stats = {}
         for p in pickings:
             pid = p.get("partner_id")
             if not pid:
                 continue
-            # Get partner city for zone classification
-            partner = sr(models, uid, "res.partner", [["id", "=", pid[0]]],
-                         ["city"], limit=1)
-            city = partner[0].get("city", "") if partner else ""
-            zone = classify_zone(city)
+            zone = picking_zone.get(p["id"], "Sin Zona")
             if zone not in zone_stats:
                 zone_stats[zone] = {"total": 0, "on_time": 0, "late_clients": []}
             zone_stats[zone]["total"] += 1
@@ -636,12 +638,12 @@ def extract_sla(models, uid, weeks):
                 "on_time": st["on_time"],
                 "late": st["total"] - st["on_time"],
                 "pct": pct,
-                "late_clients": st["late_clients"][:5],  # top 5
+                "late_clients": st["late_clients"],  # all late clients
             }
         sla_data.append({"label": wd["label"], "zones": week_sla})
         total_p = sum(s["total"] for s in week_sla.values())
         total_ot = sum(s["on_time"] for s in week_sla.values())
-        print(f"  {wd['label']}: {total_p} pickings, {total_ot} on time")
+        print(f"  {wd['label']}: {total_p} pickings, {total_ot} on time, zones: {list(week_sla.keys())}")
     return sla_data
 
 
@@ -657,8 +659,8 @@ FREQ_MAP = {
 }
 CHURN_MULTIPLIER = 2
 IRREGULAR_DEFAULT_DAYS = 15
-MIN_INVOICES_FOR_CHURN = 4   # need stable purchase history
-MAX_FREQ_DAYS_FOR_CHURN = 60  # exclude seasonal (>60 day frequency)
+MIN_INVOICES_FOR_CHURN = 8   # need solid purchase history
+MAX_FREQ_DAYS_FOR_CHURN = 45  # exclude seasonal/irregular (>45 day frequency)
 
 
 def parse_frecuencia(val):
@@ -760,18 +762,21 @@ def extract_churn(models, uid):
     new_this_week = sum(1 for c in churned if c["new_this_week"])
     print(f"  Posible Churn: {len(churned)} total, {new_this_week} new this week")
 
-    # ── Monthly history (last 6 months) ──
-    print("  Calculating monthly churn history...")
+    # ── Monthly history (last 6 months) — NEW churns per month only ──
+    # A client is "new churn" in month M if they crossed the threshold DURING that month
+    # (were OK at start of month, exceeded threshold by end of month)
+    print("  Calculating monthly churn rate (new per month, not accumulated)...")
     churn_history = []
     for m_offset in range(6):
         ref = today.replace(day=1)
         for _ in range(m_offset):
             ref = (ref - timedelta(days=1)).replace(day=1)
+        m_start = ref
         m_end = (ref + timedelta(days=32)).replace(day=1) - timedelta(days=1)
         m_label = ref.strftime("%b %Y")
 
-        m_churned = 0
-        m_eligible = 0
+        m_new_churn = 0
+        m_active_start = 0
         for pid, last_date in partner_last.items():
             info = partner_freq.get(pid)
             if not info or not info["freq_days"]:
@@ -780,15 +785,21 @@ def extract_churn(models, uid):
                 continue
             if partner_count.get(pid, 0) < MIN_INVOICES_FOR_CHURN:
                 continue
-            days_at_month = (m_end - datetime.strptime(last_date, "%Y-%m-%d")).days
-            if days_at_month < 0:
-                continue
-            m_eligible += 1
-            if days_at_month > info["freq_days"] * CHURN_MULTIPLIER:
-                m_churned += 1
-        m_pct = round(m_churned / m_eligible * 100, 1) if m_eligible > 0 else 0
-        churn_history.append({"month": m_label, "pct": m_pct, "churned": m_churned, "eligible": m_eligible})
-        print(f"    {m_label}: {m_churned}/{m_eligible} = {m_pct}%")
+            ld = datetime.strptime(last_date, "%Y-%m-%d")
+            days_at_start = (m_start - ld).days
+            days_at_end = (m_end - ld).days
+            threshold = info["freq_days"] * CHURN_MULTIPLIER
+            if days_at_start < 0:
+                continue  # last invoice after this month started
+            # Was active at start of month (not yet exceeded threshold)
+            if days_at_start <= threshold:
+                m_active_start += 1
+                # But exceeded by end of month = NEW churn this month
+                if days_at_end > threshold:
+                    m_new_churn += 1
+        m_pct = round(m_new_churn / m_active_start * 100, 1) if m_active_start > 0 else 0
+        churn_history.append({"month": m_label, "pct": m_pct, "new_churn": m_new_churn, "active_start": m_active_start})
+        print(f"    {m_label}: {m_new_churn} new / {m_active_start} active = {m_pct}%")
 
     churn_history.reverse()
 
