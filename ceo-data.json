@@ -1,32 +1,32 @@
 {
-  "updated": "2026-04-28T17:05:07.654021",
+  "updated": "2026-04-28T20:30:16.151051",
   "weeks": [
     {
       "label": "23apr-29apr",
       "start": "2026-04-23",
       "end": "2026-04-29",
-      "ventas": 137956581,
-      "neto": 104419223,
-      "litros": 87524,
-      "litros_retail": 75483,
-      "litros_volumen": 12041,
-      "precio_neto": 1193,
-      "precio_bruto": 1576,
-      "margin": 0.08669,
-      "margin_retail": 0.08855,
-      "margin_volumen": 0.07474,
-      "facturas": 67,
+      "ventas": 153578580,
+      "neto": 116231808,
+      "litros": 97524,
+      "litros_retail": 80483,
+      "litros_volumen": 17041,
+      "precio_neto": 1192,
+      "precio_bruto": 1575,
+      "margin": 0.08596,
+      "margin_retail": 0.08839,
+      "margin_volumen": 0.07423,
+      "facturas": 72,
       "nc": 0,
-      "clientes": 60,
-      "recaud": 164762052,
+      "clientes": 63,
+      "recaud": 214298252,
       "cheques": 17478957,
-      "transf": 142989094,
+      "transf": 192525294,
       "factoring": 4294001,
       "compras_odoo": 79470564,
       "cheq_cartera_saldo": 0,
-      "cheq_recibidos": 44644216,
+      "cheq_recibidos": 52638216,
       "facturas_contado": 8,
-      "facturas_credito": 59,
+      "facturas_credito": 64,
       "margin_by_term": {
         "Prepago": {
           "margin": 0.06593,
@@ -53,9 +53,9 @@
           "days": 15
         },
         "30 Días": {
-          "margin": 0.08954,
-          "normalizado": 0.08954,
-          "count": 51,
+          "margin": 0.08813,
+          "normalizado": 0.08813,
+          "count": 56,
           "days": 30
         },
         "45 Días": {
@@ -71,8 +71,8 @@
           "days": 60
         }
       },
-      "cotiz_canceladas": 3,
-      "visitas": 7,
+      "cotiz_canceladas": 4,
+      "visitas": 8,
       "clientes_nuevos": 4,
       "ppto": 269236,
       "ppto_retail": 199235,
@@ -1290,8 +1290,8 @@
     {
       "date": "28apr",
       "day": "Mar",
-      "litros": 15481,
-      "neto": 18415043
+      "litros": 25481,
+      "neto": 30227628
     },
     {
       "date": "27apr",
@@ -1386,20 +1386,16 @@
   ],
   "banks": [
     {
+      "name": "DE CHILE",
+      "balance": 23169927
+    },
+    {
       "name": "ITAU",
       "balance": 22692677
     },
     {
       "name": "CAJA",
       "balance": 3291177
-    },
-    {
-      "name": "DE CHILE",
-      "balance": 1659828
-    },
-    {
-      "name": "SANTANDER",
-      "balance": 1465063
     },
     {
       "name": "ESTADO",
@@ -1410,19 +1406,23 @@
       "balance": 823881
     },
     {
+      "name": "SANTANDER",
+      "balance": 555063
+    },
+    {
       "name": "DE CREDITO",
       "balance": -838790
     }
   ],
-  "total_cash": 30322412,
+  "total_cash": 50922511,
   "receivables": {
-    "open_invoices": 286,
-    "total_due": 615123597,
-    "current": 472751867,
-    "overdue": 142371730,
-    "pct_overdue": 23.1,
+    "open_invoices": 282,
+    "total_due": 598184795,
+    "current": 479394866,
+    "overdue": 118789929,
+    "pct_overdue": 19.9,
     "aging": {
-      "0-30": 120578366,
+      "0-30": 96996565,
       "31-60": 12027801,
       "61-90": 0,
       "90+": 9765563
@@ -1465,10 +1465,6 @@
         "amount": 13390401
       },
       {
-        "name": "SERVICIOS AGRICOLAS HERNANDEZ LIMITADA",
-        "amount": 13275000
-      },
-      {
         "name": "AGRICOLA AGROBOSQUES SAN ISIDRO S.A.",
         "amount": 13025053
       },
@@ -1501,12 +1497,16 @@
         "amount": 8824001
       },
       {
-        "name": "AGRICOLA TRICAHUE LIMITADA",
-        "amount": 8668001
+        "name": "AGRICOLA LOS BOLDOS SPA",
+        "amount": 8482999
       },
       {
         "name": "VALENZUELA LEIVA MAX",
         "amount": 7895000
+      },
+      {
+        "name": "TRANSPORTES SAN MARCELO SPA",
+        "amount": 7740000
       }
     ]
   },
@@ -1598,8 +1598,8 @@
   "riesgo": {
     "cubierto": 0,
     "cubierto_count": 0,
-    "no_cubierto": 615123597,
-    "no_cubierto_count": 286,
+    "no_cubierto": 598184795,
+    "no_cubierto_count": 282,
     "pct_monto": 100.0,
     "pct_count": 100.0
   },
