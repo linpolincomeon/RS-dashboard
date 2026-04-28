@@ -153,7 +153,7 @@ tr:hover td{background:#fafaf8}
 
         <!-- Hot Deals -->
         <div class="sec"><div class="sec-h"><h2>🔥 Hot Deals — Cotizados 30d</h2><span class="badge" id="hotCount">0</span></div>
-          <div class="sec-b" style="max-height:480px;overflow-y:auto"><table><thead><tr><th>Cliente</th><th>Etapa</th><th>Ejecutivo</th><th>Litros</th><th>Días</th></tr></thead><tbody id="hotBody"></tbody></table>
+          <div class="sec-b" style="max-height:480px;overflow-y:auto"><table><thead><tr><th>Cliente</th><th>Etapa</th><th>Ejecutivo</th><th>Litros</th><th>Fecha</th></tr></thead><tbody id="hotBody"></tbody></table>
           <div class="nodata" id="noHot" style="display:none">Sin hot deals</div></div></div>
       </div>
 
@@ -172,7 +172,7 @@ tr:hover td{background:#fafaf8}
 
         <!-- Hot Deals (same as semanal) -->
         <div class="sec"><div class="sec-h"><h2>🔥 Hot Deals — Cotizados 30d</h2><span class="badge" id="hotCountAccum">0</span></div>
-          <div class="sec-b" style="max-height:480px;overflow-y:auto"><table><thead><tr><th>Cliente</th><th>Etapa</th><th>Ejecutivo</th><th>Litros</th><th>Días</th></tr></thead><tbody id="hotBodyAccum"></tbody></table>
+          <div class="sec-b" style="max-height:480px;overflow-y:auto"><table><thead><tr><th>Cliente</th><th>Etapa</th><th>Ejecutivo</th><th>Litros</th><th>Fecha</th></tr></thead><tbody id="hotBodyAccum"></tbody></table>
           <div class="nodata" id="noHotAccum" style="display:none">Sin hot deals</div></div></div>
       </div>
     </div>
@@ -244,6 +244,7 @@ let D = null;
 let CEO = null; // ceo-data.json for weekly margins
 let selectedWeek = 0;
 let selectedExec = 0; // 0=Toro, 1=Muñoz, 2=Ron, 3=Freelancers
+let execSubTab = 'semanal';
 let csSubTab = 'semanal'; // For CS tab sub-tabs
 let chartWeekly = null, chartMargenZona = null, chartMargenExec = null;
 
@@ -710,59 +711,68 @@ function renderEjecutivos() {
 
   // Semanal / Acumulado sub-tabs
   h += '<div class="tab-bar" style="margin-bottom:12px">';
-  h += `<button class="tab-btn active" onclick="switchExecSubTab('semanal')">Semanal</button>`;
-  h += `<button class="tab-btn" onclick="switchExecSubTab('acumulado')">Acumulado Mes</button>`;
+  h += '<button class="tab-btn' + (execSubTab === 'semanal' ? ' active' : '') + '" onclick="switchExecSubTab(\'semanal\')">Semanal</button>';
+  h += '<button class="tab-btn' + (execSubTab === 'acumulado' ? ' active' : '') + '" onclick="switchExecSubTab(\'acumulado\')">Acumulado Mes</button>';
   h += '</div>';
 
   // Get data for this exec
   const freelancerNames = selectedExec === 3 ? getFreelancerNames() : [];
 
-  // KPIs — all weekly when possible
+  const isExecAccum = execSubTab === 'acumulado';
   let litros = 0, leads = 0, cotizaciones = 0, nuevoClientes = 0, margen = 0, ganados = 0;
 
-  // Litros — weekly from weekly_history.litros_by_user, fallback to monthly
+  // Litros
   const hist = (V.weekly_history || []).slice().reverse();
   const wkData = hist[selectedWeek] || {};
   const wkLbu = wkData.litros_by_user || {};
-  const lbuExec = Object.keys(wkLbu).length > 0 ? wkLbu : lbu;
-  for (const [user, val] of Object.entries(lbuExec)) {
-    if (matchesExec(user)) litros += val;
+  if (isExecAccum) {
+    for (const [user, val] of Object.entries(lbu)) { if (matchesExec(user)) litros += val; }
+  } else {
+    const lbuExec = Object.keys(wkLbu).length > 0 ? wkLbu : lbu;
+    for (const [user, val] of Object.entries(lbuExec)) { if (matchesExec(user)) litros += val; }
   }
 
-  // Leads (weekly from selected week)
-  for (const [user, val] of Object.entries(st.leads?.by_user || {})) {
-    if (matchesExec(user)) leads += val;
+  // Leads
+  const fwE = D.funnel_weeks || [];
+  if (isExecAccum) {
+    fwE.forEach(w => { for (const [user, val] of Object.entries(w.stages?.leads?.by_user || {})) { if (matchesExec(user)) leads += val; } });
+  } else {
+    for (const [user, val] of Object.entries(st.leads?.by_user || {})) { if (matchesExec(user)) leads += val; }
   }
 
-  // Cotizaciones (weekly from selected week)
-  for (const [user, val] of Object.entries(st.cotizacion?.by_user || {})) {
-    if (matchesExec(user)) cotizaciones += val;
+  // Cotizaciones
+  if (isExecAccum) {
+    fwE.forEach(w => { for (const [user, val] of Object.entries(w.stages?.cotizacion?.by_user || {})) { if (matchesExec(user)) cotizaciones += val; } });
+  } else {
+    for (const [user, val] of Object.entries(st.cotizacion?.by_user || {})) { if (matchesExec(user)) cotizaciones += val; }
   }
 
-  // Nuevos Clientes (filtered to selected week)
-  for (const c of ncDetail) {
-    if (matchesExec(c.vendedor) && ws && we && c.fecha >= ws && c.fecha <= we) nuevoClientes += 1;
+  // Nuevos Clientes
+  if (isExecAccum) {
+    for (const c of ncDetail) { if (matchesExec(c.vendedor)) nuevoClientes += 1; }
+  } else {
+    for (const c of ncDetail) { if (matchesExec(c.vendedor) && ws && we && c.fecha >= ws && c.fecha <= we) nuevoClientes += 1; }
   }
 
-  // Margen — weekly from weekly_history.margin_by_user, fallback to monthly
-  const histE = (V.weekly_history || []).slice().reverse();
-  const wkMbu = (histE[selectedWeek] || {}).margin_by_user || {};
-  if (Object.keys(wkMbu).length > 0) {
-    for (const [user, val] of Object.entries(wkMbu)) {
-      if (matchesExec(user)) { margen = val; break; }
+  // Margen
+  if (isExecAccum) {
+    for (const [user, val] of Object.entries(T.margin_by_user || {})) { if (matchesExec(user)) { margen = val; break; } }
+  } else {
+    const wkMbu = (wkData.margin_by_user || {});
+    if (Object.keys(wkMbu).length > 0) {
+      for (const [user, val] of Object.entries(wkMbu)) { if (matchesExec(user)) { margen = val; break; } }
+    }
+    if (!margen) {
+      for (const [user, val] of Object.entries(T.margin_by_user || {})) { if (matchesExec(user)) { margen = val; break; } }
     }
   }
-  if (!margen) {
-    for (const [user, val] of Object.entries(T.margin_by_user || {})) {
-      if (matchesExec(user)) { margen = val; break; }
-    }
-  }
 
-  // Ganados (in selected week)
-  for (const w of wonAll) {
-    if (ws && we && (w.last_update || '') >= ws && (w.last_update || '') <= we && matchesExec(w.exec)) {
-      ganados += 1;
-    }
+  // Ganados
+  const monthStart = V.month_start || '';
+  if (isExecAccum) {
+    for (const w of wonAll) { if ((w.last_update || '') >= monthStart && matchesExec(w.exec)) ganados += 1; }
+  } else {
+    for (const w of wonAll) { if (ws && we && (w.last_update || '') >= ws && (w.last_update || '') <= we && matchesExec(w.exec)) ganados += 1; }
   }
 
   // Individual lead meta for single exec: 45 / num_freelancers for freelancers, else individual goal
@@ -785,9 +795,10 @@ function renderEjecutivos() {
   h += mkKpi('c-green', 'Ganados', ganados, 'En semana actual', null, null);
   h += '</div>';
 
-  // Clientes Nuevos table — filtered to selected week
+  // Clientes Nuevos table — filtered to week or month
   const thisExecNewClients = ncDetail.filter(c => {
     if (!matchesExec(c.vendedor) && !(selectedExec === 3 && freelancerNames.includes(c.vendedor))) return false;
+    if (isExecAccum) return true; // show all month
     if (ws && we && c.fecha) return c.fecha >= ws && c.fecha <= we;
     return false;
   });
@@ -811,13 +822,12 @@ function renderEjecutivos() {
   });
 
   h += '<div class="sec"><div class="sec-h"><h2>🎯 Oportunidades</h2></div><div class="sec-b" style="max-height:400px;overflow-y:auto"><table>';
-  h += '<thead><tr><th>Cliente</th><th>Etapa</th><th>Litros Est.</th><th>Días Act.</th></tr></thead><tbody>';
+  h += '<thead><tr><th>Cliente</th><th>Etapa</th><th>Litros Est.</th><th>Fecha</th></tr></thead><tbody>';
   if (thisExecOpportunities.length === 0) {
     h += '<tr><td colspan="4" style="text-align:center;color:var(--dim);padding:20px">Sin oportunidades</td></tr>';
   } else {
     thisExecOpportunities.sort((a, b) => (b.value || 0) - (a.value || 0)).slice(0, 20).forEach(p => {
-      const days = p.days_since_activity ?? p.days_in_stage ?? 0;
-      h += `<tr><td class="bold">${H(p.name)}</td><td>${stageTag(p.stage, p.stage_class)}</td><td>${fL(p.value)}</td><td><strong>${days}</strong></td></tr>`;
+      h += `<tr><td class="bold">${H(p.name)}</td><td>${stageTag(p.stage, p.stage_class)}</td><td>${fL(p.value)}</td><td>${p.last_update || '—'}</td></tr>`;
     });
   }
   h += '</tbody></table></div></div>';
@@ -832,7 +842,7 @@ function switchExec(idx) {
 }
 
 function switchExecSubTab(subTab) {
-  // For now, just a placeholder - both semanal and acumulado show same data
+  execSubTab = subTab;
   renderEjecutivos();
 }
 
@@ -1166,10 +1176,8 @@ function renderHotDeals() {
   if (items.length === 0) { document.getElementById('noHot').style.display = 'block'; return; }
   document.getElementById('noHot').style.display = 'none';
   items.forEach(p => {
-    const days = p.days_since_activity ?? p.days_in_stage;
-    const dc = days <= 7 ? 'tag-g' : days <= 14 ? 'tag-y' : 'tag-orange';
     const tr = document.createElement('tr');
-    tr.innerHTML = `<td class="bold">${H(p.name)}</td><td>${stageTag(p.stage, p.stage_class)}</td><td>${H((p.exec || '').split(' ').slice(0, 2).join(' '))}</td><td>${fL(p.value)}</td><td><span class="tag ${dc}">${days}d</span></td>`;
+    tr.innerHTML = `<td class="bold">${H(p.name)}</td><td>${stageTag(p.stage, p.stage_class)}</td><td>${H((p.exec || '').split(' ').slice(0, 2).join(' '))}</td><td>${fL(p.value)}</td><td>${p.last_update || '—'}</td>`;
     tbody.appendChild(tr);
   });
 }
@@ -1184,10 +1192,8 @@ function renderHotDealsAccum() {
   if (items.length === 0) { document.getElementById('noHotAccum').style.display = 'block'; return; }
   document.getElementById('noHotAccum').style.display = 'none';
   items.forEach(p => {
-    const days = p.days_since_activity ?? p.days_in_stage;
-    const dc = days <= 7 ? 'tag-g' : days <= 14 ? 'tag-y' : 'tag-orange';
     const tr = document.createElement('tr');
-    tr.innerHTML = `<td class="bold">${H(p.name)}</td><td>${stageTag(p.stage, p.stage_class)}</td><td>${H((p.exec || '').split(' ').slice(0, 2).join(' '))}</td><td>${fL(p.value)}</td><td><span class="tag ${dc}">${days}d</span></td>`;
+    tr.innerHTML = `<td class="bold">${H(p.name)}</td><td>${stageTag(p.stage, p.stage_class)}</td><td>${H((p.exec || '').split(' ').slice(0, 2).join(' '))}</td><td>${fL(p.value)}</td><td>${p.last_update || '—'}</td>`;
     tbody.appendChild(tr);
   });
 }
