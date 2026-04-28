@@ -726,11 +726,15 @@ function renderEjecutivos() {
     if (matchesExec(c.vendedor) && ws && we && c.fecha >= ws && c.fecha <= we) nuevoClientes += 1;
   }
 
-  // Margen — weekly from ceo-data if available, else monthly
-  const ceoWeekE = (CEO && CEO.weeks) ? CEO.weeks[selectedWeek] : null;
-  if (ceoWeekE && ceoWeekE.margin != null) {
-    margen = Math.round(ceoWeekE.margin * 1000) / 10; // overall margin for the week
-  } else {
+  // Margen — weekly from weekly_history.margin_by_user, fallback to monthly
+  const histE = (V.weekly_history || []).slice().reverse();
+  const wkMbu = (histE[selectedWeek] || {}).margin_by_user || {};
+  if (Object.keys(wkMbu).length > 0) {
+    for (const [user, val] of Object.entries(wkMbu)) {
+      if (matchesExec(user)) { margen = val; break; }
+    }
+  }
+  if (!margen) {
     for (const [user, val] of Object.entries(T.margin_by_user || {})) {
       if (matchesExec(user)) { margen = val; break; }
     }
@@ -920,9 +924,17 @@ function renderVentas() {
     ? wonAll.filter(w => (w.last_update || '') >= (V.month_start || ''))
     : wonAll.filter(w => ws && we && (w.last_update || '') >= ws && (w.last_update || '') <= we);
 
-  // Build KPI HTML
+  // Budget for acumulado: monthly litros goal from company_goals
+  const ltGoalMes = CG.litros_mes || 0;
+  const retGoal = 90;
+
+  // Build KPI HTML — all with metas for color coding
   let kh = '';
-  kh += mkKpi('c-red', 'Litros Totales', fL(wkLitros), isAccum ? 'Acumulado mes' : (wkPct + '% de meta'), isAccum ? null : wkLitros, isAccum ? null : wkBudget);
+  if (isAccum) {
+    kh += mkKpi('c-red', 'Litros Totales', fL(wkLitros), 'Meta: ' + fL(ltGoalMes), wkLitros, ltGoalMes || 1);
+  } else {
+    kh += mkKpi('c-red', 'Litros Totales', fL(wkLitros), wkPct + '% de meta ' + fL(wkBudget), wkLitros, wkBudget || 1);
+  }
   kh += mkKpi('c-green', 'Litros Fidelización', fL(litrosFidelizacion), 'No ejecutivos comerciales', null, null);
   kh += mkKpi('c-yellow', 'Litros Freelancer', fL(litrosFreelancer), 'Otros vendedores', null, null);
   kh += mkKpi('c-blue', 'Litros Nuevos', fL(litrosNuevos), isAccum ? 'Mes' : 'Esta semana', null, null);
@@ -931,7 +943,7 @@ function renderVentas() {
   kh += mkKpi('c-green', 'Nuevos Clientes', wCierre, 'Meta: ' + cierreGoal, wCierre, cierreGoal);
   kh += mkKpi('c-blue', 'Margen Retail', mRetail + '%', 'Meta: ' + (CG.margen_retail || 8.5) + '%', mRetail, CG.margen_retail || 8.5);
   kh += mkKpi('c-red', 'Margen Volumen', mVol + '%', 'Meta: ' + (CG.margen_volumen || 6) + '%', mVol, CG.margen_volumen || 6);
-  kh += mkKpi('c-green', 'Retención', retPct + '%', 'Tasa de retención', null, null);
+  kh += mkKpi('c-green', 'Retención', retPct + '%', 'Meta: ' + retGoal + '%', retPct, retGoal);
   kh += mkKpi('c-yellow', 'Ganados', wGanados.length, isAccum ? 'Mes' : 'Esta semana', null, null);
   document.getElementById('kpiRow').innerHTML = kh;
 
@@ -979,15 +991,21 @@ function renderWeeklyChart() {
 function renderRanking() {
   const tbody = document.getElementById('rankingBody'); tbody.innerHTML = '';
   const T = (D.ventas || {}).totals || {};
-  const lbu = T.litros_by_user || {};
+  const lbuMonth = T.litros_by_user || {};
   const pf = getProratedFactor(D.ventas?.month_start || new Date());
   const week = getCurrentWeek();
 
+  // Weekly litros from weekly_history
+  const hist = ((D.ventas || {}).weekly_history || []).slice().reverse();
+  const wkLbu = (hist[selectedWeek] || {}).litros_by_user || {};
+  const hasWkLbu = Object.keys(wkLbu).length > 0;
+
   // Build unified set of allowed vendor names, deduplicated by norm()
-  const nameMap = {}; // norm(name) -> best display name
+  const nameMap = {};
   const addName = n => { const nn = norm(n); if (!nameMap[nn]) nameMap[nn] = n; };
   Object.keys(D.vendor_goals || {}).forEach(n => { if (isAllowed(n)) addName(n); });
-  Object.keys(lbu).forEach(n => { if (isAllowed(n)) addName(n); });
+  Object.keys(lbuMonth).forEach(n => { if (isAllowed(n)) addName(n); });
+  if (hasWkLbu) Object.keys(wkLbu).forEach(n => { if (isAllowed(n)) addName(n); });
   (D.executives || []).forEach(e => { if (isAllowed(e.name)) addName(e.name); });
   const vendorNames = Object.values(nameMap);
 
@@ -995,20 +1013,26 @@ function renderRanking() {
   const execMap = {};
   (D.executives || []).forEach(e => { execMap[norm(e.name)] = e; });
 
+  // Use weekly litros for semanal ranking, monthly for % meta
   const rows = vendorNames.map(n => {
-    const lt = findInByUser(lbu, n);
+    const ltWeek = hasWkLbu ? findInByUser(wkLbu, n) : 0;
+    const ltMonth = findInByUser(lbuMonth, n);
     const g = getGoal(n);
     const gL = g.litros_mes || 0;
     const pM = gL > 0 ? gL * pf : 1;
-    const ltP = gL > 0 ? Math.round((lt / pM) * 100) : 0;
+    const ltP = gL > 0 ? Math.round((ltMonth / pM) * 100) : (ltMonth > 0 ? 1 : 0);
     const ex = execMap[norm(n)] || {};
-    return { name: n, ltP, m7: ex.moved || 0, m30: ex.moved_30d || 0 };
-  }).sort((a, b) => b.ltP - a.ltP);
+    return { name: n, ltWeek, ltMonth, ltP, m7: ex.moved || 0, m30: ex.moved_30d || 0 };
+  }).sort((a, b) => b.ltMonth - a.ltMonth);
+
+  // Update header
+  const thead = tbody.closest('table').querySelector('thead tr');
+  if (thead) thead.innerHTML = '<th>#</th><th>Ejecutivo</th><th>Litros Sem.</th><th>% Meta Mes</th><th>Mov. 7d</th><th>Mov. 30d</th>';
 
   rows.forEach((r, i) => {
     const lc = r.ltP >= 100 ? 'tag-g' : r.ltP >= 60 ? 'tag-y' : 'tag-r';
     const tr = document.createElement('tr');
-    tr.innerHTML = `<td><strong>${i + 1}</strong></td><td>${H(r.name)}</td><td><span class="tag ${lc}">${r.ltP}%</span></td><td><strong>${r.m7}</strong></td><td><strong>${r.m30}</strong></td>`;
+    tr.innerHTML = '<td><strong>' + (i+1) + '</strong></td><td>' + H(r.name) + '</td><td><strong>' + fL(r.ltWeek) + '</strong></td><td><span class="tag ' + lc + '">' + r.ltP + '%</span></td><td><strong>' + r.m7 + '</strong></td><td><strong>' + r.m30 + '</strong></td>';
     tbody.appendChild(tr);
   });
 }
