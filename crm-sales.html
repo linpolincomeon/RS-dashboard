@@ -104,10 +104,14 @@ tr:hover td{background:#fafaf8}
   <div id="content" style="display:none">
     <div class="tab-bar">
       <button class="tab-btn active" onclick="switchTab('ventas')">Ventas</button>
+      <button class="tab-btn" onclick="switchTab('ejecutivos')">👔 Ejecutivos</button>
       <button class="tab-btn" onclick="switchTab('funnel')">🎯 Funnel</button>
       <button class="tab-btn" onclick="switchTab('vendedores')">👤 Vendedores</button>
       <button class="tab-btn" onclick="switchTab('fidelizacion')">Fidelización / CS</button>
     </div>
+
+    <!-- ═══ TAB: EJECUTIVOS ═══ -->
+    <div class="tab-panel" id="tab-ejecutivos"></div>
 
     <!-- ═══ TAB: FUNNEL ═══ -->
     <div class="tab-panel" id="tab-funnel"></div>
@@ -191,6 +195,7 @@ tr:hover td{background:#fafaf8}
 <script>
 let D = null;
 let selectedWeek = 0;
+let selectedExec = 0; // 0=Toro, 1=Muñoz, 2=Ron, 3=Freelancers
 let chartWeekly = null, chartMargenZona = null, chartMargenExec = null;
 
 const ALLOWED_VENDORS = [
@@ -215,6 +220,15 @@ function getGoal(name) {
 const H = s => { if (!s) return ''; const d = document.createElement('div'); d.textContent = s; return d.innerHTML; };
 const fL = n => n ? Math.round(n).toLocaleString('es-CL') + ' L' : '0 L';
 const pct = (v, g) => g ? Math.min(Math.round((v / g) * 100), 999) : 0;
+
+// Global helper to lookup values in byUser maps by normalized name
+const findInByUser = (byUser, name) => {
+  if (!byUser) return 0;
+  if (byUser[name] !== undefined) return byUser[name];
+  const nn = norm(name);
+  for (const [k, v] of Object.entries(byUser)) { if (norm(k) === nn) return v; }
+  return 0;
+};
 const clr = (v, g) => { const p = g ? (v / g) * 100 : 0; return p >= 100 ? 'g' : p >= 60 ? 'y' : 'r'; };
 const tagC = c => c === 'g' ? 'tag-g' : c === 'y' ? 'tag-y' : 'tag-r';
 const barC = c => c === 'g' ? 'var(--green)' : c === 'y' ? 'var(--yellow)' : 'var(--red)';
@@ -263,6 +277,7 @@ function selectWeek(idx) {
   if (document.getElementById('tab-ventas').classList.contains('active')) {
     renderVentas();
   }
+  if (document.getElementById('tab-ejecutivos').classList.contains('active')) renderEjecutivos();
   if (document.getElementById('tab-funnel').classList.contains('active')) renderFunnel();
   if (document.getElementById('tab-vendedores').classList.contains('active')) renderVendedores();
 }
@@ -276,6 +291,7 @@ function switchTab(tab) {
   document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
   document.getElementById('tab-' + tab).classList.add('active');
   document.querySelector(`.tab-btn[onclick*="${tab}"]`).classList.add('active');
+  if (tab === 'ejecutivos' && D) renderEjecutivos();
   if (tab === 'funnel' && D) renderFunnel();
   if (tab === 'vendedores' && D) renderVendedores();
   if (tab === 'fidelizacion' && D) renderFidelizacion();
@@ -520,6 +536,214 @@ function renderVendedores() {
 }
 
 // ═══════════════════════════════════════
+// EJECUTIVOS TAB
+// ═══════════════════════════════════════
+const EJECUTIVOS = [
+  { key: 'toro', name: 'Toro', fullName: 'toro gonzález sebastian enrique' },
+  { key: 'munoz', name: 'Muñoz', fullName: 'muñoz encalada joaquin' },
+  { key: 'ron', name: 'Ron', fullName: 'yeniré ron' }, // Matches both 'yeniré ron' and 'yenire ron'
+  { key: 'freelancers', name: 'Freelancers', fullName: null }
+];
+
+function getFreelancerNames() {
+  // All users with activity who are NOT in ALLOWED_VENDORS and NOT in CS_TEAM
+  const lbu = (D.ventas || {}).totals?.litros_by_user || {};
+  const ncDetail = (D.ventas || {}).new_clients?.detail || [];
+  const seenNames = new Set();
+
+  // Collect all vendor names from litros
+  for (const name of Object.keys(lbu)) {
+    if (!isAllowed(name) && !isCS(name)) seenNames.add(norm(name));
+  }
+  // Collect from new clients
+  for (const c of ncDetail) {
+    if (!isAllowed(c.vendedor) && !isCS(c.vendedor)) seenNames.add(norm(c.vendedor));
+  }
+  // Collect from won deals
+  for (const w of (D.won_deals || [])) {
+    if (!isAllowed(w.exec) && !isCS(w.exec)) seenNames.add(norm(w.exec));
+  }
+  // Collect from pipeline
+  for (const p of (D.pipeline || [])) {
+    if (!isAllowed(p.exec) && !isCS(p.exec)) seenNames.add(norm(p.exec));
+  }
+
+  // Map back to original names
+  const originalNames = {};
+  for (const name of Object.keys(lbu)) {
+    const nn = norm(name);
+    if (seenNames.has(nn) && !originalNames[nn]) originalNames[nn] = name;
+  }
+  for (const c of ncDetail) {
+    const nn = norm(c.vendedor);
+    if (seenNames.has(nn) && !originalNames[nn]) originalNames[nn] = c.vendedor;
+  }
+  for (const w of (D.won_deals || [])) {
+    const nn = norm(w.exec);
+    if (seenNames.has(nn) && !originalNames[nn]) originalNames[nn] = w.exec;
+  }
+  for (const p of (D.pipeline || [])) {
+    const nn = norm(p.exec);
+    if (seenNames.has(nn) && !originalNames[nn]) originalNames[nn] = p.exec;
+  }
+
+  return Array.from(seenNames).sort().map(nn => originalNames[nn]);
+}
+
+function renderEjecutivos() {
+  if (!D) return;
+
+  const V = D.ventas || {}, T = V.totals || {}, VG = D.vendor_goals || {};
+  const lbu = T.litros_by_user || {};
+  const week = getCurrentWeek();
+  const st = week?.stages || {};
+  const ncDetail = V.new_clients?.detail || [];
+  const pipeline = D.pipeline || [];
+  const wonAll = D.won_deals || [];
+  const CG = D.company_goals || {};
+
+  const ws = week?.week_start || '', we = week?.week_end || '';
+
+  // Determine current exec name and filter
+  let currentExecName = null;
+  if (selectedExec < 3) {
+    currentExecName = EJECUTIVOS[selectedExec].fullName;
+  }
+
+  // Filter helper
+  const matchesExec = (testName) => {
+    if (selectedExec === 3) {
+      // Freelancers: NOT in ALLOWED_VENDORS and NOT in CS_TEAM
+      return !isAllowed(testName) && !isCS(testName);
+    } else if (currentExecName) {
+      // Match by normalized name (handles variations like 'yeniré ron' vs 'yenire ron')
+      return norm(testName) === norm(currentExecName);
+    }
+    return false;
+  };
+
+  // Build HTML
+  let h = '<div id="weekSelector" style="display:flex;gap:6px;margin-bottom:18px"></div>';
+
+  // Sub-tabs for each exec
+  h += '<div class="tab-bar" style="margin-bottom:12px">';
+  EJECUTIVOS.forEach((e, i) => {
+    h += `<button class="tab-btn${i === selectedExec ? ' active' : ''}" onclick="switchExec(${i})">${e.name}</button>`;
+  });
+  h += '</div>';
+
+  // Semanal / Acumulado sub-tabs
+  h += '<div class="tab-bar" style="margin-bottom:12px">';
+  h += `<button class="tab-btn active" onclick="switchExecSubTab('semanal')">Semanal</button>`;
+  h += `<button class="tab-btn" onclick="switchExecSubTab('acumulado')">Acumulado Mes</button>`;
+  h += '</div>';
+
+  // Get data for this exec
+  const freelancerNames = selectedExec === 3 ? getFreelancerNames() : [];
+
+  // KPIs
+  let litros = 0, leads = 0, cotizaciones = 0, nuevoClientes = 0, margen = 0, ganados = 0;
+
+  // Litros (monthly or week depending on sub-tab)
+  for (const [user, val] of Object.entries(lbu)) {
+    if (matchesExec(user)) litros += val;
+  }
+
+  // Leads (weekly)
+  for (const [user, val] of Object.entries(st.leads?.by_user || {})) {
+    if (matchesExec(user)) leads += val;
+  }
+
+  // Cotizaciones (weekly)
+  for (const [user, val] of Object.entries(st.cotizacion?.by_user || {})) {
+    if (matchesExec(user)) cotizaciones += val;
+  }
+
+  // Nuevos Clientes (from factura)
+  for (const c of ncDetail) {
+    if (matchesExec(c.vendedor)) nuevoClientes += 1;
+  }
+
+  // Margen (if available)
+  for (const [user, val] of Object.entries(T.margin_by_user || {})) {
+    if (matchesExec(user)) { margen = val; break; }
+  }
+
+  // Ganados (in selected week)
+  for (const w of wonAll) {
+    if (ws && we && (w.last_update || '') >= ws && (w.last_update || '') <= we && matchesExec(w.exec)) {
+      ganados += 1;
+    }
+  }
+
+  // Individual lead meta for single exec: 45 / num_freelancers for freelancers, else individual goal
+  let leadsGoal = 45;
+  if (selectedExec < 3 && currentExecName) {
+    const g = getGoal(currentExecName);
+    leadsGoal = g.leads_semana || 45;
+  } else if (selectedExec === 3) {
+    // For freelancers, share the 45 among them (minimum 1 per person)
+    leadsGoal = Math.max(1, Math.round(45 / Math.max(freelancerNames.length, 1)));
+  }
+
+  // KPI row
+  h += '<div class="kpi-row" id="execKpiRow">';
+  h += mkKpi('c-red', 'Litros', fL(litros), 'Mes actual', null, null);
+  h += mkKpi('c-red', 'Leads', leads, `Meta: ${leadsGoal}`, leads, leadsGoal);
+  h += mkKpi('c-yellow', 'Cotizaciones', cotizaciones, 'Semana actual', null, null);
+  h += mkKpi('c-green', 'Nuevos Clientes', nuevoClientes, 'Primera factura', null, null);
+  h += mkKpi('c-blue', 'Margen', margen > 0 ? margen + '%' : '—', 'Porcentaje neto', null, null);
+  h += mkKpi('c-green', 'Ganados', ganados, 'En semana actual', null, null);
+  h += '</div>';
+
+  // Clientes Nuevos table
+  const thisExecNewClients = selectedExec === 3
+    ? ncDetail.filter(c => freelancerNames.includes(c.vendedor))
+    : ncDetail.filter(c => matchesExec(c.vendedor));
+
+  h += '<div class="sec"><div class="sec-h"><h2>📊 Clientes Nuevos</h2></div><div class="sec-b" style="max-height:400px;overflow-y:auto"><table>';
+  h += '<thead><tr><th>Cliente</th><th>Fecha</th><th>Litros</th></tr></thead><tbody>';
+  if (thisExecNewClients.length === 0) {
+    h += '<tr><td colspan="3" style="text-align:center;color:var(--dim);padding:20px">Sin clientes nuevos</td></tr>';
+  } else {
+    thisExecNewClients.sort((a, b) => (b.fecha || '').localeCompare(a.fecha || '')).forEach(c => {
+      h += `<tr><td class="bold">${H(c.cliente)}</td><td>${c.fecha || '—'}</td><td>${fL(c.litros)}</td></tr>`;
+    });
+  }
+  h += '</tbody></table></div></div>';
+
+  // Oportunidades table (from pipeline filtered to this exec)
+  const thisExecOpportunities = selectedExec === 3
+    ? pipeline.filter(p => freelancerNames.includes(p.exec || ''))
+    : pipeline.filter(p => matchesExec(p.exec));
+
+  h += '<div class="sec"><div class="sec-h"><h2>🎯 Oportunidades</h2></div><div class="sec-b" style="max-height:400px;overflow-y:auto"><table>';
+  h += '<thead><tr><th>Cliente</th><th>Etapa</th><th>Litros Est.</th><th>Días Act.</th></tr></thead><tbody>';
+  if (thisExecOpportunities.length === 0) {
+    h += '<tr><td colspan="4" style="text-align:center;color:var(--dim);padding:20px">Sin oportunidades</td></tr>';
+  } else {
+    thisExecOpportunities.sort((a, b) => (b.value || 0) - (a.value || 0)).slice(0, 20).forEach(p => {
+      const days = p.days_since_activity ?? p.days_in_stage ?? 0;
+      h += `<tr><td class="bold">${H(p.name)}</td><td>${stageTag(p.stage, p.stage_class)}</td><td>${fL(p.value)}</td><td><strong>${days}</strong></td></tr>`;
+    });
+  }
+  h += '</tbody></table></div></div>';
+
+  document.getElementById('tab-ejecutivos').innerHTML = h;
+  renderWeekSelector();
+}
+
+function switchExec(idx) {
+  selectedExec = idx;
+  renderEjecutivos();
+}
+
+function switchExecSubTab(subTab) {
+  // For now, just a placeholder - both semanal and acumulado show same data
+  renderEjecutivos();
+}
+
+// ═══════════════════════════════════════
 // VENTAS TAB
 // ═══════════════════════════════════════
 let ventasSubTab = 'semanal'; // Track which sub-tab is active
@@ -683,15 +907,6 @@ function renderRanking() {
   const execMap = {};
   (D.executives || []).forEach(e => { execMap[norm(e.name)] = e; });
 
-  // Lookup helper
-  const findInByUser = (byUser, name) => {
-    if (!byUser) return 0;
-    if (byUser[name] !== undefined) return byUser[name];
-    const nn = norm(name);
-    for (const [k, v] of Object.entries(byUser)) { if (norm(k) === nn) return v; }
-    return 0;
-  };
-
   const rows = vendorNames.map(n => {
     const lt = findInByUser(lbu, n);
     const g = getGoal(n);
@@ -728,15 +943,6 @@ function renderRankingAccum() {
   // Build exec lookup
   const execMap = {};
   (D.executives || []).forEach(e => { execMap[norm(e.name)] = e; });
-
-  // Lookup helper
-  const findInByUser = (byUser, name) => {
-    if (!byUser) return 0;
-    if (byUser[name] !== undefined) return byUser[name];
-    const nn = norm(name);
-    for (const [k, v] of Object.entries(byUser)) { if (norm(k) === nn) return v; }
-    return 0;
-  };
 
   const rows = vendorNames.map(n => {
     const lt = findInByUser(lbu, n);
