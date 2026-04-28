@@ -1,5 +1,5 @@
 {
-  "updated": "2026-04-28T20:20:03.625020",
+  "updated": "2026-04-28T20:53:58.885292",
   "week": {
     "start": "2026-04-23",
     "end": "2026-04-29",
@@ -7,9 +7,9 @@
   },
   "has_litros": true,
   "summary": {
-    "active": 759,
+    "active": 760,
     "new_this_week": 49,
-    "moved_this_week": 171,
+    "moved_this_week": 172,
     "stale_7d": 693,
     "won": 248,
     "total_value": 4097149
@@ -139,28 +139,28 @@
       "won": 1
     },
     {
+      "name": "Marcela Márquez",
+      "total": 1,
+      "moved": 1,
+      "moved_30d": 1,
+      "stale": 0,
+      "value": 0,
+      "won": 12
+    },
+    {
       "name": "Julio Phillipi",
       "total": 1,
       "moved": 0,
       "moved_30d": 0,
       "stale": 1,
       "value": 0
-    },
-    {
-      "name": "Marcela Márquez",
-      "total": 0,
-      "moved": 0,
-      "moved_30d": 0,
-      "stale": 0,
-      "value": 0,
-      "won": 12
     }
   ],
   "funnel": [
     {
       "stage": "No Cerrados",
       "class": "oportunidad",
-      "count": 138
+      "count": 139
     },
     {
       "stage": "Ruta",
@@ -185,10 +185,24 @@
     {
       "stage": "Oportunidad de Negocio",
       "class": "oportunidad",
-      "count": 138
+      "count": 139
     }
   ],
   "pipeline": [
+    {
+      "id": 1967,
+      "name": "VIÑA LA FORTUNA",
+      "stage": "Oportunidad de Negocio",
+      "stage_class": "oportunidad",
+      "exec": "Marcela Márquez",
+      "exec_id": 265,
+      "value": 0,
+      "days_in_stage": 0,
+      "days_since_activity": 0,
+      "last_update": "2026-04-28",
+      "origin": "—",
+      "created": "2026-04-28"
+    },
     {
       "id": 1900,
       "name": "AMV SPA",
@@ -309,8 +323,8 @@
       "exec": "Comber Sigall Pauline",
       "exec_id": 52,
       "value": 0,
-      "days_in_stage": 0,
-      "days_since_activity": 0,
+      "days_in_stage": 1,
+      "days_since_activity": 1,
       "last_update": "2026-04-27",
       "origin": "—",
       "created": "2026-04-27"
@@ -995,7 +1009,7 @@
       "exec": "MUÑOZ ENCALADA JOAQUIN",
       "exec_id": 262,
       "value": 2000,
-      "days_in_stage": 5,
+      "days_in_stage": 6,
       "days_since_activity": 5,
       "last_update": "2026-04-22",
       "origin": "—",
@@ -2274,20 +2288,6 @@
       "last_update": "2026-03-23",
       "origin": "—",
       "created": "2026-03-13"
-    },
-    {
-      "id": 1710,
-      "name": "CRISNI SPA",
-      "stage": "No Cerrados",
-      "stage_class": "oportunidad",
-      "exec": "Toro González Sebastian Enrique",
-      "exec_id": 56,
-      "value": 4000,
-      "days_in_stage": 46,
-      "days_since_activity": 36,
-      "last_update": "2026-03-23",
-      "origin": "—",
-      "created": "2026-01-16"
     }
   ],
   "won_deals": [
@@ -4616,20 +4616,6 @@
       "created": "2025-10-29"
     },
     {
-      "id": 803,
-      "name": "RUBEN BERNARDO FAUNDEZ ARAVENA",
-      "stage": "Won",
-      "stage_class": "won",
-      "exec": "Administrator",
-      "exec_id": 2,
-      "value": 0,
-      "days_in_stage": 47,
-      "days_since_activity": 43,
-      "last_update": "2026-03-16",
-      "origin": "—",
-      "created": "2025-10-03"
-    },
-    {
       "id": 1146,
       "name": "RUBEN BERNARDO FAUNDEZ ARAVENA",
       "stage": "Won",
@@ -4642,6 +4628,20 @@
       "last_update": "2026-03-16",
       "origin": "—",
       "created": "2025-10-29"
+    },
+    {
+      "id": 803,
+      "name": "RUBEN BERNARDO FAUNDEZ ARAVENA",
+      "stage": "Won",
+      "stage_class": "won",
+      "exec": "Administrator",
+      "exec_id": 2,
+      "value": 0,
+      "days_in_stage": 47,
+      "days_since_activity": 43,
+      "last_update": "2026-03-16",
+      "origin": "—",
+      "created": "2025-10-03"
     },
     {
       "id": 65,
@@ -4714,20 +4714,6 @@
       "created": "2025-10-03"
     },
     {
-      "id": 704,
-      "name": "CARLOS ANDRES URETA GAJARDO",
-      "stage": "Won",
-      "stage_class": "won",
-      "exec": "Administrator",
-      "exec_id": 2,
-      "value": 0,
-      "days_in_stage": 54,
-      "days_since_activity": 50,
-      "last_update": "2026-03-09",
-      "origin": "—",
-      "created": "2025-10-03"
-    },
-    {
       "id": 1049,
       "name": "CARLOS ANDRES URETA GAJARDO",
       "stage": "Won",
@@ -4742,18 +4728,18 @@
       "created": "2025-10-29"
     },
     {
-      "id": 1132,
-      "name": "FERMIN FREDY DONOSO BARRA",
+      "id": 704,
+      "name": "CARLOS ANDRES URETA GAJARDO",
       "stage": "Won",
       "stage_class": "won",
       "exec": "Administrator",
       "exec_id": 2,
       "value": 0,
       "days_in_stage": 54,
-      "days_since_activity": 54,
-      "last_update": "2026-03-05",
+      "days_since_activity": 50,
+      "last_update": "2026-03-09",
       "origin": "—",
-      "created": "2025-10-29"
+      "created": "2025-10-03"
     },
     {
       "id": 737,
@@ -4768,6 +4754,20 @@
       "last_update": "2026-03-05",
       "origin": "—",
       "created": "2025-10-03"
+    },
+    {
+      "id": 1132,
+      "name": "FERMIN FREDY DONOSO BARRA",
+      "stage": "Won",
+      "stage_class": "won",
+      "exec": "Administrator",
+      "exec_id": 2,
+      "value": 0,
+      "days_in_stage": 54,
+      "days_since_activity": 54,
+      "last_update": "2026-03-05",
+      "origin": "—",
+      "created": "2025-10-29"
     },
     {
       "id": 781,
@@ -5170,8 +5170,8 @@
       "exec_id": 56,
       "value": 5000,
       "days_in_stage": 92,
-      "days_since_activity": 12,
-      "last_update": "2026-04-16",
+      "days_since_activity": 0,
+      "last_update": "2026-04-28",
       "origin": "—",
       "created": "2025-10-29"
     },
@@ -6126,6 +6126,21 @@
       "action": "Seguimiento cotización"
     },
     {
+      "id": 66,
+      "name": "AGROINDUSTRIAL ALMAHUE LTDA",
+      "stage": "Cotizado",
+      "stage_class": "cotizado",
+      "exec": "Toro González Sebastian Enrique",
+      "exec_id": 56,
+      "value": 0,
+      "days_in_stage": 260,
+      "days_since_activity": 36,
+      "last_update": "2026-03-23",
+      "origin": "—",
+      "created": "2025-08-11",
+      "action": "Seguimiento cotización"
+    },
+    {
       "id": 67,
       "name": "EXPORTADORA IDAHUE CHILE",
       "stage": "Cotizado",
@@ -6156,19 +6171,34 @@
       "action": "Seguimiento cotización"
     },
     {
-      "id": 66,
-      "name": "AGROINDUSTRIAL ALMAHUE LTDA",
-      "stage": "Cotizado",
-      "stage_class": "cotizado",
+      "id": 106,
+      "name": "SOCIEDAD AGRICOLA SANTA ANA DEL ROSARIO",
+      "stage": "Contactado",
+      "stage_class": "contactado",
       "exec": "Toro González Sebastian Enrique",
       "exec_id": 56,
       "value": 0,
-      "days_in_stage": 259,
+      "days_in_stage": 258,
       "days_since_activity": 36,
       "last_update": "2026-03-23",
       "origin": "—",
-      "created": "2025-08-11",
-      "action": "Seguimiento cotización"
+      "created": "2025-08-13",
+      "action": "Agendar visita (Ruta)"
+    },
+    {
+      "id": 105,
+      "name": "ARICOLA SUIZA",
+      "stage": "Contactado",
+      "stage_class": "contactado",
+      "exec": "Vanessa Vazquez",
+      "exec_id": 67,
+      "value": 0,
+      "days_in_stage": 258,
+      "days_since_activity": 36,
+      "last_update": "2026-03-23",
+      "origin": "—",
+      "created": "2025-08-13",
+      "action": "Agendar visita (Ruta)"
     },
     {
       "id": 98,
@@ -6454,36 +6484,6 @@
       "origin": "—",
       "created": "2025-08-13",
       "action": "Seguimiento cotización"
-    },
-    {
-      "id": 106,
-      "name": "SOCIEDAD AGRICOLA SANTA ANA DEL ROSARIO",
-      "stage": "Contactado",
-      "stage_class": "contactado",
-      "exec": "Toro González Sebastian Enrique",
-      "exec_id": 56,
-      "value": 0,
-      "days_in_stage": 257,
-      "days_since_activity": 36,
-      "last_update": "2026-03-23",
-      "origin": "—",
-      "created": "2025-08-13",
-      "action": "Agendar visita (Ruta)"
-    },
-    {
-      "id": 105,
-      "name": "ARICOLA SUIZA",
-      "stage": "Contactado",
-      "stage_class": "contactado",
-      "exec": "Vanessa Vazquez",
-      "exec_id": 67,
-      "value": 0,
-      "days_in_stage": 257,
-      "days_since_activity": 36,
-      "last_update": "2026-03-23",
-      "origin": "—",
-      "created": "2025-08-13",
-      "action": "Agendar visita (Ruta)"
     },
     {
       "id": 138,
@@ -6905,7 +6905,7 @@
       "date": "2026-05-03",
       "who": "Comber Sigall Pauline",
       "type": "To-Do",
-      "summary": "28/4 plantilla y cot a peldaño del medio mas wsp para que lo respondan ojala desde Odoo",
+      "summary": "28/4 responden por plantilla opcion 2 pido revisar cot y comentarios 28/4 plantilla y cot a peldaño del medio mas wsp para que lo respondan ojala desde Odoo",
       "lead": "Oportunidad de SOC AGRICOLA SAN FRANCISCO SPA",
       "state": "planned"
     },
@@ -6956,13 +6956,13 @@
     },
     {
       "date": "2026-04-28 19:20",
-      "who": "Marcela Márquez",
-      "desc": "Hay un nuevo lead para el equipo \"Ventas\"."
+      "who": "OdooBot",
+      "desc": "Lead Enrichment (based on email address)\n        \n            Enrichment could not be done because the email address does not look valid."
     },
     {
       "date": "2026-04-28 19:20",
-      "who": "OdooBot",
-      "desc": "Lead Enrichment (based on email address)\n        \n            Enrichment could not be done because the email address does not look valid."
+      "who": "Marcela Márquez",
+      "desc": "Hay un nuevo lead para el equipo \"Ventas\"."
     },
     {
       "date": "2026-04-28 19:17",
@@ -6986,23 +6986,23 @@
     },
     {
       "date": "2026-04-28 19:09",
-      "who": "Marcela Márquez",
-      "desc": "Hay un nuevo lead para el equipo \"Ventas\"."
+      "who": "OdooBot",
+      "desc": "Lead Enrichment (based on email address)\n        \n            Enrichment could not be done because the email address does not look valid."
     },
     {
       "date": "2026-04-28 19:09",
-      "who": "OdooBot",
-      "desc": "Lead Enrichment (based on email address)\n        \n            Enrichment could not be done because the email address does not look valid."
-    },
-    {
-      "date": "2026-04-28 19:02",
-      "who": "OdooBot",
-      "desc": "Lead Enrichment (based on email address)\n        \n            Enrichment could not be done because the email address does not look valid."
+      "who": "Marcela Márquez",
+      "desc": "Hay un nuevo lead para el equipo \"Ventas\"."
     },
     {
       "date": "2026-04-28 19:02",
       "who": "Marcela Márquez",
       "desc": "Hay un nuevo lead para el equipo \"Ventas\"."
+    },
+    {
+      "date": "2026-04-28 19:02",
+      "who": "OdooBot",
+      "desc": "Lead Enrichment (based on email address)\n        \n            Enrichment could not be done because the email address does not look valid."
     },
     {
       "date": "2026-04-28 18:57",
@@ -7013,6 +7013,11 @@
       "date": "2026-04-28 18:57",
       "who": "Marcela Márquez",
       "desc": "Hay un nuevo lead para el equipo \"Ventas\"."
+    },
+    {
+      "date": "2026-04-28 18:42",
+      "who": "OdooBot",
+      "desc": "Lead Enrichment (based on email address)\n        \n             No company data found based on the email address or email address is one of an email provider. No credit was consumed."
     },
     {
       "date": "2026-04-28 18:42",
@@ -7025,11 +7030,6 @@
       "desc": "Hay un nuevo lead para el equipo \"Ventas\"."
     },
     {
-      "date": "2026-04-28 18:42",
-      "who": "OdooBot",
-      "desc": "Lead Enrichment (based on email address)\n        \n             No company data found based on the email address or email address is one of an email provider. No credit was consumed."
-    },
-    {
       "date": "2026-04-28 18:38",
       "who": "OdooBot",
       "desc": "Lead Enrichment (based on email address)\n        \n            Enrichment could not be done because the email address does not look valid."
@@ -7041,13 +7041,13 @@
     },
     {
       "date": "2026-04-28 18:36",
-      "who": "Marcela Márquez",
-      "desc": "Hay un nuevo lead para el equipo \"Ventas\"."
+      "who": "OdooBot",
+      "desc": "Lead Enrichment (based on email address)\n        \n            Enrichment could not be done because the email address does not look valid."
     },
     {
       "date": "2026-04-28 18:36",
-      "who": "OdooBot",
-      "desc": "Lead Enrichment (based on email address)\n        \n            Enrichment could not be done because the email address does not look valid."
+      "who": "Marcela Márquez",
+      "desc": "Hay un nuevo lead para el equipo \"Ventas\"."
     },
     {
       "date": "2026-04-28 18:34",
@@ -7098,7 +7098,7 @@
               "name": "Oportunidad de VIÑA LA FORTUNA",
               "empresa": "VIÑA LA FORTUNA",
               "vendedor": "Marcela Márquez",
-              "etapa": "Perdidos",
+              "etapa": "Oportunidad de Negocio",
               "fecha": "2026-04-28"
             },
             {
@@ -7230,10 +7230,10 @@
           ]
         },
         "contacto": {
-          "value": 449,
+          "value": 450,
           "goal": 10,
           "by_user": {
-            "Marcela Márquez": 40,
+            "Marcela Márquez": 41,
             "Ron Yenire": 41,
             "Comber Sigall Pauline": 151,
             "MUÑOZ ENCALADA JOAQUIN": 45,
@@ -7250,17 +7250,35 @@
           }
         },
         "cotizacion": {
-          "value": 64,
+          "value": 66,
           "goal": 8,
           "by_user": {
-            "TomEnergy": 12,
+            "TomEnergy": 13,
             "Ron Yenire": 1,
             "Carolina Avilés": 1,
-            "Toro González Sebastian Enrique": 2,
+            "Toro González Sebastian Enrique": 1,
             "LABBE ORTIZ CARLOS ALBERTO": 2,
             "Comber Sigall Pauline": 2
           },
           "detail": [
+            {
+              "name": "S30502",
+              "cliente": "SOC AGRICOLA SAN FRANCISCO SPA",
+              "vendedor": "TomEnergy",
+              "monto": 0.0,
+              "litros": 0,
+              "estado": "draft",
+              "fecha": "2026-04-28"
+            },
+            {
+              "name": "S30500",
+              "cliente": "JUAN VILLAR ESPINOZA SPA",
+              "vendedor": "TomEnergy",
+              "monto": 0.0,
+              "litros": 0,
+              "estado": "draft",
+              "fecha": "2026-04-28"
+            },
             {
               "name": "S30499",
               "cliente": "SOCIEDAD DE TRANSPORTES DIAZ OLIVARES LIMITADA",
@@ -7422,24 +7440,6 @@
               "litros": 2400,
               "estado": "draft",
               "fecha": "2026-04-28"
-            },
-            {
-              "name": "S30461",
-              "cliente": "AGROSERVICIOS JR SPA",
-              "vendedor": "TomEnergy",
-              "monto": 2427727.0,
-              "litros": 2000,
-              "estado": "draft",
-              "fecha": "2026-04-27"
-            },
-            {
-              "name": "S30458",
-              "cliente": "JOSE RODRIGO REYES VALDIVIA",
-              "vendedor": "Toro González Sebastian Enrique",
-              "monto": 0.0,
-              "litros": 0,
-              "estado": "draft",
-              "fecha": "2026-04-27"
             }
           ]
         },
@@ -8755,13 +8755,13 @@
     "month_start": "2026-04-01",
     "month_end": "2026-04-30",
     "totals": {
-      "total_litros": 668609,
-      "total_venta_neta": 842256098,
-      "invoice_count": 422,
+      "total_litros": 674009,
+      "total_venta_neta": 848673482,
+      "invoice_count": 424,
       "nc_count": 17,
       "litros_by_user": {
         "Toro González Sebastian Enrique": 196315,
-        "Comber Sigall Pauline": 448524,
+        "Comber Sigall Pauline": 453924,
         "Toledo Núñez Madelaine Camila": 6270,
         "MUÑOZ ENCALADA JOAQUIN": 13500,
         "LABBE ORTIZ CARLOS ALBERTO": 2000,
@@ -8769,7 +8769,7 @@
       },
       "venta_by_user": {
         "Toro González Sebastian Enrique": 242460092,
-        "Comber Sigall Pauline": 569685320,
+        "Comber Sigall Pauline": 576102704,
         "Toledo Núñez Madelaine Camila": 7954111,
         "MUÑOZ ENCALADA JOAQUIN": 17066534,
         "LABBE ORTIZ CARLOS ALBERTO": 2559306,
@@ -8777,12 +8777,12 @@
       },
       "margin_retail_pct": 8.79,
       "margin_volume_pct": 6.46,
-      "retail_venta": 672892460,
+      "retail_venta": 679309844,
       "volume_venta": 179059412,
       "litros_by_zone": {
         "Talca": 192872,
         "Curico": 147470,
-        "Rancagua": 119429,
+        "Rancagua": 124829,
         "San Fernando": 86720,
         "Chillan": 82380,
         "VI Costa": 43800
@@ -8790,14 +8790,14 @@
       "venta_by_zone": {
         "Talca": 243708586,
         "Curico": 186051442,
-        "Rancagua": 153572494,
+        "Rancagua": 159989878,
         "San Fernando": 110671419,
         "Chillan": 102292940,
         "VI Costa": 55654991
       },
       "margin_by_zone": {
-        "Talca": 8.3,
         "Rancagua": 9.4,
+        "Talca": 8.3,
         "Chillan": 6.6,
         "San Fernando": 9.2,
         "Curico": 7.5,
@@ -8812,10 +8812,10 @@
         "De Trenqualye Merino Andre Jean": 5.8
       },
       "comber_mantencion_detail": {
-        "tomenergy_litros": 417014,
+        "tomenergy_litros": 422414,
         "comber_own_litros": 31510,
-        "total": 448524,
-        "merged_venta_neta": 569685320,
+        "total": 453924,
+        "merged_venta_neta": 576102704,
         "merged_margin_pct": 8.5
       }
     },
@@ -9020,8 +9020,8 @@
       },
       {
         "label": "23/4-29/4",
-        "litros": 97524,
-        "venta_neta": 116231808
+        "litros": 102924,
+        "venta_neta": 122649192
       }
     ],
     "weekly_history": [
@@ -9173,9 +9173,9 @@
       },
       {
         "label": "23/4-29/4",
-        "litros": 97524,
+        "litros": 102924,
         "litros_by_user": {
-          "TomEnergy": 59910,
+          "TomEnergy": 65310,
           "Toro González Sebastian Enrique": 28044,
           "Comber Sigall Pauline": 5200,
           "Toledo Núñez Madelaine Camila": 1870,
@@ -9605,9 +9605,9 @@
       },
       {
         "label": "23/4-29/4",
-        "litros": 97524,
+        "litros": 102924,
         "litros_by_user": {
-          "TomEnergy": 59910,
+          "TomEnergy": 65310,
           "Toro González Sebastian Enrique": 28044,
           "Comber Sigall Pauline": 5200,
           "Toledo Núñez Madelaine Camila": 1870,
@@ -9797,12 +9797,12 @@
     "summary": {
       "active": 359,
       "dormant": 219,
-      "lost": 469,
-      "newly_lost": 42,
+      "lost": 468,
+      "newly_lost": 41,
       "rescued_dormant": 0,
       "rescued_lost": 0,
       "prev_month_clients": 304,
-      "churn_pct": 13.8,
+      "churn_pct": 13.5,
       "rescue_pct": 0.0
     },
     "by_user": {
@@ -9817,7 +9817,7 @@
         "Vanessa Vazquez": 20
       },
       "lost": {
-        "Marcela Márquez": 4,
+        "Marcela Márquez": 3,
         "LABBE ORTIZ CARLOS ALBERTO": 3,
         "Toro González Sebastian Enrique": 37,
         "Vial Comber Pauline": 5,
@@ -10143,12 +10143,6 @@
         "avg_monthly_litros": 0
       },
       {
-        "name": "VIÑA LA FORTUNA",
-        "user": "Marcela Márquez",
-        "last_update": "2026-04-28",
-        "avg_monthly_litros": 0
-      },
-      {
         "name": "Viña Echeverría Ltda",
         "user": "Marcela Márquez",
         "last_update": "2026-04-28",
@@ -10312,6 +10306,12 @@
       },
       {
         "name": "VIÑA LUIS FELIPE EDWARDS LTDA",
+        "user": "TomEnergy",
+        "last_update": "2026-03-27",
+        "avg_monthly_litros": 0
+      },
+      {
+        "name": "VIÑA CASA SILVA S.A.",
         "user": "TomEnergy",
         "last_update": "2026-03-27",
         "avg_monthly_litros": 0
