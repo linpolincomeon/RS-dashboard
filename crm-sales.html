@@ -109,6 +109,7 @@ tr:hover td{background:#fafaf8}
       <button class="tab-btn" onclick="switchTab('vendedores')">👤 Vendedores</button>
       <button class="tab-btn" onclick="switchTab('fidelizacion')">Churn & Rescate</button>
       <button class="tab-btn" onclick="switchTab('cs')">Fidelización + CS</button>
+      <button class="tab-btn" onclick="switchTab('mesvencido')">📋 Mes Vencido</button>
     </div>
 
     <!-- ═══ TAB: EJECUTIVOS ═══ -->
@@ -230,6 +231,9 @@ tr:hover td{background:#fafaf8}
           <div class="nodata" id="noClientesAcumulado" style="display:none">Sin clientes ganados este mes</div></div></div>
       </div>
     </div>
+
+    <!-- ═══ TAB: MES VENCIDO ═══ -->
+    <div class="tab-panel" id="tab-mesvencido"></div>
   </div>
 </div>
 
@@ -339,6 +343,7 @@ function switchTab(tab) {
   if (tab === 'vendedores' && D) renderVendedores();
   if (tab === 'fidelizacion' && D) renderFidelizacion();
   if (tab === 'cs' && D) renderCS();
+  if (tab === 'mesvencido' && D) renderMesVencido();
 }
 
 function switchCsSubTab(subTab) {
@@ -1375,6 +1380,96 @@ function renderCS() {
     semanalCont.style.display = 'none';
     acumuladoCont.style.display = 'block';
   }
+}
+
+// ═══════════════════════════════════════
+// MES VENCIDO TAB
+// ═══════════════════════════════════════
+function renderMesVencido(){
+  const VP=D.ventas_prev||{},TP=VP.totals||{},ncP=VP.new_clients||{},VG=D.vendor_goals||{},CG=D.company_goals||{};
+  const ltGoal=CG.litros_mes||0;
+  const mrGoal=CG.margen_retail||8.5,mvGoal=CG.margen_volumen||6;
+  const mrA=TP.margin_retail_pct||0,mvA=TP.margin_volume_pct||0;
+
+  let h='<div style="margin-bottom:16px"><h2 style="font-size:18px;font-weight:700">Cierre '+( VP.month_label||'Mes Anterior')+'</h2></div>';
+
+  h+='<div class="kpi-row">';
+  h+=mkKpi('c-red','Litros',fL(TP.total_litros||0),ltGoal?pct(TP.total_litros||0,ltGoal)+'% de meta '+fL(ltGoal):'',TP.total_litros||0,ltGoal||1);
+  h+=mkKpi('c-blue','Clientes Nuevos',(ncP.count||0),'primera factura del mes');
+  h+=mkKpi(mrA>=mrGoal?'c-green':'c-red','Margen Retail',mrA+'%','Meta: '+mrGoal+'%',mrA,mrGoal);
+  h+=mkKpi(mvA>=mvGoal?'c-green':'c-red','Margen Volumen',mvA+'%','Meta: '+mvGoal+'%',mvA,mvGoal);
+  h+='</div>';
+
+  // SLA
+  var sla=VP.sla||null;
+  if(sla){
+    var slaOk=sla.cumplimiento_pct>=80;
+    h+='<div class="kpi-row">';
+    h+=mkKpi(slaOk?'c-green':'c-red','SLA Entrega',sla.cumplimiento_pct+'%',sla.cumplidos+' ok / '+sla.incumplidos+' incumplidos',sla.cumplimiento_pct,80);
+    h+=mkKpi('c-yellow','Días Promedio',sla.dias_promedio+'d','fecha factura - fecha entrega prometida');
+    h+=mkKpi('c-blue','Órdenes Evaluadas',(sla.total_evaluadas||0),'con commitment_date');
+    h+='</div>';
+    if(sla.detalle&&sla.detalle.length){
+      h+='<div class="sec"><div class="sec-h"><h2>SLA Incumplidos</h2><span class="badge">'+sla.incumplidos+'</span></div>';
+      h+='<div class="sec-b" style="padding:0;overflow-x:auto"><table><thead><tr><th>Cliente</th><th>Orden</th><th>Fecha Prometida</th><th>Fecha Factura</th><th>Días</th></tr></thead><tbody>';
+      sla.detalle.forEach(function(r){
+        var dc=r.dias_diff>3?'color:var(--red);font-weight:600':'color:var(--yellow);font-weight:600';
+        h+='<tr><td class="bold">'+H(r.cliente)+'</td><td>'+H(r.orden)+'</td><td>'+r.fecha_entrega+'</td><td>'+r.fecha_factura+'</td><td style="'+dc+'">+'+r.dias_diff+'d</td></tr>';
+      });
+      h+='</tbody></table></div></div>';
+    }
+  }
+
+  // Churn del mes
+  var C=D.churn||{},S=C.summary||{};
+  h+='<div class="sec"><div class="sec-h"><h2>Churn '+(VP.month_label||'Mes Anterior')+'</h2></div><div class="sec-b">';
+  h+='<div class="kpi-row" style="margin-bottom:0">';
+  h+=mkKpi('c-red','Nuevos Perdidos',(S.newly_lost||0),(S.newly_lost||0)+' / '+(S.prev_month_clients||'?')+' clientes mes ant.');
+  h+=mkKpi('c-red','Churn %',(S.churn_pct||0)+'%','meta: <3%',S.churn_pct||0,3);
+  h+=mkKpi('c-green','Rescatados Durmientes',(S.rescued_dormant||0),'volvieron a facturar');
+  h+=mkKpi('c-blue','Rescatados Perdidos',(S.rescued_lost||0),'cuentan como cliente nuevo');
+  h+='</div></div></div>';
+
+  // Perdidos del mes
+  var ll=C.lost_list||[];
+  var monthStart=VP.month_start||'';
+  var perdidosMes=ll.filter(function(c){return c.last_update>=monthStart});
+  h+='<div class="sec"><div class="sec-h"><h2>Clientes Perdidos — '+(VP.month_label||'Mes Anterior')+'</h2><span style="font-size:12px;color:var(--dim)">'+perdidosMes.length+' este mes</span></div>';
+  h+='<div class="sec-b" style="padding:0;overflow-x:auto"><table><thead><tr><th>Cliente</th><th>Último vendedor</th><th>Fecha</th></tr></thead><tbody>';
+  if(perdidosMes.length) perdidosMes.forEach(function(c){
+    h+='<tr><td class="bold">'+H(c.name)+'</td><td>'+H(c.user)+'</td><td style="color:var(--dim)">'+(c.last_update||'—')+'</td></tr>';
+  }); else h+='<tr><td colspan="3" class="nodata">Sin perdidos</td></tr>';
+  h+='</tbody></table></div></div>';
+
+  // Resumen por vendedor
+  var _uSet=new Set([].concat(Object.keys(TP.litros_by_user||{}),Object.keys(VG)));
+  var users=Array.from(_uSet).filter(function(u){return u!=='Sin asignar'&&isAllowed(u)});
+  if(users.length){
+    h+='<div class="sec"><div class="sec-h"><h2>Resumen '+(VP.month_label||'Mes')+'</h2></div>';
+    h+='<div class="sec-b" style="padding:0;overflow-x:auto"><table><thead><tr><th>Vendedor</th><th>Litros</th><th>Clientes Nuevos</th></tr></thead><tbody>';
+    users.forEach(function(u){
+      var lt=(TP.litros_by_user||{})[u]||0;
+      var nc2=(ncP.by_user||{})[u]||0;
+      h+='<tr><td class="bold">'+H(u)+'</td><td>'+fL(lt)+'</td><td>'+nc2+'</td></tr>';
+    });
+    h+='</tbody></table></div></div>';
+  }
+
+  // Zonas
+  var lz=TP.litros_by_zone||{},mz=TP.margin_by_zone||{};
+  var zones=Object.keys(lz).filter(function(z){return z!=='Sin zona'});
+  if(zones.length){
+    h+='<div class="sec"><div class="sec-h"><h2>Desglose por Zona</h2></div>';
+    h+='<div class="sec-b" style="padding:0;overflow-x:auto"><table><thead><tr><th>Zona</th><th>Litros</th><th>Margen %</th></tr></thead><tbody>';
+    zones.forEach(function(z){
+      var mg=mz[z]||0;
+      var mc2=mg>=8.5?'tag-g':mg>=6?'tag-y':'tag-r';
+      h+='<tr><td class="bold">'+H(z)+'</td><td>'+fL(lz[z]||0)+'</td><td><span class="tag '+mc2+'">'+mg+'%</span></td></tr>';
+    });
+    h+='</tbody></table></div></div>';
+  }
+
+  document.getElementById('tab-mesvencido').innerHTML=h;
 }
 
 // ═══════════════════════════════════════
