@@ -1,5 +1,5 @@
 {
-  "updated": "2026-04-28T12:01:53.175580",
+  "updated": "2026-04-28T12:46:32.949255",
   "weeks": [
     {
       "label": "23apr-29apr",
@@ -18,9 +18,9 @@
       "facturas": 54,
       "nc": 0,
       "clientes": 51,
-      "recaud": 160909553,
+      "recaud": 164762052,
       "cheques": 17478957,
-      "transf": 139136595,
+      "transf": 142989094,
       "factoring": 4294001,
       "compras_odoo": 36091376,
       "cheq_cartera_saldo": 0,
@@ -1284,8 +1284,8 @@
     {
       "date": "28apr",
       "day": "Mar",
-      "litros": 0,
-      "neto": 0
+      "litros": 3000,
+      "neto": 3623944
     },
     {
       "date": "27apr",
@@ -1381,7 +1381,7 @@
   "banks": [
     {
       "name": "DE CHILE",
-      "balance": 46513999
+      "balance": 24064069
     },
     {
       "name": "ITAU",
@@ -1408,15 +1408,15 @@
       "balance": -838790
     }
   ],
-  "total_cash": 74176583,
+  "total_cash": 51726653,
   "receivables": {
-    "open_invoices": 275,
-    "total_due": 594639384,
-    "current": 449944154,
-    "overdue": 144695230,
-    "pct_overdue": 24.3,
+    "open_invoices": 274,
+    "total_due": 595568885,
+    "current": 453197155,
+    "overdue": 142371730,
+    "pct_overdue": 23.9,
     "aging": {
-      "0-30": 122901866,
+      "0-30": 120578366,
       "31-60": 12027801,
       "61-90": 0,
       "90+": 9765563
@@ -1560,15 +1560,15 @@
   "riesgo": {
     "cubierto": 0,
     "cubierto_count": 0,
-    "no_cubierto": 594639384,
-    "no_cubierto_count": 275,
+    "no_cubierto": 595568885,
+    "no_cubierto_count": 274,
     "pct_monto": 100.0,
     "pct_count": 100.0
   },
   "churn": {
     "eligible_clients": 267,
-    "churned_count": 103,
-    "pct": 38.6,
+    "churned_count": 102,
+    "pct": 38.2,
     "churned": [
       {
         "name": "ISMAEL DE LA CRUZ VERGARA CISTERNA",
@@ -1893,20 +1893,20 @@
       },
       {
         "month": "Feb 2026",
-        "pct": 59.5,
-        "churned": 25,
-        "eligible": 42
+        "pct": 58.5,
+        "churned": 24,
+        "eligible": 41
       },
       {
         "month": "Mar 2026",
-        "pct": 28.5,
-        "churned": 41,
-        "eligible": 144
+        "pct": 28.0,
+        "churned": 40,
+        "eligible": 143
       },
       {
         "month": "Apr 2026",
-        "pct": 41.9,
-        "churned": 112,
+        "pct": 41.6,
+        "churned": 111,
         "eligible": 267
       }
     ]
