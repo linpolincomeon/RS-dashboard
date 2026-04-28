@@ -888,14 +888,13 @@ function renderVentas() {
   const wkBudget = !isAccum && wkData.label ? getWeeklyBudget(wkData.label) : 0;
   const wkPct = wkBudget > 0 ? Math.round((wkLitros / wkBudget) * 100) : 0;
 
-  // 2. Litros Fidelización (everyone NOT in ALLOWED_VENDORS = not Toro/Muñoz/Ron/freelancers)
-  // This includes CS team (Comber, Mauro, TomEnergy) + any other non-commercial users
+  // 2. Litros Ejecutivos (Toro + Muñoz + Ron)
+  let litrosEjecutivos = 0;
+  for (const [u, v] of Object.entries(lbuSrc)) { if (isAllowed(u)) litrosEjecutivos += v; }
+
+  // 3. Litros Fidelización (everyone else — CS + freelancers + others)
   let litrosFidelizacion = 0;
   for (const [u, v] of Object.entries(lbuSrc)) { if (!isAllowed(u)) litrosFidelizacion += v; }
-
-  // 3. Litros Freelancer (NOT CS and NOT allowed vendors — true external freelancers)
-  let litrosFreelancer = 0;
-  for (const [u, v] of Object.entries(lbuSrc)) { if (!isCS(u) && !isAllowed(u)) litrosFreelancer += v; }
 
   // 4. Litros Nuevos (new clients)
   const ncDetail = V.new_clients?.detail || [];
@@ -952,12 +951,11 @@ function renderVentas() {
   } else {
     kh += mkKpi('c-red', 'Litros Totales', fL(wkLitros), wkPct + '% de meta ' + fL(wkBudget), wkLitros, wkBudget || 1);
   }
-  kh += mkKpi('c-green', 'Litros Fidelización', fL(litrosFidelizacion), 'No ejecutivos comerciales', null, null);
-  kh += mkKpi('c-yellow', 'Litros Freelancer', fL(litrosFreelancer), 'Otros vendedores', null, null);
-  kh += mkKpi('c-blue', 'Litros Nuevos', fL(litrosNuevos), isAccum ? 'Mes' : 'Esta semana', null, null);
+  kh += mkKpi('c-blue', 'Litros Ejecutivos', fL(litrosEjecutivos), 'Toro + Muñoz + Ron', null, null);
+  kh += mkKpi('c-green', 'Litros Fidelización', fL(litrosFidelizacion), 'CS + otros', null, null);
   kh += mkKpi('c-red', 'Leads', wLeads, 'Meta: ' + leadsGoal, wLeads, leadsGoal);
   kh += mkKpi('c-yellow', 'Cotizaciones', wCotiz, 'Meta: ' + cotizGoal, wCotiz, cotizGoal);
-  kh += mkKpi('c-green', 'Nuevos Clientes', wCierre, 'Meta: ' + cierreGoal, wCierre, cierreGoal);
+  kh += mkKpi('c-green', 'Nuevos Clientes', wCierre, 'Meta: ' + cierreGoal + ' · ' + fL(litrosNuevos), wCierre, cierreGoal);
   kh += mkKpi('c-blue', 'Margen Retail', mRetail + '%', 'Meta: ' + (CG.margen_retail || 8.5) + '%', mRetail, CG.margen_retail || 8.5);
   kh += mkKpi('c-red', 'Margen Volumen', mVol + '%', 'Meta: ' + (CG.margen_volumen || 6) + '%', mVol, CG.margen_volumen || 6);
   kh += mkKpi('c-green', 'Retención', retPct + '%', 'Meta: ' + retGoal + '%', retPct, retGoal);
