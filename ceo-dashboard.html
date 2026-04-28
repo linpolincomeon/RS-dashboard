@@ -165,7 +165,7 @@ function renderVentas(){
   const dv=last.ppto>0?last.litros/last.ppto:0;
   const mcrRetail=last.margin_retail||0, mcVol=last.margin_volumen||0;
   const hasNM=last.margin_retail!==undefined&&last.margin_retail!==null;
-  h+='<div class="kpi-grid">';
+  let h='<div class="kpi-grid">';
   h+=kpi('Venta Semana',fM(last.ventas),pD(last.ventas,prev.ventas),'c-accent',`$${fNum(last.precio_bruto||last.precio_neto||last.precio||0)}/L bruto`);
   h+=kpi('Litros',fK(last.litros),pD(last.litros,prev.litros),'c-blue',`Retail: ${fK(last.litros_retail||0)} · Vol: ${fK(last.litros_volumen||0)}`);
   h+=kpi('Nº Compras',fNum(last.facturas),pD(last.facturas,prev.facturas),'c-purple',`${last.facturas_contado||'—'} contado · ${last.facturas_credito||'—'} crédito`);
