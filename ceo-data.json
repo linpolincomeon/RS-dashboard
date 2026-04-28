@@ -1,21 +1,21 @@
 {
-  "updated": "2026-04-28T13:02:19.838318",
+  "updated": "2026-04-28T13:33:26.794815",
   "weeks": [
     {
       "label": "23apr-29apr",
       "start": "2026-04-23",
       "end": "2026-04-29",
-      "ventas": 118401869,
-      "neto": 89628124,
-      "litros": 75043,
-      "litros_retail": 66208,
+      "ventas": 119173869,
+      "neto": 90211106,
+      "litros": 75543,
+      "litros_retail": 66708,
       "litros_volumen": 8835,
       "precio_neto": 1194,
       "precio_bruto": 1578,
-      "margin": 0.0873,
-      "margin_retail": 0.08875,
+      "margin": 0.08719,
+      "margin_retail": 0.08862,
       "margin_volumen": 0.07624,
-      "facturas": 55,
+      "facturas": 56,
       "nc": 0,
       "clientes": 52,
       "recaud": 164762052,
@@ -25,7 +25,7 @@
       "compras_odoo": 36091376,
       "cheq_cartera_saldo": 0,
       "cheq_recibidos": 44644216,
-      "facturas_contado": 7,
+      "facturas_contado": 8,
       "facturas_credito": 48,
       "margin_by_term": {
         "Prepago": {
@@ -35,9 +35,9 @@
           "days": 0
         },
         "1 Día": {
-          "margin": 0.06309,
-          "normalizado": 0.07276,
-          "count": 6,
+          "margin": 0.06346,
+          "normalizado": 0.07312,
+          "count": 7,
           "days": 1
         },
         "7 Días": {
@@ -168,8 +168,8 @@
       "litros_volumen": 31519,
       "precio_neto": 1306,
       "precio_bruto": 1527,
-      "margin": 0.08585,
-      "margin_retail": 0.09025,
+      "margin": 0.08557,
+      "margin_retail": 0.08991,
       "margin_volumen": 0.0624,
       "facturas": 129,
       "nc": 5,
@@ -209,8 +209,8 @@
           "days": 15
         },
         "30 Días": {
-          "margin": 0.0911,
-          "normalizado": 0.0911,
+          "margin": 0.09069,
+          "normalizado": 0.09069,
           "count": 91,
           "days": 30
         },
@@ -1290,8 +1290,8 @@
     {
       "date": "28apr",
       "day": "Mar",
-      "litros": 3000,
-      "neto": 3623944
+      "litros": 3500,
+      "neto": 4206926
     },
     {
       "date": "27apr",
@@ -1387,7 +1387,7 @@
   "banks": [
     {
       "name": "ITAU",
-      "balance": 22692677
+      "balance": 18317421
     },
     {
       "name": "CAJA",
@@ -1398,6 +1398,10 @@
       "balance": 1659828
     },
     {
+      "name": "SANTANDER",
+      "balance": 1465063
+    },
+    {
       "name": "ESTADO",
       "balance": 1228576
     },
@@ -1406,19 +1410,15 @@
       "balance": 823881
     },
     {
-      "name": "SANTANDER",
-      "balance": 465063
-    },
-    {
       "name": "DE CREDITO",
       "balance": -838790
     }
   ],
-  "total_cash": 29322412,
+  "total_cash": 25947156,
   "receivables": {
-    "open_invoices": 274,
-    "total_due": 595568885,
-    "current": 453197155,
+    "open_invoices": 275,
+    "total_due": 596340885,
+    "current": 453969155,
     "overdue": 142371730,
     "pct_overdue": 23.9,
     "aging": {
@@ -1566,8 +1566,8 @@
   "riesgo": {
     "cubierto": 0,
     "cubierto_count": 0,
-    "no_cubierto": 595568885,
-    "no_cubierto_count": 274,
+    "no_cubierto": 596340885,
+    "no_cubierto_count": 275,
     "pct_monto": 100.0,
     "pct_count": 100.0
   },
