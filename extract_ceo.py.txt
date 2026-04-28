@@ -586,28 +586,32 @@ def extract_sla(models, uid, weeks):
             ["state", "=", "done"],
             ["date_done", ">=", wd["start"] + " 00:00:00"],
             ["date_done", "<=", wd["end"] + " 23:59:59"],
-        ], ["partner_id", "scheduled_date", "date_done"], 2000)
+        ], ["partner_id", "scheduled_date", "date_done", "sale_id"], 2000)
 
-        # Batch-load delivery zones for all partners in this week
-        partner_ids = list(set(p["partner_id"][0] for p in pickings if p.get("partner_id")))
-        partner_zone = {}  # pid -> zone name
-        for poff in range(0, len(partner_ids), 200):
-            batch = partner_ids[poff:poff + 200]
-            partners = sr(models, uid, "res.partner", [["id", "in", batch]],
-                           ["id", "delivery_zone_id"], limit=200)
-            for pt in partners:
-                dz = pt.get("delivery_zone_id")
+        # Get delivery_zone_id from sale.order (not res.partner)
+        sale_ids = list(set(p["sale_id"][0] for p in pickings if p.get("sale_id")))
+        sale_zone = {}  # sale_id -> zone name
+        for soff in range(0, len(sale_ids), 200):
+            batch = sale_ids[soff:soff + 200]
+            orders = sr(models, uid, "sale.order", [["id", "in", batch]],
+                         ["id", "delivery_zone_id"], limit=200)
+            for o in orders:
+                dz = o.get("delivery_zone_id")
                 if dz:
-                    partner_zone[pt["id"]] = dz[1]  # [id, name]
-                else:
-                    partner_zone[pt["id"]] = "Sin Zona"
+                    sale_zone[o["id"]] = dz[1]  # [id, name]
+
+        # Map picking -> zone via sale_id
+        picking_zone = {}
+        for p in pickings:
+            sid = p["sale_id"][0] if p.get("sale_id") else None
+            picking_zone[p["id"]] = sale_zone.get(sid, "Sin Zona") if sid else "Sin Zona"
 
         zone_stats = {}
         for p in pickings:
             pid = p.get("partner_id")
             if not pid:
                 continue
-            zone = partner_zone.get(pid[0], "Sin Zona")
+            zone = picking_zone.get(p["id"], "Sin Zona")
             if zone not in zone_stats:
                 zone_stats[zone] = {"total": 0, "on_time": 0, "late_clients": []}
             zone_stats[zone]["total"] += 1
@@ -655,8 +659,8 @@ FREQ_MAP = {
 }
 CHURN_MULTIPLIER = 2
 IRREGULAR_DEFAULT_DAYS = 15
-MIN_INVOICES_FOR_CHURN = 4   # need stable purchase history
-MAX_FREQ_DAYS_FOR_CHURN = 60  # exclude seasonal (>60 day frequency)
+MIN_INVOICES_FOR_CHURN = 8   # need solid purchase history
+MAX_FREQ_DAYS_FOR_CHURN = 45  # exclude seasonal/irregular (>45 day frequency)
 
 
 def parse_frecuencia(val):
