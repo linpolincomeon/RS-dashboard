@@ -108,6 +108,7 @@ tr:hover td{background:#fafaf8}
       <button class="tab-btn" onclick="switchTab('funnel')">🎯 Funnel</button>
       <button class="tab-btn" onclick="switchTab('vendedores')">👤 Vendedores</button>
       <button class="tab-btn" onclick="switchTab('fidelizacion')">Churn & Rescate</button>
+      <button class="tab-btn" onclick="switchTab('cs')">Fidelización + CS</button>
     </div>
 
     <!-- ═══ TAB: EJECUTIVOS ═══ -->
@@ -203,6 +204,32 @@ tr:hover td{background:#fafaf8}
         <table><thead><tr><th>Cliente</th><th>Prom. Mensual 8M</th><th>Responsable</th><th>Última actualización</th></tr></thead><tbody id="allDormantBody"></tbody></table>
         <div class="nodata" id="noAllDormant" style="display:none">Sin durmientes registrados</div></div></div>
     </div>
+
+    <!-- ═══ TAB: CS ═══ -->
+    <div class="tab-panel" id="tab-cs">
+      <!-- Sub-tabs -->
+      <div class="tab-bar" style="margin-bottom:20px">
+        <button class="tab-btn" style="font-size:13px" onclick="switchCsSubTab('semanal')">Semanal</button>
+        <button class="tab-btn" style="font-size:13px" onclick="switchCsSubTab('acumulado')">Acumulado Mes</button>
+      </div>
+
+      <!-- KPI Row -->
+      <div class="kpi-row" id="csKpiRow"></div>
+
+      <!-- Clientes Ganados table (semanal view) -->
+      <div id="csClientesGanadosContainer" style="display:none">
+        <div class="sec"><div class="sec-h"><h2>👥 Clientes Ganados (Semanal)</h2></div><div class="sec-b" style="max-height:500px;overflow-x:auto">
+          <table><thead><tr><th>Cliente</th><th>Ejecutivo</th><th>Litros</th><th>Fecha</th></tr></thead><tbody id="csClientesGanadosBody"></tbody></table>
+          <div class="nodata" id="noClientesGanados" style="display:none">Sin clientes ganados esta semana</div></div></div>
+      </div>
+
+      <!-- Clientes Ganados table (acumulado view) -->
+      <div id="csClientesAcumuladoContainer" style="display:none">
+        <div class="sec"><div class="sec-h"><h2>👥 Clientes Ganados (Mes Actual)</h2></div><div class="sec-b" style="max-height:500px;overflow-x:auto">
+          <table><thead><tr><th>Cliente</th><th>Ejecutivo</th><th>Litros</th><th>Fecha</th></tr></thead><tbody id="csClientesAcumuladoBody"></tbody></table>
+          <div class="nodata" id="noClientesAcumulado" style="display:none">Sin clientes ganados este mes</div></div></div>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -210,6 +237,7 @@ tr:hover td{background:#fafaf8}
 let D = null;
 let selectedWeek = 0;
 let selectedExec = 0; // 0=Toro, 1=Muñoz, 2=Ron, 3=Freelancers
+let csSubTab = 'semanal'; // For CS tab sub-tabs
 let chartWeekly = null, chartMargenZona = null, chartMargenExec = null;
 
 const ALLOWED_VENDORS = [
@@ -294,6 +322,7 @@ function selectWeek(idx) {
   if (document.getElementById('tab-ejecutivos').classList.contains('active')) renderEjecutivos();
   if (document.getElementById('tab-funnel').classList.contains('active')) renderFunnel();
   if (document.getElementById('tab-vendedores').classList.contains('active')) renderVendedores();
+  if (document.getElementById('tab-cs').classList.contains('active')) renderCS();
 }
 
 const EXEC_COUNT = 4;
@@ -309,6 +338,20 @@ function switchTab(tab) {
   if (tab === 'funnel' && D) renderFunnel();
   if (tab === 'vendedores' && D) renderVendedores();
   if (tab === 'fidelizacion' && D) renderFidelizacion();
+  if (tab === 'cs' && D) renderCS();
+}
+
+function switchCsSubTab(subTab) {
+  const semanalCont = document.getElementById('csClientesGanadosContainer');
+  const acumuladoCont = document.getElementById('csClientesAcumuladoContainer');
+  csSubTab = subTab;
+  if (subTab === 'semanal') {
+    semanalCont.style.display = 'block';
+    acumuladoCont.style.display = 'none';
+  } else {
+    semanalCont.style.display = 'none';
+    acumuladoCont.style.display = 'block';
+  }
 }
 
 function render() {
@@ -360,13 +403,6 @@ function renderFunnel() {
   h += '<div class="chart-cont"><h3>Tendencia 4 Semanas</h3><canvas id="cTrend" style="max-height:250px"></canvas></div>';
   h += '</div>';
 
-  // Leads table
-  const ld = (st.leads && st.leads.detail) || [];
-  if (ld.length) {
-    h += '<div class="sec"><div class="sec-h"><h2>Leads Ingresados</h2></div><div class="sec-b" style="padding:0;overflow-x:auto"><table><thead><tr><th>Lead</th><th>Empresa</th><th>Vendedor</th><th>Etapa</th><th>Fecha</th></tr></thead><tbody>';
-    ld.forEach(l => { h += `<tr><td class="bold">${H(l.name)}</td><td>${H(l.empresa)}</td><td>${H(l.vendedor)}</td><td>${H(l.etapa)}</td><td>${l.fecha}</td></tr>`; });
-    h += '</tbody></table></div></div>';
-  }
   // Cotizaciones table
   const qd = (st.cotizacion && st.cotizacion.detail) || [];
   if (qd.length) {
@@ -793,72 +829,79 @@ function renderVentas() {
   const week = getCurrentWeek();
   const CG = D.company_goals || {};
 
-  // Calculate 11 KPIs for both sub-tabs
-
-  // 1. Litros Totales (weekly)
+  // Calculate KPIs — semanal uses weekly data, acumulado uses monthly
+  const isAccum = ventasSubTab === 'acumulado';
   const hist = (V.weekly_history || []).slice().reverse(); // newest first
-  const wkLitros = hist[selectedWeek]?.litros || 0;
-  const wkBudget = hist[selectedWeek] ? getWeeklyBudget(hist[selectedWeek].label) : 0;
+  const wkData = hist[selectedWeek] || {};
+  const wkLbu = wkData.litros_by_user || {}; // weekly litros by user (from extract_crm)
+  const ws = week?.week_start || '', we = week?.week_end || '';
+
+  // Source: weekly or monthly depending on sub-tab
+  const lbuSrc = isAccum ? lbu : wkLbu;
+
+  // 1. Litros Totales
+  const wkLitros = isAccum ? (T.total_litros || 0) : (wkData.litros || 0);
+  const wkBudget = !isAccum && wkData.label ? getWeeklyBudget(wkData.label) : 0;
   const wkPct = wkBudget > 0 ? Math.round((wkLitros / wkBudget) * 100) : 0;
 
-  // 2. Litros TomEnergy+CS (sum from allowed_vendors CS_TEAM users)
+  // 2. Litros TomEnergy+CS
   let litrosCS = 0;
-  for (const [u, v] of Object.entries(lbu)) { if (isCS(u)) litrosCS += v; }
+  for (const [u, v] of Object.entries(lbuSrc)) { if (isCS(u)) litrosCS += v; }
 
-  // 3. Litros Freelancer (allowed vendors NOT in CS_TEAM)
+  // 3. Litros Freelancer (NOT CS and NOT allowed vendors)
   let litrosFreelancer = 0;
-  for (const [u, v] of Object.entries(lbu)) { if (isAllowed(u) && !isCS(u)) litrosFreelancer += v; }
+  for (const [u, v] of Object.entries(lbuSrc)) { if (!isCS(u) && !isAllowed(u)) litrosFreelancer += v; }
 
-  // 4. Litros Nuevos (new clients this week/month)
+  // 4. Litros Nuevos (new clients)
   const ncDetail = V.new_clients?.detail || [];
-  const ws = week?.week_start || '', we = week?.week_end || '';
-  const litrosNuevosWeek = ncDetail.filter(c => ws && we && c.fecha >= ws && c.fecha <= we && isAllowed(c.vendedor)).reduce((s, c) => s + (c.litros || 0), 0);
-  const litrosNuevosMes = ncDetail.filter(c => isAllowed(c.vendedor)).reduce((s, c) => s + (c.litros || 0), 0);
+  const litrosNuevos = isAccum
+    ? ncDetail.reduce((s, c) => s + (c.litros || 0), 0)
+    : ncDetail.filter(c => ws && we && c.fecha >= ws && c.fecha <= we).reduce((s, c) => s + (c.litros || 0), 0);
 
-  // 5. Leads (meta semanal 45)
-  const sumA = obj => { if (!obj) return 0; return Object.entries(obj).filter(([k]) => isAllowed(k) && !isCS(k)).reduce((a, [, v]) => a + v, 0); };
-  const wLeads = week ? sumA(week.stages?.leads?.by_user) : 0;
-  const leadsGoal = 45;
+  // 5-7. Leads, Cotizaciones, Nuevos Clientes — from funnel (always weekly, sum all weeks if acumulado)
+  const sumA = obj => { if (!obj) return 0; return Object.entries(obj).reduce((a, [, v]) => a + v, 0); };
+  const fw = D.funnel_weeks || [];
+  let wLeads, wCotiz, wCierre;
+  if (isAccum) {
+    wLeads = fw.reduce((s, w) => s + sumA(w.stages?.leads?.by_user), 0);
+    wCotiz = fw.reduce((s, w) => s + sumA(w.stages?.cotizacion?.by_user), 0);
+    wCierre = fw.reduce((s, w) => s + sumA(w.stages?.cierre?.by_user), 0);
+  } else {
+    wLeads = week ? sumA(week.stages?.leads?.by_user) : 0;
+    wCotiz = week ? sumA(week.stages?.cotizacion?.by_user) : 0;
+    wCierre = week ? sumA(week.stages?.cierre?.by_user) : 0;
+  }
+  const leadsGoal = isAccum ? 45 * fw.length : 45;
+  const cotizGoal = isAccum ? 24 * fw.length : 24;
+  const cierreGoal = isAccum ? 6 * fw.length : 6;
 
-  // 6. Cotizaciones (meta 24)
-  const wCotiz = week ? sumA(week.stages?.cotizacion?.by_user) : 0;
-  const cotizGoal = 24;
-
-  // 7. Nuevos Clientes con factura (meta 6)
-  const wCierre = week ? sumA(week.stages?.cierre?.by_user) : 0;
-  const cierreGoal = 6;
-
-  // 8. Margen Retail
+  // 8-9. Margen (monthly — no weekly available)
   const mRetail = T.margin_retail_pct || 0;
-
-  // 9. Margen Volumen
   const mVol = T.margin_volume_pct || 0;
 
-  // 10. Retención (from funnel retencion stage)
-  const retencion = (D.funnel_weeks || [])[0]?.stages?.retencion || {};
-  const retPct = retencion.value || 0;
+  // 10. Retención (from selected week)
+  const retWeek = (fw[selectedWeek] || fw[0] || {}).stages?.retencion || {};
+  const retPct = retWeek.value || 0;
 
-  // 11. Ganados (won_deals in selected week)
+  // 11. Ganados
   const wonAll = D.won_deals || [];
-  const wGanados = wonAll.filter(w => {
-    if (!ws || !we) return false;
-    const lu = w.last_update || '';
-    return lu >= ws && lu <= we && (isAllowed(w.exec) || isCS(w.exec));
-  });
+  const wGanados = isAccum
+    ? wonAll.filter(w => (w.last_update || '') >= (V.month_start || ''))
+    : wonAll.filter(w => ws && we && (w.last_update || '') >= ws && (w.last_update || '') <= we);
 
-  // Build KPI HTML (both sub-tabs share same KPIs)
+  // Build KPI HTML
   let kh = '';
-  kh += mkKpi('c-red', 'Litros Totales', fL(wkLitros), `${wkPct}% de meta`, wkLitros, wkBudget);
+  kh += mkKpi('c-red', 'Litros Totales', fL(wkLitros), isAccum ? 'Acumulado mes' : (wkPct + '% de meta'), isAccum ? null : wkLitros, isAccum ? null : wkBudget);
   kh += mkKpi('c-green', 'Litros TomEnergy+CS', fL(litrosCS), 'Comber, Mauro, TomE', null, null);
   kh += mkKpi('c-yellow', 'Litros Freelancer', fL(litrosFreelancer), 'Otros vendedores', null, null);
-  kh += mkKpi('c-blue', 'Litros Nuevos', fL(ventasSubTab === 'semanal' ? litrosNuevosWeek : litrosNuevosMes), ventasSubTab === 'semanal' ? 'Esta semana' : 'Este mes', null, null);
-  kh += mkKpi('c-red', 'Leads', wLeads, `Meta: ${leadsGoal}`, wLeads, leadsGoal);
-  kh += mkKpi('c-yellow', 'Cotizaciones', wCotiz, `Meta: ${cotizGoal}`, wCotiz, cotizGoal);
-  kh += mkKpi('c-green', 'Nuevos Clientes', wCierre, `Meta: ${cierreGoal}`, wCierre, cierreGoal);
-  kh += mkKpi('c-blue', 'Margen Retail', mRetail + '%', `Meta: ${CG.margen_retail || 8.5}%`, mRetail, CG.margen_retail || 8.5);
-  kh += mkKpi('c-red', 'Margen Volumen', mVol + '%', `Meta: ${CG.margen_volumen || 6}%`, mVol, CG.margen_volumen || 6);
+  kh += mkKpi('c-blue', 'Litros Nuevos', fL(litrosNuevos), isAccum ? 'Mes' : 'Esta semana', null, null);
+  kh += mkKpi('c-red', 'Leads', wLeads, 'Meta: ' + leadsGoal, wLeads, leadsGoal);
+  kh += mkKpi('c-yellow', 'Cotizaciones', wCotiz, 'Meta: ' + cotizGoal, wCotiz, cotizGoal);
+  kh += mkKpi('c-green', 'Nuevos Clientes', wCierre, 'Meta: ' + cierreGoal, wCierre, cierreGoal);
+  kh += mkKpi('c-blue', 'Margen Retail', mRetail + '%', 'Meta: ' + (CG.margen_retail || 8.5) + '% (mes)', mRetail, CG.margen_retail || 8.5);
+  kh += mkKpi('c-red', 'Margen Volumen', mVol + '%', 'Meta: ' + (CG.margen_volumen || 6) + '% (mes)', mVol, CG.margen_volumen || 6);
   kh += mkKpi('c-green', 'Retención', retPct + '%', 'Tasa de retención', null, null);
-  kh += mkKpi('c-yellow', 'Ganados', wGanados.length, 'Clientes en etapa Ganado', null, null);
+  kh += mkKpi('c-yellow', 'Ganados', wGanados.length, isAccum ? 'Mes' : 'Esta semana', null, null);
   document.getElementById('kpiRow').innerHTML = kh;
 
   // Render sub-tab specific content
@@ -1230,6 +1273,107 @@ function renderFidelizacion() {
       tr.innerHTML = `<td class="bold">${H(c.name)}</td><td>${lTag}</td><td>${H(c.user || '—')}</td><td>${c.last_update || '—'}</td>`;
       adb.appendChild(tr);
     });
+  }
+}
+
+// ═══════════════════════════════════════
+// CS TAB
+// ═══════════════════════════════════════
+function renderCS() {
+  if (!D) return;
+
+  const churn = D.churn || {}, week = getCurrentWeek() || {}, now = new Date();
+  const weekStart = week.week_start || '', weekEnd = week.week_end || '';
+  const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+  const monthStartStr = monthStart.toISOString().split('T')[0];
+
+  // Calculate CS team KPIs
+  const lbu = (D.ventas && D.ventas.totals && D.ventas.totals.litros_by_user) || {};
+  let litrosCS = 0;
+  for (const [u, v] of Object.entries(lbu)) { if (isCS(u)) litrosCS += v; }
+
+  const wonAll = D.won_deals || [];
+  let clientesGanados = 0;
+  for (const w of wonAll) {
+    if (isCS(w.exec)) {
+      const lu = w.last_update || '';
+      if (csSubTab === 'semanal') {
+        if (weekStart && weekEnd && lu >= weekStart && lu <= weekEnd) clientesGanados++;
+      } else {
+        if (lu >= monthStartStr) clientesGanados++;
+      }
+    }
+  }
+
+  const byUser = churn.by_user || {};
+  let durmientes = 0, rescatados = 0;
+  for (const [u, v] of Object.entries(byUser)) {
+    if (isCS(u)) {
+      durmientes += (v.dormant || 0);
+      rescatados += (v.rescued_dormant || 0) + (v.rescued_lost || 0);
+    }
+  }
+
+  // KPI Row
+  let kh = '';
+  kh += mkKpi('c-blue', '💧 Litros CS', fL(litrosCS), 'volumen mensual', null, null);
+  kh += mkKpi('c-green', '👥 Clientes Ganados', clientesGanados, csSubTab === 'semanal' ? 'esta semana' : 'este mes', null, null);
+  kh += mkKpi('c-yellow', '😴 Durmientes', durmientes, 'clientes en pausa', null, null);
+  kh += mkKpi('c-green', '🏆 Rescatados', rescatados, 'durmientes reactivados', null, null);
+  document.getElementById('csKpiRow').innerHTML = kh;
+
+  // Populate Clientes Ganados tables
+  const ganados = wonAll.filter(w => {
+    if (!isCS(w.exec)) return false;
+    const lu = w.last_update || '';
+    if (csSubTab === 'semanal') {
+      return weekStart && weekEnd && lu >= weekStart && lu <= weekEnd;
+    } else {
+      return lu >= monthStartStr;
+    }
+  });
+
+  // Semanal view
+  const semanalBody = document.getElementById('csClientesGanadosBody');
+  const noSemanal = document.getElementById('noClientesGanados');
+  semanalBody.innerHTML = '';
+  if (ganados.length === 0) {
+    noSemanal.style.display = 'block';
+  } else {
+    noSemanal.style.display = 'none';
+    ganados.forEach(w => {
+      const tr = document.createElement('tr');
+      const litros = (w.litros || 0);
+      tr.innerHTML = `<td class="bold">${H(w.name)}</td><td>${H(w.exec)}</td><td>${fL(litros)}</td><td>${w.last_update || ''}</td>`;
+      semanalBody.appendChild(tr);
+    });
+  }
+
+  // Acumulado view
+  const acumuladoBody = document.getElementById('csClientesAcumuladoBody');
+  const noAcumulado = document.getElementById('noClientesAcumulado');
+  acumuladoBody.innerHTML = '';
+  if (ganados.length === 0) {
+    noAcumulado.style.display = 'block';
+  } else {
+    noAcumulado.style.display = 'none';
+    ganados.forEach(w => {
+      const tr = document.createElement('tr');
+      const litros = (w.litros || 0);
+      tr.innerHTML = `<td class="bold">${H(w.name)}</td><td>${H(w.exec)}</td><td>${fL(litros)}</td><td>${w.last_update || ''}</td>`;
+      acumuladoBody.appendChild(tr);
+    });
+  }
+
+  // Show correct sub-tab view
+  const semanalCont = document.getElementById('csClientesGanadosContainer');
+  const acumuladoCont = document.getElementById('csClientesAcumuladoContainer');
+  if (csSubTab === 'semanal') {
+    semanalCont.style.display = 'block';
+    acumuladoCont.style.display = 'none';
+  } else {
+    semanalCont.style.display = 'none';
+    acumuladoCont.style.display = 'block';
   }
 }
 
