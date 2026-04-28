@@ -208,6 +208,8 @@ tr:hover td{background:#fafaf8}
 
     <!-- ═══ TAB: CS ═══ -->
     <div class="tab-panel" id="tab-cs">
+      <!-- Week selector -->
+      <div id="csWeekSelector" style="display:flex;gap:6px;margin-bottom:18px;flex-wrap:wrap"></div>
       <!-- Sub-tabs -->
       <div class="tab-bar" style="margin-bottom:20px">
         <button class="tab-btn" style="font-size:13px" onclick="switchCsSubTab('semanal')">Semanal</button>
@@ -761,10 +763,12 @@ function renderEjecutivos() {
   h += mkKpi('c-green', 'Ganados', ganados, 'En semana actual', null, null);
   h += '</div>';
 
-  // Clientes Nuevos table
-  const thisExecNewClients = selectedExec === 3
-    ? ncDetail.filter(c => freelancerNames.includes(c.vendedor))
-    : ncDetail.filter(c => matchesExec(c.vendedor));
+  // Clientes Nuevos table — filtered to selected week
+  const thisExecNewClients = ncDetail.filter(c => {
+    if (!matchesExec(c.vendedor) && !(selectedExec === 3 && freelancerNames.includes(c.vendedor))) return false;
+    if (ws && we && c.fecha) return c.fecha >= ws && c.fecha <= we;
+    return false;
+  });
 
   h += '<div class="sec"><div class="sec-h"><h2>📊 Clientes Nuevos</h2></div><div class="sec-b" style="max-height:400px;overflow-y:auto"><table>';
   h += '<thead><tr><th>Cliente</th><th>Fecha</th><th>Litros</th></tr></thead><tbody>';
@@ -777,10 +781,12 @@ function renderEjecutivos() {
   }
   h += '</tbody></table></div></div>';
 
-  // Oportunidades table (from pipeline filtered to this exec)
-  const thisExecOpportunities = selectedExec === 3
-    ? pipeline.filter(p => freelancerNames.includes(p.exec || ''))
-    : pipeline.filter(p => matchesExec(p.exec));
+  // Oportunidades table — filtered to this exec, only with activity in selected week (≤7d)
+  const thisExecOpportunities = pipeline.filter(p => {
+    if (!matchesExec(p.exec) && !(selectedExec === 3 && freelancerNames.includes(p.exec || ''))) return false;
+    const days = p.days_since_activity ?? p.days_in_stage ?? 999;
+    return days <= 7;
+  });
 
   h += '<div class="sec"><div class="sec-h"><h2>🎯 Oportunidades</h2></div><div class="sec-b" style="max-height:400px;overflow-y:auto"><table>';
   h += '<thead><tr><th>Cliente</th><th>Etapa</th><th>Litros Est.</th><th>Días Act.</th></tr></thead><tbody>';
@@ -875,18 +881,25 @@ function renderVentas() {
     ? ncDetail.reduce((s, c) => s + (c.litros || 0), 0)
     : ncDetail.filter(c => ws && we && c.fecha >= ws && c.fecha <= we).reduce((s, c) => s + (c.litros || 0), 0);
 
-  // 5-7. Leads, Cotizaciones, Nuevos Clientes — from funnel (always weekly, sum all weeks if acumulado)
-  const sumA = obj => { if (!obj) return 0; return Object.entries(obj).reduce((a, [, v]) => a + v, 0); };
+  // 5-7. Leads, Cotizaciones (sent only), Nuevos Clientes
+  const sumAll = obj => { if (!obj) return 0; return Object.entries(obj).reduce((a, [, v]) => a + v, 0); };
   const fw = D.funnel_weeks || [];
+
+  // Cotizaciones: count only estado='sent' from detail
+  const countSentCotiz = (wk) => {
+    const det = (wk.stages?.cotizacion?.detail || []);
+    return det.filter(q => q.estado === 'sent').length;
+  };
+
   let wLeads, wCotiz, wCierre;
   if (isAccum) {
-    wLeads = fw.reduce((s, w) => s + sumA(w.stages?.leads?.by_user), 0);
-    wCotiz = fw.reduce((s, w) => s + sumA(w.stages?.cotizacion?.by_user), 0);
-    wCierre = fw.reduce((s, w) => s + sumA(w.stages?.cierre?.by_user), 0);
+    wLeads = fw.reduce((s, w) => s + sumAll(w.stages?.leads?.by_user), 0);
+    wCotiz = fw.reduce((s, w) => s + countSentCotiz(w), 0);
+    wCierre = fw.reduce((s, w) => s + sumAll(w.stages?.cierre?.by_user), 0);
   } else {
-    wLeads = week ? sumA(week.stages?.leads?.by_user) : 0;
-    wCotiz = week ? sumA(week.stages?.cotizacion?.by_user) : 0;
-    wCierre = week ? sumA(week.stages?.cierre?.by_user) : 0;
+    wLeads = week ? sumAll(week.stages?.leads?.by_user) : 0;
+    wCotiz = week ? countSentCotiz(week) : 0;
+    wCierre = week ? sumAll(week.stages?.cierre?.by_user) : 0;
   }
   const leadsGoal = isAccum ? 45 * fw.length : 45;
   const cotizGoal = isAccum ? 24 * fw.length : 24;
@@ -1299,6 +1312,15 @@ function renderFidelizacion() {
 // ═══════════════════════════════════════
 function renderCS() {
   if (!D) return;
+
+  // Render week selector for CS tab
+  const fwCS = D.funnel_weeks || [];
+  const csWkSel = document.getElementById('csWeekSelector');
+  if (csWkSel) {
+    csWkSel.innerHTML = fwCS.map((w, i) =>
+      '<button class="btn' + (i === selectedWeek ? ' style="border-color:var(--red);color:var(--red)"' : '') + '" onclick="selectWeek(' + i + ')">' + w.label + (w.is_current ? ' ●' : '') + '</button>'
+    ).join('');
+  }
 
   const churn = D.churn || {}, week = getCurrentWeek() || {}, now = new Date();
   const weekStart = week.week_start || '', weekEnd = week.week_end || '';
