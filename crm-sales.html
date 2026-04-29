@@ -193,8 +193,8 @@ tr:hover td{background:#fafaf8}
         <div class="nodata" id="noNewLost" style="display:none">Sin nuevos perdidos esta semana</div></div></div>
 
       <!-- Lost clients this month (below Churn KPI) -->
-      <div class="sec"><div class="sec-h"><h2>📉 Clientes Perdidos (Mes Actual)</h2></div><div class="sec-b" style="max-height:400px;overflow-y:auto">
-        <table><thead><tr><th>Prioridad</th><th>Cliente</th><th>Prom. Mensual 8M</th><th>Último vendedor</th><th>Fecha cambio</th></tr></thead><tbody id="lostMonthBody"></tbody></table>
+      <div class="sec"><div class="sec-h"><h2>📉 Clientes Perdidos Este Mes (precisión CRM)</h2></div><div class="sec-b" style="max-height:400px;overflow-y:auto">
+        <table><thead><tr><th>Cliente</th><th>Vendedor</th><th>Fecha</th><th>Estado Actual</th></tr></thead><tbody id="lostMonthBody"></tbody></table>
         <div class="nodata" id="noLostMonth" style="display:none">Sin perdidos en el mes</div></div></div>
 
       <!-- Todos los Durmientes -->
@@ -1313,27 +1313,19 @@ function renderFidelizacion() {
     });
   }
 
-  // Lost clients this month (below Churn KPI)
-  const lostMonth = lostListAll.filter(c => {
-    const lu = c.last_update || '';
-    return lu >= monthStartStr;
-  });
-  const lostMonthDedup = _dedup(lostMonth);
-  lostMonthDedup.sort((a, b) => (b.avg_monthly_litros || 0) - (a.avg_monthly_litros || 0));
+  // Lost clients this month — from precise tracking (mail.tracking.value)
+  const newlyLostPrecise = S.newly_lost_list || [];
 
   const lmb = document.getElementById('lostMonthBody'); lmb.innerHTML = '';
-  if (lostMonthDedup.length === 0) {
+  if (newlyLostPrecise.length === 0) {
     document.getElementById('noLostMonth').style.display = 'block';
   } else {
     document.getElementById('noLostMonth').style.display = 'none';
-    lostMonthDedup.forEach(c => {
-      const l = c.avg_monthly_litros || 0;
-      const lTag = l >= 5000 ? '<span style="color:var(--red);font-weight:700">' + fL(l) + '</span>'
-        : l >= 1000 ? '<span style="color:var(--yellow);font-weight:700">' + fL(l) + '</span>'
-        : '<span style="color:var(--dim)">' + fL(l) + '</span>';
-      const priority = l >= 5000 ? '🔴' : l >= 1000 ? '🟡' : '⚪';
+    newlyLostPrecise.forEach(c => {
+      const stageNow = c.stage_now || '';
+      const recovered = stageNow && !stageNow.toLowerCase().includes('perdido');
       const tr = document.createElement('tr');
-      tr.innerHTML = `<td>${priority}</td><td class="bold">${H(c.name)}</td><td>${lTag}</td><td>${H(c.user || '—')}</td><td>${c.last_update || '—'}</td>`;
+      tr.innerHTML = '<td class="bold">' + H(c.name) + '</td><td>' + H(c.user || '—') + '</td><td>' + (c.date || '—') + '</td><td>' + (recovered ? '<span class="tag tag-g">Recuperado → ' + H(stageNow) + '</span>' : '<span class="tag tag-r">Perdido</span>') + '</td>';
       lmb.appendChild(tr);
     });
   }
