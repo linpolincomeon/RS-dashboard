@@ -931,6 +931,143 @@ def extract_enap_compliance(models, uid):
     }
 
 
+# ── OPERACIONES (transport expenses) ──
+TRANSPORT_BUDGET = {
+    "2025-01": 11705955, "2025-02": 11858691, "2025-03": 15342984, "2025-04": 15321854,
+    "2025-05": 11078731, "2025-06": 8503716, "2025-07": 13074085, "2025-08": 13323650,
+    "2025-09": 14420942, "2025-10": 15509795, "2025-11": 15023726, "2025-12": 15389582,
+    "2026-01": 12742955, "2026-02": 13074640, "2026-03": 16149608, "2026-04": 14517971,
+    "2026-05": 10055583, "2026-06": 16920204, "2026-07": 12501767, "2026-08": 15375085,
+    "2026-09": 12280892, "2026-10": 15623001, "2026-11": 10395006, "2026-12": 12172896,
+}
+
+TRANSPORT_ACCOUNTS = [
+    "3.3.01.28",  # Arriendo Terreno para Camiones
+    "3.3.01.30",  # Elementos Protección Personal (EPP)
+    "3.1.01.02",  # Petróleo para Camiones
+    "3.1.01.04",  # Seguros Pagados Camiones
+    "3.1.01.06",  # Seguros Pagados Camionetas
+    "3.1.01.08",  # Mantenciones Varias
+    "3.3.01.18",  # Mantención y Reparación Camiones
+    "3.3.01.29",  # Gastos Vehículos
+    "3.3.01.52",  # Gastos de Traslados (TAG)
+]
+
+# Map account codes to display names
+TRANSPORT_ACCOUNT_NAMES = {
+    "3.3.01.28": "Arriendo",
+    "3.3.01.30": "EPP",
+    "3.1.01.02": "Petróleo",
+    "3.1.01.04": "Seguros Camiones",
+    "3.1.01.06": "Seguros Camionetas",
+    "3.1.01.08": "Mantenciones Varias",
+    "3.3.01.18": "Mantención y Reparación",
+    "3.3.01.29": "Gastos Vehículos",
+    "3.3.01.52": "Gastos Traslados (TAG)",
+}
+
+def extract_operaciones(models, uid):
+    """Extract transport expenses (last 6 months) vs budget."""
+    import calendar
+    print("Extracting operaciones (transport expenses)...")
+    today = datetime.now()
+
+    # Build list of account IDs for these codes
+    account_codes = TRANSPORT_ACCOUNTS
+    account_id_map = {}  # code -> id
+
+    for code in account_codes:
+        accs = sr(models, uid, "account.account",
+                  [["code", "=", code]], ["id", "code"], limit=1)
+        if accs:
+            account_id_map[code] = accs[0]["id"]
+
+    print(f"  Found {len(account_id_map)} / {len(account_codes)} account codes")
+
+    if not account_id_map:
+        return {"months": []}
+
+    # Get last 6 months
+    months = []
+    for m_offset in range(6):
+        ref = today.replace(day=1)
+        for _ in range(m_offset):
+            ref = (ref - timedelta(days=1)).replace(day=1)
+        m_start = ref.strftime("%Y-%m-%d")
+        m_end = ((ref + timedelta(days=32)).replace(day=1) - timedelta(days=1)).strftime("%Y-%m-%d")
+        m_key = ref.strftime("%Y-%m")
+        m_label = ref.strftime("%b %Y").replace("May", "May").replace("Jun", "Jun").replace("Jul", "Jul")
+        # Spanish month names
+        month_es = ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"]
+        m_label = f"{month_es[ref.month-1]} {ref.year}".replace(" ", " ")
+
+        months.append({
+            "month": m_key,
+            "label": m_label,
+            "start": m_start,
+            "end": m_end,
+        })
+
+    months.reverse()  # oldest first
+
+    # Query expenses for each month
+    account_ids = list(account_id_map.values())
+    results = []
+
+    for m in months:
+        # Query account.move.line for all transport accounts in this month
+        lines = sr(models, uid, "account.move.line", [
+            ["account_id", "in", account_ids],
+            ["parent_state", "=", "posted"],
+            ["date", ">=", m["start"]],
+            ["date", "<=", m["end"]],
+        ], ["debit", "account_id", "date"], 5000)
+
+        # Sum debits by account code
+        by_code = {}
+        total = 0
+        for line in lines:
+            aid = line["account_id"][0] if line.get("account_id") else None
+            debit = line.get("debit", 0)
+            total += debit
+            # Find code for this account ID
+            code = None
+            for c, id in account_id_map.items():
+                if id == aid:
+                    code = c
+                    break
+            if code:
+                if code not in by_code:
+                    by_code[code] = 0
+                by_code[code] += debit
+
+        # Build categories dict (grouped for display)
+        categories = {
+            "Petróleo": by_code.get("3.1.01.02", 0),
+            "Mantención y Reparación": by_code.get("3.3.01.18", 0),
+            "Gastos Traslados (TAG)": by_code.get("3.3.01.52", 0),
+            "Seguros": by_code.get("3.1.01.04", 0) + by_code.get("3.1.01.06", 0),
+            "Gastos Vehículos": by_code.get("3.3.01.29", 0),
+            "Arriendo": by_code.get("3.3.01.28", 0),
+            "EPP": by_code.get("3.3.01.30", 0),
+            "Mantenciones Varias": by_code.get("3.1.01.08", 0),
+        }
+
+        budget = TRANSPORT_BUDGET.get(m["month"], 0)
+        compliance_pct = round((total / budget * 100), 1) if budget > 0 else 0
+
+        results.append({
+            "month": m["month"],
+            "label": m["label"],
+            "budget": budget,
+            "actual": round(total),
+            "compliance_pct": compliance_pct,
+            "categories": {k: round(v) for k, v in categories.items()},
+        })
+
+    return {"months": results}
+
+
 # ── RIESGO VIGENTE (credit risk) ──
 def extract_riesgo(models, uid):
     """Uncovered vs covered receivable amounts (credit limit check)."""
@@ -1008,6 +1145,7 @@ def main():
     riesgo = extract_riesgo(models, uid)
     churn = extract_churn(models, uid)
     enap = extract_enap_compliance(models, uid)
+    operaciones = extract_operaciones(models, uid)
 
     data = {
         "updated": datetime.now().isoformat(),
@@ -1020,6 +1158,7 @@ def main():
         "riesgo": riesgo,
         "churn": churn,
         "enap": enap,
+        "operaciones": operaciones,
         "gerencia_goals": {
             "margen_contado_meta": 0.085,
             "margen_credito_meta": 0.06,
