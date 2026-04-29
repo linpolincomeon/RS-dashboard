@@ -108,6 +108,7 @@ tr:hover td{background:rgba(200,54,14,.02)}
     <div class="panel" id="p-cobranza"></div>
     <div class="panel" id="p-caja"></div>
     <div class="panel" id="p-resumen"></div>
+    <div class="panel" id="p-operaciones"></div>
   </div>
 </div>
 <div class="container"><div class="footer"><span>TomEnergy · CEO Dashboard</span><span id="ftr"></span></div></div>
@@ -122,11 +123,11 @@ const fP=n=>!n&&n!==0?'—':(n*100).toFixed(1)+'%';
 const pD=(c,p)=>(!c||!p)?null:((c-p)/Math.abs(p))*100;
 const dH=d=>{if(d==null)return'';const u=d>=0;return`<div class="kpi-delta ${u?'up':'dn'}">${u?'▲':'▼'} ${Math.abs(d).toFixed(1)}%</div>`};
 function setupTabs(){
-  const tabDefs=[['ventas','RS'],['gerencia','Gerencia'],['cobranza','Cobranza'],['caja','Caja'],['resumen','Resumen']];
+  const tabDefs=[['ventas','RS'],['gerencia','Gerencia'],['cobranza','Cobranza'],['caja','Caja'],['resumen','Resumen'],['operaciones','Operaciones']];
   document.getElementById('tabs').innerHTML=tabDefs.map(([k,l])=>
     `<button class="tab ${k===curTab?'active':''}" onclick="switchTab('${k}')">${l}</button>`
   ).join('');
-  if(curTab==='ventas'||curTab==='gerencia'||curTab==='caja'||curTab==='resumen'){
+  if(curTab==='ventas'||curTab==='gerencia'||curTab==='caja'||curTab==='resumen'||curTab==='operaciones'){
     const ws=D.weeks[selW];
     document.getElementById('filters').innerHTML=[4,8,16].map(n=>
       `<button class="wf ${fN===n?'on':''}" onclick="setFilter(${n})">${n}S</button>`
@@ -152,6 +153,7 @@ function render(){
   else if(curTab==='gerencia') renderGerencia();
   else if(curTab==='cobranza') renderCobranza();
   else if(curTab==='resumen') renderResumen();
+  else if(curTab==='operaciones') renderOperaciones();
   else renderCaja();
   setupTabs();
 }
@@ -165,7 +167,7 @@ function renderVentas(){
   const dv=last.ppto>0?last.litros/last.ppto:0;
   const mcrRetail=last.margin_retail||0, mcVol=last.margin_volumen||0;
   const hasNM=last.margin_retail!==undefined&&last.margin_retail!==null;
-  h+='<div class="kpi-grid">';
+  let h='<div class="kpi-grid">';
   h+=kpi('Venta Semana',fM(last.ventas),pD(last.ventas,prev.ventas),'c-accent',`$${fNum(last.precio_bruto||last.precio_neto||last.precio||0)}/L bruto`);
   h+=kpi('Litros',fK(last.litros),pD(last.litros,prev.litros),'c-blue',`Retail: ${fK(last.litros_retail||0)} · Vol: ${fK(last.litros_volumen||0)}`);
   h+=kpi('Nº Compras',fNum(last.facturas),pD(last.facturas,prev.facturas),'c-purple',`${last.facturas_contado||'—'} contado · ${last.facturas_credito||'—'} crédito`);
@@ -482,6 +484,77 @@ function renderCaja(){
   });
   h+='</tbody></table></div>';
   el.innerHTML=h;
+}
+// ── OPERACIONES ──
+function renderOperaciones(){
+  const el=document.getElementById('p-operaciones');
+  const op=D.operaciones||{};
+  const months=op.months||[];
+
+  if(months.length===0){
+    el.innerHTML='<div class="chart-card" style="text-align:center;padding:3rem;color:var(--text3)">Sin datos de operaciones</div>';
+    return;
+  }
+
+  // Current month (last in list)
+  const curr=months[months.length-1]||{};
+  const budget=curr.budget||0, actual=curr.actual||0;
+  const cmpPct=curr.compliance_pct||0;
+
+  // YTD sum
+  const ytdActual=months.reduce((s,m)=>s+m.actual,0);
+  const ytdBudget=months.reduce((s,m)=>s+m.budget,0);
+
+  let h='<div class="kpi-grid">';
+  h+=kpi('Gasto Mes Actual','$'+fNum(actual),null,cmpPct<=100?'c-green':cmpPct<=110?'c-amber':'c-red',cmpPct.toFixed(1)+'% presupuesto: $'+fNum(budget));
+  h+=kpi('Gasto Acumulado Año','$'+fNum(ytdActual),null,'c-blue','Presupuesto: $'+fNum(ytdBudget));
+  h+=kpi('Cumplimiento %',cmpPct.toFixed(1)+'%',null,cmpPct<=100?'c-green':cmpPct<=110?'c-amber':'c-red',cmpPct<=100?'OK':cmpPct<=110?'Alerta':'Exceso');
+  h+='</div>';
+
+  // Monthly breakdown table
+  h+='<div class="section-label">Comparativo Mensual</div>';
+  h+='<div class="table-card" style="overflow-x:auto"><table><thead><tr>';
+  h+='<th>Mes</th><th class="r">Presupuesto</th><th class="r">Real</th><th class="r">Cumplimiento %</th>';
+  h+='</tr></thead><tbody>';
+  months.forEach((m,i)=>{
+    const mp=m.compliance_pct||0;
+    const sel=i===months.length-1;
+    h+=`<tr style="${sel?'background:var(--accent-light)':''}">`;
+    h+=`<td class="${sel?'hi':''}">${m.label}</td>`;
+    h+=`<td class="r">$${fNum(m.budget)}</td>`;
+    h+=`<td class="r">${fM(m.actual)}</td>`;
+    h+=`<td class="r ${mp<=100?'ok':mp<=110?'':'bad'}">${mp.toFixed(1)}%</td>`;
+    h+='</tr>';
+  });
+  h+='</tbody></table></div>';
+
+  // Chart: Budget vs Actual last 6 months
+  h+='<div class="chart-card"><div class="chart-title">Gasto vs Presupuesto <span class="badge">últimos 6 meses</span></div><div class="chart-wrap"><canvas id="cOpsMonthly"></canvas></div></div>';
+
+  // Categories for current month
+  const cats=curr.categories||{};
+  const catEntries=Object.entries(cats).filter(([k,v])=>v>0).sort((a,b)=>b[1]-a[1]);
+
+  if(catEntries.length>0){
+    h+='<div class="section-label">Categorías de Gasto — '+curr.label+'</div>';
+    h+='<div class="table-card"><table><thead><tr><th>Categoría</th><th class="r">Monto</th></tr></thead><tbody>';
+    catEntries.forEach(([cat,amt])=>{
+      h+=`<tr><td>${cat}</td><td class="r">$${fNum(amt)}</td></tr>`;
+    });
+    h+='</tbody></table></div>';
+  }
+
+  el.innerHTML=h;
+
+  // Render chart
+  const gC3='rgba(0,0,0,.04)',tC3='#9c9b96';
+  const labels=months.map(m=>m.label.split(' ')[0]);
+  dc('cOM');
+  charts.cOM=new Chart(document.getElementById('cOpsMonthly'),{type:'bar',
+    data:{labels,datasets:[
+      {label:'Presupuesto',data:months.map(m=>m.budget),backgroundColor:C.amber+'44',borderRadius:5},
+      {label:'Real',data:months.map(m=>m.actual),backgroundColor:months.map(m=>m.compliance_pct<=100?C.green+'77':m.compliance_pct<=110?C.amber+'77':C.red+'77'),borderRadius:5}
+    ]},options:co(tC3,gC3,v=>fM(v))});
 }
 // ── HELPERS ──
 function kpi(label,val,delta,cls,sub){
