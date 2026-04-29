@@ -109,6 +109,7 @@ tr:hover td{background:#fafaf8}
       <button class="tab-btn" onclick="switchTab('fidelizacion')">Churn & Rescate</button>
       <button class="tab-btn" onclick="switchTab('cs')">Fidelización + CS</button>
       <button class="tab-btn" onclick="switchTab('mesvencido')">📋 Mes Vencido</button>
+      <button class="tab-btn" onclick="switchTab('glosario')">📖 Glosario</button>
     </div>
 
     <!-- ═══ TAB: EJECUTIVOS ═══ -->
@@ -237,6 +238,37 @@ tr:hover td{background:#fafaf8}
 
     <!-- ═══ TAB: MES VENCIDO ═══ -->
     <div class="tab-panel" id="tab-mesvencido"></div>
+
+    <!-- ═══ TAB: GLOSARIO ═══ -->
+    <div class="tab-panel" id="tab-glosario">
+      <div class="sec"><div class="sec-h"><h2>📖 Glosario — Definición de Variables</h2></div>
+      <div class="sec-b" style="font-size:13px;line-height:2">
+        <table style="width:100%">
+          <thead><tr><th style="width:180px">Variable</th><th>Definición</th><th style="width:120px">Fuente Odoo</th></tr></thead>
+          <tbody>
+            <tr><td class="bold">Litros Totales</td><td>Litros de Diesel B1 facturados en la semana/mes (facturas posteadas, descontando NC)</td><td>account.move.line</td></tr>
+            <tr><td class="bold">Litros Ejecutivos</td><td>Litros vendidos por Toro, Muñoz y Ron</td><td>invoice_user_id</td></tr>
+            <tr><td class="bold">Litros Fidelización</td><td>Litros vendidos por equipo CS (Comber, Mauro, TomEnergy) + otros</td><td>invoice_user_id</td></tr>
+            <tr><td class="bold">Litros Freelancer</td><td>Litros vendidos por Avilés, Jullian, Márquez, Bisquertt</td><td>invoice_user_id</td></tr>
+            <tr style="border-top:2px solid #e5e4df"><td class="bold">Leads</td><td>Oportunidades CREADAS esa semana en CRM (create_date dentro de la semana). No incluye leads existentes con actividad.</td><td>crm.lead create_date</td></tr>
+            <tr><td class="bold">Cotizaciones</td><td>Cotizaciones (sale.order) en estado "Enviada" creadas esa semana</td><td>sale.order state=sent</td></tr>
+            <tr><td class="bold">Nuevos Clientes</td><td>Clientes cuya PRIMERA factura de Diesel B1 fue esta semana/mes. No cuenta facturas por intereses o servicios.</td><td>account.move + product_id=14</td></tr>
+            <tr><td class="bold">Ganados</td><td>Leads movidos a etapa "Ganado" en CRM durante la semana (por write_date)</td><td>crm.lead stage=Won</td></tr>
+            <tr style="border-top:2px solid #e5e4df"><td class="bold">Margen Retail</td><td>Margen ponderado por monto de ventas a clientes donde is_volume_client = False. Meta: 8.5%</td><td>margin_zone × amount_untaxed</td></tr>
+            <tr><td class="bold">Margen Volumen</td><td>Margen ponderado de clientes con is_volume_client = True. Meta: 6%</td><td>margin_zone × amount_untaxed</td></tr>
+            <tr><td class="bold">Retención 90d</td><td>Porcentaje de seguimiento de cotizaciones a 90 días (del funnel semanal)</td><td>crm.lead stages</td></tr>
+            <tr style="border-top:2px solid #e5e4df"><td class="bold">Activos</td><td>Clientes que facturaron en los últimos 2 meses</td><td>account.move</td></tr>
+            <tr><td class="bold">Durmientes</td><td>Clientes en etapa CRM "Durmiente" — fuera de ciclo de compra, menos de 9 meses sin comprar</td><td>crm.lead stage</td></tr>
+            <tr><td class="bold">Perdidos</td><td>Clientes en etapa CRM "Perdidos" — sin factura 9+ meses</td><td>crm.lead stage</td></tr>
+            <tr><td class="bold">Churn %</td><td>Leads que se MOVIERON a etapa "Perdidos" este mes ÷ clientes activos mes anterior. Usa mail.tracking.value para precisión.</td><td>mail.tracking.value</td></tr>
+            <tr><td class="bold">Tasa Rescate</td><td>Clientes rescatados (durmientes que volvieron a facturar) ÷ (durmientes + rescatados)</td><td>crm.lead + account.move</td></tr>
+            <tr style="border-top:2px solid #e5e4df"><td class="bold">Semana Comercial</td><td>Jueves a Miércoles (no lunes a domingo)</td><td>—</td></tr>
+            <tr><td class="bold">Presupuesto Semanal</td><td>Presupuesto mensual de litros ÷ 4.33</td><td>Hardcodeado</td></tr>
+            <tr><td class="bold">Retail vs Volumen</td><td>Retail = clientes con is_volume_client=False. Volumen = is_volume_client=True. NO tiene relación con condición de pago.</td><td>res.partner</td></tr>
+          </tbody>
+        </table>
+      </div></div>
+    </div>
   </div>
 </div>
 
