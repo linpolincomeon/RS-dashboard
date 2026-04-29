@@ -249,6 +249,8 @@ let execSubTab = 'semanal';
 let csSubTab = 'semanal'; // For CS tab sub-tabs
 let chartWeekly = null, chartMargenZona = null, chartMargenExec = null;
 
+const norm = s => s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').split(/\s+/).filter(Boolean).sort().join(' ');
+
 const ALLOWED_VENDORS = [
   'toro gonzález sebastian enrique','muñoz encalada joaquin','ron yenire'
 ];
@@ -256,14 +258,12 @@ const FREELANCERS = [
   'carolina avilés','fernando jullian','marcela márquez','raúl bisquertt'
 ];
 const CS_TEAM = ['comber sigall pauline','mauro boccardo','tomenergy'];
-const _fN = new Set(FREELANCERS.map(norm));
-const isFreelancer = n => n && _fN.has(norm(n));
-
-const norm = s => s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').split(/\s+/).filter(Boolean).sort().join(' ');
 const _aN = new Set(ALLOWED_VENDORS.map(norm));
 const _csN = new Set(CS_TEAM.map(norm));
 const isAllowed = n => n && _aN.has(norm(n));
 const isCS = n => n && _csN.has(norm(n));
+const _fN = new Set(FREELANCERS.map(norm));
+const isFreelancer = n => n && _fN.has(norm(n));
 
 function getGoal(name) {
   if (!D || !D.vendor_goals) return {};
