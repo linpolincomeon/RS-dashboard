@@ -1,32 +1,32 @@
 {
-  "updated": "2026-04-29T16:54:20.282145",
+  "updated": "2026-04-29T20:22:59.683368",
   "weeks": [
     {
       "label": "23apr-29apr",
       "start": "2026-04-23",
       "end": "2026-04-29",
-      "ventas": 180761080,
-      "neto": 136572181,
-      "litros": 116549,
-      "litros_retail": 99508,
-      "litros_volumen": 17041,
-      "precio_neto": 1172,
-      "precio_bruto": 1551,
-      "margin": 0.08654,
-      "margin_retail": 0.08865,
-      "margin_volumen": 0.07423,
-      "facturas": 84,
+      "ventas": 211476881,
+      "neto": 159727184,
+      "litros": 136749,
+      "litros_retail": 103708,
+      "litros_volumen": 33041,
+      "precio_neto": 1168,
+      "precio_bruto": 1546,
+      "margin": 0.08136,
+      "margin_retail": 0.08915,
+      "margin_volumen": 0.05638,
+      "facturas": 92,
       "nc": 0,
-      "clientes": 72,
-      "recaud": 314664887,
+      "clientes": 78,
+      "recaud": 315548387,
       "cheques": 17478957,
-      "transf": 222598745,
+      "transf": 223482245,
       "factoring": 74587185,
       "compras_odoo": 115668291,
       "cheq_cartera_saldo": 0,
       "cheq_recibidos": 52638216,
-      "facturas_contado": 9,
-      "facturas_credito": 75,
+      "facturas_contado": 10,
+      "facturas_credito": 82,
       "margin_by_term": {
         "Prepago": {
           "margin": 0.06593,
@@ -35,9 +35,9 @@
           "days": 0
         },
         "1 Día": {
-          "margin": 0.06778,
-          "normalizado": 0.07745,
-          "count": 8,
+          "margin": 0.07121,
+          "normalizado": 0.08087,
+          "count": 9,
           "days": 1
         },
         "7 Días": {
@@ -47,15 +47,15 @@
           "days": 7
         },
         "15 Días": {
-          "margin": 0.08368,
-          "normalizado": 0.08868,
-          "count": 4,
+          "margin": 0.0435,
+          "normalizado": 0.0485,
+          "count": 7,
           "days": 15
         },
         "30 Días": {
-          "margin": 0.08906,
-          "normalizado": 0.08906,
-          "count": 64,
+          "margin": 0.08928,
+          "normalizado": 0.08928,
+          "count": 68,
           "days": 30
         },
         "45 Días": {
@@ -71,9 +71,9 @@
           "days": 60
         }
       },
-      "cotiz_canceladas": 5,
+      "cotiz_canceladas": 8,
       "visitas": 6,
-      "clientes_nuevos": 4,
+      "clientes_nuevos": 5,
       "ppto": 269236,
       "ppto_retail": 199235,
       "ppto_volumen": 70001,
@@ -1290,8 +1290,8 @@
     {
       "date": "29apr",
       "day": "Mié",
-      "litros": 13625,
-      "neto": 13922989
+      "litros": 33825,
+      "neto": 37077992
     },
     {
       "date": "28apr",
@@ -1387,7 +1387,7 @@
   "banks": [
     {
       "name": "DE CHILE",
-      "balance": 69446562
+      "balance": 34899569
     },
     {
       "name": "CAJA",
@@ -1414,15 +1414,15 @@
       "balance": -838790
     }
   ],
-  "total_cash": 77483417,
+  "total_cash": 42936424,
   "receivables": {
-    "open_invoices": 236,
-    "total_due": 515409820,
-    "current": 415291987,
-    "overdue": 100117833,
-    "pct_overdue": 19.4,
+    "open_invoices": 243,
+    "total_due": 545242121,
+    "current": 446007788,
+    "overdue": 99234333,
+    "pct_overdue": 18.2,
     "aging": {
-      "0-30": 77898649,
+      "0-30": 77015149,
       "31-60": 12453621,
       "61-90": 0,
       "90+": 9765563
@@ -1431,6 +1431,10 @@
       {
         "name": "JOSE RODRIGO ORMAZABAL VIDAL",
         "amount": 28285701
+      },
+      {
+        "name": "EL PARRON SPA",
+        "amount": 22470000
       },
       {
         "name": "PATRICIO VISCAY ALBORNOZ",
@@ -1453,12 +1457,12 @@
         "amount": 14291081
       },
       {
-        "name": "FORESTAL PUIHUA SPA",
-        "amount": 13390401
+        "name": "INGENERIA Y CONSTRUCCIONES FEBLANCA SPA",
+        "amount": 13952200
       },
       {
-        "name": "INGENERIA Y CONSTRUCCIONES FEBLANCA SPA",
-        "amount": 12433200
+        "name": "FORESTAL PUIHUA SPA",
+        "amount": 13390401
       },
       {
         "name": "AGROINDUSTRIAL SIRACUSA S A",
@@ -1503,10 +1507,6 @@
       {
         "name": "PATRICIO REYES SERRANO",
         "amount": 7645000
-      },
-      {
-        "name": "AGRICOLA MANTOS VERDES LIMITADA",
-        "amount": 6862500
       }
     ]
   },
@@ -1610,15 +1610,15 @@
   "riesgo": {
     "cubierto": 0,
     "cubierto_count": 0,
-    "no_cubierto": 515409820,
-    "no_cubierto_count": 236,
+    "no_cubierto": 545242121,
+    "no_cubierto_count": 243,
     "pct_monto": 100.0,
     "pct_count": 100.0
   },
   "churn": {
     "eligible_clients": 165,
-    "churned_count": 54,
-    "pct": 32.7,
+    "churned_count": 53,
+    "pct": 32.1,
     "churned": [
       {
         "name": "ERIKA DEL PILAR GUZMAN MANRIQUEZ",
@@ -1871,16 +1871,6 @@
         "new_this_week": false
       },
       {
-        "name": "BEPATAGONIA MAQUINARIA S.A.",
-        "freq": "Bimensual (Quincenal)",
-        "freq_days": 15,
-        "last_invoice": "2026-03-16",
-        "days_since": 44,
-        "threshold": 30,
-        "invoices_8m": 14,
-        "new_this_week": false
-      },
-      {
         "name": "PAROT HERMANOS SPA",
         "freq": "Irregular (Promedio: 3 días)",
         "freq_days": 3,
@@ -1919,6 +1909,16 @@
         "threshold": 30,
         "invoices_8m": 10,
         "new_this_week": false
+      },
+      {
+        "name": "SOCIEDAD DE EXPLOTACION AGRICOLA LTDA",
+        "freq": "Irregular (Promedio: 20 días)",
+        "freq_days": 20,
+        "last_invoice": "2026-03-17",
+        "days_since": 43,
+        "threshold": 40,
+        "invoices_8m": 8,
+        "new_this_week": true
       }
     ],
     "filters": "≥8 facturas, frecuencia ≤45d, silencio >2x freq",
@@ -1955,9 +1955,9 @@
       },
       {
         "month": "Apr 2026",
-        "pct": 69.4,
-        "new_churn": 34,
-        "active_start": 49
+        "pct": 68.8,
+        "new_churn": 33,
+        "active_start": 48
       }
     ]
   },
