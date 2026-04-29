@@ -688,13 +688,22 @@ def extract_sales_data(models, uid, custom_start=None, custom_end=None, label_ov
         pid = safe_id(inv.get("partner_id"))
         if not pid or pid in seen: continue
         seen.add(pid)
-        prev = s_count(models, uid, "account.move", [
+        # Check if this partner had Diesel B1 invoices BEFORE this month
+        prev_invs = sr(models, uid, "account.move", [
             ["move_type", "=", "out_invoice"],
             ["state", "=", "posted"],
             ["partner_id", "=", pid],
             ["invoice_date", "<", fmt(m_start)],
-        ])
-        if prev == 0:
+        ], ["id"], limit=100)
+        has_prev_diesel = False
+        if prev_invs:
+            prev_ids = [i["id"] for i in prev_invs]
+            diesel_lines = s_count(models, uid, "account.move.line", [
+                ["move_id", "in", prev_ids],
+                ["product_id", "=", DIESEL_PRODUCT_ID],
+            ])
+            has_prev_diesel = diesel_lines > 0
+        if not has_prev_diesel:
             u = safe_name(inv.get("invoice_user_id"))
             pname = safe_name(inv.get("partner_id"))
             new_cl_by_user[u] += 1
@@ -1035,7 +1044,6 @@ def extract_churn_data(models, uid):
     lost_by_user = Counter()
     rescued_lost_list = []
     rescued_lost_by_user = Counter()
-    newly_lost = 0
 
     for lead in perdido_leads:
         pid = safe_id(lead.get("partner_id"))
@@ -1043,15 +1051,59 @@ def extract_churn_data(models, uid):
         name = safe_name(lead.get("partner_id")) or lead.get("partner_name", "?")
         write_date = (lead.get("write_date") or "")[:10]
 
-        if write_date >= fmt(month_start):
-            newly_lost += 1
-
         if pid and pid in curr_month_partners:
             rescued_lost_list.append({"name": name, "user": user, "last_update": write_date})
             rescued_lost_by_user[user] += 1
         else:
             lost_list.append({"name": name, "user": user, "last_update": write_date, "partner_id": pid})
             lost_by_user[user] += 1
+
+    # ── Newly lost: precise count using mail.tracking.value ──
+    # Tracks actual stage changes TO "Perdidos" this month (not just write_date edits)
+    print("  Querying precise stage changes to Perdidos (mail.tracking.value)...")
+    stage_field = sr(models, uid, "ir.model.fields", [
+        ["name", "=", "stage_id"], ["model", "=", "crm.lead"]
+    ], ["id"], limit=1)
+    stage_field_id = stage_field[0]["id"] if stage_field else None
+
+    newly_lost = 0
+    newly_lost_list = []
+    if stage_field_id:
+        tracking = sr(models, uid, "mail.tracking.value", [
+            ["field_id", "=", stage_field_id],
+            ["new_value_char", "ilike", "perdido"],
+            ["create_date", ">=", fmt(month_start)],
+            ["create_date", "<=", fmt(today)],
+        ], ["mail_message_id", "old_value_char", "new_value_char", "create_date"], limit=500)
+
+        # Get lead IDs from messages
+        msg_ids = list(set(t["mail_message_id"][0] for t in tracking if t.get("mail_message_id")))
+        lead_ids_lost = set()
+        if msg_ids:
+            for i in range(0, len(msg_ids), 200):
+                batch = msg_ids[i:i+200]
+                msgs = sr(models, uid, "mail.message", [
+                    ["id", "in", batch], ["model", "=", "crm.lead"]
+                ], ["res_id"], limit=200)
+                lead_ids_lost.update(m["res_id"] for m in msgs)
+
+        newly_lost = len(lead_ids_lost)
+
+        # Get details for the newly lost leads
+        if lead_ids_lost:
+            nl_leads = sr(models, uid, "crm.lead", [
+                ["id", "in", list(lead_ids_lost)]
+            ], ["partner_name", "user_id", "stage_id", "write_date"], limit=200)
+            for l in nl_leads:
+                stage_name = l.get("stage_id", [None, ""])[1] if l.get("stage_id") else ""
+                newly_lost_list.append({
+                    "name": l.get("partner_name", "?"),
+                    "user": safe_name(l.get("user_id")),
+                    "stage_now": stage_name,
+                    "date": (l.get("write_date") or "")[:10],
+                })
+
+    print(f"  Newly lost (precise): {newly_lost} leads moved to Perdidos this month")
 
     # ── Avg monthly litros (8 months) for lost clients ──
     lost_pids = [c["partner_id"] for c in lost_list if c.get("partner_id")]
@@ -1131,6 +1183,7 @@ def extract_churn_data(models, uid):
             "dormant": len(dormant_list),
             "lost": len(lost_list),
             "newly_lost": newly_lost,
+            "newly_lost_list": newly_lost_list,
             "rescued_dormant": len(rescued_dormant_list),
             "rescued_lost": len(rescued_lost_list),
             "prev_month_clients": prev_month_clients,
