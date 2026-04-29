@@ -106,7 +106,6 @@ tr:hover td{background:#fafaf8}
       <button class="tab-btn active" onclick="switchTab('ventas')">Ventas</button>
       <button class="tab-btn" onclick="switchTab('ejecutivos')">👔 Ejecutivos</button>
       <button class="tab-btn" onclick="switchTab('funnel')">🎯 Funnel</button>
-      <button class="tab-btn" onclick="switchTab('vendedores')">👤 Vendedores</button>
       <button class="tab-btn" onclick="switchTab('fidelizacion')">Churn & Rescate</button>
       <button class="tab-btn" onclick="switchTab('cs')">Fidelización + CS</button>
       <button class="tab-btn" onclick="switchTab('mesvencido')">📋 Mes Vencido</button>
@@ -119,8 +118,6 @@ tr:hover td{background:#fafaf8}
     <div class="tab-panel" id="tab-funnel"></div>
 
     <!-- ═══ TAB: VENDEDORES ═══ -->
-    <div class="tab-panel" id="tab-vendedores"></div>
-
     <!-- ═══ TAB 1: VENTAS ═══ -->
     <div class="tab-panel active" id="tab-ventas">
       <!-- Week selector -->
@@ -255,7 +252,12 @@ let chartWeekly = null, chartMargenZona = null, chartMargenExec = null;
 const ALLOWED_VENDORS = [
   'toro gonzález sebastian enrique','muñoz encalada joaquin','ron yenire'
 ];
+const FREELANCERS = [
+  'carolina avilés','fernando jullian','marcela márquez','raúl bisquertt'
+];
 const CS_TEAM = ['comber sigall pauline','mauro boccardo','tomenergy'];
+const _fN = new Set(FREELANCERS.map(norm));
+const isFreelancer = n => n && _fN.has(norm(n));
 
 const norm = s => s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').split(/\s+/).filter(Boolean).sort().join(' ');
 const _aN = new Set(ALLOWED_VENDORS.map(norm));
@@ -351,7 +353,6 @@ function selectWeek(idx) {
   }
   if (document.getElementById('tab-ejecutivos').classList.contains('active')) renderEjecutivos();
   if (document.getElementById('tab-funnel').classList.contains('active')) renderFunnel();
-  if (document.getElementById('tab-vendedores').classList.contains('active')) renderVendedores();
   if (document.getElementById('tab-cs').classList.contains('active')) renderCS();
 }
 
@@ -366,7 +367,6 @@ function switchTab(tab) {
   document.querySelector(`.tab-btn[onclick*="${tab}"]`).classList.add('active');
   if (tab === 'ejecutivos' && D) renderEjecutivos();
   if (tab === 'funnel' && D) renderFunnel();
-  if (tab === 'vendedores' && D) renderVendedores();
   if (tab === 'fidelizacion' && D) renderFidelizacion();
   if (tab === 'cs' && D) renderCS();
   if (tab === 'mesvencido' && D) renderMesVencido();
@@ -623,7 +623,10 @@ const EJECUTIVOS = [
   { key: 'toro', name: 'Toro', fullName: 'toro gonzález sebastian enrique' },
   { key: 'munoz', name: 'Muñoz', fullName: 'muñoz encalada joaquin' },
   { key: 'ron', name: 'Ron', fullName: 'ron yenire' },
-  { key: 'freelancers', name: 'Freelancers', fullName: null }
+  { key: 'aviles', name: 'Avilés', fullName: 'carolina avilés', freelancer: true },
+  { key: 'jullian', name: 'Jullian', fullName: 'fernando jullian', freelancer: true },
+  { key: 'marquez', name: 'Márquez', fullName: 'marcela márquez', freelancer: true },
+  { key: 'bisquertt', name: 'Bisquertt', fullName: 'raúl bisquertt', freelancer: true }
 ];
 
 function getFreelancerNames() {
@@ -685,22 +688,20 @@ function renderEjecutivos() {
 
   const ws = week?.week_start || '', we = week?.week_end || '';
 
-  // Determine current exec name and filter
-  let currentExecName = null;
-  if (selectedExec < 3) {
-    currentExecName = EJECUTIVOS[selectedExec].fullName;
-  }
+  // Determine current exec name
+  let currentExecName = EJECUTIVOS[selectedExec] ? EJECUTIVOS[selectedExec].fullName : null;
 
   // Filter helper
   const matchesExec = (testName) => {
-    if (selectedExec === 3) {
-      // Freelancers: NOT in ALLOWED_VENDORS and NOT in CS_TEAM
-      return !isAllowed(testName) && !isCS(testName);
-    } else if (currentExecName) {
-      // Match by normalized name (handles variations like 'yeniré ron' vs 'yenire ron')
-      return norm(testName) === norm(currentExecName);
-    }
-    return false;
+    if (!currentExecName) return false;
+    const nn = norm(testName);
+    const cn = norm(currentExecName);
+    if (nn === cn) return true;
+    // Partial match for names with middle names
+    const nWords = nn.split(' '), cWords = cn.split(' ');
+    const shorter = nWords.length <= cWords.length ? nWords : cWords;
+    const longer = nWords.length <= cWords.length ? cWords : nWords;
+    return shorter.length >= 2 && shorter.every(w => longer.includes(w));
   };
 
   // Build HTML
@@ -720,7 +721,7 @@ function renderEjecutivos() {
   h += '</div>';
 
   // Get data for this exec
-  const freelancerNames = selectedExec === 3 ? getFreelancerNames() : [];
+  const freelancerNames = []; // no longer used as aggregate
 
   const isExecAccum = execSubTab === 'acumulado';
   let litros = 0, leads = 0, cotizaciones = 0, nuevoClientes = 0, margen = 0, ganados = 0;
@@ -781,12 +782,9 @@ function renderEjecutivos() {
 
   // Individual lead meta for single exec: 45 / num_freelancers for freelancers, else individual goal
   let leadsGoal = 45;
-  if (selectedExec < 3 && currentExecName) {
+  if (currentExecName) {
     const g = getGoal(currentExecName);
-    leadsGoal = g.leads_semana || 45;
-  } else if (selectedExec === 3) {
-    // For freelancers, share the 45 among them (minimum 1 per person)
-    leadsGoal = Math.max(1, Math.round(45 / Math.max(freelancerNames.length, 1)));
+    if (g.leads_semana) leadsGoal = g.leads_semana;
   }
 
   // KPI row
@@ -801,7 +799,7 @@ function renderEjecutivos() {
 
   // Clientes Nuevos table — filtered to week or month
   const thisExecNewClients = ncDetail.filter(c => {
-    if (!matchesExec(c.vendedor) && !(selectedExec === 3 && freelancerNames.includes(c.vendedor))) return false;
+    if (!matchesExec(c.vendedor)) return false;
     if (isExecAccum) return true; // show all month
     if (ws && we && c.fecha) return c.fecha >= ws && c.fecha <= we;
     return false;
@@ -820,7 +818,7 @@ function renderEjecutivos() {
 
   // Oportunidades table — filtered to this exec, only with activity in selected week (≤7d)
   const thisExecOpportunities = pipeline.filter(p => {
-    if (!matchesExec(p.exec) && !(selectedExec === 3 && freelancerNames.includes(p.exec || ''))) return false;
+    if (!matchesExec(p.exec)) return false;
     const days = p.days_since_activity ?? p.days_in_stage ?? 999;
     return days <= 7;
   });
@@ -906,9 +904,13 @@ function renderVentas() {
   let litrosEjecutivos = 0;
   for (const [u, v] of Object.entries(lbuSrc)) { if (isAllowed(u)) litrosEjecutivos += v; }
 
-  // 3. Litros Fidelización (everyone else — CS + freelancers + others)
+  // 3. Litros Freelancer (Avilés, Jullian, Márquez, Bisquertt)
+  let litrosFreelancer = 0;
+  for (const [u, v] of Object.entries(lbuSrc)) { if (isFreelancer(u)) litrosFreelancer += v; }
+
+  // 4. Litros Fidelización (everyone else — CS + others, NOT ejecutivos, NOT freelancers)
   let litrosFidelizacion = 0;
-  for (const [u, v] of Object.entries(lbuSrc)) { if (!isAllowed(u)) litrosFidelizacion += v; }
+  for (const [u, v] of Object.entries(lbuSrc)) { if (!isAllowed(u) && !isFreelancer(u)) litrosFidelizacion += v; }
 
   // 4. Litros Nuevos (new clients)
   const ncDetail = V.new_clients?.detail || [];
@@ -966,6 +968,7 @@ function renderVentas() {
     kh += mkKpi('c-red', 'Litros Totales', fL(wkLitros), wkPct + '% de meta ' + fL(wkBudget), wkLitros, wkBudget || 1);
   }
   kh += mkKpi('c-blue', 'Litros Ejecutivos', fL(litrosEjecutivos), 'Toro + Muñoz + Ron', null, null);
+  kh += mkKpi('c-yellow', 'Litros Freelancer', fL(litrosFreelancer), 'Avilés, Jullian, Márquez, Bisquertt', null, null);
   kh += mkKpi('c-green', 'Litros Fidelización', fL(litrosFidelizacion), 'CS + otros', null, null);
   kh += mkKpi('c-red', 'Leads', wLeads, 'Meta: ' + leadsGoal, wLeads, leadsGoal);
   kh += mkKpi('c-yellow', 'Cotizaciones', wCotiz, 'Meta: ' + cotizGoal, wCotiz, cotizGoal);
