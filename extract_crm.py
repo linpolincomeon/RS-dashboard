@@ -746,11 +746,24 @@ def extract_sales_data(models, uid, custom_start=None, custom_end=None, label_ov
             ["state", "=", "posted"],
             ["invoice_date", ">=", fmt(ws_d)],
             ["invoice_date", "<=", fmt(we_d)],
-        ], ["id", "invoice_user_id"], limit=5000)
+        ], ["id", "invoice_user_id", "margin_zone", "amount_untaxed"], limit=5000)
         wk_user_map = {i["id"]: safe_name(i.get("invoice_user_id")) or "Sin asignar" for i in wk_inv}
+        wk_margin_map = {i["id"]: i.get("margin_zone") or 0 for i in wk_inv}
+        wk_untaxed_map = {i["id"]: i.get("amount_untaxed") or 0 for i in wk_inv}
         wk_ids = [i["id"] for i in wk_inv]
         wk_l = 0
         wk_lbu = defaultdict(float)
+        # Margin per user: weighted by amount_untaxed
+        wk_mg_venta = defaultdict(float)  # user -> sum(margin * untaxed)
+        wk_mg_base = defaultdict(float)   # user -> sum(untaxed)
+        for inv in wk_inv:
+            mid = inv["id"]
+            user = wk_user_map.get(mid, "Sin asignar")
+            mz = wk_margin_map.get(mid, 0)
+            au = wk_untaxed_map.get(mid, 0)
+            if mz and au > 0:
+                wk_mg_venta[user] += mz * au
+                wk_mg_base[user] += au
         if wk_ids:
             wk_lines = sr(models, uid, "account.move.line", [
                 ["move_id", "in", wk_ids],
@@ -762,10 +775,16 @@ def extract_sales_data(models, uid, custom_start=None, custom_end=None, label_ov
                 mid = safe_id(ln.get("move_id"))
                 user = wk_user_map.get(mid, "Sin asignar")
                 wk_lbu[user] += q
+        # Build margin_by_user for this week
+        wk_mbu = {}
+        for user in set(list(wk_mg_venta.keys()) + list(wk_lbu.keys())):
+            if wk_mg_base.get(user, 0) > 0:
+                wk_mbu[user] = round(wk_mg_venta[user] / wk_mg_base[user] * 100, 1)
         weekly_history.append({
             "label": f"{ws_d.day}/{ws_d.month}-{we_d.day}/{we_d.month}",
             "litros": round(wk_l),
             "litros_by_user": {k: round(v) for k, v in wk_lbu.items()},
+            "margin_by_user": wk_mbu,
         })
     weekly_history.reverse()  # oldest first
 
@@ -801,6 +820,75 @@ def extract_sales_data(models, uid, custom_start=None, custom_end=None, label_ov
         "weekly": list(reversed(weekly_sales)),
         "weekly_history": weekly_history,
     }
+
+
+# ==============================================================
+# PART 3b: GRADUATING CLIENTS (new → fidelización after 3 months)
+# ==============================================================
+def extract_graduating_clients(models, uid):
+    """
+    Find clients whose FIRST invoice was ~3 months ago (60-120 days).
+    These clients are 'graduating' from new/ejecutivo to fidelización.
+    """
+    print("Extracting graduating clients (3+ months since first invoice)...")
+    today = datetime.now()
+    # Window: first invoice between 60 and 120 days ago
+    date_from = (today - timedelta(days=120)).strftime("%Y-%m-%d")
+    date_to = (today - timedelta(days=60)).strftime("%Y-%m-%d")
+
+    # Get all invoices in that window
+    invs = sr(models, uid, "account.move", [
+        ["move_type", "=", "out_invoice"],
+        ["state", "=", "posted"],
+        ["invoice_date", ">=", date_from],
+        ["invoice_date", "<=", date_to],
+    ], ["partner_id", "invoice_date", "invoice_user_id", "amount_total"], limit=5000, order="invoice_date asc")
+
+    # For each partner, check if this was their FIRST invoice ever
+    seen = set()
+    graduating = []
+    for inv in invs:
+        pid = inv["partner_id"][0] if inv.get("partner_id") else None
+        if not pid or pid in seen:
+            continue
+        seen.add(pid)
+        pname = inv["partner_id"][1] if inv.get("partner_id") else "N/A"
+        first_date = inv.get("invoice_date", "")
+        user = (inv.get("invoice_user_id") or [None, "Sin asignar"])[1]
+
+        # Check if they had any invoice BEFORE date_from
+        prev = models.execute_kw(ODOO_DB, uid, ODOO_KEY, "account.move", "search_count", [[
+            ["move_type", "=", "out_invoice"],
+            ["state", "=", "posted"],
+            ["partner_id", "=", pid],
+            ["invoice_date", "<", date_from],
+        ]])
+        if prev > 0:
+            continue  # not a new client, had invoices before
+
+        # Count total litros and invoices since first purchase
+        total_invs = sr(models, uid, "account.move", [
+            ["move_type", "=", "out_invoice"],
+            ["state", "=", "posted"],
+            ["partner_id", "=", pid],
+        ], ["amount_total"], limit=100)
+        total_amount = sum(i.get("amount_total", 0) for i in total_invs)
+        inv_count = len(total_invs)
+
+        days_since = (today - datetime.strptime(first_date, "%Y-%m-%d")).days
+
+        graduating.append({
+            "name": pname,
+            "first_invoice": first_date,
+            "days_since": days_since,
+            "vendedor": user,
+            "total_invoices": inv_count,
+            "total_amount": round(total_amount),
+        })
+
+    graduating.sort(key=lambda x: x["days_since"], reverse=True)
+    print(f"  {len(graduating)} clients graduating (first invoice 60-120 days ago)")
+    return graduating
 
 
 # ==============================================================
@@ -1183,6 +1271,9 @@ def main():
     prev_m_start = prev_m_end.replace(day=1)
     ventas_prev = extract_sales_data(models, uid, prev_m_start, prev_m_end, prev_m_start.strftime("%B %Y"))
 
+    # Part 3c: Graduating clients (new → fidelización)
+    graduating = extract_graduating_clients(models, uid)
+
     # Part 4: Churn & Rescue
     churn = extract_churn_data(models, uid)
 
@@ -1331,6 +1422,7 @@ def main():
         "ventas": ventas,
         "ventas_prev": ventas_prev,
         "churn": churn,
+        "graduating": graduating,
         "vendor_goals": vendor_goals,
         "company_goals": {
             "litros_mes": 1305689,
