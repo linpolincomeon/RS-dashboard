@@ -183,6 +183,9 @@ tr:hover td{background:#fafaf8}
       <!-- Explanation notes -->
       <div id="churnNotes" style="background:var(--card);border-radius:12px;padding:16px;margin-bottom:24px;border-left:3px solid var(--yellow);font-size:12px;color:var(--dim);line-height:1.6"></div>
 
+      <!-- At-Risk Clients Section -->
+      <div id="atRiskSection"></div>
+
       <!-- Nuevos Durmientes de la Semana -->
       <div class="sec"><div class="sec-h"><h2>😴 Nuevos Durmientes de la Semana</h2></div><div class="sec-b" style="max-height:400px;overflow-y:auto">
         <table><thead><tr><th>Prioridad</th><th>Cliente</th><th>Prom. Mensual 8M</th><th>Responsable</th><th>Fecha cambio</th></tr></thead><tbody id="newDormantBody"></tbody></table>
@@ -258,6 +261,7 @@ tr:hover td{background:#fafaf8}
             <tr><td class="bold">Margen Volumen</td><td>Margen ponderado de clientes con is_volume_client = True. Meta: 6%</td><td>margin_zone × amount_untaxed</td></tr>
             <tr style="border-top:2px solid #e5e4df"><td class="bold">Activos</td><td>Clientes que facturaron en los últimos 2 meses</td><td>account.move</td></tr>
             <tr><td class="bold">Durmientes</td><td>Clientes en etapa CRM "Durmiente" — fuera de ciclo de compra, menos de 9 meses sin comprar</td><td>crm.lead stage</td></tr>
+            <tr><td class="bold">En Riesgo</td><td>Clientes activos cuyo días sin compra supera 1.5× su frecuencia normal pero no excede 2.5× (aún recuperables). No incluye estacionales (freq > 60 días).</td><td>res.partner dias_facturacion</td></tr>
             <tr><td class="bold">Perdidos</td><td>Clientes en etapa CRM "Perdidos" — sin factura 9+ meses</td><td>crm.lead stage</td></tr>
             <tr><td class="bold">Churn %</td><td>Leads que se MOVIERON a etapa "Perdidos" este mes ÷ clientes activos mes anterior. Usa mail.tracking.value para precisión.</td><td>mail.tracking.value</td></tr>
             <tr><td class="bold">Tasa Rescate</td><td>Clientes rescatados (durmientes que volvieron a facturar) ÷ (durmientes + rescatados)</td><td>crm.lead + account.move</td></tr>
@@ -1008,6 +1012,9 @@ function renderVentas() {
   kh += mkKpi('c-red', 'Leads', wLeads, 'Meta: ' + leadsGoal, wLeads, leadsGoal);
   kh += mkKpi('c-yellow', 'Cotizaciones', wCotiz, 'Meta: ' + cotizGoal, wCotiz, cotizGoal);
   kh += mkKpi('c-green', 'Nuevos Clientes', wCierre, 'Meta: ' + cierreGoal + ' · ' + fL(litrosNuevos), wCierre, cierreGoal);
+  // At-risk clients
+  const atRisk = D.at_risk || {};
+  kh += mkKpi('c-amber', 'En Riesgo', (atRisk.count || 0) + ' clientes', fL(atRisk.total_litros_at_risk || 0) + '/mes en juego', atRisk.count || 0, 1);
   kh += mkKpi('c-blue', 'Margen Retail', mRetail + '%', 'Meta: ' + (CG.margen_retail || 8.5) + '%', mRetail, CG.margen_retail || 8.5);
   kh += mkKpi('c-red', 'Margen Volumen', mVol + '%', 'Meta: ' + (CG.margen_volumen || 6) + '%', mVol, CG.margen_volumen || 6);
   kh += mkKpi('c-yellow', 'Ganados', wGanados.length, isAccum ? 'Mes' : 'Esta semana', null, null);
@@ -1294,6 +1301,38 @@ function renderFidelizacion() {
   notes += '<strong>Churn:</strong> Clientes nuevos perdidos este mes / clientes activos mes anterior<br>';
   notes += '<strong>Rescate:</strong> Rescatados = durmientes que volvieron a facturar / (durmientes + rescatados)';
   document.getElementById('churnNotes').innerHTML = notes;
+
+  // ⚠️ Clientes en Riesgo — Actuar Ahora
+  const atRiskData = D.at_risk || {};
+  const atRiskClients = atRiskData.clients || [];
+
+  let arh = '<div class="sec"><div class="sec-h"><h3 style="margin:0;color:var(--orange);font-size:16px">⚠️ Clientes en Riesgo — Actuar Ahora</h3>';
+  arh += '<p style="margin:4px 0 0 0;font-size:12px;color:var(--dim)">' + (atRiskData.count || 0) + ' clientes | ' + fL(atRiskData.total_litros_at_risk || 0) + ' litros/mes en juego</p></div>';
+  arh += '<div class="sec-b" style="padding:0;overflow-x:auto"><table style="width:100%"><thead><tr><th>Prioridad</th><th>Cliente</th><th>Frecuencia</th><th>Días Sin Compra</th><th>Umbral</th><th>Litros Prom/Mes</th><th>Vendedor</th></tr></thead><tbody>';
+
+  if (atRiskClients.length === 0) {
+    arh += '<tr><td colspan="7" style="text-align:center;color:var(--dim)">Sin clientes en riesgo</td></tr>';
+  } else {
+    atRiskClients.forEach(c => {
+      const urgency = c.urgency || 'media';
+      const urgencyIcon = urgency === 'alta' ? '🔴' : '🟡';
+      const urgencyColor = urgency === 'alta' ? 'var(--red)' : 'var(--orange)';
+      const litrosColor = c.avg_monthly_litros >= 5000 ? 'var(--red)' : c.avg_monthly_litros >= 1000 ? 'var(--orange)' : 'var(--dim)';
+      arh += '<tr style="' + (urgency === 'alta' ? 'background:rgba(200,0,0,0.05)' : 'background:rgba(255,165,0,0.05)') + '">';
+      arh += '<td style="color:' + urgencyColor + ';font-weight:700">' + urgencyIcon + '</td>';
+      arh += '<td class="bold">' + H(c.name) + '</td>';
+      arh += '<td>' + H(c.freq) + '</td>';
+      arh += '<td>' + (c.dias_sin_compra || '—') + '</td>';
+      arh += '<td>' + (c.threshold ? Math.round(c.threshold * 10) / 10 : '—') + '</td>';
+      arh += '<td style="color:' + litrosColor + ';font-weight:700">' + fL(c.avg_monthly_litros || 0) + '</td>';
+      arh += '<td>' + H(c.user || '—') + '</td>';
+      arh += '</tr>';
+    });
+  }
+  arh += '</tbody></table></div></div>';
+
+  const arContainer = document.getElementById('atRiskSection');
+  if (arContainer) arContainer.innerHTML = arh;
 
   // Nuevos Durmientes de la Semana
   const dormantListAll = churn.dormant_list || [];
