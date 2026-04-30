@@ -251,7 +251,7 @@ tr:hover td{background:#fafaf8}
             <tr><td class="bold">Litros Fidelización</td><td>Litros vendidos por equipo CS (Comber, Mauro, TomEnergy) + otros</td><td>invoice_user_id</td></tr>
             <tr><td class="bold">Litros Freelancer</td><td>Litros vendidos por Avilés, Jullian, Márquez, Bisquertt</td><td>invoice_user_id</td></tr>
             <tr style="border-top:2px solid #e5e4df"><td class="bold">Leads</td><td>Oportunidades CREADAS esa semana en CRM (create_date dentro de la semana). No incluye leads existentes con actividad.</td><td>crm.lead create_date</td></tr>
-            <tr><td class="bold">Cotizaciones</td><td>Cotizaciones (sale.order) en estado "Enviada" creadas esa semana</td><td>sale.order state=sent</td></tr>
+            <tr><td class="bold">Cotizaciones</td><td>Cotizaciones (sale.order) creadas esa semana en cualquier estado (borrador, enviada o confirmada). Incluye las que ya pasaron a pedido.</td><td>sale.order create_date</td></tr>
             <tr><td class="bold">Nuevos Clientes</td><td>Clientes cuya PRIMERA factura de Diesel B1 fue esta semana/mes. No cuenta facturas por intereses o servicios.</td><td>account.move + product_id=14</td></tr>
             <tr><td class="bold">Ganados</td><td>Leads movidos a etapa "Ganado" en CRM durante la semana (por write_date)</td><td>crm.lead stage=Won</td></tr>
             <tr style="border-top:2px solid #e5e4df"><td class="bold">Margen Retail</td><td>Margen ponderado por monto de ventas a clientes donde is_volume_client = False. Meta: 8.5%</td><td>margin_zone × amount_untaxed</td></tr>
@@ -954,9 +954,9 @@ function renderVentas() {
   const sumAll = obj => { if (!obj) return 0; return Object.entries(obj).reduce((a, [, v]) => a + v, 0); };
   const fw = D.funnel_weeks || [];
 
-  // Cotizaciones: count all (draft + sent) — TomEnergy doesn't mark as sent
+  // Cotizaciones: use value (total count including confirmed), not detail (limited to 20)
   const countCotiz = (wk) => {
-    return (wk.stages?.cotizacion?.detail || []).length;
+    return (wk.stages?.cotizacion?.value || 0);
   };
 
   let wLeads, wCotiz, wCierre;
