@@ -954,9 +954,9 @@ function renderVentas() {
   const sumAll = obj => { if (!obj) return 0; return Object.entries(obj).reduce((a, [, v]) => a + v, 0); };
   const fw = D.funnel_weeks || [];
 
-  // Cotizaciones: count only sent
+  // Cotizaciones: count all (draft + sent) — TomEnergy doesn't mark as sent
   const countCotiz = (wk) => {
-    return (wk.stages?.cotizacion?.detail || []).filter(q => q.estado === 'sent').length;
+    return (wk.stages?.cotizacion?.detail || []).length;
   };
 
   let wLeads, wCotiz, wCierre;
@@ -973,10 +973,14 @@ function renderVentas() {
   const cotizGoal = isAccum ? 24 * fw.length : 24;
   const cierreGoal = isAccum ? 6 * fw.length : 6;
 
-  // 8-9. Margen — weekly from ceo-data.json, monthly fallback
+  // 8-9. Margen — try weekly from ceo-data.json, fallback to CRM monthly
   const ceoWeek = (CEO && CEO.weeks) ? CEO.weeks[selectedWeek] : null;
-  const mRetail = (!isAccum && ceoWeek && ceoWeek.margin_retail != null) ? Math.round(ceoWeek.margin_retail * 1000) / 10 : (T.margin_retail_pct || 0);
-  const mVol = (!isAccum && ceoWeek && ceoWeek.margin_volumen != null) ? Math.round(ceoWeek.margin_volumen * 1000) / 10 : (T.margin_volume_pct || 0);
+  let mRetail = T.margin_retail_pct || 0;
+  let mVol = T.margin_volume_pct || 0;
+  if (!isAccum && ceoWeek) {
+    if (ceoWeek.margin_retail != null && ceoWeek.margin_retail > 0) mRetail = Math.round(ceoWeek.margin_retail * 1000) / 10;
+    if (ceoWeek.margin_volumen != null && ceoWeek.margin_volumen > 0) mVol = Math.round(ceoWeek.margin_volumen * 1000) / 10;
+  }
 
   // 10. Retención (from selected week)
   const retWeek = (fw[selectedWeek] || fw[0] || {}).stages?.retencion || {};
