@@ -688,22 +688,13 @@ def extract_sales_data(models, uid, custom_start=None, custom_end=None, label_ov
         pid = safe_id(inv.get("partner_id"))
         if not pid or pid in seen: continue
         seen.add(pid)
-        # Check if this partner had Diesel B1 invoices BEFORE this month
-        prev_invs = sr(models, uid, "account.move", [
+        prev = s_count(models, uid, "account.move", [
             ["move_type", "=", "out_invoice"],
             ["state", "=", "posted"],
             ["partner_id", "=", pid],
             ["invoice_date", "<", fmt(m_start)],
-        ], ["id"], limit=100)
-        has_prev_diesel = False
-        if prev_invs:
-            prev_ids = [i["id"] for i in prev_invs]
-            diesel_lines = s_count(models, uid, "account.move.line", [
-                ["move_id", "in", prev_ids],
-                ["product_id", "=", DIESEL_PRODUCT_ID],
-            ])
-            has_prev_diesel = diesel_lines > 0
-        if not has_prev_diesel:
+        ])
+        if prev == 0:
             u = safe_name(inv.get("invoice_user_id"))
             pname = safe_name(inv.get("partner_id"))
             new_cl_by_user[u] += 1
@@ -755,45 +746,19 @@ def extract_sales_data(models, uid, custom_start=None, custom_end=None, label_ov
             ["state", "=", "posted"],
             ["invoice_date", ">=", fmt(ws_d)],
             ["invoice_date", "<=", fmt(we_d)],
-        ], ["id", "invoice_user_id", "margin_zone", "amount_untaxed"], limit=5000)
-        wk_user_map = {i["id"]: safe_name(i.get("invoice_user_id")) or "Sin asignar" for i in wk_inv}
-        wk_margin_map = {i["id"]: i.get("margin_zone") or 0 for i in wk_inv}
-        wk_untaxed_map = {i["id"]: i.get("amount_untaxed") or 0 for i in wk_inv}
+        ], ["id"], limit=5000)
         wk_ids = [i["id"] for i in wk_inv]
         wk_l = 0
-        wk_lbu = defaultdict(float)
-        # Margin per user: weighted by amount_untaxed
-        wk_mg_venta = defaultdict(float)  # user -> sum(margin * untaxed)
-        wk_mg_base = defaultdict(float)   # user -> sum(untaxed)
-        for inv in wk_inv:
-            mid = inv["id"]
-            user = wk_user_map.get(mid, "Sin asignar")
-            mz = wk_margin_map.get(mid, 0)
-            au = wk_untaxed_map.get(mid, 0)
-            if mz and au > 0:
-                wk_mg_venta[user] += mz * au
-                wk_mg_base[user] += au
         if wk_ids:
             wk_lines = sr(models, uid, "account.move.line", [
                 ["move_id", "in", wk_ids],
                 ["product_id", "=", DIESEL_PRODUCT_ID],
-            ], ["quantity", "move_id"], limit=5000)
+            ], ["quantity"], limit=5000)
             for ln in wk_lines:
-                q = ln.get("quantity", 0)
-                wk_l += q
-                mid = safe_id(ln.get("move_id"))
-                user = wk_user_map.get(mid, "Sin asignar")
-                wk_lbu[user] += q
-        # Build margin_by_user for this week
-        wk_mbu = {}
-        for user in set(list(wk_mg_venta.keys()) + list(wk_lbu.keys())):
-            if wk_mg_base.get(user, 0) > 0:
-                wk_mbu[user] = round(wk_mg_venta[user] / wk_mg_base[user] * 100, 1)
+                wk_l += ln.get("quantity", 0)
         weekly_history.append({
             "label": f"{ws_d.day}/{ws_d.month}-{we_d.day}/{we_d.month}",
             "litros": round(wk_l),
-            "litros_by_user": {k: round(v) for k, v in wk_lbu.items()},
-            "margin_by_user": wk_mbu,
         })
     weekly_history.reverse()  # oldest first
 
@@ -829,75 +794,6 @@ def extract_sales_data(models, uid, custom_start=None, custom_end=None, label_ov
         "weekly": list(reversed(weekly_sales)),
         "weekly_history": weekly_history,
     }
-
-
-# ==============================================================
-# PART 3b: GRADUATING CLIENTS (new → fidelización after 3 months)
-# ==============================================================
-def extract_graduating_clients(models, uid):
-    """
-    Find clients whose FIRST invoice was ~3 months ago (60-120 days).
-    These clients are 'graduating' from new/ejecutivo to fidelización.
-    """
-    print("Extracting graduating clients (3+ months since first invoice)...")
-    today = datetime.now()
-    # Window: first invoice between 60 and 120 days ago
-    date_from = (today - timedelta(days=120)).strftime("%Y-%m-%d")
-    date_to = (today - timedelta(days=60)).strftime("%Y-%m-%d")
-
-    # Get all invoices in that window
-    invs = sr(models, uid, "account.move", [
-        ["move_type", "=", "out_invoice"],
-        ["state", "=", "posted"],
-        ["invoice_date", ">=", date_from],
-        ["invoice_date", "<=", date_to],
-    ], ["partner_id", "invoice_date", "invoice_user_id", "amount_total"], limit=5000, order="invoice_date asc")
-
-    # For each partner, check if this was their FIRST invoice ever
-    seen = set()
-    graduating = []
-    for inv in invs:
-        pid = inv["partner_id"][0] if inv.get("partner_id") else None
-        if not pid or pid in seen:
-            continue
-        seen.add(pid)
-        pname = inv["partner_id"][1] if inv.get("partner_id") else "N/A"
-        first_date = inv.get("invoice_date", "")
-        user = (inv.get("invoice_user_id") or [None, "Sin asignar"])[1]
-
-        # Check if they had any invoice BEFORE date_from
-        prev = models.execute_kw(ODOO_DB, uid, ODOO_KEY, "account.move", "search_count", [[
-            ["move_type", "=", "out_invoice"],
-            ["state", "=", "posted"],
-            ["partner_id", "=", pid],
-            ["invoice_date", "<", date_from],
-        ]])
-        if prev > 0:
-            continue  # not a new client, had invoices before
-
-        # Count total litros and invoices since first purchase
-        total_invs = sr(models, uid, "account.move", [
-            ["move_type", "=", "out_invoice"],
-            ["state", "=", "posted"],
-            ["partner_id", "=", pid],
-        ], ["amount_total"], limit=100)
-        total_amount = sum(i.get("amount_total", 0) for i in total_invs)
-        inv_count = len(total_invs)
-
-        days_since = (today - datetime.strptime(first_date, "%Y-%m-%d")).days
-
-        graduating.append({
-            "name": pname,
-            "first_invoice": first_date,
-            "days_since": days_since,
-            "vendedor": user,
-            "total_invoices": inv_count,
-            "total_amount": round(total_amount),
-        })
-
-    graduating.sort(key=lambda x: x["days_since"], reverse=True)
-    print(f"  {len(graduating)} clients graduating (first invoice 60-120 days ago)")
-    return graduating
 
 
 # ==============================================================
@@ -1044,6 +940,7 @@ def extract_churn_data(models, uid):
     lost_by_user = Counter()
     rescued_lost_list = []
     rescued_lost_by_user = Counter()
+    newly_lost = 0
 
     for lead in perdido_leads:
         pid = safe_id(lead.get("partner_id"))
@@ -1051,59 +948,15 @@ def extract_churn_data(models, uid):
         name = safe_name(lead.get("partner_id")) or lead.get("partner_name", "?")
         write_date = (lead.get("write_date") or "")[:10]
 
+        if write_date >= fmt(month_start):
+            newly_lost += 1
+
         if pid and pid in curr_month_partners:
             rescued_lost_list.append({"name": name, "user": user, "last_update": write_date})
             rescued_lost_by_user[user] += 1
         else:
             lost_list.append({"name": name, "user": user, "last_update": write_date, "partner_id": pid})
             lost_by_user[user] += 1
-
-    # ── Newly lost: precise count using mail.tracking.value ──
-    # Tracks actual stage changes TO "Perdidos" this month (not just write_date edits)
-    print("  Querying precise stage changes to Perdidos (mail.tracking.value)...")
-    stage_field = sr(models, uid, "ir.model.fields", [
-        ["name", "=", "stage_id"], ["model", "=", "crm.lead"]
-    ], ["id"], limit=1)
-    stage_field_id = stage_field[0]["id"] if stage_field else None
-
-    newly_lost = 0
-    newly_lost_list = []
-    if stage_field_id:
-        tracking = sr(models, uid, "mail.tracking.value", [
-            ["field_id", "=", stage_field_id],
-            ["new_value_char", "ilike", "perdido"],
-            ["create_date", ">=", fmt(month_start)],
-            ["create_date", "<=", fmt(today)],
-        ], ["mail_message_id", "old_value_char", "new_value_char", "create_date"], limit=500)
-
-        # Get lead IDs from messages
-        msg_ids = list(set(t["mail_message_id"][0] for t in tracking if t.get("mail_message_id")))
-        lead_ids_lost = set()
-        if msg_ids:
-            for i in range(0, len(msg_ids), 200):
-                batch = msg_ids[i:i+200]
-                msgs = sr(models, uid, "mail.message", [
-                    ["id", "in", batch], ["model", "=", "crm.lead"]
-                ], ["res_id"], limit=200)
-                lead_ids_lost.update(m["res_id"] for m in msgs)
-
-        newly_lost = len(lead_ids_lost)
-
-        # Get details for the newly lost leads
-        if lead_ids_lost:
-            nl_leads = sr(models, uid, "crm.lead", [
-                ["id", "in", list(lead_ids_lost)]
-            ], ["partner_name", "user_id", "stage_id", "write_date"], limit=200)
-            for l in nl_leads:
-                stage_name = l.get("stage_id", [None, ""])[1] if l.get("stage_id") else ""
-                newly_lost_list.append({
-                    "name": l.get("partner_name", "?"),
-                    "user": safe_name(l.get("user_id")),
-                    "stage_now": stage_name,
-                    "date": (l.get("write_date") or "")[:10],
-                })
-
-    print(f"  Newly lost (precise): {newly_lost} leads moved to Perdidos this month")
 
     # ── Avg monthly litros (8 months) for lost clients ──
     lost_pids = [c["partner_id"] for c in lost_list if c.get("partner_id")]
@@ -1183,7 +1036,6 @@ def extract_churn_data(models, uid):
             "dormant": len(dormant_list),
             "lost": len(lost_list),
             "newly_lost": newly_lost,
-            "newly_lost_list": newly_lost_list,
             "rescued_dormant": len(rescued_dormant_list),
             "rescued_lost": len(rescued_lost_list),
             "prev_month_clients": prev_month_clients,
@@ -1206,7 +1058,203 @@ def extract_churn_data(models, uid):
 
 
 # ==============================================================
-# PART 5: SLA DE ENTREGA
+# PART 5: RESCUED CLIENTS (based on frecuencia_facturacion)
+# ==============================================================
+def parse_frecuencia_days(freq_str):
+    """Parse frecuencia_facturacion char field into days.
+    Examples: 'Semanal' → 7, 'Quincenal' → 15, 'Mensual' → 30,
+              'Irregular (Promedio: 12 días)' → 12, 'Bimensual' → 60
+    """
+    if not freq_str:
+        return None
+    f = freq_str.strip().lower()
+    if "semanal" in f and "bi" not in f and "quince" not in f:
+        return 7
+    if "quincenal" in f:
+        return 15
+    if "mensual" in f and "bi" not in f and "tri" not in f:
+        return 30
+    if "bimensual" in f or "bimestral" in f:
+        return 60
+    if "trimestral" in f:
+        return 90
+    # Irregular (Promedio: X días)
+    m = re.search(r'(\d+)\s*d[ií]a', f)
+    if m:
+        return int(m.group(1))
+    # Fallback: try to find any number
+    m2 = re.search(r'(\d+)', f)
+    if m2:
+        return int(m2.group(1))
+    return None
+
+
+def extract_rescued_clients(models, uid):
+    """
+    Detect 'rescued' clients: bought this month BUT the gap since their
+    previous invoice exceeded 2× their frecuencia_facturacion.
+    Split into: Rescatados Durmientes (gap < 270d) and Rescatados Perdidos (gap ≥ 270d).
+    Returns litros, vendedor (from this month's invoice), and client name.
+    """
+    print("\nExtracting Rescued Clients (frecuencia-based)...")
+    today = datetime.now().date()
+    month_start = today.replace(day=1)
+
+    # 1. Get all invoices this month with partner + salesperson
+    curr_invoices = sr(models, uid, "account.move", [
+        ["move_type", "=", "out_invoice"],
+        ["state", "=", "posted"],
+        ["invoice_date", ">=", fmt(month_start)],
+        ["invoice_date", "<=", fmt(today)],
+    ], ["partner_id", "invoice_user_id", "invoice_date"], limit=10000)
+
+    # Unique partners who bought this month
+    curr_partner_ids = list(set(
+        safe_id(i.get("partner_id")) for i in curr_invoices
+        if safe_id(i.get("partner_id"))
+    ))
+    print(f"  Partners with invoices this month: {len(curr_partner_ids)}")
+
+    if not curr_partner_ids:
+        return {"rescued_durmientes": [], "rescued_perdidos": [], "summary": {}}
+
+    # Map partner → salesperson from this month's invoice (first invoice found)
+    partner_vendedor = {}
+    for inv in curr_invoices:
+        pid = safe_id(inv.get("partner_id"))
+        if pid and pid not in partner_vendedor:
+            partner_vendedor[pid] = safe_name(inv.get("invoice_user_id"))
+
+    # 2. Read frecuencia_facturacion from res.partner (batch)
+    partner_freq = {}
+    partner_names = {}
+    batch_size = 200
+    for i in range(0, len(curr_partner_ids), batch_size):
+        batch = curr_partner_ids[i:i+batch_size]
+        partners = sr(models, uid, "res.partner", [
+            ["id", "in", batch],
+        ], ["id", "name", "frecuencia_facturacion"], limit=batch_size)
+        for p in partners:
+            freq_days = parse_frecuencia_days(p.get("frecuencia_facturacion"))
+            if freq_days is not None:
+                partner_freq[p["id"]] = freq_days
+            partner_names[p["id"]] = p.get("name", "?")
+
+    print(f"  Partners with parseable frecuencia: {len(partner_freq)} / {len(curr_partner_ids)}")
+
+    if not partner_freq:
+        return {"rescued_durmientes": [], "rescued_perdidos": [], "summary": {}}
+
+    # 3. For each partner with frecuencia, find the last invoice BEFORE this month
+    rescued_durmientes = []
+    rescued_perdidos = []
+    pids_to_check = list(partner_freq.keys())
+
+    for i in range(0, len(pids_to_check), batch_size):
+        batch = pids_to_check[i:i+batch_size]
+        # Get the most recent invoice before this month for each partner in batch
+        prev_invs = sr(models, uid, "account.move", [
+            ["move_type", "=", "out_invoice"],
+            ["state", "=", "posted"],
+            ["partner_id", "in", batch],
+            ["invoice_date", "<", fmt(month_start)],
+        ], ["partner_id", "invoice_date"], limit=50000, order="invoice_date desc")
+
+        # Group by partner_id → take most recent
+        last_invoice_by_partner = {}
+        for inv in prev_invs:
+            pid = safe_id(inv.get("partner_id"))
+            if pid and pid not in last_invoice_by_partner:
+                last_invoice_by_partner[pid] = inv.get("invoice_date", "")[:10]
+
+        # 4. Check gap vs 2× frecuencia
+        for pid in batch:
+            freq_days = partner_freq[pid]
+            threshold = freq_days * 2
+            last_date_str = last_invoice_by_partner.get(pid)
+
+            if not last_date_str:
+                # No previous invoice → this is essentially a new client, skip
+                continue
+
+            try:
+                last_date = datetime.strptime(last_date_str, "%Y-%m-%d").date()
+            except (ValueError, TypeError):
+                continue
+
+            gap_days = (month_start - last_date).days
+
+            if gap_days > threshold:
+                entry = {
+                    "name": partner_names.get(pid, "?"),
+                    "vendedor": partner_vendedor.get(pid, "Sin asignar"),
+                    "frecuencia_dias": freq_days,
+                    "gap_dias": gap_days,
+                    "ultima_factura_anterior": last_date_str,
+                    "partner_id": pid,
+                }
+                if gap_days >= LOST_THRESHOLD_DAYS:
+                    rescued_perdidos.append(entry)
+                else:
+                    rescued_durmientes.append(entry)
+
+    # 5. Get litros this month for each rescued client
+    rescued_pids = [r["partner_id"] for r in rescued_durmientes + rescued_perdidos]
+    litros_by_rescued = {}
+    if rescued_pids:
+        for i in range(0, len(rescued_pids), batch_size):
+            batch = rescued_pids[i:i+batch_size]
+            invs = sr(models, uid, "account.move", [
+                ["move_type", "=", "out_invoice"],
+                ["state", "=", "posted"],
+                ["partner_id", "in", batch],
+                ["invoice_date", ">=", fmt(month_start)],
+                ["invoice_date", "<=", fmt(today)],
+            ], ["id", "partner_id"], limit=10000)
+            inv_ids = [inv["id"] for inv in invs]
+            inv_pid = {inv["id"]: safe_id(inv.get("partner_id")) for inv in invs}
+
+            if inv_ids:
+                lines = sr(models, uid, "account.move.line", [
+                    ["move_id", "in", inv_ids],
+                    ["product_id", "=", DIESEL_PRODUCT_ID],
+                ], ["move_id", "quantity"], limit=10000)
+                for ln in lines:
+                    mid = safe_id(ln.get("move_id"))
+                    pid = inv_pid.get(mid)
+                    if pid:
+                        litros_by_rescued[pid] = litros_by_rescued.get(pid, 0) + (ln.get("quantity", 0) or 0)
+
+    # Attach litros and clean up
+    for r in rescued_durmientes + rescued_perdidos:
+        r["litros"] = round(litros_by_rescued.get(r["partner_id"], 0))
+        r.pop("partner_id", None)
+
+    rescued_durmientes.sort(key=lambda x: -x["litros"])
+    rescued_perdidos.sort(key=lambda x: -x["litros"])
+
+    total_litros_d = sum(r["litros"] for r in rescued_durmientes)
+    total_litros_p = sum(r["litros"] for r in rescued_perdidos)
+
+    print(f"  Rescatados Durmientes: {len(rescued_durmientes)} ({round(total_litros_d)} L)")
+    print(f"  Rescatados Perdidos: {len(rescued_perdidos)} ({round(total_litros_p)} L)")
+
+    return {
+        "rescued_durmientes": rescued_durmientes[:50],
+        "rescued_perdidos": rescued_perdidos[:30],
+        "summary": {
+            "count_durmientes": len(rescued_durmientes),
+            "count_perdidos": len(rescued_perdidos),
+            "litros_durmientes": round(total_litros_d),
+            "litros_perdidos": round(total_litros_p),
+            "total_rescued": len(rescued_durmientes) + len(rescued_perdidos),
+            "total_litros": round(total_litros_d + total_litros_p),
+        },
+    }
+
+
+# ==============================================================
+# PART 6: SLA DE ENTREGA
 # ==============================================================
 def extract_sla_data(models, uid, m_start, m_end):
     """
@@ -1324,17 +1372,17 @@ def main():
     prev_m_start = prev_m_end.replace(day=1)
     ventas_prev = extract_sales_data(models, uid, prev_m_start, prev_m_end, prev_m_start.strftime("%B %Y"))
 
-    # Part 3c: Graduating clients (new → fidelización)
-    graduating = extract_graduating_clients(models, uid)
-
     # Part 4: Churn & Rescue
     churn = extract_churn_data(models, uid)
 
-    # Part 5: SLA entrega mes anterior
+    # Part 5: Rescued clients (frecuencia-based)
+    rescued = extract_rescued_clients(models, uid)
+
+    # Part 5b: SLA entrega mes anterior
     sla_prev = extract_sla_data(models, uid, prev_m_start, prev_m_end)
     ventas_prev["sla"] = sla_prev
 
-    # Part 6: Pauline Comber "mantención" — absorbs the TomEnergy bucket into Comber's row.
+    # Part 7: Pauline Comber "mantención" — absorbs the TomEnergy bucket into Comber's row.
     # Liters = TomEnergy liters + Comber liters (simple sum, no subtraction).
     # Venta neta y margen se suman/pondera. La fila "TomEnergy" se elimina del output.
 
@@ -1475,7 +1523,7 @@ def main():
         "ventas": ventas,
         "ventas_prev": ventas_prev,
         "churn": churn,
-        "graduating": graduating,
+        "rescued": rescued,
         "vendor_goals": vendor_goals,
         "company_goals": {
             "litros_mes": 1305689,
