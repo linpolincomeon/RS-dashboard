@@ -1254,7 +1254,306 @@ def extract_rescued_clients(models, uid):
 
 
 # ==============================================================
-# PART 6: SLA DE ENTREGA
+# PART 6: CREDIT RISK DASHBOARD
+# ==============================================================
+def extract_credit_risk(models, uid):
+    """
+    Credit risk analysis:
+    1. Clients with insufficient credit line (projected billing vs monto_credito)
+    2. Credit risk score per client (morosidad + volume + margin + cobranza)
+    """
+    print("\nExtracting Credit Risk data...")
+    today = datetime.now().date()
+    month_start = today.replace(day=1)
+
+    # ── 3-month window for consumption trend ──
+    three_months_ago = month_start
+    for _ in range(3):
+        three_months_ago = (three_months_ago - timedelta(days=1)).replace(day=1)
+    print(f"  Trend window: {fmt(three_months_ago)} → {fmt(today)}")
+
+    # ── 1. Get partners with credit line ──
+    credit_partners = sr(models, uid, "res.partner", [
+        ["tiene_credito", "=", True],
+        ["customer_rank", ">", 0],
+    ], ["id", "name", "monto_credito", "saldo_credito",
+        "property_payment_term_id", "property_product_pricelist",
+        "credit"],  # credit = standard Odoo AR balance
+    limit=2000)
+
+    print(f"  Partners with credit line: {len(credit_partners)}")
+    if not credit_partners:
+        return {"linea_insuficiente": [], "score_table": [], "summary": {}}
+
+    partner_map = {p["id"]: p for p in credit_partners}
+    partner_ids = list(partner_map.keys())
+
+    # ── 2. Get invoices last 3 months for these partners ──
+    batch_size = 200
+    all_invoices = []
+    for i in range(0, len(partner_ids), batch_size):
+        batch = partner_ids[i:i+batch_size]
+        invs = sr(models, uid, "account.move", [
+            ["move_type", "=", "out_invoice"],
+            ["state", "=", "posted"],
+            ["partner_id", "in", batch],
+            ["invoice_date", ">=", fmt(three_months_ago)],
+            ["invoice_date", "<=", fmt(today)],
+        ], ["id", "partner_id", "invoice_user_id", "amount_untaxed",
+            "amount_residual", "payment_state", "invoice_date",
+            "invoice_date_due", "margin_zone",
+            "average_payment_days", "price_rango",
+            "cobranza", "excepcion_line"],
+        limit=10000)
+        all_invoices.extend(invs)
+
+    print(f"  Invoices (3 months): {len(all_invoices)}")
+
+    # ── 3. Get diesel litros from invoice lines ──
+    inv_ids = [inv["id"] for inv in all_invoices]
+    inv_pid_map = {inv["id"]: safe_id(inv.get("partner_id")) for inv in all_invoices}
+    litros_by_inv = {}
+    if inv_ids:
+        for i in range(0, len(inv_ids), 500):
+            chunk = inv_ids[i:i+500]
+            lines = sr(models, uid, "account.move.line", [
+                ["move_id", "in", chunk],
+                ["product_id", "=", DIESEL_PRODUCT_ID],
+            ], ["move_id", "quantity", "price_subtotal"], limit=10000)
+            for ln in lines:
+                mid = safe_id(ln.get("move_id"))
+                if mid:
+                    prev = litros_by_inv.get(mid, {"litros": 0, "venta": 0})
+                    prev["litros"] += ln.get("quantity", 0) or 0
+                    prev["venta"] += ln.get("price_subtotal", 0) or 0
+                    litros_by_inv[mid] = prev
+
+    # ── 4. Aggregate per partner ──
+    partner_stats = {}  # pid → stats
+    for inv in all_invoices:
+        pid = safe_id(inv.get("partner_id"))
+        if not pid or pid not in partner_map:
+            continue
+
+        if pid not in partner_stats:
+            partner_stats[pid] = {
+                "litros_total": 0,
+                "venta_total": 0,
+                "invoice_count": 0,
+                "avg_payment_days_sum": 0,
+                "avg_payment_days_count": 0,
+                "overdue_count": 0,
+                "overdue_amount": 0,
+                "siniestro_count": 0,
+                "excepcion_count": 0,
+                "margin_sum": 0,
+                "margin_count": 0,
+                "price_rango_sum": 0,
+                "price_rango_count": 0,
+                "cobranza_labels": [],
+                "vendedor": safe_name(inv.get("invoice_user_id")),
+            }
+
+        s = partner_stats[pid]
+        inv_data = litros_by_inv.get(inv["id"], {"litros": 0, "venta": 0})
+        s["litros_total"] += inv_data["litros"]
+        s["venta_total"] += inv_data["venta"]
+        s["invoice_count"] += 1
+
+        # Average payment days
+        apd = inv.get("average_payment_days")
+        if apd and apd > 0:
+            s["avg_payment_days_sum"] += apd
+            s["avg_payment_days_count"] += 1
+
+        # Overdue detection
+        due_date = (inv.get("invoice_date_due") or "")[:10]
+        residual = inv.get("amount_residual", 0) or 0
+        if due_date and residual > 0:
+            try:
+                due_dt = datetime.strptime(due_date, "%Y-%m-%d").date()
+                if today > due_dt:
+                    s["overdue_count"] += 1
+                    s["overdue_amount"] += residual
+            except (ValueError, TypeError):
+                pass
+
+        # Margin
+        margin = inv.get("margin_zone", 0) or 0
+        if margin:
+            s["margin_sum"] += margin
+            s["margin_count"] += 1
+
+        # Price rango
+        pr = inv.get("price_rango", 0) or 0
+        if pr:
+            s["price_rango_sum"] += pr
+            s["price_rango_count"] += 1
+
+        # Cobranza (collection status)
+        cobranza = safe_name(inv.get("cobranza"))
+        if cobranza and cobranza != "False" and cobranza != "Sin asignar":
+            s["cobranza_labels"].append(cobranza)
+            if "siniestro" in cobranza.lower():
+                s["siniestro_count"] += 1
+
+        # Excepcion de linea
+        exc = safe_name(inv.get("excepcion_line"))
+        if exc and exc != "False" and exc != "Sin asignar":
+            s["excepcion_count"] += 1
+
+    # ── 5. Build risk table ──
+    # Number of months in the window for averaging
+    months_in_window = max(1, (today - three_months_ago).days / 30)
+
+    linea_insuficiente = []
+    score_table = []
+    total_ar = sum(p.get("credit", 0) or 0 for p in credit_partners)
+
+    for pid, stats in partner_stats.items():
+        p = partner_map[pid]
+        monto = p.get("monto_credito", 0) or 0
+        saldo = p.get("saldo_credito", 0) or 0
+        ar_balance = p.get("credit", 0) or 0
+        payment_term = safe_name(p.get("property_payment_term_id"))
+        pricelist = safe_name(p.get("property_product_pricelist"))
+        name = p.get("name", "?")
+
+        # Parse payment term days (e.g., "30 Days", "Plazo 30 días")
+        pt_days = 30  # default
+        if payment_term:
+            pt_match = re.search(r'(\d+)', payment_term)
+            if pt_match:
+                pt_days = int(pt_match.group(1))
+
+        # Averages
+        avg_monthly_litros = round(stats["litros_total"] / months_in_window)
+        avg_monthly_venta = round(stats["venta_total"] / months_in_window)
+        avg_payment_days = round(stats["avg_payment_days_sum"] / max(stats["avg_payment_days_count"], 1), 1)
+        avg_margin = round((stats["margin_sum"] / max(stats["margin_count"], 1)) * 100, 1)
+        avg_price_rango = round(stats["price_rango_sum"] / max(stats["price_rango_count"], 1), 1)
+
+        # ── Utilization % ──
+        utilizacion = round(((monto - saldo) / max(monto, 1)) * 100, 1) if monto > 0 else 0
+
+        # ── Projected monthly billing vs credit line ──
+        avg_price_per_liter = stats["venta_total"] / max(stats["litros_total"], 1) if stats["litros_total"] > 0 else 0
+        projected_monthly = round(avg_monthly_litros * avg_price_per_liter)
+        linea_ratio = round((projected_monthly / max(monto, 1)) * 100, 1) if monto > 0 else 999
+
+        # ── RISK SCORE (0-100, higher = worse) ──
+        # Component 1: Morosidad (0-40 pts)
+        mora_ratio = avg_payment_days / max(pt_days, 1)
+        score_mora = min(40, round(mora_ratio * 20))  # ratio 2.0 → 40pts
+
+        # Component 2: Utilización crédito (0-25 pts)
+        score_util = min(25, round(utilizacion / 4))  # 100% util → 25pts
+
+        # Component 3: Cobranza / Siniestro (0-20 pts)
+        score_cobranza = 0
+        if stats["siniestro_count"] > 0:
+            score_cobranza = 20  # Siniestro = max risk
+        elif stats["overdue_count"] > 0:
+            overdue_ratio = stats["overdue_count"] / max(stats["invoice_count"], 1)
+            score_cobranza = min(15, round(overdue_ratio * 15))
+
+        # Component 4: Margen bajo (0-15 pts) — lower margin = more risk
+        score_margin = 0
+        if avg_margin > 0:
+            if avg_margin < 4:
+                score_margin = 15
+            elif avg_margin < 6:
+                score_margin = 10
+            elif avg_margin < 8:
+                score_margin = 5
+
+        risk_score = score_mora + score_util + score_cobranza + score_margin
+
+        # Risk level label
+        if risk_score >= 60:
+            risk_level = "Crítico"
+        elif risk_score >= 40:
+            risk_level = "Alto"
+        elif risk_score >= 20:
+            risk_level = "Medio"
+        else:
+            risk_level = "Bajo"
+
+        entry = {
+            "name": name,
+            "vendedor": stats["vendedor"],
+            "monto_credito": monto,
+            "saldo_credito": saldo,
+            "utilizacion_pct": utilizacion,
+            "avg_monthly_litros": avg_monthly_litros,
+            "avg_monthly_venta": avg_monthly_venta,
+            "projected_monthly": projected_monthly,
+            "linea_ratio": linea_ratio,
+            "avg_payment_days": avg_payment_days,
+            "plazo_pago_dias": pt_days,
+            "plazo_pago_label": payment_term or "—",
+            "mora_ratio": round(mora_ratio, 2),
+            "overdue_count": stats["overdue_count"],
+            "overdue_amount": round(stats["overdue_amount"]),
+            "siniestro_count": stats["siniestro_count"],
+            "excepcion_count": stats["excepcion_count"],
+            "avg_margin_pct": avg_margin,
+            "avg_price_rango": avg_price_rango,
+            "pricelist": pricelist or "—",
+            "ar_balance": round(ar_balance),
+            "risk_score": risk_score,
+            "risk_level": risk_level,
+            "score_detail": {
+                "morosidad": score_mora,
+                "utilizacion": score_util,
+                "cobranza": score_cobranza,
+                "margen": score_margin,
+            },
+        }
+
+        score_table.append(entry)
+
+        # Flag insufficient credit line (projected > 80% of line, or already > 80% utilized)
+        if linea_ratio > 80 or utilizacion > 80:
+            linea_insuficiente.append(entry)
+
+    # Sort
+    score_table.sort(key=lambda x: -x["risk_score"])
+    linea_insuficiente.sort(key=lambda x: -x["linea_ratio"])
+
+    # Summary stats
+    criticos = sum(1 for s in score_table if s["risk_level"] == "Crítico")
+    altos = sum(1 for s in score_table if s["risk_level"] == "Alto")
+    medios = sum(1 for s in score_table if s["risk_level"] == "Medio")
+    bajos = sum(1 for s in score_table if s["risk_level"] == "Bajo")
+    total_siniestros = sum(s["siniestro_count"] for s in score_table)
+    total_overdue = sum(s["overdue_amount"] for s in score_table)
+    avg_util = round(sum(s["utilizacion_pct"] for s in score_table) / max(len(score_table), 1), 1)
+    total_linea_insuf = len(linea_insuficiente)
+
+    print(f"  Score: {criticos} Críticos, {altos} Altos, {medios} Medios, {bajos} Bajos")
+    print(f"  Líneas insuficientes: {total_linea_insuf}")
+    print(f"  Siniestros: {total_siniestros} | Monto vencido: ${total_overdue:,.0f}")
+
+    return {
+        "linea_insuficiente": linea_insuficiente[:50],
+        "score_table": score_table[:100],
+        "summary": {
+            "total_evaluados": len(score_table),
+            "criticos": criticos,
+            "altos": altos,
+            "medios": medios,
+            "bajos": bajos,
+            "linea_insuficiente_count": total_linea_insuf,
+            "total_siniestros": total_siniestros,
+            "total_overdue_amount": round(total_overdue),
+            "avg_utilizacion": avg_util,
+        },
+    }
+
+
+# ==============================================================
+# PART 7: SLA DE ENTREGA
 # ==============================================================
 def extract_sla_data(models, uid, m_start, m_end):
     """
@@ -1378,7 +1677,10 @@ def main():
     # Part 5: Rescued clients (frecuencia-based)
     rescued = extract_rescued_clients(models, uid)
 
-    # Part 5b: SLA entrega mes anterior
+    # Part 6: Credit Risk
+    credit_risk = extract_credit_risk(models, uid)
+
+    # Part 6b: SLA entrega mes anterior
     sla_prev = extract_sla_data(models, uid, prev_m_start, prev_m_end)
     ventas_prev["sla"] = sla_prev
 
@@ -1524,6 +1826,7 @@ def main():
         "ventas_prev": ventas_prev,
         "churn": churn,
         "rescued": rescued,
+        "credit_risk": credit_risk,
         "vendor_goals": vendor_goals,
         "company_goals": {
             "litros_mes": 1305689,
