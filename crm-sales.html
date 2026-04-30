@@ -256,7 +256,6 @@ tr:hover td{background:#fafaf8}
             <tr><td class="bold">Ganados</td><td>Leads movidos a etapa "Ganado" en CRM durante la semana (por write_date)</td><td>crm.lead stage=Won</td></tr>
             <tr style="border-top:2px solid #e5e4df"><td class="bold">Margen Retail</td><td>Margen ponderado por monto de ventas a clientes donde is_volume_client = False. Meta: 8.5%</td><td>margin_zone × amount_untaxed</td></tr>
             <tr><td class="bold">Margen Volumen</td><td>Margen ponderado de clientes con is_volume_client = True. Meta: 6%</td><td>margin_zone × amount_untaxed</td></tr>
-            <tr><td class="bold">Retención 90d</td><td>Porcentaje de seguimiento de cotizaciones a 90 días (del funnel semanal)</td><td>crm.lead stages</td></tr>
             <tr style="border-top:2px solid #e5e4df"><td class="bold">Activos</td><td>Clientes que facturaron en los últimos 2 meses</td><td>account.move</td></tr>
             <tr><td class="bold">Durmientes</td><td>Clientes en etapa CRM "Durmiente" — fuera de ciclo de compra, menos de 9 meses sin comprar</td><td>crm.lead stage</td></tr>
             <tr><td class="bold">Perdidos</td><td>Clientes en etapa CRM "Perdidos" — sin factura 9+ meses</td><td>crm.lead stage</td></tr>
@@ -1011,7 +1010,6 @@ function renderVentas() {
   kh += mkKpi('c-green', 'Nuevos Clientes', wCierre, 'Meta: ' + cierreGoal + ' · ' + fL(litrosNuevos), wCierre, cierreGoal);
   kh += mkKpi('c-blue', 'Margen Retail', mRetail + '%', 'Meta: ' + (CG.margen_retail || 8.5) + '%', mRetail, CG.margen_retail || 8.5);
   kh += mkKpi('c-red', 'Margen Volumen', mVol + '%', 'Meta: ' + (CG.margen_volumen || 6) + '%', mVol, CG.margen_volumen || 6);
-  kh += mkKpi('c-green', 'Retención', retPct + '%', 'Meta: ' + retGoal + '%', retPct, retGoal);
   kh += mkKpi('c-yellow', 'Ganados', wGanados.length, isAccum ? 'Mes' : 'Esta semana', null, null);
   document.getElementById('kpiRow').innerHTML = kh;
 
