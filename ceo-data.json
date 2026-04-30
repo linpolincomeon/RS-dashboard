@@ -1,5 +1,5 @@
 {
-  "updated": "2026-04-30T00:08:23.480175",
+  "updated": "2026-04-30T12:25:03.809862",
   "weeks": [
     {
       "label": "30apr-06may",
@@ -1470,7 +1470,68 @@
   "sla": [
     {
       "label": "30apr-06may",
-      "zones": {}
+      "zones": {
+        "Chillan": {
+          "total": 2,
+          "on_time": 0,
+          "late": 2,
+          "pct": 0.0,
+          "late_clients": [
+            "INGENERIA Y CONSTRUCCIONES FEBLANCA SPA, PLANTA PARRAL",
+            "ARIDOS DON EDUARDO SPA, ANGELICA MOLINA, FEBLANCA SAN CARLOS"
+          ]
+        },
+        "Curico": {
+          "total": 6,
+          "on_time": 4,
+          "late": 2,
+          "pct": 66.67,
+          "late_clients": [
+            "AGRICOLA SANTA SOFIA SA, AGRICOLA SANTA SOFIA LA MONTAÑA",
+            "BEPATAGONIA MAQUINARIA S.A., BEPATAGONIA-Pamela"
+          ]
+        },
+        "Rancagua": {
+          "total": 4,
+          "on_time": 2,
+          "late": 2,
+          "pct": 50.0,
+          "late_clients": [
+            "FERNANDO ROMERO ORTIZ, Fernando Romero",
+            "NUEVA PICARQUIN SPA, NUEVA PICARQUIN-Alejandra"
+          ]
+        },
+        "Región Metropolitana": {
+          "total": 2,
+          "on_time": 0,
+          "late": 2,
+          "pct": 0.0,
+          "late_clients": [
+            "EL PARRON SPA, Direccion 1 la cisterna",
+            "EL PARRON SPA, Direccion 2 est central"
+          ]
+        },
+        "San Fernando": {
+          "total": 3,
+          "on_time": 3,
+          "late": 0,
+          "pct": 100.0,
+          "late_clients": []
+        },
+        "Talca": {
+          "total": 7,
+          "on_time": 2,
+          "late": 5,
+          "pct": 28.57,
+          "late_clients": [
+            "PATRICIO ANDRES BUSTOS CASTILLO, PATRICIO ANDRES BUSTOS-Patricio",
+            "INVERSIONES FRUTICOLAS S.A., HUERTO SAN AGUSTIN",
+            "SOC AGRICOLA GRANJA SAN RAFAEL LIMITADA, LO PATRICIO 2",
+            "PATRICIO VISCAY ALBORNOZ, Cristopher",
+            "JOAQUIN EDUARDO OLAVE GAJARDO, JOAQUIN OLAVE"
+          ]
+        }
+      }
     }
   ],
   "riesgo": {
