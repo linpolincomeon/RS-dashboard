@@ -1,33 +1,40 @@
 {
-  "updated": "2026-04-30T12:25:03.809862",
+  "updated": "2026-04-30T16:47:16.120366",
   "weeks": [
     {
       "label": "30apr-06may",
       "start": "2026-04-30",
       "end": "2026-05-06",
-      "ventas": 0,
-      "neto": 0,
-      "litros": 0,
-      "litros_retail": 0,
-      "litros_volumen": 0,
-      "precio_neto": 0,
-      "precio_bruto": 0,
-      "margin": 0,
-      "margin_retail": 0,
-      "margin_volumen": 0,
-      "facturas": 0,
+      "ventas": 37593641,
+      "neto": 28400621,
+      "litros": 24261,
+      "litros_retail": 12400,
+      "litros_volumen": 11861,
+      "precio_neto": 1171,
+      "precio_bruto": 1550,
+      "margin": 0.06936,
+      "margin_retail": 0.07567,
+      "margin_volumen": 0.06268,
+      "facturas": 10,
       "nc": 0,
-      "clientes": 0,
-      "recaud": 0,
+      "clientes": 8,
+      "recaud": 19288749,
       "cheques": 0,
-      "transf": 0,
+      "transf": 19288749,
       "factoring": 0,
       "compras_odoo": 0,
       "cheq_cartera_saldo": 0,
       "cheq_recibidos": 0,
       "facturas_contado": 0,
-      "facturas_credito": 0,
-      "margin_by_term": {},
+      "facturas_credito": 10,
+      "margin_by_term": {
+        "30 Días": {
+          "margin": 0.06936,
+          "normalizado": 0.06936,
+          "count": 10,
+          "days": 30
+        }
+      },
       "cotiz_canceladas": 0,
       "visitas": 0,
       "clientes_nuevos": 0,
@@ -57,7 +64,7 @@
       "cheques": 17478957,
       "transf": 223482245,
       "factoring": 74587185,
-      "compras_odoo": 115668291,
+      "compras_odoo": 194954734,
       "cheq_cartera_saldo": 0,
       "cheq_recibidos": 52638216,
       "facturas_contado": 12,
@@ -1247,8 +1254,8 @@
     {
       "date": "30apr",
       "day": "Jue",
-      "litros": 0,
-      "neto": 0
+      "litros": 24261,
+      "neto": 28400621
     },
     {
       "date": "29apr",
@@ -1344,7 +1351,11 @@
   "banks": [
     {
       "name": "DE CHILE",
-      "balance": 34899569
+      "balance": 25839321
+    },
+    {
+      "name": "SANTANDER",
+      "balance": 5290019
     },
     {
       "name": "CAJA",
@@ -1363,23 +1374,19 @@
       "balance": 823881
     },
     {
-      "name": "SANTANDER",
-      "balance": 515620
-    },
-    {
       "name": "DE CREDITO",
       "balance": -838790
     }
   ],
-  "total_cash": 42936424,
+  "total_cash": 38650575,
   "receivables": {
-    "open_invoices": 248,
-    "total_due": 557865859,
-    "current": 448631928,
-    "overdue": 109233931,
-    "pct_overdue": 19.6,
+    "open_invoices": 254,
+    "total_due": 586054000,
+    "current": 479031069,
+    "overdue": 107022931,
+    "pct_overdue": 18.3,
     "aging": {
-      "0-30": 87014747,
+      "0-30": 84803747,
       "31-60": 12453621,
       "61-90": 0,
       "90+": 9765563
@@ -1402,16 +1409,16 @@
         "amount": 18639671
       },
       {
+        "name": "SOC AGRICOLA GRANJA SAN RAFAEL LIMITADA",
+        "amount": 16785481
+      },
+      {
         "name": "SAMUEL BUDINICH SPA",
         "amount": 15411835
       },
       {
         "name": "SOC. DE TRANSPORTES TRACMAVI LTDA.",
         "amount": 15354752
-      },
-      {
-        "name": "SOC AGRICOLA GRANJA SAN RAFAEL LIMITADA",
-        "amount": 14291081
       },
       {
         "name": "INGENERIA Y CONSTRUCCIONES FEBLANCA SPA",
@@ -1422,12 +1429,20 @@
         "amount": 13390401
       },
       {
+        "name": "CIA AGRICOLA Y FORESTAL EL ALAMO LIMITADA",
+        "amount": 12319999
+      },
+      {
         "name": "AGROINDUSTRIAL SIRACUSA S A",
         "amount": 11617500
       },
       {
         "name": "URAN ANTONIO LUNA DOMÍNGUEZ",
         "amount": 11424000
+      },
+      {
+        "name": "INVERSIONES SANTA BERTINA",
+        "amount": 10731000
       },
       {
         "name": "ALFREDO ALFONSO OPAZO MUÑOZ",
@@ -1442,12 +1457,12 @@
         "amount": 9026979
       },
       {
-        "name": "AGROMORANDE S A",
-        "amount": 8915602
-      },
-      {
         "name": "VICTOR FAVIO VILCHES MARDONES",
         "amount": 8824001
+      },
+      {
+        "name": "AGROMORANDE S A",
+        "amount": 7945602
       },
       {
         "name": "VALENZUELA LEIVA MAX",
@@ -1456,14 +1471,6 @@
       {
         "name": "TRANSPORTES SAN MARCELO SPA",
         "amount": 7740000
-      },
-      {
-        "name": "ANDES SOLAR SA",
-        "amount": 7673676
-      },
-      {
-        "name": "PATRICIO REYES SERRANO",
-        "amount": 7645000
       }
     ]
   },
@@ -1537,15 +1544,15 @@
   "riesgo": {
     "cubierto": 0,
     "cubierto_count": 0,
-    "no_cubierto": 557865859,
-    "no_cubierto_count": 248,
+    "no_cubierto": 586054000,
+    "no_cubierto_count": 254,
     "pct_monto": 100.0,
     "pct_count": 100.0
   },
   "churn": {
     "eligible_clients": 165,
-    "churned_count": 55,
-    "pct": 33.3,
+    "churned_count": 54,
+    "pct": 32.7,
     "churned": [
       {
         "name": "ERIKA DEL PILAR GUZMAN MANRIQUEZ",
@@ -1898,10 +1905,10 @@
           "5667"
         ],
         "target_total": 622068,
-        "mtd_litros": 380108,
-        "compliance_pct": 61.1,
-        "projected": 380108,
-        "projected_pct": 61.1,
+        "mtd_litros": 420084,
+        "compliance_pct": 67.5,
+        "projected": 420084,
+        "projected_pct": 67.5,
         "plants": {
           "Maipu": {
             "target": 230827
@@ -1920,10 +1927,10 @@
           "15293"
         ],
         "target_total": 472147,
-        "mtd_litros": 275000,
-        "compliance_pct": 58.2,
-        "projected": 275000,
-        "projected_pct": 58.2,
+        "mtd_litros": 290000,
+        "compliance_pct": 61.4,
+        "projected": 290000,
+        "projected_pct": 61.4,
         "plants": {
           "Maipu": {
             "target": 0
@@ -1935,10 +1942,10 @@
       }
     },
     "total_target": 1094215,
-    "total_mtd": 655108,
-    "total_compliance_pct": 59.9,
-    "total_projected": 655108,
-    "total_projected_pct": 59.9
+    "total_mtd": 710084,
+    "total_compliance_pct": 64.9,
+    "total_projected": 710084,
+    "total_projected_pct": 64.9
   },
   "operaciones": {
     "months": [
@@ -2031,11 +2038,11 @@
         "month": "2026-04",
         "label": "Abr 2026",
         "budget": 14517971,
-        "actual": 23674525,
-        "compliance_pct": 163.1,
+        "actual": 24278566,
+        "compliance_pct": 167.2,
         "categories": {
           "Petróleo": 10526075,
-          "Mantención y Reparación": 9618147,
+          "Mantención y Reparación": 10222188,
           "Gastos Traslados (TAG)": 2146882,
           "Seguros": 0,
           "Gastos Vehículos": 1083421,
