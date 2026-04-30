@@ -38,7 +38,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
 .sec-h .badge{background:var(--red);color:#fff;font-size:11px;font-weight:600;padding:3px 10px;border-radius:10px}
 .sec-b{padding:16px 18px}
 table{width:100%;border-collapse:collapse;font-size:13px}
-th{text-align:left;padding:10px 12px;color:var(--dim);font-size:11px;font-weight:600;text-transform:uppercase;border-bottom:2px solid #f0f0f0}
+th{text-align:left;padding:10px 12px;color:var(--dim);font-size:11px;font-weight:600;text-transform:uppercase;border-bottom:2px solid #f0f0f0;position:sticky;top:0;background:var(--card);z-index:2}
 td{padding:10px 12px;border-bottom:1px solid #f5f5f5;vertical-align:middle}
 tr:hover td{background:#fafaf8}
 .bold{font-weight:600}
@@ -258,16 +258,21 @@ tr:hover td{background:#fafaf8}
       <div class="kpi-row" id="riesgoKpiRow"></div>
       <div class="grid-2">
         <div class="chart-cont"><h3>Distribución de Riesgo</h3><canvas id="chartRiskDist"></canvas></div>
-        <div class="chart-cont"><h3>Top 10 — Utilización Línea de Crédito</h3><canvas id="chartUtilizacion"></canvas></div>
+        <div class="chart-cont"><h3>Riesgo Vigente AVLA — % No Cubierto</h3><canvas id="chartRiesgoVigente"></canvas></div>
       </div>
+
+      <div class="sec"><div class="sec-h"><h2>📊 Top 10 — Utilización Línea de Crédito</h2></div>
+        <div class="sec-b"><table><thead><tr><th>Score</th><th>Cliente</th><th>Línea</th><th>Saldo</th><th>Utiliz.</th><th>Mora</th></tr></thead>
+        <tbody id="topUtilBody"></tbody></table></div></div>
+
       <div class="sec"><div class="sec-h"><h2>⚠️ Líneas de Crédito Insuficientes</h2><span class="badge" id="lineaInsufCount">0</span></div>
         <div class="sec-b" style="max-height:500px;overflow-y:auto">
-          <table><thead><tr><th>Cliente</th><th>Línea</th><th>Saldo Disp.</th><th>Utiliz.</th><th>Facturación Proy.</th><th>% Línea</th><th>Score</th></tr></thead>
+          <table><thead><tr><th>Score</th><th>Cliente</th><th>Línea</th><th>Saldo Disp.</th><th>Utiliz.</th><th>Facturación Proy.</th><th>% Línea</th></tr></thead>
           <tbody id="lineaInsufBody"></tbody></table>
           <div class="nodata" id="noLineaInsuf" style="display:none">Sin líneas insuficientes</div></div></div>
       <div class="sec"><div class="sec-h"><h2>📊 Score Crediticio por Cliente</h2><span class="badge" id="scoreCount">0</span></div>
         <div class="sec-b" style="max-height:600px;overflow-y:auto">
-          <table><thead><tr><th>Cliente</th><th>Score</th><th>Nivel</th><th>Mora (días)</th><th>Plazo</th><th>Utiliz.</th><th>Vencido</th><th>Siniestro</th><th>Margen</th><th>L/mes</th></tr></thead>
+          <table><thead><tr><th>Score</th><th>Cliente</th><th>Nivel</th><th>DICOM</th><th>Mora (días)</th><th>Plazo</th><th>Utiliz.</th><th>Vencido</th><th>Siniestro</th><th>Margen</th><th>L/mes</th></tr></thead>
           <tbody id="scoreBody"></tbody></table>
           <div class="nodata" id="noScore" style="display:none">Sin datos de riesgo</div></div></div>
     </div>
@@ -1698,51 +1703,79 @@ function renderRescuedTable(list, bodyId, noId, countId) {
 // ═══════════════════════════════════════
 // RIESGO CREDITICIO TAB
 // ═══════════════════════════════════════
-let chartRiskDist = null, chartUtilizacion = null;
+let chartRiskDist = null, chartRiesgoVigente = null;
+let _riesgoHist = null;
+async function loadRiesgoHist() {
+  if (_riesgoHist) return _riesgoHist;
+  try { const r = await fetch('riesgo-historico.json?t='+Date.now()); if(r.ok) _riesgoHist = await r.json(); } catch(e) {}
+  return _riesgoHist || [];
+}
 
 function renderRiesgo() {
   if (!D || !D.credit_risk) return;
   const cr = D.credit_risk, summary = cr.summary || {};
   const scoreData = cr.score_table || [];
   const lineaData = cr.linea_insuficiente || [];
+  const total = summary.total_evaluados || 1;
+  const pctCrit = ((summary.criticos||0)/total*100).toFixed(1);
+  const pctAlto = ((summary.altos||0)/total*100).toFixed(1);
+  const pctCritAlto = (((summary.criticos||0)+(summary.altos||0))/total*100).toFixed(1);
 
   const fMoney = n => n ? '$' + Math.round(n).toLocaleString('es-CL') : '$0';
 
   let kh = '';
-  kh += mkKpi('c-red', 'Riesgo Crítico', summary.criticos || 0, 'clientes', null, null);
-  kh += mkKpi('c-yellow', 'Riesgo Alto', summary.altos || 0, 'clientes', null, null);
+  kh += mkKpi(parseFloat(pctCritAlto)>30?'c-red':parseFloat(pctCritAlto)>15?'c-yellow':'c-green', '% Crítico+Alto', pctCritAlto+'%', `${summary.criticos||0} críticos + ${summary.altos||0} altos`, null, null);
   kh += mkKpi('c-blue', 'Líneas Insuficientes', summary.linea_insuficiente_count || 0, 'requieren aumento', null, null);
   kh += mkKpi('c-red', 'Monto Vencido', fMoney(summary.total_overdue_amount), `${summary.total_siniestros || 0} siniestros`, null, null);
   kh += mkKpi('c-yellow', 'Utiliz. Promedio', (summary.avg_utilizacion || 0) + '%', `${summary.total_evaluados || 0} evaluados`, null, null);
   kh += mkKpi('c-green', 'Riesgo Bajo', summary.bajos || 0, 'clientes sanos', null, null);
   document.getElementById('riesgoKpiRow').innerHTML = kh;
 
-  // Risk Distribution Chart
+  // Donut with percentages
   const ctx1 = document.getElementById('chartRiskDist').getContext('2d');
   if (chartRiskDist) chartRiskDist.destroy();
   chartRiskDist = new Chart(ctx1, {
     type: 'doughnut',
     data: {
-      labels: ['Crítico', 'Alto', 'Medio', 'Bajo'],
+      labels: [`Crítico ${pctCrit}%`, `Alto ${pctAlto}%`, `Medio ${((summary.medios||0)/total*100).toFixed(1)}%`, `Bajo ${((summary.bajos||0)/total*100).toFixed(1)}%`],
       datasets: [{ data: [summary.criticos||0, summary.altos||0, summary.medios||0, summary.bajos||0],
         backgroundColor: ['#c8360e', '#ca8a04', '#2563eb', '#16a34a'], borderWidth: 2, borderColor: '#fff' }]
     },
-    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { font: { family: 'DM Sans', size: 12 } } } } }
+    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { font: { family: 'DM Sans', size: 12 } } },
+      tooltip: { callbacks: { label: ctx => { const v=ctx.parsed; const t=ctx.dataset.data.reduce((a,b)=>a+b,0); return ctx.label+': '+v+' ('+(v/t*100).toFixed(1)+'%)'; } } } } }
   });
 
-  // Utilization Chart (top 10)
+  // Riesgo Vigente AVLA trend line
+  loadRiesgoHist().then(hist => {
+    if (!hist || hist.length === 0) return;
+    const last16 = hist.slice(-16);
+    const labels = last16.map(w => { const d = new Date(w.fecha); return d.getDate()+'/'+(d.getMonth()+1); });
+    const riesgoPct = last16.map(w => { const t = (w.no_cubierto||0) + (w.cubierto||0); return t > 0 ? parseFloat(((w.no_cubierto||0)/t*100).toFixed(1)) : 0; });
+    const avg = riesgoPct.reduce((a,b) => a+b, 0) / riesgoPct.length;
+    const ctx2 = document.getElementById('chartRiesgoVigente').getContext('2d');
+    if (chartRiesgoVigente) chartRiesgoVigente.destroy();
+    chartRiesgoVigente = new Chart(ctx2, {
+      type: 'line',
+      data: { labels, datasets: [
+        { label: 'Riesgo Vigente %', data: riesgoPct, borderColor: '#c8360e', backgroundColor: 'rgba(200,54,14,.1)', fill: true, tension: .3, pointRadius: 3, pointBackgroundColor: riesgoPct.map(v => v>12?'#c8360e':v>8?'#ca8a04':'#16a34a'), borderWidth: 2 },
+        { label: 'Promedio', data: riesgoPct.map(() => parseFloat(avg.toFixed(1))), borderColor: '#ca8a04', borderDash: [5,3], borderWidth: 1, pointRadius: 0, fill: false }
+      ] },
+      options: { responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { position: 'bottom', labels: { font: { family: 'DM Sans', size: 10 } } },
+          tooltip: { callbacks: { afterLabel: ctx => { if(ctx.datasetIndex>0)return''; const w=last16[ctx.dataIndex]; return 'No cubierto: $'+(w.no_cubierto/1e6).toFixed(1)+'M\nCubierto: $'+(w.cubierto/1e6).toFixed(1)+'M'; } } } },
+        scales: { x: { ticks: { font: { size: 9 } }, grid: { display: false } }, y: { beginAtZero: true, max: 20, ticks: { callback: v => v+'%', font: { size: 9 } }, grid: { color: '#f0f0f0' } } } }
+    });
+  });
+
+  // Top 10 Utilización TABLE
   const top10 = [...scoreData].sort((a,b) => b.utilizacion_pct - a.utilizacion_pct).slice(0, 10);
-  const ctx2 = document.getElementById('chartUtilizacion').getContext('2d');
-  if (chartUtilizacion) chartUtilizacion.destroy();
-  chartUtilizacion = new Chart(ctx2, {
-    type: 'bar',
-    data: {
-      labels: top10.map(c => (c.name||'').substring(0, 20)),
-      datasets: [{ label: 'Utilización %', data: top10.map(c => c.utilizacion_pct),
-        backgroundColor: top10.map(c => c.utilizacion_pct >= 90 ? 'rgba(200,54,14,.6)' : c.utilizacion_pct >= 70 ? 'rgba(202,138,4,.5)' : 'rgba(22,163,74,.4)'), borderRadius: 4 }]
-    },
-    options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } },
-      scales: { x: { beginAtZero: true, max: 100, ticks: { callback: v => v+'%' }, grid: { color: '#f0f0f0' } }, y: { grid: { display: false }, ticks: { font: { size: 11 } } } } }
+  const utb = document.getElementById('topUtilBody'); utb.innerHTML = '';
+  top10.forEach(c => {
+    const uc = c.utilizacion_pct >= 90 ? 'tag-r' : c.utilizacion_pct >= 70 ? 'tag-y' : 'tag-g';
+    const sc = c.risk_score >= 60 ? 'tag-r' : c.risk_score >= 40 ? 'tag-y' : 'tag-g';
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td><span class="tag ${sc}">${c.risk_score}</span></td><td class="bold">${H(c.name)}</td><td>${fMoney(c.monto_credito)}</td><td>${fMoney(c.saldo_credito)}</td><td><span class="tag ${uc}">${c.utilizacion_pct}%</span></td><td>${c.avg_payment_days}d</td>`;
+    utb.appendChild(tr);
   });
 
   // Líneas Insuficientes Table
@@ -1756,7 +1789,7 @@ function renderRiesgo() {
       const lc = c.linea_ratio >= 100 ? 'tag-r' : c.linea_ratio >= 80 ? 'tag-y' : 'tag-g';
       const sc = c.risk_score >= 60 ? 'tag-r' : c.risk_score >= 40 ? 'tag-y' : c.risk_score >= 20 ? 'tag-blue' : 'tag-g';
       const tr = document.createElement('tr');
-      tr.innerHTML = `<td class="bold">${H(c.name)}</td><td>${fMoney(c.monto_credito)}</td><td>${fMoney(c.saldo_credito)}</td><td><span class="tag ${uc}">${c.utilizacion_pct}%</span></td><td>${fMoney(c.projected_monthly)}/mes</td><td><span class="tag ${lc}">${c.linea_ratio}%</span></td><td><span class="tag ${sc}">${c.risk_score}</span></td>`;
+      tr.innerHTML = `<td><span class="tag ${sc}">${c.risk_score}</span></td><td class="bold">${H(c.name)}</td><td>${fMoney(c.monto_credito)}</td><td>${fMoney(c.saldo_credito)}</td><td><span class="tag ${uc}">${c.utilizacion_pct}%</span></td><td>${fMoney(c.projected_monthly)}/mes</td><td><span class="tag ${lc}">${c.linea_ratio}%</span></td>`;
       lb.appendChild(tr);
     });
   }
@@ -1774,7 +1807,8 @@ function renderRiesgo() {
       const sinTag = c.siniestro_count > 0 ? `<span class="tag tag-r">${c.siniestro_count}</span>` : '<span style="color:var(--dim)">0</span>';
       const overdueTag = c.overdue_amount > 0 ? `<span class="tag tag-r">${fMoney(c.overdue_amount)}</span>` : '<span style="color:var(--dim)">—</span>';
       const tr = document.createElement('tr');
-      tr.innerHTML = `<td class="bold">${H(c.name)}</td><td><span class="tag ${sc}">${c.risk_score}</span></td><td>${H(c.risk_level)}</td><td><span class="tag ${mc}">${c.avg_payment_days}d</span></td><td>${c.plazo_pago_dias}d</td><td><span class="tag ${uc}">${c.utilizacion_pct}%</span></td><td>${overdueTag}</td><td>${sinTag}</td><td>${c.avg_margin_pct}%</td><td>${fL(c.avg_monthly_litros)}</td>`;
+      const dicomTag = c.has_dicom ? '<span class="tag tag-r">DICOM</span>' : '<span style="color:var(--dim)">—</span>';
+      tr.innerHTML = `<td><span class="tag ${sc}">${c.risk_score}</span></td><td class="bold">${H(c.name)}</td><td>${H(c.risk_level)}</td><td>${dicomTag}</td><td><span class="tag ${mc}">${c.avg_payment_days}d</span></td><td>${c.plazo_pago_dias}d</td><td><span class="tag ${uc}">${c.utilizacion_pct}%</span></td><td>${overdueTag}</td><td>${sinTag}</td><td>${c.avg_margin_pct}%</td><td>${fL(c.avg_monthly_litros)}</td>`;
       sb.appendChild(tr);
     });
   }

@@ -69,7 +69,7 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(-
 .section-label{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin:1.5rem 0 .5rem;font-weight:600}
 .table-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1rem;overflow:auto}
 table{width:100%;border-collapse:collapse;font-size:12px}
-th{text-align:left;color:var(--text3);font-weight:600;padding:6px 8px;border-bottom:2px solid var(--border);font-size:10px;text-transform:uppercase;letter-spacing:.04em}
+th{text-align:left;color:var(--text3);font-weight:600;padding:6px 8px;border-bottom:2px solid var(--border);font-size:10px;text-transform:uppercase;letter-spacing:.04em;position:sticky;top:0;background:var(--surface);z-index:2}
 td{padding:6px 8px;border-bottom:1px solid var(--surface2);color:var(--text2)}
 tr:hover td{background:rgba(200,54,14,.02)}
 .r{text-align:right}
@@ -448,19 +448,27 @@ function renderResumen(){
   h+='</div></div>';
   el.innerHTML=h;
 }
-// ── COBRANZA ──
 // ── RIESGO CREDITICIO ──
+let _riesgoHist=null;
+async function loadRiesgoHist(){
+  if(_riesgoHist) return _riesgoHist;
+  try{const r=await fetch('riesgo-historico.json?t='+Date.now());if(r.ok)_riesgoHist=await r.json()}catch(e){}
+  return _riesgoHist||[];
+}
 function renderRiesgo(){
   const el=document.getElementById('p-riesgo');
-  if(!D._crm||!D._crm.credit_risk){el.innerHTML='<div class="chart-card" style="text-align:center;padding:3rem;color:var(--text3)">Cargando datos de riesgo...</div>';return}
-  const cr=D._crm.credit_risk, sm=cr.summary||{};
+  const hasCrm=D._crm&&D._crm.credit_risk;
+  const cr=hasCrm?D._crm.credit_risk:{}, sm=cr.summary||{};
   const scoreData=cr.score_table||[], lineaData=cr.linea_insuficiente||[];
   const fMon=n=>n?'$'+Math.round(n).toLocaleString('es-CL'):'$0';
   const fL=n=>n?Math.round(n).toLocaleString('es-CL')+' L':'0 L';
+  const total=sm.total_evaluados||1;
+  const pctCrit=((sm.criticos||0)/total*100).toFixed(1);
+  const pctAlto=((sm.altos||0)/total*100).toFixed(1);
+  const pctCritAlto=(((sm.criticos||0)+(sm.altos||0))/total*100).toFixed(1);
 
   let h='<div class="kpi-grid">';
-  h+=kpi('Riesgo Crítico',sm.criticos||0,null,'c-red','clientes');
-  h+=kpi('Riesgo Alto',sm.altos||0,null,'c-amber','clientes');
+  h+=kpi('% Crítico+Alto',pctCritAlto+'%',null,parseFloat(pctCritAlto)>30?'c-red':parseFloat(pctCritAlto)>15?'c-amber':'c-green',(sm.criticos||0)+' críticos + '+(sm.altos||0)+' altos');
   h+=kpi('Líneas Insuficientes',sm.linea_insuficiente_count||0,null,'c-purple','requieren aumento');
   h+=kpi('Monto Vencido',fMon(sm.total_overdue_amount),null,'c-red',(sm.total_siniestros||0)+' siniestros');
   h+=kpi('Utiliz. Promedio',(sm.avg_utilizacion||0)+'%',null,'c-amber',(sm.total_evaluados||0)+' evaluados');
@@ -469,42 +477,73 @@ function renderRiesgo(){
 
   // Charts row
   h+='<div class="chart-row two">';
-  h+='<div class="chart-card"><div class="chart-title">Distribución de Riesgo</div><div class="chart-wrap"><canvas id="cRiskDist"></canvas></div></div>';
-  h+='<div class="chart-card"><div class="chart-title">Top 10 — Utilización Línea</div><div class="chart-wrap"><canvas id="cUtiliz"></canvas></div></div>';
+  h+='<div class="chart-card"><div class="chart-title">Distribución de Riesgo <span class="badge">'+total+' clientes</span></div><div class="chart-wrap"><canvas id="cRiskDist"></canvas></div></div>';
+  h+='<div class="chart-card"><div class="chart-title">Riesgo Vigente AVLA <span class="badge">% monto no cubierto</span></div><div class="chart-wrap"><canvas id="cRiesgoVigente"></canvas></div></div>';
   h+='</div>';
+
+  // Top 10 Utilización as TABLE
+  const top10=[...scoreData].sort((a,b)=>b.utilizacion_pct-a.utilizacion_pct).slice(0,10);
+  if(top10.length>0){
+    h+='<div class="section-label">Top 10 — Utilización Línea de Crédito</div>';
+    h+='<div class="table-card"><table><thead><tr><th class="r">Score</th><th>Cliente</th><th class="r">Línea</th><th class="r">Saldo</th><th class="r">Utiliz.</th><th class="r">Mora</th></tr></thead><tbody>';
+    top10.forEach(c=>{
+      const uc=c.utilizacion_pct>=90?'bad':c.utilizacion_pct>=70?'':'ok';
+      const sc=c.risk_score>=60?'bad':c.risk_score>=40?'':'ok';
+      h+=`<tr><td class="r ${sc}">${c.risk_score}</td><td class="hi">${c.name}</td><td class="r">${fMon(c.monto_credito)}</td><td class="r">${fMon(c.saldo_credito)}</td><td class="r ${uc}">${c.utilizacion_pct}%</td><td class="r">${c.avg_payment_days}d</td></tr>`;
+    });
+    h+='</tbody></table></div>';
+  }
 
   // Líneas insuficientes table
   h+='<div class="section-label">Líneas de Crédito Insuficientes ('+lineaData.length+')</div>';
-  h+='<div class="table-card" style="max-height:400px;overflow-y:auto"><table><thead><tr><th>Cliente</th><th class="r">Línea</th><th class="r">Saldo</th><th class="r">Utiliz.</th><th class="r">Proy. Mensual</th><th class="r">% Línea</th><th class="r">Score</th></tr></thead><tbody>';
+  h+='<div class="table-card" style="max-height:400px;overflow-y:auto"><table><thead><tr><th class="r">Score</th><th>Cliente</th><th class="r">Línea</th><th class="r">Saldo</th><th class="r">Utiliz.</th><th class="r">Proy. Mensual</th><th class="r">% Línea</th></tr></thead><tbody>';
   lineaData.forEach(c=>{
     const uc=c.utilizacion_pct>=90?'bad':c.utilizacion_pct>=70?'':'ok';
     const sc=c.risk_score>=60?'bad':c.risk_score>=40?'':'ok';
-    h+=`<tr><td class="hi">${c.name}</td><td class="r">${fMon(c.monto_credito)}</td><td class="r">${fMon(c.saldo_credito)}</td><td class="r ${uc}">${c.utilizacion_pct}%</td><td class="r">${fMon(c.projected_monthly)}</td><td class="r ${c.linea_ratio>=100?'bad':''}">${c.linea_ratio}%</td><td class="r ${sc}">${c.risk_score}</td></tr>`;
+    h+=`<tr><td class="r ${sc}">${c.risk_score}</td><td class="hi">${c.name}</td><td class="r">${fMon(c.monto_credito)}</td><td class="r">${fMon(c.saldo_credito)}</td><td class="r ${uc}">${c.utilizacion_pct}%</td><td class="r">${fMon(c.projected_monthly)}</td><td class="r ${c.linea_ratio>=100?'bad':''}">${c.linea_ratio}%</td></tr>`;
   });
   h+='</tbody></table></div>';
 
   // Score table
   h+='<div class="section-label">Score Crediticio por Cliente ('+scoreData.length+')</div>';
-  h+='<div class="table-card" style="max-height:500px;overflow-y:auto"><table><thead><tr><th>Cliente</th><th class="r">Score</th><th>Nivel</th><th class="r">Mora</th><th class="r">Plazo</th><th class="r">Utiliz.</th><th class="r">Vencido</th><th class="r">Siniestro</th><th class="r">Margen</th><th class="r">L/mes</th></tr></thead><tbody>';
+  h+='<div class="table-card" style="max-height:500px;overflow-y:auto"><table><thead><tr><th class="r">Score</th><th>Cliente</th><th>Nivel</th><th>DICOM</th><th class="r">Mora</th><th class="r">Plazo</th><th class="r">Utiliz.</th><th class="r">Vencido</th><th class="r">Siniestro</th><th class="r">Margen</th><th class="r">L/mes</th></tr></thead><tbody>';
   scoreData.forEach(c=>{
     const sc=c.risk_score>=60?'bad':c.risk_score>=40?'':'ok';
     const mc=c.mora_ratio>=2?'bad':c.mora_ratio>=1.3?'':'ok';
-    h+=`<tr><td class="hi">${c.name}</td><td class="r ${sc}">${c.risk_score}</td><td>${c.risk_level}</td><td class="r ${mc}">${c.avg_payment_days}d</td><td class="r">${c.plazo_pago_dias}d</td><td class="r">${c.utilizacion_pct}%</td><td class="r ${c.overdue_amount>0?'bad':''}">${c.overdue_amount>0?fMon(c.overdue_amount):'—'}</td><td class="r ${c.siniestro_count>0?'bad':''}">${c.siniestro_count}</td><td class="r">${c.avg_margin_pct}%</td><td class="r">${fL(c.avg_monthly_litros)}</td></tr>`;
+    const dc=c.has_dicom?'<span style="color:var(--red);font-weight:700">DICOM</span>':'—';
+    h+=`<tr><td class="r ${sc}">${c.risk_score}</td><td class="hi">${c.name}</td><td>${c.risk_level}</td><td>${dc}</td><td class="r ${mc}">${c.avg_payment_days}d</td><td class="r">${c.plazo_pago_dias}d</td><td class="r">${c.utilizacion_pct}%</td><td class="r ${c.overdue_amount>0?'bad':''}">${c.overdue_amount>0?fMon(c.overdue_amount):'—'}</td><td class="r ${c.siniestro_count>0?'bad':''}">${c.siniestro_count}</td><td class="r">${c.avg_margin_pct}%</td><td class="r">${fL(c.avg_monthly_litros)}</td></tr>`;
   });
   h+='</tbody></table></div>';
 
   el.innerHTML=h;
 
-  // Render charts
-  dc('cRD');dc('cUt');
+  // ── Chart 1: Donut with percentages ──
+  dc('cRD');
   charts.cRD=new Chart(document.getElementById('cRiskDist'),{type:'doughnut',
-    data:{labels:['Crítico','Alto','Medio','Bajo'],datasets:[{data:[sm.criticos||0,sm.altos||0,sm.medios||0,sm.bajos||0],backgroundColor:[C.red,C.amber,C.blue,C.green],borderWidth:2,borderColor:'#fff'}]},
-    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{font:{family:'DM Sans',size:11}}}}}});
+    data:{labels:[`Crítico ${pctCrit}%`,`Alto ${pctAlto}%`,`Medio ${((sm.medios||0)/total*100).toFixed(1)}%`,`Bajo ${((sm.bajos||0)/total*100).toFixed(1)}%`],
+      datasets:[{data:[sm.criticos||0,sm.altos||0,sm.medios||0,sm.bajos||0],backgroundColor:[C.red,C.amber,C.blue,C.green],borderWidth:2,borderColor:'#fff'}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{font:{family:'DM Sans',size:11}}},
+      tooltip:{callbacks:{label:ctx=>{const v=ctx.parsed;const t=ctx.dataset.data.reduce((a,b)=>a+b,0);return ctx.label+': '+v+' ('+(v/t*100).toFixed(1)+'%)'}}}}}});
 
-  const top10=[...scoreData].sort((a,b)=>b.utilizacion_pct-a.utilizacion_pct).slice(0,10);
-  charts.cUt=new Chart(document.getElementById('cUtiliz'),{type:'bar',
-    data:{labels:top10.map(c=>(c.name||'').substring(0,18)),datasets:[{label:'%',data:top10.map(c=>c.utilizacion_pct),backgroundColor:top10.map(c=>c.utilizacion_pct>=90?C.red+'99':c.utilizacion_pct>=70?C.amber+'88':C.green+'77'),borderRadius:4}]},
-    options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{beginAtZero:true,max:100,ticks:{callback:v=>v+'%',color:'#9c9b96',font:{size:9}},grid:{color:'rgba(0,0,0,.04)'}},y:{grid:{display:false},ticks:{font:{size:10,family:'DM Sans'}}}}}});
+  // ── Chart 2: Riesgo Vigente AVLA (trend line) ──
+  loadRiesgoHist().then(hist=>{
+    if(!hist||hist.length===0)return;
+    const last16=hist.slice(-16);
+    const labels=last16.map(w=>{const d=new Date(w.fecha);return(d.getDate())+'/'+(d.getMonth()+1)});
+    const riesgoPct=last16.map(w=>{const t=(w.no_cubierto||0)+(w.cubierto||0);return t>0?parseFloat(((w.no_cubierto||0)/t*100).toFixed(1)):0});
+    const avg=riesgoPct.reduce((a,b)=>a+b,0)/riesgoPct.length;
+    dc('cRV');
+    charts.cRV=new Chart(document.getElementById('cRiesgoVigente'),{type:'line',
+      data:{labels,datasets:[
+        {label:'Riesgo Vigente %',data:riesgoPct,borderColor:C.red,backgroundColor:C.red+'22',fill:true,tension:.3,pointRadius:3,pointBackgroundColor:riesgoPct.map(v=>v>12?C.red:v>8?C.amber:C.green),borderWidth:2},
+        {label:'Promedio',data:riesgoPct.map(()=>parseFloat(avg.toFixed(1))),borderColor:C.amber,borderDash:[5,3],borderWidth:1,pointRadius:0,fill:false}
+      ]},
+      options:{responsive:true,maintainAspectRatio:false,
+        plugins:{legend:{position:'bottom',labels:{font:{family:'DM Sans',size:10}}},
+          tooltip:{callbacks:{afterLabel:ctx=>{if(ctx.datasetIndex>0)return'';const w=last16[ctx.dataIndex];return'No cubierto: $'+(w.no_cubierto/1e6).toFixed(1)+'M\nCubierto: $'+(w.cubierto/1e6).toFixed(1)+'M'}}}},
+        scales:{x:{ticks:{color:'#9c9b96',font:{size:9}},grid:{display:false}},
+          y:{beginAtZero:true,max:20,ticks:{callback:v=>v+'%',color:'#9c9b96',font:{size:9}},grid:{color:'rgba(0,0,0,.04)'}}}}});
+  });
 }
 // ── OPERACIONES ──
 function renderOperaciones(){
