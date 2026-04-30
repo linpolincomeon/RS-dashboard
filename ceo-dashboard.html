@@ -105,9 +105,8 @@ tr:hover td{background:rgba(200,54,14,.02)}
     <div class="filters" id="filters"></div>
     <div class="panel active" id="p-ventas"></div>
     <div class="panel" id="p-gerencia"></div>
-    <div class="panel" id="p-cobranza"></div>
-    <div class="panel" id="p-caja"></div>
     <div class="panel" id="p-resumen"></div>
+    <div class="panel" id="p-riesgo"></div>
     <div class="panel" id="p-operaciones"></div>
   </div>
 </div>
@@ -123,11 +122,11 @@ const fP=n=>!n&&n!==0?'—':(n*100).toFixed(1)+'%';
 const pD=(c,p)=>(!c||!p)?null:((c-p)/Math.abs(p))*100;
 const dH=d=>{if(d==null)return'';const u=d>=0;return`<div class="kpi-delta ${u?'up':'dn'}">${u?'▲':'▼'} ${Math.abs(d).toFixed(1)}%</div>`};
 function setupTabs(){
-  const tabDefs=[['ventas','RS'],['gerencia','Gerencia'],['cobranza','Cobranza'],['caja','Caja'],['resumen','Resumen'],['operaciones','Operaciones']];
+  const tabDefs=[['ventas','RS'],['gerencia','Gerencia'],['resumen','Resumen'],['operaciones','Operaciones'],['riesgo','⚠️ Riesgo']];
   document.getElementById('tabs').innerHTML=tabDefs.map(([k,l])=>
     `<button class="tab ${k===curTab?'active':''}" onclick="switchTab('${k}')">${l}</button>`
   ).join('');
-  if(curTab==='ventas'||curTab==='gerencia'||curTab==='caja'||curTab==='resumen'||curTab==='operaciones'){
+  if(curTab==='ventas'||curTab==='gerencia'||curTab==='resumen'||curTab==='operaciones'){
     const ws=D.weeks[selW];
     document.getElementById('filters').innerHTML=[4,8,16].map(n=>
       `<button class="wf ${fN===n?'on':''}" onclick="setFilter(${n})">${n}S</button>`
@@ -151,10 +150,9 @@ function selectWeek(i){selW=i;render()}
 function render(){
   if(curTab==='ventas') renderVentas();
   else if(curTab==='gerencia') renderGerencia();
-  else if(curTab==='cobranza') renderCobranza();
   else if(curTab==='resumen') renderResumen();
   else if(curTab==='operaciones') renderOperaciones();
-  else renderCaja();
+  else if(curTab==='riesgo') renderRiesgo();
   setupTabs();
 }
 // ── RS (was Ventas) ──
@@ -451,39 +449,62 @@ function renderResumen(){
   el.innerHTML=h;
 }
 // ── COBRANZA ──
-function renderCobranza(){
-  const el=document.getElementById('p-cobranza');
-  const r=D.receivables;
-  if(!r){el.innerHTML='<div class="chart-card" style="text-align:center;padding:3rem;color:var(--text3)">Sin datos de cobranza</div>';return}
-  const pO=r.total_due>0?(r.overdue/r.total_due*100):0;
+// ── RIESGO CREDITICIO ──
+function renderRiesgo(){
+  const el=document.getElementById('p-riesgo');
+  if(!D._crm||!D._crm.credit_risk){el.innerHTML='<div class="chart-card" style="text-align:center;padding:3rem;color:var(--text3)">Cargando datos de riesgo...</div>';return}
+  const cr=D._crm.credit_risk, sm=cr.summary||{};
+  const scoreData=cr.score_table||[], lineaData=cr.linea_insuficiente||[];
+  const fMon=n=>n?'$'+Math.round(n).toLocaleString('es-CL'):'$0';
+  const fL=n=>n?Math.round(n).toLocaleString('es-CL')+' L':'0 L';
+
   let h='<div class="kpi-grid">';
-  h+=kpi('Total por Cobrar',fM(r.total_due),null,'c-blue',r.open_invoices+' facturas');
-  h+=kpi('Al Día',fM(r.current),null,'c-green',(100-pO).toFixed(1)+'% del total');
-  h+=kpi('Vencido',fM(r.overdue),null,'c-red',pO.toFixed(1)+'% del total');
-  h+=kpi('Vencido 90+',fM(r.aging["90+"]||0),null,'c-amber','Cobranza crítica');
+  h+=kpi('Riesgo Crítico',sm.criticos||0,null,'c-red','clientes');
+  h+=kpi('Riesgo Alto',sm.altos||0,null,'c-amber','clientes');
+  h+=kpi('Líneas Insuficientes',sm.linea_insuficiente_count||0,null,'c-purple','requieren aumento');
+  h+=kpi('Monto Vencido',fMon(sm.total_overdue_amount),null,'c-red',(sm.total_siniestros||0)+' siniestros');
+  h+=kpi('Utiliz. Promedio',(sm.avg_utilizacion||0)+'%',null,'c-amber',(sm.total_evaluados||0)+' evaluados');
+  h+=kpi('Riesgo Bajo',sm.bajos||0,null,'c-green','clientes sanos');
   h+='</div>';
-  h+='<div class="section-label">Top Deudores</div><div class="table-card"><table><thead><tr><th>Cliente</th><th class="r">Monto Pendiente</th></tr></thead><tbody>';
-  (r.top_debtors||[]).forEach(d=>{h+=`<tr><td>${d.name}</td><td class="r bad">${fM(d.amount)}</td></tr>`});
-  h+='</tbody></table></div>';
-  el.innerHTML=h;
-}
-// ── CAJA ──
-function renderCaja(){
-  const el=document.getElementById('p-caja');
-  const bk=D.banks||[],tc=D.total_cash||0;
-  let h=`<div class="kpi-grid"><div class="kpi c-green" style="grid-column:1/-1"><div class="kpi-label">Saldo Total</div><div class="kpi-val" style="font-size:32px">\$${fNum(tc)}</div><div class="kpi-sub">${bk.length} cuentas</div></div></div>`;
-  h+='<div class="section-label">Saldos por Cuenta</div><div class="chart-card">';
-  bk.forEach(b=>{
-    const p=tc>0?(b.balance/tc*100):0;
-    h+=`<div style="display:flex;align-items:center;gap:8px;margin-bottom:10px"><div style="width:120px;font-size:12px;color:var(--text2);text-align:right;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${b.name}</div><div style="flex:1;height:10px;background:var(--surface2);border-radius:5px;overflow:hidden"><div style="height:100%;width:${p}%;background:${b.balance>1e6?C.green:C.amber};border-radius:5px"></div></div><div style="width:90px;font-size:12px;font-weight:600;color:var(--text);text-align:right">\$${fNum(b.balance)}</div></div>`;
-  });
+
+  // Charts row
+  h+='<div class="chart-row two">';
+  h+='<div class="chart-card"><div class="chart-title">Distribución de Riesgo</div><div class="chart-wrap"><canvas id="cRiskDist"></canvas></div></div>';
+  h+='<div class="chart-card"><div class="chart-title">Top 10 — Utilización Línea</div><div class="chart-wrap"><canvas id="cUtiliz"></canvas></div></div>';
   h+='</div>';
-  h+='<div class="section-label">Recaudación Semanal</div><div class="table-card"><table><thead><tr><th>Semana</th><th class="r">Recaud.</th><th class="r">Transf.</th><th class="r">Cheques</th><th class="r">Factoring</th><th class="r">Compras</th></tr></thead><tbody>';
-  D.weeks.slice(0,fN).forEach((w,i)=>{
-    h+=`<tr style="${i===selW?'background:var(--accent-light)':''}"><td class="${i===selW?'hi':''}">${w.label}</td><td class="r">${fM(w.recaud)}</td><td class="r">${fM(w.transf||0)}</td><td class="r">${w.cheques?fM(w.cheques):'—'}</td><td class="r">${fM(w.factoring||0)}</td><td class="r">${fM(w.compras_odoo||w.compras_enap||0)}</td></tr>`;
+
+  // Líneas insuficientes table
+  h+='<div class="section-label">Líneas de Crédito Insuficientes ('+lineaData.length+')</div>';
+  h+='<div class="table-card" style="max-height:400px;overflow-y:auto"><table><thead><tr><th>Cliente</th><th class="r">Línea</th><th class="r">Saldo</th><th class="r">Utiliz.</th><th class="r">Proy. Mensual</th><th class="r">% Línea</th><th class="r">Score</th></tr></thead><tbody>';
+  lineaData.forEach(c=>{
+    const uc=c.utilizacion_pct>=90?'bad':c.utilizacion_pct>=70?'':'ok';
+    const sc=c.risk_score>=60?'bad':c.risk_score>=40?'':'ok';
+    h+=`<tr><td class="hi">${c.name}</td><td class="r">${fMon(c.monto_credito)}</td><td class="r">${fMon(c.saldo_credito)}</td><td class="r ${uc}">${c.utilizacion_pct}%</td><td class="r">${fMon(c.projected_monthly)}</td><td class="r ${c.linea_ratio>=100?'bad':''}">${c.linea_ratio}%</td><td class="r ${sc}">${c.risk_score}</td></tr>`;
   });
   h+='</tbody></table></div>';
+
+  // Score table
+  h+='<div class="section-label">Score Crediticio por Cliente ('+scoreData.length+')</div>';
+  h+='<div class="table-card" style="max-height:500px;overflow-y:auto"><table><thead><tr><th>Cliente</th><th class="r">Score</th><th>Nivel</th><th class="r">Mora</th><th class="r">Plazo</th><th class="r">Utiliz.</th><th class="r">Vencido</th><th class="r">Siniestro</th><th class="r">Margen</th><th class="r">L/mes</th></tr></thead><tbody>';
+  scoreData.forEach(c=>{
+    const sc=c.risk_score>=60?'bad':c.risk_score>=40?'':'ok';
+    const mc=c.mora_ratio>=2?'bad':c.mora_ratio>=1.3?'':'ok';
+    h+=`<tr><td class="hi">${c.name}</td><td class="r ${sc}">${c.risk_score}</td><td>${c.risk_level}</td><td class="r ${mc}">${c.avg_payment_days}d</td><td class="r">${c.plazo_pago_dias}d</td><td class="r">${c.utilizacion_pct}%</td><td class="r ${c.overdue_amount>0?'bad':''}">${c.overdue_amount>0?fMon(c.overdue_amount):'—'}</td><td class="r ${c.siniestro_count>0?'bad':''}">${c.siniestro_count}</td><td class="r">${c.avg_margin_pct}%</td><td class="r">${fL(c.avg_monthly_litros)}</td></tr>`;
+  });
+  h+='</tbody></table></div>';
+
   el.innerHTML=h;
+
+  // Render charts
+  dc('cRD');dc('cUt');
+  charts.cRD=new Chart(document.getElementById('cRiskDist'),{type:'doughnut',
+    data:{labels:['Crítico','Alto','Medio','Bajo'],datasets:[{data:[sm.criticos||0,sm.altos||0,sm.medios||0,sm.bajos||0],backgroundColor:[C.red,C.amber,C.blue,C.green],borderWidth:2,borderColor:'#fff'}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{font:{family:'DM Sans',size:11}}}}}});
+
+  const top10=[...scoreData].sort((a,b)=>b.utilizacion_pct-a.utilizacion_pct).slice(0,10);
+  charts.cUt=new Chart(document.getElementById('cUtiliz'),{type:'bar',
+    data:{labels:top10.map(c=>(c.name||'').substring(0,18)),datasets:[{label:'%',data:top10.map(c=>c.utilizacion_pct),backgroundColor:top10.map(c=>c.utilizacion_pct>=90?C.red+'99':c.utilizacion_pct>=70?C.amber+'88':C.green+'77'),borderRadius:4}]},
+    options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{beginAtZero:true,max:100,ticks:{callback:v=>v+'%',color:'#9c9b96',font:{size:9}},grid:{color:'rgba(0,0,0,.04)'}},y:{grid:{display:false},ticks:{font:{size:10,family:'DM Sans'}}}}}});
 }
 // ── OPERACIONES ──
 function renderOperaciones(){
@@ -570,9 +591,13 @@ function dc(k){if(charts[k]){charts[k].destroy();delete charts[k]}}
 // ── LOAD ──
 async function loadData(){
   try{
-    const r=await fetch('ceo-data.json?t='+Date.now());
+    const [r, r2]=await Promise.all([
+      fetch('ceo-data.json?t='+Date.now()),
+      fetch('crm-data.json?t='+Date.now()).catch(()=>null)
+    ]);
     if(!r.ok) throw new Error('HTTP '+r.status);
     D=await r.json();
+    if(r2&&r2.ok){D._crm=await r2.json()}
     const u=new Date(D.updated);
     document.getElementById('timestamp').textContent=u.toLocaleDateString('es-CL')+' '+u.toLocaleTimeString('es-CL',{hour:'2-digit',minute:'2-digit'});
     document.getElementById('ftr').textContent=`Odoo PRODUCCION · margin_zone · NC descontadas · ${u.toLocaleDateString('es-CL')}`;
