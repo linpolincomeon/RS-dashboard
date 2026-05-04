@@ -1,5 +1,5 @@
 {
-  "updated": "2026-05-04T12:22:56.059701",
+  "updated": "2026-05-04T15:00:43.277176",
   "week": {
     "start": "2026-04-30",
     "end": "2026-05-06",
@@ -7,12 +7,12 @@
   },
   "has_litros": true,
   "summary": {
-    "active": 808,
-    "new_this_week": 11,
-    "moved_this_week": 93,
+    "active": 811,
+    "new_this_week": 14,
+    "moved_this_week": 100,
     "stale_7d": 695,
-    "won": 241,
-    "total_value": 2979500
+    "won": 240,
+    "total_value": 2988500
   },
   "executives": [
     {
@@ -27,7 +27,7 @@
     {
       "name": "GARRIDO CISTERNA JUAN MANUEL",
       "total": 155,
-      "moved": 2,
+      "moved": 3,
       "moved_30d": 11,
       "stale": 155,
       "value": 1336500,
@@ -44,26 +44,26 @@
     },
     {
       "name": "Administrator",
-      "total": 108,
-      "moved": 9,
-      "moved_30d": 48,
-      "stale": 108,
+      "total": 109,
+      "moved": 10,
+      "moved_30d": 49,
+      "stale": 109,
       "value": 0,
-      "won": 117
+      "won": 116
     },
     {
       "name": "MUÑOZ ENCALADA JOAQUIN",
-      "total": 60,
+      "total": 59,
       "moved": 38,
-      "moved_30d": 60,
-      "stale": 15,
-      "value": 217500,
+      "moved_30d": 59,
+      "stale": 14,
+      "value": 215500,
       "won": 4
     },
     {
       "name": "Comber Sigall Pauline",
       "total": 34,
-      "moved": 12,
+      "moved": 13,
       "moved_30d": 34,
       "stale": 30,
       "value": 69000,
@@ -71,11 +71,11 @@
     },
     {
       "name": "Marcela Márquez",
-      "total": 29,
-      "moved": 10,
-      "moved_30d": 29,
+      "total": 30,
+      "moved": 12,
+      "moved_30d": 30,
       "stale": 0,
-      "value": 0
+      "value": 1000
     },
     {
       "name": "De Trenqualye Merino Andre Jean",
@@ -114,20 +114,20 @@
       "won": 1
     },
     {
+      "name": "LABBE ORTIZ CARLOS ALBERTO",
+      "total": 11,
+      "moved": 4,
+      "moved_30d": 11,
+      "stale": 4,
+      "value": 182000
+    },
+    {
       "name": "Fernando Jullian",
       "total": 10,
       "moved": 1,
       "moved_30d": 2,
       "stale": 10,
       "value": 8000
-    },
-    {
-      "name": "LABBE ORTIZ CARLOS ALBERTO",
-      "total": 9,
-      "moved": 2,
-      "moved_30d": 9,
-      "stale": 4,
-      "value": 172000
     },
     {
       "name": "Carolina Avilés",
@@ -167,12 +167,12 @@
     {
       "stage": "En Riesgo",
       "class": "oportunidad",
-      "count": 197
+      "count": 199
     },
     {
       "stage": "No Cerrados",
       "class": "oportunidad",
-      "count": 197
+      "count": 199
     },
     {
       "stage": "Ruta",
@@ -182,25 +182,67 @@
     {
       "stage": "Cotizado",
       "class": "cotizado",
-      "count": 239
+      "count": 238
     },
     {
       "stage": "Durmiente",
       "class": "durmiente",
-      "count": 216
+      "count": 217
     },
     {
       "stage": "Oportunidad de Negocio",
       "class": "oportunidad",
-      "count": 197
+      "count": 199
     },
     {
       "stage": "Contactado",
       "class": "contactado",
-      "count": 106
+      "count": 107
     }
   ],
   "pipeline": [
+    {
+      "id": 2018,
+      "name": "Viña Montes S.A",
+      "stage": "Contactado",
+      "stage_class": "contactado",
+      "exec": "Marcela Márquez",
+      "exec_id": 265,
+      "value": 1000,
+      "days_in_stage": 0,
+      "days_since_activity": 0,
+      "last_update": "2026-05-04",
+      "origin": "—",
+      "created": "2026-05-04"
+    },
+    {
+      "id": 2017,
+      "name": "AGRICOLA SANTA ANA DE LAS BANDURRIAS",
+      "stage": "Oportunidad de Negocio",
+      "stage_class": "oportunidad",
+      "exec": "LABBE ORTIZ CARLOS ALBERTO",
+      "exec_id": 77,
+      "value": 8000,
+      "days_in_stage": 0,
+      "days_since_activity": 0,
+      "last_update": "2026-05-04",
+      "origin": "—",
+      "created": "2026-05-04"
+    },
+    {
+      "id": 2016,
+      "name": "AGRICOLA DOS MARIAS LTDA",
+      "stage": "Oportunidad de Negocio",
+      "stage_class": "oportunidad",
+      "exec": "LABBE ORTIZ CARLOS ALBERTO",
+      "exec_id": 77,
+      "value": 2000,
+      "days_in_stage": 0,
+      "days_since_activity": 0,
+      "last_update": "2026-05-04",
+      "origin": "—",
+      "created": "2026-05-04"
+    },
     {
       "id": 2010,
       "name": "Agrícola Araucarias SpA",
@@ -867,8 +909,8 @@
       "exec": "Comber Sigall Pauline",
       "exec_id": 52,
       "value": 0,
-      "days_in_stage": 3,
-      "days_since_activity": 3,
+      "days_in_stage": 4,
+      "days_since_activity": 4,
       "last_update": "2026-04-30",
       "origin": "—",
       "created": "2026-04-30"
@@ -881,8 +923,8 @@
       "exec": "MUÑOZ ENCALADA JOAQUIN",
       "exec_id": 262,
       "value": 3000,
-      "days_in_stage": 3,
-      "days_since_activity": 3,
+      "days_in_stage": 4,
+      "days_since_activity": 4,
       "last_update": "2026-04-30",
       "origin": "—",
       "created": "2026-04-29"
@@ -895,9 +937,9 @@
       "exec": "LABBE ORTIZ CARLOS ALBERTO",
       "exec_id": 77,
       "value": 0,
-      "days_in_stage": 3,
-      "days_since_activity": 3,
-      "last_update": "2026-04-30",
+      "days_in_stage": 4,
+      "days_since_activity": 0,
+      "last_update": "2026-05-04",
       "origin": "—",
       "created": "2026-01-06"
     },
@@ -938,7 +980,7 @@
       "exec_id": 265,
       "value": 0,
       "days_in_stage": 4,
-      "days_since_activity": 3,
+      "days_since_activity": 4,
       "last_update": "2026-04-30",
       "origin": "—",
       "created": "2026-04-28"
@@ -1008,8 +1050,8 @@
       "exec_id": 265,
       "value": 0,
       "days_in_stage": 4,
-      "days_since_activity": 4,
-      "last_update": "2026-04-29",
+      "days_since_activity": 0,
+      "last_update": "2026-05-04",
       "origin": "—",
       "created": "2026-04-28"
     },
@@ -1203,8 +1245,8 @@
       "exec": "Carolina Avilés",
       "exec_id": 266,
       "value": 80000,
-      "days_in_stage": 4,
-      "days_since_activity": 4,
+      "days_in_stage": 5,
+      "days_since_activity": 5,
       "last_update": "2026-04-29",
       "origin": "—",
       "created": "2026-04-29"
@@ -1217,8 +1259,8 @@
       "exec": "LABBE ORTIZ CARLOS ALBERTO",
       "exec_id": 77,
       "value": 6000,
-      "days_in_stage": 4,
-      "days_since_activity": 4,
+      "days_in_stage": 5,
+      "days_since_activity": 5,
       "last_update": "2026-04-29",
       "origin": "—",
       "created": "2026-04-29"
@@ -1231,7 +1273,7 @@
       "exec": "Carolina Avilés",
       "exec_id": 266,
       "value": 6000,
-      "days_in_stage": 4,
+      "days_in_stage": 5,
       "days_since_activity": 4,
       "last_update": "2026-04-29",
       "origin": "—",
@@ -1624,7 +1666,7 @@
       "exec_id": 56,
       "value": 100000,
       "days_in_stage": 6,
-      "days_since_activity": 5,
+      "days_since_activity": 6,
       "last_update": "2026-04-28",
       "origin": "—",
       "created": "2025-12-23"
@@ -1707,7 +1749,7 @@
       "exec": "Toro González Sebastian Enrique",
       "exec_id": 56,
       "value": 5000,
-      "days_in_stage": 6,
+      "days_in_stage": 7,
       "days_since_activity": 3,
       "last_update": "2026-04-30",
       "origin": "—",
@@ -1721,8 +1763,8 @@
       "exec": "Ron Yenire",
       "exec_id": 263,
       "value": 8000,
-      "days_in_stage": 6,
-      "days_since_activity": 6,
+      "days_in_stage": 7,
+      "days_since_activity": 7,
       "last_update": "2026-04-27",
       "origin": "—",
       "created": "2026-04-27"
@@ -1735,8 +1777,8 @@
       "exec": "Ron Yenire",
       "exec_id": 263,
       "value": 60000,
-      "days_in_stage": 6,
-      "days_since_activity": 6,
+      "days_in_stage": 7,
+      "days_since_activity": 7,
       "last_update": "2026-04-27",
       "origin": "—",
       "created": "2026-04-27"
@@ -1749,8 +1791,8 @@
       "exec": "Ron Yenire",
       "exec_id": 263,
       "value": 8000,
-      "days_in_stage": 6,
-      "days_since_activity": 5,
+      "days_in_stage": 7,
+      "days_since_activity": 6,
       "last_update": "2026-04-28",
       "origin": "—",
       "created": "2026-04-27"
@@ -1763,8 +1805,8 @@
       "exec": "Ron Yenire",
       "exec_id": 263,
       "value": 10000,
-      "days_in_stage": 6,
-      "days_since_activity": 6,
+      "days_in_stage": 7,
+      "days_since_activity": 7,
       "last_update": "2026-04-27",
       "origin": "—",
       "created": "2026-04-27"
@@ -1777,8 +1819,8 @@
       "exec": "Ron Yenire",
       "exec_id": 263,
       "value": 10000,
-      "days_in_stage": 6,
-      "days_since_activity": 6,
+      "days_in_stage": 7,
+      "days_since_activity": 7,
       "last_update": "2026-04-27",
       "origin": "—",
       "created": "2026-04-27"
@@ -1792,8 +1834,8 @@
       "exec_id": 52,
       "value": 0,
       "days_in_stage": 9,
-      "days_since_activity": 8,
-      "last_update": "2026-04-25",
+      "days_since_activity": 0,
+      "last_update": "2026-05-04",
       "origin": "—",
       "created": "2026-04-24"
     },
@@ -1805,8 +1847,8 @@
       "exec": "Toro González Sebastian Enrique",
       "exec_id": 56,
       "value": 0,
-      "days_in_stage": 9,
-      "days_since_activity": 9,
+      "days_in_stage": 10,
+      "days_since_activity": 10,
       "last_update": "2026-04-24",
       "origin": "—",
       "created": "2025-08-19"
@@ -1819,8 +1861,8 @@
       "exec": "Toro González Sebastian Enrique",
       "exec_id": 56,
       "value": 0,
-      "days_in_stage": 9,
-      "days_since_activity": 9,
+      "days_in_stage": 10,
+      "days_since_activity": 10,
       "last_update": "2026-04-24",
       "origin": "—",
       "created": "2026-04-24"
@@ -1833,8 +1875,8 @@
       "exec": "Toro González Sebastian Enrique",
       "exec_id": 56,
       "value": 0,
-      "days_in_stage": 9,
-      "days_since_activity": 9,
+      "days_in_stage": 10,
+      "days_since_activity": 10,
       "last_update": "2026-04-24",
       "origin": "—",
       "created": "2026-03-19"
@@ -1847,8 +1889,8 @@
       "exec": "Toro González Sebastian Enrique",
       "exec_id": 56,
       "value": 0,
-      "days_in_stage": 9,
-      "days_since_activity": 9,
+      "days_in_stage": 10,
+      "days_since_activity": 10,
       "last_update": "2026-04-24",
       "origin": "—",
       "created": "2026-03-19"
@@ -1861,15 +1903,15 @@
       "exec": "Toro González Sebastian Enrique",
       "exec_id": 56,
       "value": 0,
-      "days_in_stage": 9,
-      "days_since_activity": 9,
+      "days_in_stage": 10,
+      "days_since_activity": 10,
       "last_update": "2026-04-24",
       "origin": "—",
       "created": "2026-04-24"
     },
     {
-      "id": 1878,
-      "name": "JUAN VILLAR ESPINOZA SPA",
+      "id": 1847,
+      "name": "HECTOR BERMUDEZ E I R L",
       "stage": "Durmiente",
       "stage_class": "durmiente",
       "exec": "Comber Sigall Pauline",
@@ -1878,62 +1920,20 @@
       "days_in_stage": 10,
       "days_since_activity": 4,
       "last_update": "2026-04-30",
-      "origin": "—",
-      "created": "2026-04-09"
-    },
-    {
-      "id": 1887,
-      "name": "MADERAS INSIGNE LTDA",
-      "stage": "Durmiente",
-      "stage_class": "durmiente",
-      "exec": "Comber Sigall Pauline",
-      "exec_id": 52,
-      "value": 0,
-      "days_in_stage": 10,
-      "days_since_activity": 9,
-      "last_update": "2026-04-24",
-      "origin": "—",
-      "created": "2026-04-10"
-    },
-    {
-      "id": 198,
-      "name": "AGRICOLA LA PALMA S A",
-      "stage": "Durmiente",
-      "stage_class": "durmiente",
-      "exec": "Comber Sigall Pauline",
-      "exec_id": 52,
-      "value": 30000,
-      "days_in_stage": 10,
-      "days_since_activity": 10,
-      "last_update": "2026-04-23",
-      "origin": "—",
-      "created": "2025-08-26"
-    },
-    {
-      "id": 1838,
-      "name": "ERNALDO CLEMENTE ESCOBAR MONDACA",
-      "stage": "Durmiente",
-      "stage_class": "durmiente",
-      "exec": "Comber Sigall Pauline",
-      "exec_id": 52,
-      "value": 0,
-      "days_in_stage": 10,
-      "days_since_activity": 8,
-      "last_update": "2026-04-25",
       "origin": "—",
       "created": "2026-03-31"
     },
     {
-      "id": 1926,
-      "name": "AGRÍCOLA SAN JOSE DE PERALILLO S.A",
+      "id": 1927,
+      "name": "ESTANISLAO ESPINOZA VALLADARES",
       "stage": "Durmiente",
       "stage_class": "durmiente",
       "exec": "Comber Sigall Pauline",
       "exec_id": 52,
       "value": 0,
       "days_in_stage": 10,
-      "days_since_activity": 4,
-      "last_update": "2026-04-30",
+      "days_since_activity": 10,
+      "last_update": "2026-04-23",
       "origin": "—",
       "created": "2026-04-23"
     },
@@ -1952,22 +1952,8 @@
       "created": "2025-09-01"
     },
     {
-      "id": 1927,
-      "name": "ESTANISLAO ESPINOZA VALLADARES",
-      "stage": "Durmiente",
-      "stage_class": "durmiente",
-      "exec": "Comber Sigall Pauline",
-      "exec_id": 52,
-      "value": 0,
-      "days_in_stage": 10,
-      "days_since_activity": 10,
-      "last_update": "2026-04-23",
-      "origin": "—",
-      "created": "2026-04-23"
-    },
-    {
-      "id": 1844,
-      "name": "AGROFARMING S.A.",
+      "id": 1887,
+      "name": "MADERAS INSIGNE LTDA",
       "stage": "Durmiente",
       "stage_class": "durmiente",
       "exec": "Comber Sigall Pauline",
@@ -1977,7 +1963,7 @@
       "days_since_activity": 9,
       "last_update": "2026-04-24",
       "origin": "—",
-      "created": "2026-03-31"
+      "created": "2026-04-10"
     },
     {
       "id": 1022,
@@ -2022,8 +2008,22 @@
       "created": "2026-03-31"
     },
     {
-      "id": 1847,
-      "name": "HECTOR BERMUDEZ E I R L",
+      "id": 1844,
+      "name": "AGROFARMING S.A.",
+      "stage": "Durmiente",
+      "stage_class": "durmiente",
+      "exec": "Comber Sigall Pauline",
+      "exec_id": 52,
+      "value": 0,
+      "days_in_stage": 10,
+      "days_since_activity": 9,
+      "last_update": "2026-04-24",
+      "origin": "—",
+      "created": "2026-03-31"
+    },
+    {
+      "id": 1878,
+      "name": "JUAN VILLAR ESPINOZA SPA",
       "stage": "Durmiente",
       "stage_class": "durmiente",
       "exec": "Comber Sigall Pauline",
@@ -2033,7 +2033,49 @@
       "days_since_activity": 4,
       "last_update": "2026-04-30",
       "origin": "—",
+      "created": "2026-04-09"
+    },
+    {
+      "id": 1926,
+      "name": "AGRÍCOLA SAN JOSE DE PERALILLO S.A",
+      "stage": "Durmiente",
+      "stage_class": "durmiente",
+      "exec": "Comber Sigall Pauline",
+      "exec_id": 52,
+      "value": 0,
+      "days_in_stage": 10,
+      "days_since_activity": 4,
+      "last_update": "2026-04-30",
+      "origin": "—",
+      "created": "2026-04-23"
+    },
+    {
+      "id": 1838,
+      "name": "ERNALDO CLEMENTE ESCOBAR MONDACA",
+      "stage": "Durmiente",
+      "stage_class": "durmiente",
+      "exec": "Comber Sigall Pauline",
+      "exec_id": 52,
+      "value": 0,
+      "days_in_stage": 10,
+      "days_since_activity": 8,
+      "last_update": "2026-04-25",
+      "origin": "—",
       "created": "2026-03-31"
+    },
+    {
+      "id": 198,
+      "name": "AGRICOLA LA PALMA S A",
+      "stage": "Durmiente",
+      "stage_class": "durmiente",
+      "exec": "Comber Sigall Pauline",
+      "exec_id": 52,
+      "value": 30000,
+      "days_in_stage": 10,
+      "days_since_activity": 10,
+      "last_update": "2026-04-23",
+      "origin": "—",
+      "created": "2025-08-26"
     },
     {
       "id": 1929,
@@ -2086,7 +2128,7 @@
       "exec_id": 52,
       "value": 0,
       "days_in_stage": 10,
-      "days_since_activity": 3,
+      "days_since_activity": 4,
       "last_update": "2026-04-30",
       "origin": "—",
       "created": "2026-04-23"
@@ -2127,7 +2169,7 @@
       "exec": "Comber Sigall Pauline",
       "exec_id": 52,
       "value": 0,
-      "days_in_stage": 10,
+      "days_in_stage": 11,
       "days_since_activity": 8,
       "last_update": "2026-04-25",
       "origin": "—",
@@ -2141,7 +2183,7 @@
       "exec": "Comber Sigall Pauline",
       "exec_id": 52,
       "value": 0,
-      "days_in_stage": 10,
+      "days_in_stage": 11,
       "days_since_activity": 4,
       "last_update": "2026-04-29",
       "origin": "—",
@@ -2155,7 +2197,7 @@
       "exec": "Comber Sigall Pauline",
       "exec_id": 52,
       "value": 0,
-      "days_in_stage": 10,
+      "days_in_stage": 11,
       "days_since_activity": 8,
       "last_update": "2026-04-25",
       "origin": "—",
@@ -2169,8 +2211,8 @@
       "exec": "Comber Sigall Pauline",
       "exec_id": 52,
       "value": 0,
-      "days_in_stage": 10,
-      "days_since_activity": 10,
+      "days_in_stage": 11,
+      "days_since_activity": 11,
       "last_update": "2026-04-23",
       "origin": "—",
       "created": "2026-04-23"
@@ -2258,48 +2300,6 @@
       "last_update": "2026-04-22",
       "origin": "—",
       "created": "2026-01-29"
-    },
-    {
-      "id": 1709,
-      "name": "SOC. AGRICOLA Y GANADERA MARCHIGUE LTDA",
-      "stage": "Cotizado",
-      "stage_class": "cotizado",
-      "exec": "MUÑOZ ENCALADA JOAQUIN",
-      "exec_id": 262,
-      "value": 2000,
-      "days_in_stage": 11,
-      "days_since_activity": 11,
-      "last_update": "2026-04-22",
-      "origin": "—",
-      "created": "2026-01-16"
-    },
-    {
-      "id": 1768,
-      "name": "OLIVOS DEL SUR",
-      "stage": "Ruta",
-      "stage_class": "ruta",
-      "exec": "MUÑOZ ENCALADA JOAQUIN",
-      "exec_id": 262,
-      "value": 40000,
-      "days_in_stage": 11,
-      "days_since_activity": 11,
-      "last_update": "2026-04-22",
-      "origin": "—",
-      "created": "2026-02-25"
-    },
-    {
-      "id": 1912,
-      "name": "EXCAVACIÓNES SEBASTIAN ARAVENA E.I.R.L",
-      "stage": "Cotizado",
-      "stage_class": "cotizado",
-      "exec": "Toro González Sebastian Enrique",
-      "exec_id": 56,
-      "value": 0,
-      "days_in_stage": 12,
-      "days_since_activity": 12,
-      "last_update": "2026-04-21",
-      "origin": "—",
-      "created": "2026-04-20"
     }
   ],
   "won_deals": [
@@ -2360,20 +2360,6 @@
       "created": "2026-04-29"
     },
     {
-      "id": 1950,
-      "name": "PATRICIO ANDRES BUSTOS CASTILLO",
-      "stage": "Won",
-      "stage_class": "won",
-      "exec": "Comber Sigall Pauline",
-      "exec_id": 52,
-      "value": 0,
-      "days_in_stage": 4,
-      "days_since_activity": 4,
-      "last_update": "2026-04-29",
-      "origin": "—",
-      "created": "2026-04-28"
-    },
-    {
       "id": 335,
       "name": "PATRICIO ANDRES BUSTOS CASTILLO",
       "stage": "Won",
@@ -2388,8 +2374,8 @@
       "created": "2025-09-29"
     },
     {
-      "id": 1925,
-      "name": "FERNANDO ROMERO ORTIZ",
+      "id": 1950,
+      "name": "PATRICIO ANDRES BUSTOS CASTILLO",
       "stage": "Won",
       "stage_class": "won",
       "exec": "Comber Sigall Pauline",
@@ -2399,7 +2385,7 @@
       "days_since_activity": 4,
       "last_update": "2026-04-29",
       "origin": "—",
-      "created": "2026-04-23"
+      "created": "2026-04-28"
     },
     {
       "id": 1972,
@@ -2414,6 +2400,20 @@
       "last_update": "2026-04-29",
       "origin": "—",
       "created": "2026-04-28"
+    },
+    {
+      "id": 1925,
+      "name": "FERNANDO ROMERO ORTIZ",
+      "stage": "Won",
+      "stage_class": "won",
+      "exec": "Comber Sigall Pauline",
+      "exec_id": 52,
+      "value": 0,
+      "days_in_stage": 4,
+      "days_since_activity": 4,
+      "last_update": "2026-04-29",
+      "origin": "—",
+      "created": "2026-04-23"
     },
     {
       "id": 1761,
@@ -2452,8 +2452,8 @@
       "exec_id": 52,
       "value": 0,
       "days_in_stage": 5,
-      "days_since_activity": 3,
-      "last_update": "2026-04-30",
+      "days_since_activity": 0,
+      "last_update": "2026-05-04",
       "origin": "—",
       "created": "2026-04-29"
     },
@@ -2472,34 +2472,6 @@
       "created": "2026-04-24"
     },
     {
-      "id": 255,
-      "name": "AGRÍCOLA LA RIGADA SPA",
-      "stage": "Won",
-      "stage_class": "won",
-      "exec": "Vanessa Vazquez",
-      "exec_id": 67,
-      "value": 0,
-      "days_in_stage": 5,
-      "days_since_activity": 5,
-      "last_update": "2026-04-28",
-      "origin": "—",
-      "created": "2025-09-02"
-    },
-    {
-      "id": 1030,
-      "name": "AGRÍCOLA LA RIGADA SPA",
-      "stage": "Won",
-      "stage_class": "won",
-      "exec": "Administrator",
-      "exec_id": 2,
-      "value": 0,
-      "days_in_stage": 5,
-      "days_since_activity": 5,
-      "last_update": "2026-04-28",
-      "origin": "—",
-      "created": "2025-10-29"
-    },
-    {
       "id": 118,
       "name": "AGRÍCOLA LA RIGADA SPA",
       "stage": "Won",
@@ -2512,20 +2484,6 @@
       "last_update": "2026-04-28",
       "origin": "—",
       "created": "2025-08-14"
-    },
-    {
-      "id": 1877,
-      "name": "GABRIEL ANDRES DUQUE SANCHEZ",
-      "stage": "Won",
-      "stage_class": "won",
-      "exec": "Comber Sigall Pauline",
-      "exec_id": 52,
-      "value": 0,
-      "days_in_stage": 5,
-      "days_since_activity": 5,
-      "last_update": "2026-04-28",
-      "origin": "—",
-      "created": "2026-04-09"
     },
     {
       "id": 684,
@@ -2542,6 +2500,48 @@
       "created": "2025-10-03"
     },
     {
+      "id": 255,
+      "name": "AGRÍCOLA LA RIGADA SPA",
+      "stage": "Won",
+      "stage_class": "won",
+      "exec": "Vanessa Vazquez",
+      "exec_id": 67,
+      "value": 0,
+      "days_in_stage": 5,
+      "days_since_activity": 5,
+      "last_update": "2026-04-28",
+      "origin": "—",
+      "created": "2025-09-02"
+    },
+    {
+      "id": 1877,
+      "name": "GABRIEL ANDRES DUQUE SANCHEZ",
+      "stage": "Won",
+      "stage_class": "won",
+      "exec": "Comber Sigall Pauline",
+      "exec_id": 52,
+      "value": 0,
+      "days_in_stage": 5,
+      "days_since_activity": 0,
+      "last_update": "2026-05-04",
+      "origin": "—",
+      "created": "2026-04-09"
+    },
+    {
+      "id": 1030,
+      "name": "AGRÍCOLA LA RIGADA SPA",
+      "stage": "Won",
+      "stage_class": "won",
+      "exec": "Administrator",
+      "exec_id": 2,
+      "value": 0,
+      "days_in_stage": 5,
+      "days_since_activity": 5,
+      "last_update": "2026-04-28",
+      "origin": "—",
+      "created": "2025-10-29"
+    },
+    {
       "id": 329,
       "name": "AGRICOLA KUNAKO SPA",
       "stage": "Won",
@@ -2554,20 +2554,6 @@
       "last_update": "2026-05-04",
       "origin": "—",
       "created": "2025-09-29"
-    },
-    {
-      "id": 1116,
-      "name": "TRANSPORTES FRAS LTDA",
-      "stage": "Won",
-      "stage_class": "won",
-      "exec": "Administrator",
-      "exec_id": 2,
-      "value": 0,
-      "days_in_stage": 6,
-      "days_since_activity": 2,
-      "last_update": "2026-05-01",
-      "origin": "—",
-      "created": "2025-10-29"
     },
     {
       "id": 653,
@@ -2584,16 +2570,16 @@
       "created": "2025-10-03"
     },
     {
-      "id": 1112,
-      "name": "SOCIEDAD AGRICOLA GRANT Y GAETE LIMITADA",
+      "id": 1116,
+      "name": "TRANSPORTES FRAS LTDA",
       "stage": "Won",
       "stage_class": "won",
       "exec": "Administrator",
       "exec_id": 2,
       "value": 0,
-      "days_in_stage": 9,
-      "days_since_activity": 9,
-      "last_update": "2026-04-24",
+      "days_in_stage": 6,
+      "days_since_activity": 2,
+      "last_update": "2026-05-01",
       "origin": "—",
       "created": "2025-10-29"
     },
@@ -2610,6 +2596,20 @@
       "last_update": "2026-04-24",
       "origin": "—",
       "created": "2025-10-03"
+    },
+    {
+      "id": 1112,
+      "name": "SOCIEDAD AGRICOLA GRANT Y GAETE LIMITADA",
+      "stage": "Won",
+      "stage_class": "won",
+      "exec": "Administrator",
+      "exec_id": 2,
+      "value": 0,
+      "days_in_stage": 9,
+      "days_since_activity": 9,
+      "last_update": "2026-04-24",
+      "origin": "—",
+      "created": "2025-10-29"
     },
     {
       "id": 1928,
@@ -2633,8 +2633,8 @@
       "exec": "Toro González Sebastian Enrique",
       "exec_id": 56,
       "value": 10000,
-      "days_in_stage": 9,
-      "days_since_activity": 9,
+      "days_in_stage": 10,
+      "days_since_activity": 10,
       "last_update": "2026-04-24",
       "origin": "—",
       "created": "2026-03-13"
@@ -2717,8 +2717,8 @@
       "exec": "MUÑOZ ENCALADA JOAQUIN",
       "exec_id": 262,
       "value": 2000,
-      "days_in_stage": 11,
-      "days_since_activity": 11,
+      "days_in_stage": 12,
+      "days_since_activity": 12,
       "last_update": "2026-04-22",
       "origin": "—",
       "created": "2026-04-15"
@@ -2745,8 +2745,8 @@
       "exec": "Toro González Sebastian Enrique",
       "exec_id": 56,
       "value": 0,
-      "days_in_stage": 12,
-      "days_since_activity": 12,
+      "days_in_stage": 13,
+      "days_since_activity": 13,
       "last_update": "2026-04-21",
       "origin": "—",
       "created": "2026-04-17"
@@ -2774,24 +2774,10 @@
       "exec_id": 2,
       "value": 0,
       "days_in_stage": 13,
-      "days_since_activity": 13,
-      "last_update": "2026-04-20",
+      "days_since_activity": 0,
+      "last_update": "2026-05-04",
       "origin": "—",
       "created": "2025-10-29"
-    },
-    {
-      "id": 1842,
-      "name": "LUIS ANTONIO REYES FUENTES",
-      "stage": "Won",
-      "stage_class": "won",
-      "exec": "Comber Sigall Pauline",
-      "exec_id": 52,
-      "value": 0,
-      "days_in_stage": 13,
-      "days_since_activity": 13,
-      "last_update": "2026-04-20",
-      "origin": "—",
-      "created": "2026-03-31"
     },
     {
       "id": 782,
@@ -2802,24 +2788,24 @@
       "exec_id": 2,
       "value": 0,
       "days_in_stage": 13,
-      "days_since_activity": 13,
-      "last_update": "2026-04-20",
+      "days_since_activity": 0,
+      "last_update": "2026-05-04",
       "origin": "—",
       "created": "2025-10-03"
     },
     {
-      "id": 97,
-      "name": "VALENZUELA LEIVA MAX",
+      "id": 1842,
+      "name": "LUIS ANTONIO REYES FUENTES",
       "stage": "Won",
       "stage_class": "won",
       "exec": "Comber Sigall Pauline",
       "exec_id": 52,
-      "value": 10000,
-      "days_in_stage": 16,
-      "days_since_activity": 16,
-      "last_update": "2026-04-17",
+      "value": 0,
+      "days_in_stage": 13,
+      "days_since_activity": 0,
+      "last_update": "2026-05-04",
       "origin": "—",
-      "created": "2025-08-13"
+      "created": "2026-03-31"
     },
     {
       "id": 808,
@@ -2850,7 +2836,21 @@
       "created": "2025-10-29"
     },
     {
-      "id": 819,
+      "id": 97,
+      "name": "VALENZUELA LEIVA MAX",
+      "stage": "Won",
+      "stage_class": "won",
+      "exec": "Comber Sigall Pauline",
+      "exec_id": 52,
+      "value": 10000,
+      "days_in_stage": 16,
+      "days_since_activity": 16,
+      "last_update": "2026-04-17",
+      "origin": "—",
+      "created": "2025-08-13"
+    },
+    {
+      "id": 1012,
       "name": "SOCIEDAD AGRICOLA EL CARRETON SPA",
       "stage": "Won",
       "stage_class": "won",
@@ -2858,10 +2858,10 @@
       "exec_id": 2,
       "value": 0,
       "days_in_stage": 16,
-      "days_since_activity": 11,
+      "days_since_activity": 12,
       "last_update": "2026-04-22",
       "origin": "—",
-      "created": "2025-10-03"
+      "created": "2025-10-29"
     },
     {
       "id": 1850,
@@ -2878,7 +2878,7 @@
       "created": "2026-03-31"
     },
     {
-      "id": 1012,
+      "id": 819,
       "name": "SOCIEDAD AGRICOLA EL CARRETON SPA",
       "stage": "Won",
       "stage_class": "won",
@@ -2886,10 +2886,10 @@
       "exec_id": 2,
       "value": 0,
       "days_in_stage": 16,
-      "days_since_activity": 11,
+      "days_since_activity": 12,
       "last_update": "2026-04-22",
       "origin": "—",
-      "created": "2025-10-29"
+      "created": "2025-10-03"
     },
     {
       "id": 1581,
@@ -2927,8 +2927,8 @@
       "exec": "Comber Sigall Pauline",
       "exec_id": 52,
       "value": 0,
-      "days_in_stage": 16,
-      "days_since_activity": 11,
+      "days_in_stage": 17,
+      "days_since_activity": 12,
       "last_update": "2026-04-22",
       "origin": "—",
       "created": "2026-04-15"
@@ -2941,7 +2941,7 @@
       "exec": "Toro González Sebastian Enrique",
       "exec_id": 56,
       "value": 20000,
-      "days_in_stage": 16,
+      "days_in_stage": 17,
       "days_since_activity": 5,
       "last_update": "2026-04-28",
       "origin": "—",
@@ -2955,8 +2955,8 @@
       "exec": "Toro González Sebastian Enrique",
       "exec_id": 56,
       "value": 4000,
-      "days_in_stage": 16,
-      "days_since_activity": 13,
+      "days_in_stage": 17,
+      "days_since_activity": 14,
       "last_update": "2026-04-20",
       "origin": "—",
       "created": "2026-03-31"
@@ -2969,8 +2969,8 @@
       "exec": "Toro González Sebastian Enrique",
       "exec_id": 56,
       "value": 10000,
-      "days_in_stage": 16,
-      "days_since_activity": 16,
+      "days_in_stage": 17,
+      "days_since_activity": 17,
       "last_update": "2026-04-17",
       "origin": "—",
       "created": "2025-12-29"
@@ -2983,8 +2983,8 @@
       "exec": "Toro González Sebastian Enrique",
       "exec_id": 56,
       "value": 0,
-      "days_in_stage": 16,
-      "days_since_activity": 16,
+      "days_in_stage": 17,
+      "days_since_activity": 17,
       "last_update": "2026-04-17",
       "origin": "—",
       "created": "2026-04-01"
@@ -2997,8 +2997,8 @@
       "exec": "Toro González Sebastian Enrique",
       "exec_id": 56,
       "value": 4000,
-      "days_in_stage": 16,
-      "days_since_activity": 16,
+      "days_in_stage": 17,
+      "days_since_activity": 17,
       "last_update": "2026-04-17",
       "origin": "—",
       "created": "2026-04-17"
@@ -3011,8 +3011,8 @@
       "exec": "Toro González Sebastian Enrique",
       "exec_id": 56,
       "value": 3000,
-      "days_in_stage": 16,
-      "days_since_activity": 16,
+      "days_in_stage": 17,
+      "days_since_activity": 17,
       "last_update": "2026-04-17",
       "origin": "—",
       "created": "2026-03-05"
@@ -3025,7 +3025,7 @@
       "exec": "Toro González Sebastian Enrique",
       "exec_id": 56,
       "value": 2000,
-      "days_in_stage": 16,
+      "days_in_stage": 17,
       "days_since_activity": 14,
       "last_update": "2026-04-20",
       "origin": "—",
@@ -3039,7 +3039,7 @@
       "exec": "Toro González Sebastian Enrique",
       "exec_id": 56,
       "value": 5000,
-      "days_in_stage": 16,
+      "days_in_stage": 17,
       "days_since_activity": 6,
       "last_update": "2026-04-27",
       "origin": "—",
@@ -3074,20 +3074,6 @@
       "created": "2025-10-29"
     },
     {
-      "id": 663,
-      "name": "AGRICOLA LAS PIEDRAS 2 SPA",
-      "stage": "Won",
-      "stage_class": "won",
-      "exec": "Administrator",
-      "exec_id": 2,
-      "value": 0,
-      "days_in_stage": 17,
-      "days_since_activity": 8,
-      "last_update": "2026-04-25",
-      "origin": "—",
-      "created": "2025-10-03"
-    },
-    {
       "id": 1010,
       "name": "AGRICOLA LAS PIEDRAS 2 SPA",
       "stage": "Won",
@@ -3096,10 +3082,24 @@
       "exec_id": 2,
       "value": 0,
       "days_in_stage": 17,
-      "days_since_activity": 8,
+      "days_since_activity": 9,
       "last_update": "2026-04-25",
       "origin": "—",
       "created": "2025-10-29"
+    },
+    {
+      "id": 663,
+      "name": "AGRICOLA LAS PIEDRAS 2 SPA",
+      "stage": "Won",
+      "stage_class": "won",
+      "exec": "Administrator",
+      "exec_id": 2,
+      "value": 0,
+      "days_in_stage": 17,
+      "days_since_activity": 9,
+      "last_update": "2026-04-25",
+      "origin": "—",
+      "created": "2025-10-03"
     },
     {
       "id": 1031,
@@ -3158,7 +3158,7 @@
       "created": "2026-03-31"
     },
     {
-      "id": 776,
+      "id": 1073,
       "name": "LUCRECIA PATRON COSTA",
       "stage": "Won",
       "stage_class": "won",
@@ -3169,7 +3169,7 @@
       "days_since_activity": 17,
       "last_update": "2026-04-16",
       "origin": "—",
-      "created": "2025-10-03"
+      "created": "2025-10-29"
     },
     {
       "id": 1892,
@@ -3186,7 +3186,7 @@
       "created": "2026-04-14"
     },
     {
-      "id": 1073,
+      "id": 776,
       "name": "LUCRECIA PATRON COSTA",
       "stage": "Won",
       "stage_class": "won",
@@ -3197,7 +3197,7 @@
       "days_since_activity": 17,
       "last_update": "2026-04-16",
       "origin": "—",
-      "created": "2025-10-29"
+      "created": "2025-10-03"
     },
     {
       "id": 1134,
@@ -3256,20 +3256,6 @@
       "created": "2026-04-10"
     },
     {
-      "id": 253,
-      "name": "COPEFRUT S.A.",
-      "stage": "Won",
-      "stage_class": "won",
-      "exec": "Vanessa Vazquez",
-      "exec_id": 67,
-      "value": 0,
-      "days_in_stage": 23,
-      "days_since_activity": 23,
-      "last_update": "2026-04-10",
-      "origin": "—",
-      "created": "2025-09-02"
-    },
-    {
       "id": 716,
       "name": "COPEFRUT S.A.",
       "stage": "Won",
@@ -3284,18 +3270,32 @@
       "created": "2025-10-03"
     },
     {
-      "id": 1798,
+      "id": 253,
       "name": "COPEFRUT S.A.",
       "stage": "Won",
       "stage_class": "won",
-      "exec": "De Trenqualye Merino Andre Jean",
-      "exec_id": 70,
+      "exec": "Vanessa Vazquez",
+      "exec_id": 67,
       "value": 0,
       "days_in_stage": 23,
       "days_since_activity": 23,
       "last_update": "2026-04-10",
       "origin": "—",
-      "created": "2026-03-19"
+      "created": "2025-09-02"
+    },
+    {
+      "id": 1677,
+      "name": "COPEFRUT S.A.",
+      "stage": "Won",
+      "stage_class": "won",
+      "exec": "GARRIDO CISTERNA JUAN MANUEL",
+      "exec_id": 48,
+      "value": 20000,
+      "days_in_stage": 23,
+      "days_since_activity": 23,
+      "last_update": "2026-04-10",
+      "origin": "—",
+      "created": "2026-01-12"
     },
     {
       "id": 1256,
@@ -3312,18 +3312,18 @@
       "created": "2025-10-29"
     },
     {
-      "id": 1677,
+      "id": 1798,
       "name": "COPEFRUT S.A.",
       "stage": "Won",
       "stage_class": "won",
-      "exec": "GARRIDO CISTERNA JUAN MANUEL",
-      "exec_id": 48,
-      "value": 20000,
+      "exec": "De Trenqualye Merino Andre Jean",
+      "exec_id": 70,
+      "value": 0,
       "days_in_stage": 23,
       "days_since_activity": 23,
       "last_update": "2026-04-10",
       "origin": "—",
-      "created": "2026-01-12"
+      "created": "2026-03-19"
     },
     {
       "id": 1128,
@@ -3375,8 +3375,8 @@
       "exec": "Toro González Sebastian Enrique",
       "exec_id": 56,
       "value": 4000,
-      "days_in_stage": 23,
-      "days_since_activity": 5,
+      "days_in_stage": 24,
+      "days_since_activity": 6,
       "last_update": "2026-04-28",
       "origin": "—",
       "created": "2026-04-10"
@@ -3389,8 +3389,8 @@
       "exec": "Toro González Sebastian Enrique",
       "exec_id": 56,
       "value": 0,
-      "days_in_stage": 23,
-      "days_since_activity": 16,
+      "days_in_stage": 24,
+      "days_since_activity": 17,
       "last_update": "2026-04-17",
       "origin": "—",
       "created": "2026-04-10"
@@ -3403,11 +3403,25 @@
       "exec": "Toro González Sebastian Enrique",
       "exec_id": 56,
       "value": 0,
-      "days_in_stage": 23,
-      "days_since_activity": 23,
+      "days_in_stage": 24,
+      "days_since_activity": 24,
       "last_update": "2026-04-10",
       "origin": "—",
       "created": "2026-04-10"
+    },
+    {
+      "id": 1859,
+      "name": "SOCIEDAD AGRICOLA PINO TOLEDO LIMITADA",
+      "stage": "Won",
+      "stage_class": "won",
+      "exec": "Comber Sigall Pauline",
+      "exec_id": 52,
+      "value": 0,
+      "days_in_stage": 24,
+      "days_since_activity": 24,
+      "last_update": "2026-04-09",
+      "origin": "—",
+      "created": "2026-04-01"
     },
     {
       "id": 1014,
@@ -3424,18 +3438,18 @@
       "created": "2025-10-29"
     },
     {
-      "id": 1859,
-      "name": "SOCIEDAD AGRICOLA PINO TOLEDO LIMITADA",
+      "id": 1087,
+      "name": "YURIS DANIEL CORNEJO GAJARDO",
       "stage": "Won",
       "stage_class": "won",
-      "exec": "Comber Sigall Pauline",
-      "exec_id": 52,
+      "exec": "Administrator",
+      "exec_id": 2,
       "value": 0,
-      "days_in_stage": 24,
-      "days_since_activity": 24,
-      "last_update": "2026-04-09",
+      "days_in_stage": 25,
+      "days_since_activity": 25,
+      "last_update": "2026-04-08",
       "origin": "—",
-      "created": "2026-04-01"
+      "created": "2025-10-29"
     },
     {
       "id": 310,
@@ -3464,20 +3478,6 @@
       "last_update": "2026-04-08",
       "origin": "—",
       "created": "2025-10-03"
-    },
-    {
-      "id": 1087,
-      "name": "YURIS DANIEL CORNEJO GAJARDO",
-      "stage": "Won",
-      "stage_class": "won",
-      "exec": "Administrator",
-      "exec_id": 2,
-      "value": 0,
-      "days_in_stage": 25,
-      "days_since_activity": 25,
-      "last_update": "2026-04-08",
-      "origin": "—",
-      "created": "2025-10-29"
     },
     {
       "id": 1347,
@@ -3530,7 +3530,7 @@
       "exec_id": 56,
       "value": 0,
       "days_in_stage": 26,
-      "days_since_activity": 5,
+      "days_since_activity": 6,
       "last_update": "2026-04-28",
       "origin": "—",
       "created": "2026-03-30"
@@ -3544,7 +3544,7 @@
       "exec_id": 58,
       "value": 0,
       "days_in_stage": 27,
-      "days_since_activity": 12,
+      "days_since_activity": 13,
       "last_update": "2026-04-21",
       "origin": "—",
       "created": "2025-10-03"
@@ -3578,20 +3578,6 @@
       "created": "2025-10-03"
     },
     {
-      "id": 1839,
-      "name": "CARLOS ENRIQUE MELLA HINOJOSA",
-      "stage": "Won",
-      "stage_class": "won",
-      "exec": "Comber Sigall Pauline",
-      "exec_id": 52,
-      "value": 0,
-      "days_in_stage": 31,
-      "days_since_activity": 31,
-      "last_update": "2026-04-02",
-      "origin": "—",
-      "created": "2026-03-31"
-    },
-    {
       "id": 1011,
       "name": "CARLOS ENRIQUE MELLA HINOJOSA",
       "stage": "Won",
@@ -3620,6 +3606,20 @@
       "created": "2025-10-03"
     },
     {
+      "id": 1839,
+      "name": "CARLOS ENRIQUE MELLA HINOJOSA",
+      "stage": "Won",
+      "stage_class": "won",
+      "exec": "Comber Sigall Pauline",
+      "exec_id": 52,
+      "value": 0,
+      "days_in_stage": 31,
+      "days_since_activity": 31,
+      "last_update": "2026-04-02",
+      "origin": "—",
+      "created": "2026-03-31"
+    },
+    {
       "id": 1689,
       "name": "EMPRESAS TUCAPEL S A",
       "stage": "Won",
@@ -3628,7 +3628,7 @@
       "exec_id": 56,
       "value": 30000,
       "days_in_stage": 32,
-      "days_since_activity": 3,
+      "days_since_activity": 4,
       "last_update": "2026-04-30",
       "origin": "—",
       "created": "2026-01-14"
@@ -3656,7 +3656,7 @@
       "exec_id": 56,
       "value": 4000,
       "days_in_stage": 32,
-      "days_since_activity": 6,
+      "days_since_activity": 7,
       "last_update": "2026-04-27",
       "origin": "—",
       "created": "2026-03-13"
@@ -3684,7 +3684,7 @@
       "exec_id": 53,
       "value": 14000,
       "days_in_stage": 32,
-      "days_since_activity": 18,
+      "days_since_activity": 19,
       "last_update": "2026-04-15",
       "origin": "—",
       "created": "2026-04-01"
@@ -3782,7 +3782,7 @@
       "exec_id": 53,
       "value": 0,
       "days_in_stage": 37,
-      "days_since_activity": 10,
+      "days_since_activity": 11,
       "last_update": "2026-04-23",
       "origin": "—",
       "created": "2026-01-09"
@@ -3796,7 +3796,7 @@
       "exec_id": 56,
       "value": 0,
       "days_in_stage": 38,
-      "days_since_activity": 37,
+      "days_since_activity": 38,
       "last_update": "2026-03-27",
       "origin": "—",
       "created": "2026-03-27"
@@ -3810,7 +3810,7 @@
       "exec_id": 56,
       "value": 0,
       "days_in_stage": 38,
-      "days_since_activity": 37,
+      "days_since_activity": 38,
       "last_update": "2026-03-27",
       "origin": "—",
       "created": "2026-03-27"
@@ -3858,16 +3858,30 @@
       "created": "2025-10-03"
     },
     {
-      "id": 818,
-      "name": "SOC. EDUC. COLEGIO PARTICULAR MONTESSORI",
+      "id": 1114,
+      "name": "SOCIEDAD DE SERVICIO NUEVA LONGAVI LTDA",
       "stage": "Won",
       "stage_class": "won",
       "exec": "Administrator",
       "exec_id": 2,
       "value": 0,
       "days_in_stage": 39,
-      "days_since_activity": 39,
-      "last_update": "2026-03-25",
+      "days_since_activity": 5,
+      "last_update": "2026-04-28",
+      "origin": "—",
+      "created": "2025-10-29"
+    },
+    {
+      "id": 701,
+      "name": "AURORA AUSTRALIS SA",
+      "stage": "Won",
+      "stage_class": "won",
+      "exec": "Administrator",
+      "exec_id": 2,
+      "value": 0,
+      "days_in_stage": 39,
+      "days_since_activity": 10,
+      "last_update": "2026-04-24",
       "origin": "—",
       "created": "2025-10-03"
     },
@@ -3900,30 +3914,16 @@
       "created": "2026-01-23"
     },
     {
-      "id": 701,
-      "name": "AURORA AUSTRALIS SA",
+      "id": 1081,
+      "name": "SOC. DE TRANSPORTES AZR",
       "stage": "Won",
       "stage_class": "won",
       "exec": "Administrator",
       "exec_id": 2,
       "value": 0,
-      "days_in_stage": 39,
-      "days_since_activity": 9,
-      "last_update": "2026-04-24",
-      "origin": "—",
-      "created": "2025-10-03"
-    },
-    {
-      "id": 1114,
-      "name": "SOCIEDAD DE SERVICIO NUEVA LONGAVI LTDA",
-      "stage": "Won",
-      "stage_class": "won",
-      "exec": "Administrator",
-      "exec_id": 2,
-      "value": 0,
-      "days_in_stage": 39,
-      "days_since_activity": 5,
-      "last_update": "2026-04-28",
+      "days_in_stage": 40,
+      "days_since_activity": 39,
+      "last_update": "2026-03-25",
       "origin": "—",
       "created": "2025-10-29"
     },
@@ -3940,20 +3940,6 @@
       "last_update": "2026-03-25",
       "origin": "—",
       "created": "2025-10-03"
-    },
-    {
-      "id": 1081,
-      "name": "SOC. DE TRANSPORTES AZR",
-      "stage": "Won",
-      "stage_class": "won",
-      "exec": "Administrator",
-      "exec_id": 2,
-      "value": 0,
-      "days_in_stage": 40,
-      "days_since_activity": 39,
-      "last_update": "2026-03-25",
-      "origin": "—",
-      "created": "2025-10-29"
     },
     {
       "id": 1525,
@@ -3998,20 +3984,6 @@
       "created": "2025-10-29"
     },
     {
-      "id": 1122,
-      "name": "AGRICOLA EL COLMENAR LTDA",
-      "stage": "Won",
-      "stage_class": "won",
-      "exec": "Administrator",
-      "exec_id": 2,
-      "value": 0,
-      "days_in_stage": 40,
-      "days_since_activity": 34,
-      "last_update": "2026-03-30",
-      "origin": "—",
-      "created": "2025-10-29"
-    },
-    {
       "id": 651,
       "name": "AGRICOLA EL COLMENAR LTDA",
       "stage": "Won",
@@ -4020,10 +3992,24 @@
       "exec_id": 2,
       "value": 0,
       "days_in_stage": 40,
-      "days_since_activity": 34,
+      "days_since_activity": 35,
       "last_update": "2026-03-30",
       "origin": "—",
       "created": "2025-10-03"
+    },
+    {
+      "id": 1122,
+      "name": "AGRICOLA EL COLMENAR LTDA",
+      "stage": "Won",
+      "stage_class": "won",
+      "exec": "Administrator",
+      "exec_id": 2,
+      "value": 0,
+      "days_in_stage": 40,
+      "days_since_activity": 35,
+      "last_update": "2026-03-30",
+      "origin": "—",
+      "created": "2025-10-29"
     },
     {
       "id": 679,
@@ -4068,20 +4054,6 @@
       "created": "2026-01-14"
     },
     {
-      "id": 1127,
-      "name": "AGROINDUSTRIAL SIRACUSA S A",
-      "stage": "Won",
-      "stage_class": "won",
-      "exec": "Administrator",
-      "exec_id": 2,
-      "value": 0,
-      "days_in_stage": 41,
-      "days_since_activity": 13,
-      "last_update": "2026-04-20",
-      "origin": "—",
-      "created": "2025-10-29"
-    },
-    {
       "id": 64,
       "name": "AGROINDUSTRIAL SIRACUSA S A",
       "stage": "Won",
@@ -4110,32 +4082,18 @@
       "created": "2025-10-03"
     },
     {
-      "id": 1290,
-      "name": "EMILIO BENITO MAURO ZUNIGA",
-      "stage": "Won",
-      "stage_class": "won",
-      "exec": "TomEnergy",
-      "exec_id": 58,
-      "value": 0,
-      "days_in_stage": 41,
-      "days_since_activity": 40,
-      "last_update": "2026-03-25",
-      "origin": "—",
-      "created": "2025-10-29"
-    },
-    {
-      "id": 758,
-      "name": "JAVIER ENRIQUE TORO VÉLIZ",
+      "id": 1127,
+      "name": "AGROINDUSTRIAL SIRACUSA S A",
       "stage": "Won",
       "stage_class": "won",
       "exec": "Administrator",
       "exec_id": 2,
       "value": 0,
       "days_in_stage": 41,
-      "days_since_activity": 40,
-      "last_update": "2026-03-25",
+      "days_since_activity": 13,
+      "last_update": "2026-04-20",
       "origin": "—",
-      "created": "2025-10-03"
+      "created": "2025-10-29"
     },
     {
       "id": 1104,
@@ -4148,48 +4106,6 @@
       "days_in_stage": 41,
       "days_since_activity": 40,
       "last_update": "2026-03-25",
-      "origin": "—",
-      "created": "2025-10-29"
-    },
-    {
-      "id": 268,
-      "name": "JAVIER ENRIQUE TORO VÉLIZ",
-      "stage": "Won",
-      "stage_class": "won",
-      "exec": "Vanessa Vazquez",
-      "exec_id": 67,
-      "value": 0,
-      "days_in_stage": 41,
-      "days_since_activity": 40,
-      "last_update": "2026-03-25",
-      "origin": "—",
-      "created": "2025-09-03"
-    },
-    {
-      "id": 725,
-      "name": "EMILIO BENITO MAURO ZUNIGA",
-      "stage": "Won",
-      "stage_class": "won",
-      "exec": "TomEnergy",
-      "exec_id": 58,
-      "value": 0,
-      "days_in_stage": 41,
-      "days_since_activity": 40,
-      "last_update": "2026-03-25",
-      "origin": "—",
-      "created": "2025-10-03"
-    },
-    {
-      "id": 1075,
-      "name": "MARIA LETICIA VANNINI ARRIAGADA",
-      "stage": "Won",
-      "stage_class": "won",
-      "exec": "Administrator",
-      "exec_id": 2,
-      "value": 0,
-      "days_in_stage": 41,
-      "days_since_activity": 41,
-      "last_update": "2026-03-23",
       "origin": "—",
       "created": "2025-10-29"
     },
@@ -4208,30 +4124,72 @@
       "created": "2025-10-03"
     },
     {
-      "id": 812,
-      "name": "SERVICIO DE MAQUINARIA AGRICOLA LIMITADA",
+      "id": 1290,
+      "name": "EMILIO BENITO MAURO ZUNIGA",
       "stage": "Won",
       "stage_class": "won",
-      "exec": "Administrator",
-      "exec_id": 2,
+      "exec": "TomEnergy",
+      "exec_id": 58,
       "value": 0,
       "days_in_stage": 41,
-      "days_since_activity": 38,
-      "last_update": "2026-03-26",
+      "days_since_activity": 40,
+      "last_update": "2026-03-25",
+      "origin": "—",
+      "created": "2025-10-29"
+    },
+    {
+      "id": 725,
+      "name": "EMILIO BENITO MAURO ZUNIGA",
+      "stage": "Won",
+      "stage_class": "won",
+      "exec": "TomEnergy",
+      "exec_id": 58,
+      "value": 0,
+      "days_in_stage": 41,
+      "days_since_activity": 40,
+      "last_update": "2026-03-25",
       "origin": "—",
       "created": "2025-10-03"
     },
     {
-      "id": 1107,
-      "name": "JOSE MANUEL HERRERA BARROS",
+      "id": 758,
+      "name": "JAVIER ENRIQUE TORO VÉLIZ",
       "stage": "Won",
       "stage_class": "won",
       "exec": "Administrator",
       "exec_id": 2,
       "value": 0,
       "days_in_stage": 41,
-      "days_since_activity": 34,
-      "last_update": "2026-03-30",
+      "days_since_activity": 40,
+      "last_update": "2026-03-25",
+      "origin": "—",
+      "created": "2025-10-03"
+    },
+    {
+      "id": 268,
+      "name": "JAVIER ENRIQUE TORO VÉLIZ",
+      "stage": "Won",
+      "stage_class": "won",
+      "exec": "Vanessa Vazquez",
+      "exec_id": 67,
+      "value": 0,
+      "days_in_stage": 41,
+      "days_since_activity": 40,
+      "last_update": "2026-03-25",
+      "origin": "—",
+      "created": "2025-09-03"
+    },
+    {
+      "id": 1075,
+      "name": "MARIA LETICIA VANNINI ARRIAGADA",
+      "stage": "Won",
+      "stage_class": "won",
+      "exec": "Administrator",
+      "exec_id": 2,
+      "value": 0,
+      "days_in_stage": 41,
+      "days_since_activity": 41,
+      "last_update": "2026-03-23",
       "origin": "—",
       "created": "2025-10-29"
     },
@@ -4250,6 +4208,20 @@
       "created": "2025-10-29"
     },
     {
+      "id": 812,
+      "name": "SERVICIO DE MAQUINARIA AGRICOLA LIMITADA",
+      "stage": "Won",
+      "stage_class": "won",
+      "exec": "Administrator",
+      "exec_id": 2,
+      "value": 0,
+      "days_in_stage": 41,
+      "days_since_activity": 38,
+      "last_update": "2026-03-26",
+      "origin": "—",
+      "created": "2025-10-03"
+    },
+    {
       "id": 767,
       "name": "JOSE MANUEL HERRERA BARROS",
       "stage": "Won",
@@ -4258,10 +4230,24 @@
       "exec_id": 2,
       "value": 0,
       "days_in_stage": 41,
-      "days_since_activity": 34,
+      "days_since_activity": 35,
       "last_update": "2026-03-30",
       "origin": "—",
       "created": "2025-10-03"
+    },
+    {
+      "id": 1107,
+      "name": "JOSE MANUEL HERRERA BARROS",
+      "stage": "Won",
+      "stage_class": "won",
+      "exec": "Administrator",
+      "exec_id": 2,
+      "value": 0,
+      "days_in_stage": 41,
+      "days_since_activity": 35,
+      "last_update": "2026-03-30",
+      "origin": "—",
+      "created": "2025-10-29"
     },
     {
       "id": 796,
@@ -4272,7 +4258,7 @@
       "exec_id": 2,
       "value": 0,
       "days_in_stage": 44,
-      "days_since_activity": 34,
+      "days_since_activity": 35,
       "last_update": "2026-03-30",
       "origin": "—",
       "created": "2025-10-03"
@@ -4286,7 +4272,7 @@
       "exec_id": 2,
       "value": 0,
       "days_in_stage": 44,
-      "days_since_activity": 18,
+      "days_since_activity": 19,
       "last_update": "2026-04-15",
       "origin": "—",
       "created": "2025-10-29"
@@ -4300,7 +4286,7 @@
       "exec_id": 2,
       "value": 0,
       "days_in_stage": 44,
-      "days_since_activity": 18,
+      "days_since_activity": 19,
       "last_update": "2026-04-15",
       "origin": "—",
       "created": "2025-10-03"
@@ -4320,6 +4306,20 @@
       "created": "2025-10-03"
     },
     {
+      "id": 1046,
+      "name": "AGRÍCOLA LA CANDELARIA S.A.",
+      "stage": "Won",
+      "stage_class": "won",
+      "exec": "Administrator",
+      "exec_id": 2,
+      "value": 0,
+      "days_in_stage": 44,
+      "days_since_activity": 44,
+      "last_update": "2026-03-20",
+      "origin": "—",
+      "created": "2025-10-29"
+    },
+    {
       "id": 270,
       "name": "AGRÍCOLA LA CANDELARIA S.A.",
       "stage": "Won",
@@ -4334,16 +4334,16 @@
       "created": "2025-09-03"
     },
     {
-      "id": 1046,
-      "name": "AGRÍCOLA LA CANDELARIA S.A.",
+      "id": 1074,
+      "name": "LUIS ALFREDO CORNEJO GALLARDO",
       "stage": "Won",
       "stage_class": "won",
       "exec": "Administrator",
       "exec_id": 2,
       "value": 0,
       "days_in_stage": 44,
-      "days_since_activity": 44,
-      "last_update": "2026-03-20",
+      "days_since_activity": 26,
+      "last_update": "2026-04-07",
       "origin": "—",
       "created": "2025-10-29"
     },
@@ -4360,20 +4360,6 @@
       "last_update": "2026-04-07",
       "origin": "—",
       "created": "2025-10-03"
-    },
-    {
-      "id": 1074,
-      "name": "LUIS ALFREDO CORNEJO GALLARDO",
-      "stage": "Won",
-      "stage_class": "won",
-      "exec": "Administrator",
-      "exec_id": 2,
-      "value": 0,
-      "days_in_stage": 44,
-      "days_since_activity": 26,
-      "last_update": "2026-04-07",
-      "origin": "—",
-      "created": "2025-10-29"
     },
     {
       "id": 1812,
@@ -4398,24 +4384,10 @@
       "exec_id": 56,
       "value": 6000,
       "days_in_stage": 45,
-      "days_since_activity": 24,
+      "days_since_activity": 25,
       "last_update": "2026-04-09",
       "origin": "—",
       "created": "2026-03-19"
-    },
-    {
-      "id": 1032,
-      "name": "GALVARINO JORQUERA G.",
-      "stage": "Won",
-      "stage_class": "won",
-      "exec": "Administrator",
-      "exec_id": 2,
-      "value": 0,
-      "days_in_stage": 46,
-      "days_since_activity": 45,
-      "last_update": "2026-03-20",
-      "origin": "—",
-      "created": "2025-10-29"
     },
     {
       "id": 744,
@@ -4430,6 +4402,20 @@
       "last_update": "2026-03-20",
       "origin": "—",
       "created": "2025-10-03"
+    },
+    {
+      "id": 1032,
+      "name": "GALVARINO JORQUERA G.",
+      "stage": "Won",
+      "stage_class": "won",
+      "exec": "Administrator",
+      "exec_id": 2,
+      "value": 0,
+      "days_in_stage": 46,
+      "days_since_activity": 45,
+      "last_update": "2026-03-20",
+      "origin": "—",
+      "created": "2025-10-29"
     },
     {
       "id": 681,
@@ -4474,20 +4460,6 @@
       "created": "2025-10-03"
     },
     {
-      "id": 730,
-      "name": "EXPORTADORA ANAKENA LTDA",
-      "stage": "Won",
-      "stage_class": "won",
-      "exec": "Administrator",
-      "exec_id": 2,
-      "value": 0,
-      "days_in_stage": 47,
-      "days_since_activity": 9,
-      "last_update": "2026-04-24",
-      "origin": "—",
-      "created": "2025-10-03"
-    },
-    {
       "id": 1065,
       "name": "EXPORTADORA ANAKENA LTDA",
       "stage": "Won",
@@ -4496,10 +4468,24 @@
       "exec_id": 2,
       "value": 0,
       "days_in_stage": 47,
-      "days_since_activity": 9,
+      "days_since_activity": 10,
       "last_update": "2026-04-24",
       "origin": "—",
       "created": "2025-10-29"
+    },
+    {
+      "id": 730,
+      "name": "EXPORTADORA ANAKENA LTDA",
+      "stage": "Won",
+      "stage_class": "won",
+      "exec": "Administrator",
+      "exec_id": 2,
+      "value": 0,
+      "days_in_stage": 47,
+      "days_since_activity": 10,
+      "last_update": "2026-04-24",
+      "origin": "—",
+      "created": "2025-10-03"
     },
     {
       "id": 733,
@@ -4530,20 +4516,6 @@
       "created": "2025-10-29"
     },
     {
-      "id": 705,
-      "name": "CARLOS ANGULO Y CIA",
-      "stage": "Won",
-      "stage_class": "won",
-      "exec": "Administrator",
-      "exec_id": 2,
-      "value": 0,
-      "days_in_stage": 51,
-      "days_since_activity": 41,
-      "last_update": "2026-03-23",
-      "origin": "—",
-      "created": "2025-10-03"
-    },
-    {
       "id": 1098,
       "name": "CARLOS ANGULO Y CIA",
       "stage": "Won",
@@ -4556,6 +4528,20 @@
       "last_update": "2026-03-23",
       "origin": "—",
       "created": "2025-10-29"
+    },
+    {
+      "id": 705,
+      "name": "CARLOS ANGULO Y CIA",
+      "stage": "Won",
+      "stage_class": "won",
+      "exec": "Administrator",
+      "exec_id": 2,
+      "value": 0,
+      "days_in_stage": 51,
+      "days_since_activity": 41,
+      "last_update": "2026-03-23",
+      "origin": "—",
+      "created": "2025-10-03"
     },
     {
       "id": 1146,
@@ -4600,20 +4586,6 @@
       "created": "2025-08-08"
     },
     {
-      "id": 1042,
-      "name": "AGRICOLA JORGE OMAR ALLENDES BLANCO E.I.R.L.",
-      "stage": "Won",
-      "stage_class": "won",
-      "exec": "TomEnergy",
-      "exec_id": 58,
-      "value": 0,
-      "days_in_stage": 55,
-      "days_since_activity": 26,
-      "last_update": "2026-04-07",
-      "origin": "—",
-      "created": "2025-10-29"
-    },
-    {
       "id": 658,
       "name": "AGRICOLA JORGE OMAR ALLENDES BLANCO E.I.R.L.",
       "stage": "Won",
@@ -4626,6 +4598,20 @@
       "last_update": "2026-04-07",
       "origin": "—",
       "created": "2025-10-03"
+    },
+    {
+      "id": 1042,
+      "name": "AGRICOLA JORGE OMAR ALLENDES BLANCO E.I.R.L.",
+      "stage": "Won",
+      "stage_class": "won",
+      "exec": "TomEnergy",
+      "exec_id": 58,
+      "value": 0,
+      "days_in_stage": 55,
+      "days_since_activity": 26,
+      "last_update": "2026-04-07",
+      "origin": "—",
+      "created": "2025-10-29"
     },
     {
       "id": 1785,
@@ -4656,20 +4642,6 @@
       "created": "2025-10-03"
     },
     {
-      "id": 1049,
-      "name": "CARLOS ANDRES URETA GAJARDO",
-      "stage": "Won",
-      "stage_class": "won",
-      "exec": "Administrator",
-      "exec_id": 2,
-      "value": 0,
-      "days_in_stage": 59,
-      "days_since_activity": 55,
-      "last_update": "2026-03-09",
-      "origin": "—",
-      "created": "2025-10-29"
-    },
-    {
       "id": 704,
       "name": "CARLOS ANDRES URETA GAJARDO",
       "stage": "Won",
@@ -4682,6 +4654,20 @@
       "last_update": "2026-03-09",
       "origin": "—",
       "created": "2025-10-03"
+    },
+    {
+      "id": 1049,
+      "name": "CARLOS ANDRES URETA GAJARDO",
+      "stage": "Won",
+      "stage_class": "won",
+      "exec": "Administrator",
+      "exec_id": 2,
+      "value": 0,
+      "days_in_stage": 59,
+      "days_since_activity": 55,
+      "last_update": "2026-03-09",
+      "origin": "—",
+      "created": "2025-10-29"
     },
     {
       "id": 1132,
@@ -4762,7 +4748,7 @@
       "exec_id": 2,
       "value": 0,
       "days_in_stage": 60,
-      "days_since_activity": 17,
+      "days_since_activity": 18,
       "last_update": "2026-04-16",
       "origin": "—",
       "created": "2025-10-03"
@@ -4776,22 +4762,22 @@
       "exec_id": 2,
       "value": 0,
       "days_in_stage": 60,
-      "days_since_activity": 17,
+      "days_since_activity": 18,
       "last_update": "2026-04-16",
       "origin": "—",
       "created": "2025-10-29"
     },
     {
-      "id": 1119,
-      "name": "AGRICOLA ARANCIBIA HERMANOS SPA",
+      "id": 1103,
+      "name": "HERIBERTO RAMIREZ GONZALEZ",
       "stage": "Won",
       "stage_class": "won",
-      "exec": "TomEnergy",
-      "exec_id": 58,
+      "exec": "Administrator",
+      "exec_id": 2,
       "value": 0,
       "days_in_stage": 60,
-      "days_since_activity": 3,
-      "last_update": "2026-04-30",
+      "days_since_activity": 59,
+      "last_update": "2026-03-06",
       "origin": "—",
       "created": "2025-10-29"
     },
@@ -4810,16 +4796,16 @@
       "created": "2025-10-03"
     },
     {
-      "id": 1103,
-      "name": "HERIBERTO RAMIREZ GONZALEZ",
+      "id": 1119,
+      "name": "AGRICOLA ARANCIBIA HERMANOS SPA",
       "stage": "Won",
       "stage_class": "won",
-      "exec": "Administrator",
-      "exec_id": 2,
+      "exec": "TomEnergy",
+      "exec_id": 58,
       "value": 0,
       "days_in_stage": 60,
-      "days_since_activity": 59,
-      "last_update": "2026-03-06",
+      "days_since_activity": 0,
+      "last_update": "2026-05-04",
       "origin": "—",
       "created": "2025-10-29"
     },
@@ -4866,20 +4852,6 @@
       "created": "2025-10-29"
     },
     {
-      "id": 1102,
-      "name": "GUSTAVO EGALDO MENDEZ HEVIA MAQUINARIAS SPA",
-      "stage": "Won",
-      "stage_class": "won",
-      "exec": "Administrator",
-      "exec_id": 2,
-      "value": 0,
-      "days_in_stage": 62,
-      "days_since_activity": 61,
-      "last_update": "2026-03-03",
-      "origin": "—",
-      "created": "2025-10-29"
-    },
-    {
       "id": 747,
       "name": "GUSTAVO EGALDO MENDEZ HEVIA MAQUINARIAS SPA",
       "stage": "Won",
@@ -4892,6 +4864,20 @@
       "last_update": "2026-03-03",
       "origin": "—",
       "created": "2025-10-03"
+    },
+    {
+      "id": 1102,
+      "name": "GUSTAVO EGALDO MENDEZ HEVIA MAQUINARIAS SPA",
+      "stage": "Won",
+      "stage_class": "won",
+      "exec": "Administrator",
+      "exec_id": 2,
+      "value": 0,
+      "days_in_stage": 62,
+      "days_since_activity": 61,
+      "last_update": "2026-03-03",
+      "origin": "—",
+      "created": "2025-10-29"
     },
     {
       "id": 711,
@@ -5020,20 +5006,6 @@
       "created": "2025-10-03"
     },
     {
-      "id": 1006,
-      "name": "CARMEN CECILIA MORALES GONZALEZ",
-      "stage": "Won",
-      "stage_class": "won",
-      "exec": "Administrator",
-      "exec_id": 2,
-      "value": 0,
-      "days_in_stage": 93,
-      "days_since_activity": 32,
-      "last_update": "2026-04-02",
-      "origin": "—",
-      "created": "2025-10-29"
-    },
-    {
       "id": 256,
       "name": "CARMEN CECILIA MORALES GONZALEZ",
       "stage": "Won",
@@ -5048,18 +5020,18 @@
       "created": "2025-09-02"
     },
     {
-      "id": 661,
-      "name": "AGRICOLA LA ROBLERIA LTDA.",
+      "id": 1006,
+      "name": "CARMEN CECILIA MORALES GONZALEZ",
       "stage": "Won",
       "stage_class": "won",
       "exec": "Administrator",
       "exec_id": 2,
       "value": 0,
       "days_in_stage": 93,
-      "days_since_activity": 10,
-      "last_update": "2026-04-23",
+      "days_since_activity": 32,
+      "last_update": "2026-04-02",
       "origin": "—",
-      "created": "2025-10-03"
+      "created": "2025-10-29"
     },
     {
       "id": 709,
@@ -5076,6 +5048,20 @@
       "created": "2025-10-03"
     },
     {
+      "id": 661,
+      "name": "AGRICOLA LA ROBLERIA LTDA.",
+      "stage": "Won",
+      "stage_class": "won",
+      "exec": "Administrator",
+      "exec_id": 2,
+      "value": 0,
+      "days_in_stage": 93,
+      "days_since_activity": 10,
+      "last_update": "2026-04-23",
+      "origin": "—",
+      "created": "2025-10-03"
+    },
+    {
       "id": 1699,
       "name": "AGRICOLA MANTOS VERDES LIMITADA",
       "stage": "Won",
@@ -5084,7 +5070,7 @@
       "exec_id": 70,
       "value": 0,
       "days_in_stage": 96,
-      "days_since_activity": 9,
+      "days_since_activity": 10,
       "last_update": "2026-04-24",
       "origin": "—",
       "created": "2026-01-15"
@@ -5097,7 +5083,7 @@
       "exec": "Toro González Sebastian Enrique",
       "exec_id": 56,
       "value": 5000,
-      "days_in_stage": 97,
+      "days_in_stage": 98,
       "days_since_activity": 5,
       "last_update": "2026-04-28",
       "origin": "—",
@@ -5112,7 +5098,7 @@
       "exec_id": 67,
       "value": 0,
       "days_in_stage": 103,
-      "days_since_activity": 96,
+      "days_since_activity": 97,
       "last_update": "2026-01-27",
       "origin": "—",
       "created": "2025-08-28"
@@ -5126,136 +5112,38 @@
       "exec_id": 67,
       "value": 0,
       "days_in_stage": 103,
-      "days_since_activity": 24,
+      "days_since_activity": 25,
       "last_update": "2026-04-09",
       "origin": "—",
       "created": "2025-09-03"
     },
     {
-      "id": 269,
-      "name": "AGRICOLA COLLADO IBACACHE LIMITADA",
-      "stage": "Won",
-      "stage_class": "won",
-      "exec": "Vanessa Vazquez",
-      "exec_id": 67,
-      "value": 0,
-      "days_in_stage": 103,
-      "days_since_activity": 6,
-      "last_update": "2026-04-27",
-      "origin": "—",
-      "created": "2025-09-03"
-    },
-    {
-      "id": 842,
-      "name": "TRANSPORTES MARGARETH MARTINEZ SCHNETTLER E.I.R.L",
+      "id": 1060,
+      "name": "PROVEAGRO SERVICIOS SPA",
       "stage": "Won",
       "stage_class": "won",
       "exec": "Administrator",
       "exec_id": 2,
       "value": 0,
-      "days_in_stage": 103,
-      "days_since_activity": 17,
-      "last_update": "2026-04-16",
-      "origin": "—",
-      "created": "2025-10-03"
-    },
-    {
-      "id": 252,
-      "name": "SOC AGRICOLA GRANJA SAN RAFAEL LIMITADA",
-      "stage": "Won",
-      "stage_class": "won",
-      "exec": "Vanessa Vazquez",
-      "exec_id": 67,
-      "value": 0,
-      "days_in_stage": 103,
-      "days_since_activity": 3,
-      "last_update": "2026-04-30",
-      "origin": "—",
-      "created": "2025-09-02"
-    },
-    {
-      "id": 811,
-      "name": "SERVICIOS AGRICOLAS LUIS PULGAR E.I.R.L.",
-      "stage": "Won",
-      "stage_class": "won",
-      "exec": "Administrator",
-      "exec_id": 2,
-      "value": 0,
-      "days_in_stage": 103,
-      "days_since_activity": 6,
-      "last_update": "2026-04-27",
-      "origin": "—",
-      "created": "2025-10-03"
-    },
-    {
-      "id": 820,
-      "name": "SOC AGRICOLA GRANJA SAN RAFAEL LIMITADA",
-      "stage": "Won",
-      "stage_class": "won",
-      "exec": "Administrator",
-      "exec_id": 2,
-      "value": 0,
-      "days_in_stage": 103,
-      "days_since_activity": 3,
-      "last_update": "2026-04-30",
-      "origin": "—",
-      "created": "2025-10-03"
-    },
-    {
-      "id": 235,
-      "name": "Juan Pablo",
-      "stage": "Won",
-      "stage_class": "won",
-      "exec": "Vanessa Vazquez",
-      "exec_id": 67,
-      "value": 0,
-      "days_in_stage": 103,
-      "days_since_activity": 103,
-      "last_update": "2026-01-20",
-      "origin": "—",
-      "created": "2025-08-29"
-    },
-    {
-      "id": 1027,
-      "name": "AGRICOLA EL COLORADO LTDA",
-      "stage": "Won",
-      "stage_class": "won",
-      "exec": "Administrator",
-      "exec_id": 2,
-      "value": 0,
-      "days_in_stage": 103,
-      "days_since_activity": 45,
-      "last_update": "2026-03-19",
-      "origin": "—",
-      "created": "2025-10-29"
-    },
-    {
-      "id": 1151,
-      "name": "TRANSPORTES Y CARGAS MARTINEZ DIAZ LIMITADA",
-      "stage": "Won",
-      "stage_class": "won",
-      "exec": "Administrator",
-      "exec_id": 2,
-      "value": 0,
-      "days_in_stage": 103,
-      "days_since_activity": 4,
-      "last_update": "2026-04-29",
-      "origin": "—",
-      "created": "2025-10-29"
-    },
-    {
-      "id": 839,
-      "name": "TRANSPORTES JORGE MARTINEZ SCHNETTLER E.I.R.L.",
-      "stage": "Won",
-      "stage_class": "won",
-      "exec": "Administrator",
-      "exec_id": 2,
-      "value": 0,
-      "days_in_stage": 103,
+      "days_in_stage": 104,
       "days_since_activity": 10,
       "last_update": "2026-04-23",
       "origin": "—",
-      "created": "2025-10-03"
+      "created": "2025-10-29"
+    },
+    {
+      "id": 1513,
+      "name": "FUNDO EL MANZANO",
+      "stage": "Won",
+      "stage_class": "won",
+      "exec": "GARRIDO CISTERNA JUAN MANUEL",
+      "exec_id": 48,
+      "value": 5000,
+      "days_in_stage": 104,
+      "days_since_activity": 97,
+      "last_update": "2026-01-27",
+      "origin": "—",
+      "created": "2025-11-17"
     },
     {
       "id": 49,
@@ -5265,8 +5153,8 @@
       "exec": "GARRIDO CISTERNA JUAN MANUEL",
       "exec_id": 48,
       "value": 10000,
-      "days_in_stage": 103,
-      "days_since_activity": 96,
+      "days_in_stage": 104,
+      "days_since_activity": 97,
       "last_update": "2026-01-27",
       "origin": "—",
       "created": "2025-07-31"
@@ -5279,25 +5167,11 @@
       "exec": "Vanessa Vazquez",
       "exec_id": 67,
       "value": 0,
-      "days_in_stage": 103,
-      "days_since_activity": 96,
+      "days_in_stage": 104,
+      "days_since_activity": 97,
       "last_update": "2026-01-27",
       "origin": "—",
       "created": "2025-09-02"
-    },
-    {
-      "id": 1513,
-      "name": "FUNDO EL MANZANO",
-      "stage": "Won",
-      "stage_class": "won",
-      "exec": "GARRIDO CISTERNA JUAN MANUEL",
-      "exec_id": 48,
-      "value": 5000,
-      "days_in_stage": 103,
-      "days_since_activity": 96,
-      "last_update": "2026-01-27",
-      "origin": "—",
-      "created": "2025-11-17"
     },
     {
       "id": 843,
@@ -5307,53 +5181,11 @@
       "exec": "Administrator",
       "exec_id": 2,
       "value": 0,
-      "days_in_stage": 103,
+      "days_in_stage": 104,
       "days_since_activity": 4,
       "last_update": "2026-04-29",
       "origin": "—",
       "created": "2025-10-03"
-    },
-    {
-      "id": 1150,
-      "name": "TRANSPORTES JORGE MARTINEZ SCHNETTLER E.I.R.L.",
-      "stage": "Won",
-      "stage_class": "won",
-      "exec": "Administrator",
-      "exec_id": 2,
-      "value": 0,
-      "days_in_stage": 103,
-      "days_since_activity": 10,
-      "last_update": "2026-04-23",
-      "origin": "—",
-      "created": "2025-10-29"
-    },
-    {
-      "id": 1085,
-      "name": "TRANSPORTES MARGARETH MARTINEZ SCHNETTLER E.I.R.L",
-      "stage": "Won",
-      "stage_class": "won",
-      "exec": "Administrator",
-      "exec_id": 2,
-      "value": 0,
-      "days_in_stage": 103,
-      "days_since_activity": 17,
-      "last_update": "2026-04-16",
-      "origin": "—",
-      "created": "2025-10-29"
-    },
-    {
-      "id": 1016,
-      "name": "AGRICOLA Y COMERCIAL DON CARLOS",
-      "stage": "Won",
-      "stage_class": "won",
-      "exec": "Administrator",
-      "exec_id": 2,
-      "value": 0,
-      "days_in_stage": 103,
-      "days_since_activity": 41,
-      "last_update": "2026-03-23",
-      "origin": "—",
-      "created": "2025-10-29"
     },
     {
       "id": 652,
@@ -5363,7 +5195,7 @@
       "exec": "Administrator",
       "exec_id": 2,
       "value": 0,
-      "days_in_stage": 103,
+      "days_in_stage": 104,
       "days_since_activity": 45,
       "last_update": "2026-03-19",
       "origin": "—",
@@ -5377,11 +5209,39 @@
       "exec": "Administrator",
       "exec_id": 2,
       "value": 0,
-      "days_in_stage": 103,
+      "days_in_stage": 104,
       "days_since_activity": 6,
       "last_update": "2026-04-27",
       "origin": "—",
       "created": "2025-10-29"
+    },
+    {
+      "id": 235,
+      "name": "Juan Pablo",
+      "stage": "Won",
+      "stage_class": "won",
+      "exec": "Vanessa Vazquez",
+      "exec_id": 67,
+      "value": 0,
+      "days_in_stage": 104,
+      "days_since_activity": 104,
+      "last_update": "2026-01-20",
+      "origin": "—",
+      "created": "2025-08-29"
+    },
+    {
+      "id": 839,
+      "name": "TRANSPORTES JORGE MARTINEZ SCHNETTLER E.I.R.L.",
+      "stage": "Won",
+      "stage_class": "won",
+      "exec": "Administrator",
+      "exec_id": 2,
+      "value": 0,
+      "days_in_stage": 104,
+      "days_since_activity": 10,
+      "last_update": "2026-04-23",
+      "origin": "—",
+      "created": "2025-10-03"
     },
     {
       "id": 674,
@@ -5391,21 +5251,147 @@
       "exec": "Administrator",
       "exec_id": 2,
       "value": 0,
-      "days_in_stage": 103,
+      "days_in_stage": 104,
       "days_since_activity": 41,
       "last_update": "2026-03-23",
       "origin": "—",
       "created": "2025-10-03"
     },
     {
-      "id": 1060,
-      "name": "PROVEAGRO SERVICIOS SPA",
+      "id": 811,
+      "name": "SERVICIOS AGRICOLAS LUIS PULGAR E.I.R.L.",
       "stage": "Won",
       "stage_class": "won",
       "exec": "Administrator",
       "exec_id": 2,
       "value": 0,
-      "days_in_stage": 103,
+      "days_in_stage": 104,
+      "days_since_activity": 6,
+      "last_update": "2026-04-27",
+      "origin": "—",
+      "created": "2025-10-03"
+    },
+    {
+      "id": 842,
+      "name": "TRANSPORTES MARGARETH MARTINEZ SCHNETTLER E.I.R.L",
+      "stage": "Won",
+      "stage_class": "won",
+      "exec": "Administrator",
+      "exec_id": 2,
+      "value": 0,
+      "days_in_stage": 104,
+      "days_since_activity": 17,
+      "last_update": "2026-04-16",
+      "origin": "—",
+      "created": "2025-10-03"
+    },
+    {
+      "id": 269,
+      "name": "AGRICOLA COLLADO IBACACHE LIMITADA",
+      "stage": "Won",
+      "stage_class": "won",
+      "exec": "Vanessa Vazquez",
+      "exec_id": 67,
+      "value": 0,
+      "days_in_stage": 104,
+      "days_since_activity": 6,
+      "last_update": "2026-04-27",
+      "origin": "—",
+      "created": "2025-09-03"
+    },
+    {
+      "id": 1016,
+      "name": "AGRICOLA Y COMERCIAL DON CARLOS",
+      "stage": "Won",
+      "stage_class": "won",
+      "exec": "Administrator",
+      "exec_id": 2,
+      "value": 0,
+      "days_in_stage": 104,
+      "days_since_activity": 41,
+      "last_update": "2026-03-23",
+      "origin": "—",
+      "created": "2025-10-29"
+    },
+    {
+      "id": 1085,
+      "name": "TRANSPORTES MARGARETH MARTINEZ SCHNETTLER E.I.R.L",
+      "stage": "Won",
+      "stage_class": "won",
+      "exec": "Administrator",
+      "exec_id": 2,
+      "value": 0,
+      "days_in_stage": 104,
+      "days_since_activity": 17,
+      "last_update": "2026-04-16",
+      "origin": "—",
+      "created": "2025-10-29"
+    },
+    {
+      "id": 820,
+      "name": "SOC AGRICOLA GRANJA SAN RAFAEL LIMITADA",
+      "stage": "Won",
+      "stage_class": "won",
+      "exec": "Administrator",
+      "exec_id": 2,
+      "value": 0,
+      "days_in_stage": 104,
+      "days_since_activity": 3,
+      "last_update": "2026-04-30",
+      "origin": "—",
+      "created": "2025-10-03"
+    },
+    {
+      "id": 252,
+      "name": "SOC AGRICOLA GRANJA SAN RAFAEL LIMITADA",
+      "stage": "Won",
+      "stage_class": "won",
+      "exec": "Vanessa Vazquez",
+      "exec_id": 67,
+      "value": 0,
+      "days_in_stage": 104,
+      "days_since_activity": 3,
+      "last_update": "2026-04-30",
+      "origin": "—",
+      "created": "2025-09-02"
+    },
+    {
+      "id": 1151,
+      "name": "TRANSPORTES Y CARGAS MARTINEZ DIAZ LIMITADA",
+      "stage": "Won",
+      "stage_class": "won",
+      "exec": "Administrator",
+      "exec_id": 2,
+      "value": 0,
+      "days_in_stage": 104,
+      "days_since_activity": 4,
+      "last_update": "2026-04-29",
+      "origin": "—",
+      "created": "2025-10-29"
+    },
+    {
+      "id": 1027,
+      "name": "AGRICOLA EL COLORADO LTDA",
+      "stage": "Won",
+      "stage_class": "won",
+      "exec": "Administrator",
+      "exec_id": 2,
+      "value": 0,
+      "days_in_stage": 104,
+      "days_since_activity": 45,
+      "last_update": "2026-03-19",
+      "origin": "—",
+      "created": "2025-10-29"
+    },
+    {
+      "id": 1150,
+      "name": "TRANSPORTES JORGE MARTINEZ SCHNETTLER E.I.R.L.",
+      "stage": "Won",
+      "stage_class": "won",
+      "exec": "Administrator",
+      "exec_id": 2,
+      "value": 0,
+      "days_in_stage": 104,
       "days_since_activity": 10,
       "last_update": "2026-04-23",
       "origin": "—",
@@ -5419,7 +5405,7 @@
       "exec": "Toro González Sebastian Enrique",
       "exec_id": 56,
       "value": 15000,
-      "days_in_stage": 109,
+      "days_in_stage": 110,
       "days_since_activity": 12,
       "last_update": "2026-04-21",
       "origin": "—",
@@ -5433,7 +5419,7 @@
       "exec": "Toro González Sebastian Enrique",
       "exec_id": 56,
       "value": 0,
-      "days_in_stage": 111,
+      "days_in_stage": 112,
       "days_since_activity": 17,
       "last_update": "2026-04-16",
       "origin": "—",
@@ -5489,7 +5475,7 @@
       "exec": "Administrator",
       "exec_id": 2,
       "value": 0,
-      "days_in_stage": 140,
+      "days_in_stage": 141,
       "days_since_activity": 39,
       "last_update": "2026-03-25",
       "origin": "—",
@@ -5503,7 +5489,7 @@
       "exec": "Toro González Sebastian Enrique",
       "exec_id": 56,
       "value": 3000,
-      "days_in_stage": 153,
+      "days_in_stage": 154,
       "days_since_activity": 11,
       "last_update": "2026-04-22",
       "origin": "—",
@@ -5532,7 +5518,7 @@
       "exec_id": 67,
       "value": 0,
       "days_in_stage": 195,
-      "days_since_activity": 96,
+      "days_since_activity": 97,
       "last_update": "2026-01-27",
       "origin": "—",
       "created": "2025-10-20"
@@ -5546,7 +5532,7 @@
       "exec_id": 67,
       "value": 0,
       "days_in_stage": 195,
-      "days_since_activity": 96,
+      "days_since_activity": 97,
       "last_update": "2026-01-27",
       "origin": "—",
       "created": "2025-10-20"
@@ -5559,8 +5545,8 @@
       "exec": "Toro González Sebastian Enrique",
       "exec_id": 56,
       "value": 30000,
-      "days_in_stage": 208,
-      "days_since_activity": 9,
+      "days_in_stage": 209,
+      "days_since_activity": 10,
       "last_update": "2026-04-24",
       "origin": "—",
       "created": "2025-08-06"
@@ -5588,7 +5574,7 @@
       "exec_id": 48,
       "value": 5000,
       "days_in_stage": 219,
-      "days_since_activity": 103,
+      "days_since_activity": 104,
       "last_update": "2026-01-20",
       "origin": "—",
       "created": "2025-08-26"
@@ -5602,7 +5588,7 @@
       "exec_id": 67,
       "value": 0,
       "days_in_stage": 240,
-      "days_since_activity": 96,
+      "days_since_activity": 97,
       "last_update": "2026-01-27",
       "origin": "—",
       "created": "2025-09-04"
@@ -5616,7 +5602,7 @@
       "exec_id": 48,
       "value": 20000,
       "days_in_stage": 249,
-      "days_since_activity": 96,
+      "days_since_activity": 97,
       "last_update": "2026-01-27",
       "origin": "—",
       "created": "2025-08-26"
@@ -5630,7 +5616,7 @@
       "exec_id": 67,
       "value": 0,
       "days_in_stage": 257,
-      "days_since_activity": 145,
+      "days_since_activity": 146,
       "last_update": "2025-12-09",
       "origin": "—",
       "created": "2025-08-18"
@@ -5643,7 +5629,7 @@
       "exec": "GARRIDO CISTERNA JUAN MANUEL",
       "exec_id": 48,
       "value": 15000,
-      "days_in_stage": 258,
+      "days_in_stage": 259,
       "days_since_activity": 48,
       "last_update": "2026-03-16",
       "origin": "—",
@@ -5657,8 +5643,8 @@
       "exec": "GARRIDO CISTERNA JUAN MANUEL",
       "exec_id": 48,
       "value": 12000,
-      "days_in_stage": 258,
-      "days_since_activity": 145,
+      "days_in_stage": 259,
+      "days_since_activity": 146,
       "last_update": "2025-12-09",
       "origin": "—",
       "created": "2025-08-13"
@@ -5671,8 +5657,8 @@
       "exec": "Toro González Sebastian Enrique",
       "exec_id": 56,
       "value": 6000,
-      "days_in_stage": 265,
-      "days_since_activity": 17,
+      "days_in_stage": 266,
+      "days_since_activity": 18,
       "last_update": "2026-04-16",
       "origin": "—",
       "created": "2025-08-07"
@@ -5762,7 +5748,7 @@
       "exec": "Toro González Sebastian Enrique",
       "exec_id": 56,
       "value": 0,
-      "days_in_stage": 284,
+      "days_in_stage": 285,
       "days_since_activity": 42,
       "last_update": "2026-03-23",
       "origin": "—",
@@ -5777,7 +5763,7 @@
       "exec": "Toro González Sebastian Enrique",
       "exec_id": 56,
       "value": 0,
-      "days_in_stage": 283,
+      "days_in_stage": 284,
       "days_since_activity": 42,
       "last_update": "2026-03-23",
       "origin": "—",
@@ -5792,26 +5778,11 @@
       "exec": "Julio Phillipi",
       "exec_id": 60,
       "value": 0,
-      "days_in_stage": 282,
+      "days_in_stage": 283,
       "days_since_activity": 42,
       "last_update": "2026-03-23",
       "origin": "—",
       "created": "2025-07-25",
-      "action": "Llamar o enviar mail"
-    },
-    {
-      "id": 41,
-      "name": "Llamar contacto Indap , 7 región. dato entregado por WS",
-      "stage": "Oportunidad de Negocio",
-      "stage_class": "oportunidad",
-      "exec": "GARRIDO CISTERNA JUAN MANUEL",
-      "exec_id": 48,
-      "value": 0,
-      "days_in_stage": 279,
-      "days_since_activity": 145,
-      "last_update": "2025-12-09",
-      "origin": "—",
-      "created": "2025-07-28",
       "action": "Llamar o enviar mail"
     },
     {
@@ -5822,7 +5793,7 @@
       "exec": "Toro González Sebastian Enrique",
       "exec_id": 56,
       "value": 0,
-      "days_in_stage": 279,
+      "days_in_stage": 280,
       "days_since_activity": 42,
       "last_update": "2026-03-23",
       "origin": "—",
@@ -5837,7 +5808,7 @@
       "exec": "Toro González Sebastian Enrique",
       "exec_id": 56,
       "value": 0,
-      "days_in_stage": 279,
+      "days_in_stage": 280,
       "days_since_activity": 42,
       "last_update": "2026-03-23",
       "origin": "—",
@@ -5852,12 +5823,42 @@
       "exec": "De Trenqualye Merino Andre Jean",
       "exec_id": 70,
       "value": 0,
-      "days_in_stage": 279,
+      "days_in_stage": 280,
       "days_since_activity": 42,
       "last_update": "2026-03-23",
       "origin": "—",
       "created": "2025-07-22",
       "action": "Agendar visita (Ruta)"
+    },
+    {
+      "id": 41,
+      "name": "Llamar contacto Indap , 7 región. dato entregado por WS",
+      "stage": "Oportunidad de Negocio",
+      "stage_class": "oportunidad",
+      "exec": "GARRIDO CISTERNA JUAN MANUEL",
+      "exec_id": 48,
+      "value": 0,
+      "days_in_stage": 279,
+      "days_since_activity": 146,
+      "last_update": "2025-12-09",
+      "origin": "—",
+      "created": "2025-07-28",
+      "action": "Llamar o enviar mail"
+    },
+    {
+      "id": 15,
+      "name": "AGRICOLA LOS CARRIZOS",
+      "stage": "Cotizado",
+      "stage_class": "cotizado",
+      "exec": "Toro González Sebastian Enrique",
+      "exec_id": 56,
+      "value": 0,
+      "days_in_stage": 278,
+      "days_since_activity": 42,
+      "last_update": "2026-03-23",
+      "origin": "—",
+      "created": "2025-07-22",
+      "action": "Seguimiento cotización"
     },
     {
       "id": 44,
@@ -5890,18 +5891,18 @@
       "action": "Seguimiento cotización"
     },
     {
-      "id": 15,
-      "name": "AGRICOLA LOS CARRIZOS",
+      "id": 47,
+      "name": "AFE",
       "stage": "Cotizado",
       "stage_class": "cotizado",
       "exec": "Toro González Sebastian Enrique",
       "exec_id": 56,
-      "value": 0,
-      "days_in_stage": 277,
+      "value": 5000,
+      "days_in_stage": 276,
       "days_since_activity": 42,
       "last_update": "2026-03-23",
       "origin": "—",
-      "created": "2025-07-22",
+      "created": "2025-07-31",
       "action": "Seguimiento cotización"
     },
     {
@@ -5933,21 +5934,6 @@
       "origin": "—",
       "created": "2025-07-31",
       "action": "Llamar o enviar mail"
-    },
-    {
-      "id": 47,
-      "name": "AFE",
-      "stage": "Cotizado",
-      "stage_class": "cotizado",
-      "exec": "Toro González Sebastian Enrique",
-      "exec_id": 56,
-      "value": 5000,
-      "days_in_stage": 275,
-      "days_since_activity": 42,
-      "last_update": "2026-03-23",
-      "origin": "—",
-      "created": "2025-07-31",
-      "action": "Seguimiento cotización"
     },
     {
       "id": 61,
@@ -5995,6 +5981,21 @@
       "action": "Seguimiento cotización"
     },
     {
+      "id": 62,
+      "name": "VIÑA LAS PITRAS / RAICES",
+      "stage": "Cotizado",
+      "stage_class": "cotizado",
+      "exec": "Toro González Sebastian Enrique",
+      "exec_id": 56,
+      "value": 8000,
+      "days_in_stage": 265,
+      "days_since_activity": 42,
+      "last_update": "2026-03-23",
+      "origin": "—",
+      "created": "2025-08-07",
+      "action": "Seguimiento cotización"
+    },
+    {
       "id": 66,
       "name": "AGROINDUSTRIAL ALMAHUE LTDA",
       "stage": "Cotizado",
@@ -6010,18 +6011,63 @@
       "action": "Seguimiento cotización"
     },
     {
-      "id": 62,
-      "name": "VIÑA LAS PITRAS / RAICES",
-      "stage": "Cotizado",
-      "stage_class": "cotizado",
-      "exec": "Toro González Sebastian Enrique",
-      "exec_id": 56,
-      "value": 8000,
+      "id": 78,
+      "name": "SCO AGRICOLA",
+      "stage": "Contactado",
+      "stage_class": "contactado",
+      "exec": "Vanessa Vazquez",
+      "exec_id": 67,
+      "value": 0,
       "days_in_stage": 264,
       "days_since_activity": 42,
       "last_update": "2026-03-23",
       "origin": "—",
-      "created": "2025-08-07",
+      "created": "2025-08-13",
+      "action": "Agendar visita (Ruta)"
+    },
+    {
+      "id": 77,
+      "name": "CAMILO DUQUE MEDINA",
+      "stage": "Contactado",
+      "stage_class": "contactado",
+      "exec": "Vanessa Vazquez",
+      "exec_id": 67,
+      "value": 0,
+      "days_in_stage": 264,
+      "days_since_activity": 42,
+      "last_update": "2026-03-23",
+      "origin": "—",
+      "created": "2025-08-13",
+      "action": "Agendar visita (Ruta)"
+    },
+    {
+      "id": 72,
+      "name": "AGRICOLA LAS TORCAZAS LIMITADA",
+      "stage": "Contactado",
+      "stage_class": "contactado",
+      "exec": "Vanessa Vazquez",
+      "exec_id": 67,
+      "value": 0,
+      "days_in_stage": 264,
+      "days_since_activity": 42,
+      "last_update": "2026-03-23",
+      "origin": "—",
+      "created": "2025-08-13",
+      "action": "Agendar visita (Ruta)"
+    },
+    {
+      "id": 70,
+      "name": "AGRICOLA CERRO MONDAROÑAL",
+      "stage": "Cotizado",
+      "stage_class": "cotizado",
+      "exec": "Toro González Sebastian Enrique",
+      "exec_id": 56,
+      "value": 0,
+      "days_in_stage": 264,
+      "days_since_activity": 42,
+      "last_update": "2026-03-23",
+      "origin": "—",
+      "created": "2025-08-13",
       "action": "Seguimiento cotización"
     },
     {
@@ -6153,7 +6199,7 @@
       "exec_id": 67,
       "value": 0,
       "days_in_stage": 263,
-      "days_since_activity": 145,
+      "days_since_activity": 146,
       "last_update": "2025-12-09",
       "origin": "—",
       "created": "2025-08-13",
@@ -6173,66 +6219,6 @@
       "origin": "—",
       "created": "2025-08-13",
       "action": "Agendar visita (Ruta)"
-    },
-    {
-      "id": 78,
-      "name": "SCO AGRICOLA",
-      "stage": "Contactado",
-      "stage_class": "contactado",
-      "exec": "Vanessa Vazquez",
-      "exec_id": 67,
-      "value": 0,
-      "days_in_stage": 263,
-      "days_since_activity": 42,
-      "last_update": "2026-03-23",
-      "origin": "—",
-      "created": "2025-08-13",
-      "action": "Agendar visita (Ruta)"
-    },
-    {
-      "id": 77,
-      "name": "CAMILO DUQUE MEDINA",
-      "stage": "Contactado",
-      "stage_class": "contactado",
-      "exec": "Vanessa Vazquez",
-      "exec_id": 67,
-      "value": 0,
-      "days_in_stage": 263,
-      "days_since_activity": 42,
-      "last_update": "2026-03-23",
-      "origin": "—",
-      "created": "2025-08-13",
-      "action": "Agendar visita (Ruta)"
-    },
-    {
-      "id": 72,
-      "name": "AGRICOLA LAS TORCAZAS LIMITADA",
-      "stage": "Contactado",
-      "stage_class": "contactado",
-      "exec": "Vanessa Vazquez",
-      "exec_id": 67,
-      "value": 0,
-      "days_in_stage": 263,
-      "days_since_activity": 42,
-      "last_update": "2026-03-23",
-      "origin": "—",
-      "created": "2025-08-13",
-      "action": "Agendar visita (Ruta)"
-    },
-    {
-      "id": 70,
-      "name": "AGRICOLA CERRO MONDAROÑAL",
-      "stage": "Cotizado",
-      "stage_class": "cotizado",
-      "exec": "Toro González Sebastian Enrique",
-      "exec_id": 56,
-      "value": 0,
-      "days_in_stage": 263,
-      "days_since_activity": 42,
-      "last_update": "2026-03-23",
-      "origin": "—",
-      "created": "2025-08-13",
-      "action": "Seguimiento cotización"
     },
     {
       "id": 30,
@@ -6273,7 +6259,7 @@
       "exec_id": 48,
       "value": 0,
       "days_in_stage": 262,
-      "days_since_activity": 145,
+      "days_since_activity": 146,
       "last_update": "2025-12-09",
       "origin": "—",
       "created": "2025-07-29",
@@ -6288,7 +6274,7 @@
       "exec_id": 56,
       "value": 10000,
       "days_in_stage": 262,
-      "days_since_activity": 3,
+      "days_since_activity": 4,
       "last_update": "2026-04-30",
       "origin": "—",
       "created": "2025-08-13",
@@ -6493,6 +6479,14 @@
       "type": "To-Do",
       "summary": "20-4 visita, no esta, llamado e indica que 15/5 compra de nuevo, esta abastecido, llamar 13/5",
       "lead": "PATRICIO PAREDES",
+      "state": "planned"
+    },
+    {
+      "date": "2026-05-11",
+      "who": "Administrator",
+      "type": "Email",
+      "summary": "Re-engage dormant client",
+      "lead": "SOC. EDUC. COLEGIO PARTICULAR MONTESSORI",
       "state": "planned"
     },
     {
@@ -6822,17 +6816,24 @@
       "summary": "Re-engage dormant client",
       "lead": "Oportunidad de AGRÍCOLA KUNAKO SPA",
       "state": "today"
-    },
-    {
-      "date": "2026-05-04",
-      "who": "Comber Sigall Pauline",
-      "type": "Email",
-      "summary": "30/4 compran Ganado 28/4 Carlos fue a visitar y probablemente compraran27/4 quedamos igual un par de pesos mas caro 27/4 contactada Gissele se explica que NC ofrecida por ST no era posible y enviada nueva cotizacion precio sugerido por MT -50  Gissele a cargo de pedidos por ahora",
-      "lead": "Oportunidad de ARIDOS LO VALDIVIA LIMITADA",
-      "state": "today"
     }
   ],
   "messages": [
+    {
+      "date": "2026-05-04 14:34",
+      "who": "Marcela Márquez",
+      "desc": "Hay un nuevo lead para el equipo \"Ventas\"."
+    },
+    {
+      "date": "2026-05-04 12:28",
+      "who": "LABBE ORTIZ CARLOS ALBERTO",
+      "desc": "Hay un nuevo lead para el equipo \"Ventas\"."
+    },
+    {
+      "date": "2026-05-04 12:27",
+      "who": "LABBE ORTIZ CARLOS ALBERTO",
+      "desc": "Hay un nuevo lead para el equipo \"Ventas\"."
+    },
     {
       "date": "2026-04-30 21:28",
       "who": "Carolina Avilés",
@@ -6907,13 +6908,35 @@
       "is_current": true,
       "stages": {
         "leads": {
-          "value": 11,
+          "value": 14,
           "goal": 15,
           "by_user": {
-            "Marcela Márquez": 9,
+            "Marcela Márquez": 10,
+            "LABBE ORTIZ CARLOS ALBERTO": 2,
             "Comber Sigall Pauline": 2
           },
           "detail": [
+            {
+              "name": "Viña Montes S.A",
+              "empresa": "Viña Montes S.A",
+              "vendedor": "Marcela Márquez",
+              "etapa": "Contactado",
+              "fecha": "2026-05-04"
+            },
+            {
+              "name": "AGRICOLA SANTA ANA DE LAS BANDURRIAS",
+              "empresa": "AGRICOLA SANTA ANA DE LAS BANDURRIAS",
+              "vendedor": "LABBE ORTIZ CARLOS ALBERTO",
+              "etapa": "Oportunidad de Negocio",
+              "fecha": "2026-05-04"
+            },
+            {
+              "name": "AGRICOLA DOS MARIAS",
+              "empresa": "AGRICOLA DOS MARIAS LTDA",
+              "vendedor": "LABBE ORTIZ CARLOS ALBERTO",
+              "etapa": "Oportunidad de Negocio",
+              "fecha": "2026-05-04"
+            },
             {
               "name": "Agrícola Ulmo SpA",
               "empresa": "Agrícola Ulmo SpA",
@@ -6994,15 +7017,15 @@
           ]
         },
         "contacto": {
-          "value": 90,
+          "value": 98,
           "goal": 10,
           "by_user": {
+            "Marcela Márquez": 30,
+            "MUÑOZ ENCALADA JOAQUIN": 46,
+            "Administrator": 5,
+            "LABBE ORTIZ CARLOS ALBERTO": 4,
             "Comber Sigall Pauline": 11,
             "Carolina Avilés": 1,
-            "Marcela Márquez": 26,
-            "MUÑOZ ENCALADA JOAQUIN": 45,
-            "Administrator": 4,
-            "LABBE ORTIZ CARLOS ALBERTO": 2,
             "Toro González Sebastian Enrique": 1
           }
         },
@@ -7010,25 +7033,25 @@
           "value": 10,
           "goal": 8,
           "by_user": {
-            "Toro González Sebastian Enrique": 2,
-            "TomEnergy": 8
+            "TomEnergy": 8,
+            "Toro González Sebastian Enrique": 2
           },
           "detail": [
+            {
+              "name": "S30601",
+              "cliente": "TRANSPORTES SAN MARCELO SPA",
+              "vendedor": "TomEnergy",
+              "monto": 5657553.0,
+              "litros": 5000,
+              "estado": "draft",
+              "fecha": "2026-05-04"
+            },
             {
               "name": "S30587",
               "cliente": "SOCIEDAD FORESTAL Y AGRICOLA LAS PITRAS DE PAULA LIMITADA",
               "vendedor": "Toro González Sebastian Enrique",
               "monto": 0.0,
               "litros": 0,
-              "estado": "draft",
-              "fecha": "2026-05-04"
-            },
-            {
-              "name": "S30585",
-              "cliente": "COMERCIAL LO FIGUEROA SPA",
-              "vendedor": "TomEnergy",
-              "monto": 827352.0,
-              "litros": 700,
               "estado": "draft",
               "fecha": "2026-05-04"
             },
@@ -8436,38 +8459,44 @@
     "month_start": "2026-05-01",
     "month_end": "2026-05-31",
     "totals": {
-      "total_litros": 1350,
-      "total_venta_neta": 1735473,
-      "invoice_count": 3,
+      "total_litros": 9850,
+      "total_venta_neta": 11524406,
+      "invoice_count": 7,
       "nc_count": 0,
       "litros_by_user": {
-        "Comber Sigall Pauline": 1350
+        "Comber Sigall Pauline": 9850
       },
       "venta_by_user": {
-        "Comber Sigall Pauline": 1735473
+        "Comber Sigall Pauline": 11524406
       },
-      "margin_retail_pct": 3.73,
+      "margin_retail_pct": 5.45,
       "margin_volume_pct": 0,
-      "retail_venta": 1735473,
+      "retail_venta": 11524406,
       "volume_venta": 0,
       "litros_by_zone": {
-        "Talca": 1350
+        "Curico": 5000,
+        "Talca": 3350,
+        "Chillan": 1500
       },
       "venta_by_zone": {
-        "Talca": 1735473
+        "Curico": 5657553,
+        "Talca": 4101520,
+        "Chillan": 1765333
       },
       "margin_by_zone": {
-        "Talca": 3.7
+        "Chillan": 7.2,
+        "Talca": 6.0,
+        "Curico": 4.5
       },
       "margin_by_user": {
-        "Comber Sigall Pauline": 3.7
+        "Comber Sigall Pauline": 5.4
       },
       "comber_mantencion_detail": {
-        "tomenergy_litros": 1350,
-        "comber_own_litros": 0,
-        "total": 1350,
-        "merged_venta_neta": 1735473,
-        "merged_margin_pct": 3.7
+        "tomenergy_litros": 4850,
+        "comber_own_litros": 5000,
+        "total": 9850,
+        "merged_venta_neta": 11524406,
+        "merged_margin_pct": 5.4
       }
     },
     "new_clients": {
@@ -8479,8 +8508,8 @@
     "weekly": [
       {
         "label": "1/5-6/5",
-        "litros": 1350,
-        "venta_neta": 1735473
+        "litros": 9850,
+        "venta_neta": 11524406
       }
     ],
     "weekly_history": [
@@ -8546,7 +8575,7 @@
       },
       {
         "label": "30/4-6/5",
-        "litros": 49552
+        "litros": 58052
       }
     ]
   },
@@ -8907,7 +8936,7 @@
       },
       {
         "label": "30/4-6/5",
-        "litros": 49552
+        "litros": 58052
       }
     ],
     "sla": {
@@ -8950,14 +8979,14 @@
   },
   "churn": {
     "summary": {
-      "active": 201,
-      "dormant": 216,
-      "lost": 462,
-      "newly_lost": 4,
+      "active": 202,
+      "dormant": 217,
+      "lost": 463,
+      "newly_lost": 5,
       "rescued_dormant": 0,
       "rescued_lost": 0,
       "prev_month_clients": 201,
-      "churn_pct": 2.0,
+      "churn_pct": 2.5,
       "rescue_pct": 0.0
     },
     "by_user": {
@@ -8969,13 +8998,14 @@
         "Fernando Jullian": 2,
         "BOCCARDO SALVO MAURO": 1,
         "TomEnergy": 15,
-        "Administrator": 108,
+        "Administrator": 109,
         "Vanessa Vazquez": 20
       },
       "lost": {
         "Toro González Sebastian Enrique": 38,
         "Vial Comber Pauline": 5,
         "Toledo Núñez Madelaine Camila": 2,
+        "MUÑOZ ENCALADA JOAQUIN": 1,
         "De Trenqualye Merino Andre Jean": 8,
         "GARRIDO CISTERNA JUAN MANUEL": 17,
         "TomEnergy": 209,
@@ -9015,7 +9045,7 @@
       {
         "name": "TRANSPORTE Y SERVICIO HERRERA Y CIA LTDA",
         "user": "Comber Sigall Pauline",
-        "last_update": "2026-04-25",
+        "last_update": "2026-05-04",
         "avg_monthly_litros": 5106
       },
       {
@@ -9345,6 +9375,12 @@
         "avg_monthly_litros": 0
       },
       {
+        "name": "SOC. AGRICOLA Y GANADERA MARCHIGUE LTDA",
+        "user": "MUÑOZ ENCALADA JOAQUIN",
+        "last_update": "2026-05-04",
+        "avg_monthly_litros": 0
+      },
+      {
         "name": "CONSTRUCTORA LA ESPERANZA LTDA.",
         "user": "De Trenqualye Merino Andre Jean",
         "last_update": "2026-04-09",
@@ -9463,12 +9499,6 @@
         "user": "TomEnergy",
         "last_update": "2026-03-27",
         "avg_monthly_litros": 0
-      },
-      {
-        "name": "VICTOR CABEZAS LIZANA",
-        "user": "TomEnergy",
-        "last_update": "2026-03-27",
-        "avg_monthly_litros": 0
       }
     ],
     "rescued_dormant_list": [],
@@ -9476,9 +9506,25 @@
     "_rescued_dormant_partner_ids": []
   },
   "rescued": {
-    "rescued_durmientes": [],
+    "rescued_durmientes": [
+      {
+        "name": "AGRICOLA LOS SOCIOS LIMITADA",
+        "vendedor": "TomEnergy",
+        "frecuencia_dias": 15,
+        "gap_dias": 53,
+        "ultima_factura_anterior": "2026-03-09",
+        "litros": 1500
+      }
+    ],
     "rescued_perdidos": [],
-    "summary": {}
+    "summary": {
+      "count_durmientes": 1,
+      "count_perdidos": 0,
+      "litros_durmientes": 1500,
+      "litros_perdidos": 0,
+      "total_rescued": 1,
+      "total_litros": 1500
+    }
   },
   "credit_risk": {
     "linea_insuficiente": [
@@ -9500,6 +9546,7 @@
         "overdue_amount": 0,
         "siniestro_count": 0,
         "excepcion_count": 0,
+        "has_dicom": false,
         "avg_margin_pct": 10.0,
         "avg_price_rango": -45.0,
         "pricelist": "BOMBA +16 (CLP)",
@@ -9510,7 +9557,8 @@
           "morosidad": 0,
           "utilizacion": 0,
           "cobranza": 0,
-          "margen": 0
+          "margen": 0,
+          "dicom": 0
         }
       },
       {
@@ -9531,6 +9579,7 @@
         "overdue_amount": 911000,
         "siniestro_count": 0,
         "excepcion_count": 0,
+        "has_dicom": false,
         "avg_margin_pct": 10.3,
         "avg_price_rango": -4.0,
         "pricelist": "BOMBA +44 (CLP)",
@@ -9541,7 +9590,8 @@
           "morosidad": 16,
           "utilizacion": 0,
           "cobranza": 2,
-          "margen": 0
+          "margen": 0,
+          "dicom": 0
         }
       },
       {
@@ -9562,6 +9612,7 @@
         "overdue_amount": 4095000,
         "siniestro_count": 0,
         "excepcion_count": 0,
+        "has_dicom": false,
         "avg_margin_pct": 10.2,
         "avg_price_rango": -5.0,
         "pricelist": "BOMBA +43 (CLP)",
@@ -9572,7 +9623,8 @@
           "morosidad": 27,
           "utilizacion": 0,
           "cobranza": 15,
-          "margen": 0
+          "margen": 0,
+          "dicom": 0
         }
       },
       {
@@ -9593,6 +9645,7 @@
         "overdue_amount": 0,
         "siniestro_count": 0,
         "excepcion_count": 0,
+        "has_dicom": false,
         "avg_margin_pct": 17.9,
         "avg_price_rango": 30.0,
         "pricelist": "BOMBA +48 (CLP)",
@@ -9603,7 +9656,8 @@
           "morosidad": 4,
           "utilizacion": 0,
           "cobranza": 0,
-          "margen": 0
+          "margen": 0,
+          "dicom": 0
         }
       },
       {
@@ -9624,6 +9678,7 @@
         "overdue_amount": 0,
         "siniestro_count": 0,
         "excepcion_count": 0,
+        "has_dicom": false,
         "avg_margin_pct": 15.1,
         "avg_price_rango": 46.0,
         "pricelist": "BOMBA +111 (CLP)",
@@ -9634,7 +9689,8 @@
           "morosidad": 0,
           "utilizacion": 0,
           "cobranza": 0,
-          "margen": 0
+          "margen": 0,
+          "dicom": 0
         }
       },
       {
@@ -9655,6 +9711,7 @@
         "overdue_amount": 4655000,
         "siniestro_count": 0,
         "excepcion_count": 8,
+        "has_dicom": false,
         "avg_margin_pct": 12.1,
         "avg_price_rango": -1.0,
         "pricelist": "BOMBA +67 (CLP)",
@@ -9665,7 +9722,8 @@
           "morosidad": 22,
           "utilizacion": 0,
           "cobranza": 2,
-          "margen": 0
+          "margen": 0,
+          "dicom": 0
         }
       },
       {
@@ -9686,6 +9744,7 @@
         "overdue_amount": 0,
         "siniestro_count": 0,
         "excepcion_count": 0,
+        "has_dicom": false,
         "avg_margin_pct": 13.5,
         "avg_price_rango": 20.0,
         "pricelist": "BOMBA +88 (CLP)",
@@ -9696,7 +9755,8 @@
           "morosidad": 0,
           "utilizacion": 0,
           "cobranza": 0,
-          "margen": 0
+          "margen": 0,
+          "dicom": 0
         }
       },
       {
@@ -9717,6 +9777,7 @@
         "overdue_amount": 0,
         "siniestro_count": 0,
         "excepcion_count": 0,
+        "has_dicom": false,
         "avg_margin_pct": 8.7,
         "avg_price_rango": -20.0,
         "pricelist": "BOMBA +39 (CLP)",
@@ -9727,7 +9788,8 @@
           "morosidad": 1,
           "utilizacion": 0,
           "cobranza": 0,
-          "margen": 0
+          "margen": 0,
+          "dicom": 0
         }
       },
       {
@@ -9748,6 +9810,7 @@
         "overdue_amount": 0,
         "siniestro_count": 0,
         "excepcion_count": 9,
+        "has_dicom": false,
         "avg_margin_pct": 8.7,
         "avg_price_rango": -56.7,
         "pricelist": "BOMBA -40 (CLP)",
@@ -9758,7 +9821,8 @@
           "morosidad": 40,
           "utilizacion": -4,
           "cobranza": 0,
-          "margen": 0
+          "margen": 0,
+          "dicom": 0
         }
       },
       {
@@ -9779,6 +9843,7 @@
         "overdue_amount": 0,
         "siniestro_count": 0,
         "excepcion_count": 0,
+        "has_dicom": false,
         "avg_margin_pct": 5.8,
         "avg_price_rango": -41.3,
         "pricelist": "BOMBA -50 (CLP)",
@@ -9789,7 +9854,8 @@
           "morosidad": 11,
           "utilizacion": 0,
           "cobranza": 0,
-          "margen": 10
+          "margen": 10,
+          "dicom": 0
         }
       },
       {
@@ -9810,6 +9876,7 @@
         "overdue_amount": 1239200,
         "siniestro_count": 0,
         "excepcion_count": 0,
+        "has_dicom": false,
         "avg_margin_pct": 6.4,
         "avg_price_rango": -34.6,
         "pricelist": "BOMBA +0 (CLP)",
@@ -9820,7 +9887,8 @@
           "morosidad": 40,
           "utilizacion": 16,
           "cobranza": 2,
-          "margen": 5
+          "margen": 5,
+          "dicom": 0
         }
       },
       {
@@ -9841,6 +9909,7 @@
         "overdue_amount": 0,
         "siniestro_count": 0,
         "excepcion_count": 0,
+        "has_dicom": false,
         "avg_margin_pct": 12.1,
         "avg_price_rango": -1.8,
         "pricelist": "BOMBA +7 (CLP)",
@@ -9851,7 +9920,8 @@
           "morosidad": 0,
           "utilizacion": 0,
           "cobranza": 0,
-          "margen": 0
+          "margen": 0,
+          "dicom": 0
         }
       },
       {
@@ -9872,6 +9942,7 @@
         "overdue_amount": 0,
         "siniestro_count": 0,
         "excepcion_count": 0,
+        "has_dicom": false,
         "avg_margin_pct": 8.4,
         "avg_price_rango": -54.6,
         "pricelist": "BOMBA -60 (CLP)",
@@ -9882,7 +9953,8 @@
           "morosidad": 40,
           "utilizacion": 0,
           "cobranza": 0,
-          "margen": 0
+          "margen": 0,
+          "dicom": 0
         }
       },
       {
@@ -9903,6 +9975,7 @@
         "overdue_amount": 0,
         "siniestro_count": 0,
         "excepcion_count": 0,
+        "has_dicom": false,
         "avg_margin_pct": 4.9,
         "avg_price_rango": -40.0,
         "pricelist": "BOMBA -40 (CLP)",
@@ -9913,7 +9986,8 @@
           "morosidad": 0,
           "utilizacion": 25,
           "cobranza": 0,
-          "margen": 10
+          "margen": 10,
+          "dicom": 0
         }
       },
       {
@@ -9934,6 +10008,7 @@
         "overdue_amount": 0,
         "siniestro_count": 0,
         "excepcion_count": 0,
+        "has_dicom": false,
         "avg_margin_pct": 5.9,
         "avg_price_rango": -46.3,
         "pricelist": "BOMBA +8 (CLP)",
@@ -9944,7 +10019,8 @@
           "morosidad": 20,
           "utilizacion": 0,
           "cobranza": 0,
-          "margen": 10
+          "margen": 10,
+          "dicom": 0
         }
       },
       {
@@ -9965,6 +10041,7 @@
         "overdue_amount": 0,
         "siniestro_count": 0,
         "excepcion_count": 0,
+        "has_dicom": false,
         "avg_margin_pct": 14.6,
         "avg_price_rango": 21.0,
         "pricelist": "BOMBA +15 (CLP)",
@@ -9975,7 +10052,8 @@
           "morosidad": 23,
           "utilizacion": 12,
           "cobranza": 0,
-          "margen": 0
+          "margen": 0,
+          "dicom": 0
         }
       },
       {
@@ -9996,6 +10074,7 @@
         "overdue_amount": 0,
         "siniestro_count": 0,
         "excepcion_count": 0,
+        "has_dicom": false,
         "avg_margin_pct": 12.8,
         "avg_price_rango": -6.0,
         "pricelist": "BOMBA +10 (CLP)",
@@ -10006,38 +10085,41 @@
           "morosidad": 11,
           "utilizacion": 25,
           "cobranza": 0,
-          "margen": 0
+          "margen": 0,
+          "dicom": 0
         }
       },
       {
         "name": "SERVICIOS REVIVA SPA",
         "vendedor": "TomEnergy",
         "monto_credito": 5850000,
-        "saldo_credito": 2841999,
-        "utilizacion_pct": 51.4,
+        "saldo_credito": 5871999,
+        "utilizacion_pct": -0.4,
         "avg_monthly_litros": 6271,
         "avg_monthly_venta": 5340886,
         "projected_monthly": 5341183,
         "linea_ratio": 91.3,
-        "avg_payment_days": 1.0,
+        "avg_payment_days": 2.0,
         "plazo_pago_dias": 1,
         "plazo_pago_label": "1 Día",
-        "mora_ratio": 1.0,
-        "overdue_count": 1,
-        "overdue_amount": 3030000,
+        "mora_ratio": 2.0,
+        "overdue_count": 0,
+        "overdue_amount": 0,
         "siniestro_count": 0,
         "excepcion_count": 0,
+        "has_dicom": false,
         "avg_margin_pct": 8.2,
         "avg_price_rango": -19.4,
         "pricelist": "BOMBA -6 (CLP)",
-        "ar_balance": 3008001,
-        "risk_score": 35,
-        "risk_level": "Medio",
+        "ar_balance": -21999,
+        "risk_score": 40,
+        "risk_level": "Alto",
         "score_detail": {
-          "morosidad": 20,
-          "utilizacion": 13,
-          "cobranza": 2,
-          "margen": 0
+          "morosidad": 40,
+          "utilizacion": 0,
+          "cobranza": 0,
+          "margen": 0,
+          "dicom": 0
         }
       },
       {
@@ -10058,6 +10140,7 @@
         "overdue_amount": 7645000,
         "siniestro_count": 0,
         "excepcion_count": 0,
+        "has_dicom": false,
         "avg_margin_pct": 9.4,
         "avg_price_rango": -6.3,
         "pricelist": "BOMBA -16 (CLP)",
@@ -10068,7 +10151,8 @@
           "morosidad": 40,
           "utilizacion": 11,
           "cobranza": 1,
-          "margen": 0
+          "margen": 0,
+          "dicom": 0
         }
       },
       {
@@ -10089,6 +10173,7 @@
         "overdue_amount": 4430999,
         "siniestro_count": 0,
         "excepcion_count": 0,
+        "has_dicom": false,
         "avg_margin_pct": 7.4,
         "avg_price_rango": -28.8,
         "pricelist": "BOMBA -29 (CLP)",
@@ -10099,7 +10184,8 @@
           "morosidad": 19,
           "utilizacion": 19,
           "cobranza": 3,
-          "margen": 5
+          "margen": 5,
+          "dicom": 0
         }
       },
       {
@@ -10113,24 +10199,26 @@
         "projected_monthly": 4444760,
         "linea_ratio": 76.0,
         "avg_payment_days": 4.0,
-        "plazo_pago_dias": 30,
-        "plazo_pago_label": "30 Days",
-        "mora_ratio": 0.13,
+        "plazo_pago_dias": 1,
+        "plazo_pago_label": "1 Día",
+        "mora_ratio": 4.0,
         "overdue_count": 0,
         "overdue_amount": 0,
         "siniestro_count": 0,
         "excepcion_count": 0,
+        "has_dicom": false,
         "avg_margin_pct": 6.4,
         "avg_price_rango": -15.5,
-        "pricelist": "BOMBA -1 (CLP)",
+        "pricelist": "BOMBA -55 (CLP)",
         "ar_balance": 7740000,
-        "risk_score": 33,
-        "risk_level": "Medio",
+        "risk_score": 70,
+        "risk_level": "Crítico",
         "score_detail": {
-          "morosidad": 3,
+          "morosidad": 40,
           "utilizacion": 25,
           "cobranza": 0,
-          "margen": 5
+          "margen": 5,
+          "dicom": 0
         }
       },
       {
@@ -10151,6 +10239,7 @@
         "overdue_amount": 5850001,
         "siniestro_count": 0,
         "excepcion_count": 0,
+        "has_dicom": false,
         "avg_margin_pct": 9.7,
         "avg_price_rango": -10.0,
         "pricelist": "BOMBA +38 (CLP)",
@@ -10161,7 +10250,8 @@
           "morosidad": 0,
           "utilizacion": 25,
           "cobranza": 15,
-          "margen": 0
+          "margen": 0,
+          "dicom": 0
         }
       },
       {
@@ -10182,6 +10272,7 @@
         "overdue_amount": 0,
         "siniestro_count": 0,
         "excepcion_count": 0,
+        "has_dicom": false,
         "avg_margin_pct": 10.2,
         "avg_price_rango": 9.5,
         "pricelist": "BOMBA +7 (CLP)",
@@ -10192,38 +10283,8 @@
           "morosidad": 7,
           "utilizacion": 25,
           "cobranza": 0,
-          "margen": 0
-        }
-      },
-      {
-        "name": "AGRICOLA ARANCIBIA HERMANOS SPA",
-        "vendedor": "Comber Sigall Pauline",
-        "monto_credito": 5850000,
-        "saldo_credito": -3228000,
-        "utilizacion_pct": 155.2,
-        "avg_monthly_litros": 3587,
-        "avg_monthly_venta": 3717808,
-        "projected_monthly": 3717853,
-        "linea_ratio": 63.6,
-        "avg_payment_days": 2.0,
-        "plazo_pago_dias": 1,
-        "plazo_pago_label": "1 Día",
-        "mora_ratio": 2.0,
-        "overdue_count": 0,
-        "overdue_amount": 0,
-        "siniestro_count": 0,
-        "excepcion_count": 0,
-        "avg_margin_pct": 7.1,
-        "avg_price_rango": -25.2,
-        "pricelist": "BOMBA -21 (CLP)",
-        "ar_balance": 9078000,
-        "risk_score": 70,
-        "risk_level": "Crítico",
-        "score_detail": {
-          "morosidad": 40,
-          "utilizacion": 25,
-          "cobranza": 0,
-          "margen": 5
+          "margen": 0,
+          "dicom": 0
         }
       },
       {
@@ -10244,6 +10305,7 @@
         "overdue_amount": 0,
         "siniestro_count": 0,
         "excepcion_count": 0,
+        "has_dicom": false,
         "avg_margin_pct": 13.5,
         "avg_price_rango": 30.3,
         "pricelist": "BOMBA +48 (CLP)",
@@ -10254,7 +10316,8 @@
           "morosidad": 18,
           "utilizacion": 21,
           "cobranza": 0,
-          "margen": 0
+          "margen": 0,
+          "dicom": 0
         }
       },
       {
@@ -10275,6 +10338,7 @@
         "overdue_amount": 0,
         "siniestro_count": 0,
         "excepcion_count": 0,
+        "has_dicom": false,
         "avg_margin_pct": 11.8,
         "avg_price_rango": 22.7,
         "pricelist": "BOMBA +85 (CLP)",
@@ -10285,7 +10349,8 @@
           "morosidad": 2,
           "utilizacion": 25,
           "cobranza": 0,
-          "margen": 0
+          "margen": 0,
+          "dicom": 0
         }
       },
       {
@@ -10306,6 +10371,7 @@
         "overdue_amount": 4398001,
         "siniestro_count": 0,
         "excepcion_count": 0,
+        "has_dicom": false,
         "avg_margin_pct": 2.4,
         "avg_price_rango": -79.0,
         "pricelist": "BOMBA -40 (CLP)",
@@ -10316,7 +10382,8 @@
           "morosidad": 0,
           "utilizacion": 25,
           "cobranza": 15,
-          "margen": 15
+          "margen": 15,
+          "dicom": 0
         }
       },
       {
@@ -10337,6 +10404,7 @@
         "overdue_amount": 0,
         "siniestro_count": 0,
         "excepcion_count": 0,
+        "has_dicom": false,
         "avg_margin_pct": 13.7,
         "avg_price_rango": 19.0,
         "pricelist": "BOMBA +48 (CLP)",
@@ -10347,7 +10415,8 @@
           "morosidad": 1,
           "utilizacion": 25,
           "cobranza": 0,
-          "margen": 0
+          "margen": 0,
+          "dicom": 0
         }
       },
       {
@@ -10368,6 +10437,7 @@
         "overdue_amount": 0,
         "siniestro_count": 0,
         "excepcion_count": 0,
+        "has_dicom": false,
         "avg_margin_pct": 9.9,
         "avg_price_rango": 41.0,
         "pricelist": "BOMBA +41 (CLP)",
@@ -10378,7 +10448,8 @@
           "morosidad": 1,
           "utilizacion": 25,
           "cobranza": 0,
-          "margen": 0
+          "margen": 0,
+          "dicom": 0
         }
       },
       {
@@ -10399,6 +10470,7 @@
         "overdue_amount": 0,
         "siniestro_count": 0,
         "excepcion_count": 2,
+        "has_dicom": false,
         "avg_margin_pct": 9.6,
         "avg_price_rango": 25.0,
         "pricelist": "BOMBA +30 (CLP)",
@@ -10409,7 +10481,8 @@
           "morosidad": 14,
           "utilizacion": 25,
           "cobranza": 0,
-          "margen": 0
+          "margen": 0,
+          "dicom": 0
         }
       },
       {
@@ -10430,6 +10503,7 @@
         "overdue_amount": 0,
         "siniestro_count": 0,
         "excepcion_count": 0,
+        "has_dicom": false,
         "avg_margin_pct": 10.8,
         "avg_price_rango": 12.3,
         "pricelist": "BOMBA +7 (CLP)",
@@ -10440,7 +10514,8 @@
           "morosidad": 7,
           "utilizacion": 25,
           "cobranza": 0,
-          "margen": 0
+          "margen": 0,
+          "dicom": 0
         }
       },
       {
@@ -10461,6 +10536,7 @@
         "overdue_amount": 0,
         "siniestro_count": 0,
         "excepcion_count": 0,
+        "has_dicom": false,
         "avg_margin_pct": 8.2,
         "avg_price_rango": -41.7,
         "pricelist": "BOMBA -40 (CLP)",
@@ -10471,7 +10547,8 @@
           "morosidad": 3,
           "utilizacion": 25,
           "cobranza": 0,
-          "margen": 0
+          "margen": 0,
+          "dicom": 0
         }
       },
       {
@@ -10492,6 +10569,7 @@
         "overdue_amount": 0,
         "siniestro_count": 0,
         "excepcion_count": 0,
+        "has_dicom": false,
         "avg_margin_pct": 10.8,
         "avg_price_rango": -24.2,
         "pricelist": "BOMBA -20 (CLP)",
@@ -10502,7 +10580,8 @@
           "morosidad": 11,
           "utilizacion": 20,
           "cobranza": 0,
-          "margen": 0
+          "margen": 0,
+          "dicom": 0
         }
       },
       {
@@ -10523,6 +10602,7 @@
         "overdue_amount": 0,
         "siniestro_count": 0,
         "excepcion_count": 0,
+        "has_dicom": false,
         "avg_margin_pct": 12.3,
         "avg_price_rango": 20.0,
         "pricelist": "BOMBA +12 (CLP)",
@@ -10533,7 +10613,8 @@
           "morosidad": 4,
           "utilizacion": 25,
           "cobranza": 0,
-          "margen": 0
+          "margen": 0,
+          "dicom": 0
         }
       },
       {
@@ -10554,6 +10635,7 @@
         "overdue_amount": 1794499,
         "siniestro_count": 0,
         "excepcion_count": 0,
+        "has_dicom": false,
         "avg_margin_pct": 11.1,
         "avg_price_rango": 20.3,
         "pricelist": "BOMBA +69 (CLP)",
@@ -10564,7 +10646,8 @@
           "morosidad": 13,
           "utilizacion": 22,
           "cobranza": 5,
-          "margen": 0
+          "margen": 0,
+          "dicom": 0
         }
       },
       {
@@ -10585,6 +10668,7 @@
         "overdue_amount": 905000,
         "siniestro_count": 0,
         "excepcion_count": 0,
+        "has_dicom": false,
         "avg_margin_pct": 9.7,
         "avg_price_rango": 28.4,
         "pricelist": "BOMBA +38 (CLP)",
@@ -10595,7 +10679,8 @@
           "morosidad": 1,
           "utilizacion": 25,
           "cobranza": 3,
-          "margen": 0
+          "margen": 0,
+          "dicom": 0
         }
       },
       {
@@ -10616,6 +10701,7 @@
         "overdue_amount": 0,
         "siniestro_count": 0,
         "excepcion_count": 0,
+        "has_dicom": false,
         "avg_margin_pct": 5.1,
         "avg_price_rango": -74.0,
         "pricelist": "BOMBA -74 (CLP)",
@@ -10626,7 +10712,8 @@
           "morosidad": 0,
           "utilizacion": 23,
           "cobranza": 0,
-          "margen": 10
+          "margen": 10,
+          "dicom": 0
         }
       },
       {
@@ -10647,6 +10734,7 @@
         "overdue_amount": 1578000,
         "siniestro_count": 0,
         "excepcion_count": 0,
+        "has_dicom": false,
         "avg_margin_pct": 9.3,
         "avg_price_rango": 9.0,
         "pricelist": "BOMBA +33 (CLP)",
@@ -10657,7 +10745,41 @@
           "morosidad": 20,
           "utilizacion": 20,
           "cobranza": 2,
-          "margen": 0
+          "margen": 0,
+          "dicom": 0
+        }
+      },
+      {
+        "name": "LUIS ANTONIO REYES FUENTES",
+        "vendedor": "Comber Sigall Pauline",
+        "monto_credito": 15000000,
+        "saldo_credito": -1580999,
+        "utilizacion_pct": 110.5,
+        "avg_monthly_litros": 4239,
+        "avg_monthly_venta": 4683130,
+        "projected_monthly": 4682986,
+        "linea_ratio": 31.2,
+        "avg_payment_days": 4.0,
+        "plazo_pago_dias": 30,
+        "plazo_pago_label": "30 Days",
+        "mora_ratio": 0.13,
+        "overdue_count": 0,
+        "overdue_amount": 0,
+        "siniestro_count": 0,
+        "excepcion_count": 0,
+        "has_dicom": false,
+        "avg_margin_pct": 6.7,
+        "avg_price_rango": -41.7,
+        "pricelist": "BOMBA -46 (CLP)",
+        "ar_balance": 16580999,
+        "risk_score": 33,
+        "risk_level": "Medio",
+        "score_detail": {
+          "morosidad": 3,
+          "utilizacion": 25,
+          "cobranza": 0,
+          "margen": 5,
+          "dicom": 0
         }
       },
       {
@@ -10678,6 +10800,7 @@
         "overdue_amount": 1825100,
         "siniestro_count": 0,
         "excepcion_count": 0,
+        "has_dicom": false,
         "avg_margin_pct": 15.2,
         "avg_price_rango": 31.9,
         "pricelist": "BOMBA +22 (CLP)",
@@ -10688,7 +10811,8 @@
           "morosidad": 12,
           "utilizacion": 24,
           "cobranza": 2,
-          "margen": 0
+          "margen": 0,
+          "dicom": 0
         }
       },
       {
@@ -10709,6 +10833,7 @@
         "overdue_amount": 0,
         "siniestro_count": 0,
         "excepcion_count": 0,
+        "has_dicom": false,
         "avg_margin_pct": 13.0,
         "avg_price_rango": 57.5,
         "pricelist": "BOMBA +94 (CLP)",
@@ -10719,7 +10844,8 @@
           "morosidad": 3,
           "utilizacion": 20,
           "cobranza": 0,
-          "margen": 0
+          "margen": 0,
+          "dicom": 0
         }
       },
       {
@@ -10740,6 +10866,7 @@
         "overdue_amount": 0,
         "siniestro_count": 0,
         "excepcion_count": 0,
+        "has_dicom": false,
         "avg_margin_pct": 6.6,
         "avg_price_rango": -10.5,
         "pricelist": "BOMBA -9 (CLP)",
@@ -10750,7 +10877,8 @@
           "morosidad": 3,
           "utilizacion": 25,
           "cobranza": 0,
-          "margen": 5
+          "margen": 5,
+          "dicom": 0
         }
       },
       {
@@ -10771,6 +10899,7 @@
         "overdue_amount": 0,
         "siniestro_count": 0,
         "excepcion_count": 0,
+        "has_dicom": false,
         "avg_margin_pct": 11.2,
         "avg_price_rango": 23.3,
         "pricelist": "BOMBA +50 (CLP)",
@@ -10781,7 +10910,8 @@
           "morosidad": 8,
           "utilizacion": 22,
           "cobranza": 0,
-          "margen": 0
+          "margen": 0,
+          "dicom": 0
         }
       },
       {
@@ -10802,6 +10932,7 @@
         "overdue_amount": 0,
         "siniestro_count": 0,
         "excepcion_count": 0,
+        "has_dicom": false,
         "avg_margin_pct": 7.3,
         "avg_price_rango": -5.0,
         "pricelist": "BOMBA -5 (CLP)",
@@ -10812,7 +10943,8 @@
           "morosidad": 23,
           "utilizacion": 24,
           "cobranza": 0,
-          "margen": 5
+          "margen": 5,
+          "dicom": 0
         }
       },
       {
@@ -10833,6 +10965,7 @@
         "overdue_amount": 0,
         "siniestro_count": 0,
         "excepcion_count": 0,
+        "has_dicom": false,
         "avg_margin_pct": 6.0,
         "avg_price_rango": -71.0,
         "pricelist": "BOMBA -71 (CLP)",
@@ -10843,7 +10976,8 @@
           "morosidad": 1,
           "utilizacion": 24,
           "cobranza": 0,
-          "margen": 5
+          "margen": 5,
+          "dicom": 0
         }
       },
       {
@@ -10864,6 +10998,7 @@
         "overdue_amount": 0,
         "siniestro_count": 0,
         "excepcion_count": 0,
+        "has_dicom": false,
         "avg_margin_pct": 7.0,
         "avg_price_rango": -9.0,
         "pricelist": "BOMBA -9 (CLP)",
@@ -10874,40 +11009,76 @@
           "morosidad": 0,
           "utilizacion": 22,
           "cobranza": 0,
-          "margen": 5
+          "margen": 5,
+          "dicom": 0
+        }
+      },
+      {
+        "name": "CRISGO SPA",
+        "vendedor": "TomEnergy",
+        "monto_credito": 5850000,
+        "saldo_credito": 917517,
+        "utilizacion_pct": 84.3,
+        "avg_monthly_litros": 1190,
+        "avg_monthly_venta": 1331378,
+        "projected_monthly": 1331134,
+        "linea_ratio": 22.8,
+        "avg_payment_days": 6.0,
+        "plazo_pago_dias": 30,
+        "plazo_pago_label": "30 Days",
+        "mora_ratio": 0.2,
+        "overdue_count": 0,
+        "overdue_amount": 0,
+        "siniestro_count": 0,
+        "excepcion_count": 0,
+        "has_dicom": false,
+        "avg_margin_pct": 11.5,
+        "avg_price_rango": 5.3,
+        "pricelist": "BOMBA +5 (CLP)",
+        "ar_balance": 3717779,
+        "risk_score": 25,
+        "risk_level": "Medio",
+        "score_detail": {
+          "morosidad": 4,
+          "utilizacion": 21,
+          "cobranza": 0,
+          "margen": 0,
+          "dicom": 0
         }
       }
     ],
     "score_table": [
       {
-        "name": "AGRICOLA ARANCIBIA HERMANOS SPA",
-        "vendedor": "Comber Sigall Pauline",
+        "name": "TRANSPORTES SAN MARCELO SPA",
+        "vendedor": "TomEnergy",
         "monto_credito": 5850000,
-        "saldo_credito": -3228000,
-        "utilizacion_pct": 155.2,
+        "saldo_credito": -1890000,
+        "utilizacion_pct": 132.3,
         "avg_monthly_litros": 3587,
-        "avg_monthly_venta": 3717808,
-        "projected_monthly": 3717853,
-        "linea_ratio": 63.6,
-        "avg_payment_days": 2.0,
+        "avg_monthly_venta": 4444706,
+        "projected_monthly": 4444760,
+        "linea_ratio": 76.0,
+        "avg_payment_days": 4.0,
         "plazo_pago_dias": 1,
         "plazo_pago_label": "1 Día",
-        "mora_ratio": 2.0,
+        "mora_ratio": 4.0,
         "overdue_count": 0,
         "overdue_amount": 0,
         "siniestro_count": 0,
         "excepcion_count": 0,
-        "avg_margin_pct": 7.1,
-        "avg_price_rango": -25.2,
-        "pricelist": "BOMBA -21 (CLP)",
-        "ar_balance": 9078000,
+        "has_dicom": false,
+        "avg_margin_pct": 6.4,
+        "avg_price_rango": -15.5,
+        "pricelist": "BOMBA -55 (CLP)",
+        "ar_balance": 7740000,
         "risk_score": 70,
         "risk_level": "Crítico",
         "score_detail": {
           "morosidad": 40,
           "utilizacion": 25,
           "cobranza": 0,
-          "margen": 5
+          "margen": 5,
+          "dicom": 0
         }
       },
       {
@@ -10928,6 +11099,7 @@
         "overdue_amount": 0,
         "siniestro_count": 0,
         "excepcion_count": 0,
+        "has_dicom": false,
         "avg_margin_pct": 5.5,
         "avg_price_rango": -30.0,
         "pricelist": "BOMBA -30 (CLP)",
@@ -10938,7 +11110,41 @@
           "morosidad": 40,
           "utilizacion": 15,
           "cobranza": 0,
-          "margen": 10
+          "margen": 10,
+          "dicom": 0
+        }
+      },
+      {
+        "name": "AGRICOLA ARANCIBIA HERMANOS SPA",
+        "vendedor": "Comber Sigall Pauline",
+        "monto_credito": 5850000,
+        "saldo_credito": 1359000,
+        "utilizacion_pct": 76.8,
+        "avg_monthly_litros": 3587,
+        "avg_monthly_venta": 3717808,
+        "projected_monthly": 3717853,
+        "linea_ratio": 63.6,
+        "avg_payment_days": 2.0,
+        "plazo_pago_dias": 1,
+        "plazo_pago_label": "1 Día",
+        "mora_ratio": 2.0,
+        "overdue_count": 0,
+        "overdue_amount": 0,
+        "siniestro_count": 0,
+        "excepcion_count": 0,
+        "has_dicom": false,
+        "avg_margin_pct": 7.1,
+        "avg_price_rango": -25.2,
+        "pricelist": "BOMBA -21 (CLP)",
+        "ar_balance": 4491000,
+        "risk_score": 64,
+        "risk_level": "Crítico",
+        "score_detail": {
+          "morosidad": 40,
+          "utilizacion": 19,
+          "cobranza": 0,
+          "margen": 5,
+          "dicom": 0
         }
       },
       {
@@ -10959,6 +11165,7 @@
         "overdue_amount": 1239200,
         "siniestro_count": 0,
         "excepcion_count": 0,
+        "has_dicom": false,
         "avg_margin_pct": 6.4,
         "avg_price_rango": -34.6,
         "pricelist": "BOMBA +0 (CLP)",
@@ -10969,7 +11176,8 @@
           "morosidad": 40,
           "utilizacion": 16,
           "cobranza": 2,
-          "margen": 5
+          "margen": 5,
+          "dicom": 0
         }
       },
       {
@@ -10990,6 +11198,7 @@
         "overdue_amount": 2950290,
         "siniestro_count": 0,
         "excepcion_count": 0,
+        "has_dicom": false,
         "avg_margin_pct": 7.6,
         "avg_price_rango": -17.7,
         "pricelist": "BOMBA +16 (CLP)",
@@ -11000,7 +11209,8 @@
           "morosidad": 40,
           "utilizacion": 13,
           "cobranza": 5,
-          "margen": 5
+          "margen": 5,
+          "dicom": 0
         }
       },
       {
@@ -11021,6 +11231,7 @@
         "overdue_amount": 0,
         "siniestro_count": 0,
         "excepcion_count": 0,
+        "has_dicom": false,
         "avg_margin_pct": 5.0,
         "avg_price_rango": -40.0,
         "pricelist": "BOMBA -40 (CLP)",
@@ -11031,7 +11242,8 @@
           "morosidad": 40,
           "utilizacion": 11,
           "cobranza": 0,
-          "margen": 10
+          "margen": 10,
+          "dicom": 0
         }
       },
       {
@@ -11052,6 +11264,7 @@
         "overdue_amount": 1264000,
         "siniestro_count": 0,
         "excepcion_count": 0,
+        "has_dicom": false,
         "avg_margin_pct": 9.8,
         "avg_price_rango": 3.8,
         "pricelist": "BOMBA +30 (CLP)",
@@ -11062,7 +11275,8 @@
           "morosidad": 40,
           "utilizacion": 13,
           "cobranza": 4,
-          "margen": 0
+          "margen": 0,
+          "dicom": 0
         }
       },
       {
@@ -11083,6 +11297,7 @@
         "overdue_amount": 4398001,
         "siniestro_count": 0,
         "excepcion_count": 0,
+        "has_dicom": false,
         "avg_margin_pct": 2.4,
         "avg_price_rango": -79.0,
         "pricelist": "BOMBA -40 (CLP)",
@@ -11093,7 +11308,8 @@
           "morosidad": 0,
           "utilizacion": 25,
           "cobranza": 15,
-          "margen": 15
+          "margen": 15,
+          "dicom": 0
         }
       },
       {
@@ -11114,6 +11330,7 @@
         "overdue_amount": 0,
         "siniestro_count": 0,
         "excepcion_count": 0,
+        "has_dicom": false,
         "avg_margin_pct": 7.3,
         "avg_price_rango": -5.0,
         "pricelist": "BOMBA -5 (CLP)",
@@ -11124,7 +11341,8 @@
           "morosidad": 23,
           "utilizacion": 24,
           "cobranza": 0,
-          "margen": 5
+          "margen": 5,
+          "dicom": 0
         }
       },
       {
@@ -11145,6 +11363,7 @@
         "overdue_amount": 7645000,
         "siniestro_count": 0,
         "excepcion_count": 0,
+        "has_dicom": false,
         "avg_margin_pct": 9.4,
         "avg_price_rango": -6.3,
         "pricelist": "BOMBA -16 (CLP)",
@@ -11155,7 +11374,8 @@
           "morosidad": 40,
           "utilizacion": 11,
           "cobranza": 1,
-          "margen": 0
+          "margen": 0,
+          "dicom": 0
         }
       },
       {
@@ -11176,6 +11396,7 @@
         "overdue_amount": 0,
         "siniestro_count": 0,
         "excepcion_count": 0,
+        "has_dicom": false,
         "avg_margin_pct": 15.4,
         "avg_price_rango": 50.0,
         "pricelist": "BOMBA +85 (CLP)",
@@ -11186,7 +11407,8 @@
           "morosidad": 40,
           "utilizacion": 12,
           "cobranza": 0,
-          "margen": 0
+          "margen": 0,
+          "dicom": 0
         }
       },
       {
@@ -11207,6 +11429,7 @@
         "overdue_amount": 970000,
         "siniestro_count": 0,
         "excepcion_count": 0,
+        "has_dicom": false,
         "avg_margin_pct": 12.4,
         "avg_price_rango": 2.8,
         "pricelist": "BOMBA +10 (CLP)",
@@ -11217,7 +11440,8 @@
           "morosidad": 27,
           "utilizacion": 19,
           "cobranza": 2,
-          "margen": 0
+          "margen": 0,
+          "dicom": 0
         }
       },
       {
@@ -11238,6 +11462,7 @@
         "overdue_amount": 0,
         "siniestro_count": 0,
         "excepcion_count": 0,
+        "has_dicom": false,
         "avg_margin_pct": 8.9,
         "avg_price_rango": 10.0,
         "pricelist": "BOMBA 0 (CLP)",
@@ -11248,7 +11473,8 @@
           "morosidad": 40,
           "utilizacion": 8,
           "cobranza": 0,
-          "margen": 0
+          "margen": 0,
+          "dicom": 0
         }
       },
       {
@@ -11269,6 +11495,7 @@
         "overdue_amount": 1569000,
         "siniestro_count": 0,
         "excepcion_count": 0,
+        "has_dicom": false,
         "avg_margin_pct": 10.1,
         "avg_price_rango": -13.8,
         "pricelist": "BOMBA -28 (CLP)",
@@ -11279,7 +11506,8 @@
           "morosidad": 40,
           "utilizacion": 5,
           "cobranza": 2,
-          "margen": 0
+          "margen": 0,
+          "dicom": 0
         }
       },
       {
@@ -11300,6 +11528,7 @@
         "overdue_amount": 7964501,
         "siniestro_count": 0,
         "excepcion_count": 0,
+        "has_dicom": false,
         "avg_margin_pct": 10.0,
         "avg_price_rango": 4.4,
         "pricelist": "BOMBA -5 (CLP)",
@@ -11310,7 +11539,8 @@
           "morosidad": 25,
           "utilizacion": 20,
           "cobranza": 1,
-          "margen": 0
+          "margen": 0,
+          "dicom": 0
         }
       },
       {
@@ -11331,6 +11561,7 @@
         "overdue_amount": 4430999,
         "siniestro_count": 0,
         "excepcion_count": 0,
+        "has_dicom": false,
         "avg_margin_pct": 7.4,
         "avg_price_rango": -28.8,
         "pricelist": "BOMBA -29 (CLP)",
@@ -11341,7 +11572,8 @@
           "morosidad": 19,
           "utilizacion": 19,
           "cobranza": 3,
-          "margen": 5
+          "margen": 5,
+          "dicom": 0
         }
       },
       {
@@ -11362,6 +11594,7 @@
         "overdue_amount": 0,
         "siniestro_count": 0,
         "excepcion_count": 0,
+        "has_dicom": false,
         "avg_margin_pct": 6.3,
         "avg_price_rango": -20.0,
         "pricelist": "BOMBA -20 (CLP)",
@@ -11372,7 +11605,8 @@
           "morosidad": 40,
           "utilizacion": 0,
           "cobranza": 0,
-          "margen": 5
+          "margen": 5,
+          "dicom": 0
         }
       },
       {
@@ -11393,6 +11627,7 @@
         "overdue_amount": 0,
         "siniestro_count": 0,
         "excepcion_count": 0,
+        "has_dicom": false,
         "avg_margin_pct": 7.9,
         "avg_price_rango": -67.5,
         "pricelist": "BOMBA -25 (CLP)",
@@ -11403,7 +11638,8 @@
           "morosidad": 40,
           "utilizacion": 0,
           "cobranza": 0,
-          "margen": 5
+          "margen": 5,
+          "dicom": 0
         }
       },
       {
@@ -11424,6 +11660,7 @@
         "overdue_amount": 0,
         "siniestro_count": 0,
         "excepcion_count": 0,
+        "has_dicom": false,
         "avg_margin_pct": 7.7,
         "avg_price_rango": -29.0,
         "pricelist": "BOMBA +19 (CLP)",
@@ -11434,7 +11671,8 @@
           "morosidad": 40,
           "utilizacion": 0,
           "cobranza": 0,
-          "margen": 5
+          "margen": 5,
+          "dicom": 0
         }
       },
       {
@@ -11455,6 +11693,7 @@
         "overdue_amount": 0,
         "siniestro_count": 0,
         "excepcion_count": 0,
+        "has_dicom": false,
         "avg_margin_pct": 6.6,
         "avg_price_rango": -40.0,
         "pricelist": "BOMBA +8 (CLP)",
@@ -11465,7 +11704,8 @@
           "morosidad": 40,
           "utilizacion": 0,
           "cobranza": 0,
-          "margen": 5
+          "margen": 5,
+          "dicom": 0
         }
       },
       {
@@ -11486,6 +11726,7 @@
         "overdue_amount": 0,
         "siniestro_count": 0,
         "excepcion_count": 0,
+        "has_dicom": false,
         "avg_margin_pct": 7.4,
         "avg_price_rango": -32.0,
         "pricelist": "BOMBA +16 (CLP)",
@@ -11496,7 +11737,8 @@
           "morosidad": 40,
           "utilizacion": 0,
           "cobranza": 0,
-          "margen": 5
+          "margen": 5,
+          "dicom": 0
         }
       },
       {
@@ -11517,6 +11759,7 @@
         "overdue_amount": 0,
         "siniestro_count": 0,
         "excepcion_count": 0,
+        "has_dicom": false,
         "avg_margin_pct": 6.2,
         "avg_price_rango": -45.0,
         "pricelist": "BOMBA +49 (CLP)",
@@ -11527,7 +11770,8 @@
           "morosidad": 40,
           "utilizacion": 0,
           "cobranza": 0,
-          "margen": 5
+          "margen": 5,
+          "dicom": 0
         }
       },
       {
@@ -11548,6 +11792,7 @@
         "overdue_amount": 0,
         "siniestro_count": 0,
         "excepcion_count": 0,
+        "has_dicom": false,
         "avg_margin_pct": 6.6,
         "avg_price_rango": -40.0,
         "pricelist": "BOMBA +8 (CLP)",
@@ -11558,7 +11803,8 @@
           "morosidad": 40,
           "utilizacion": 0,
           "cobranza": 0,
-          "margen": 5
+          "margen": 5,
+          "dicom": 0
         }
       },
       {
@@ -11579,6 +11825,7 @@
         "overdue_amount": 0,
         "siniestro_count": 0,
         "excepcion_count": 0,
+        "has_dicom": false,
         "avg_margin_pct": 10.6,
         "avg_price_rango": 15.0,
         "pricelist": "BOMBA +66 (CLP)",
@@ -11589,7 +11836,8 @@
           "morosidad": 23,
           "utilizacion": 20,
           "cobranza": 0,
-          "margen": 0
+          "margen": 0,
+          "dicom": 0
         }
       },
       {
@@ -11610,6 +11858,7 @@
         "overdue_amount": 0,
         "siniestro_count": 0,
         "excepcion_count": 0,
+        "has_dicom": false,
         "avg_margin_pct": 9.7,
         "avg_price_rango": -10.0,
         "pricelist": "BOMBA +49 (CLP)",
@@ -11620,7 +11869,8 @@
           "morosidad": 40,
           "utilizacion": 2,
           "cobranza": 0,
-          "margen": 0
+          "margen": 0,
+          "dicom": 0
         }
       },
       {
@@ -11641,6 +11891,7 @@
         "overdue_amount": 4095000,
         "siniestro_count": 0,
         "excepcion_count": 0,
+        "has_dicom": false,
         "avg_margin_pct": 10.2,
         "avg_price_rango": -5.0,
         "pricelist": "BOMBA +43 (CLP)",
@@ -11651,7 +11902,8 @@
           "morosidad": 27,
           "utilizacion": 0,
           "cobranza": 15,
-          "margen": 0
+          "margen": 0,
+          "dicom": 0
         }
       },
       {
@@ -11672,6 +11924,7 @@
         "overdue_amount": 1578000,
         "siniestro_count": 0,
         "excepcion_count": 0,
+        "has_dicom": false,
         "avg_margin_pct": 9.3,
         "avg_price_rango": 9.0,
         "pricelist": "BOMBA +33 (CLP)",
@@ -11682,7 +11935,8 @@
           "morosidad": 20,
           "utilizacion": 20,
           "cobranza": 2,
-          "margen": 0
+          "margen": 0,
+          "dicom": 0
         }
       },
       {
@@ -11703,6 +11957,7 @@
         "overdue_amount": 914000,
         "siniestro_count": 0,
         "excepcion_count": 0,
+        "has_dicom": false,
         "avg_margin_pct": 10.7,
         "avg_price_rango": 0.0,
         "pricelist": "BOMBA +54 (CLP)",
@@ -11713,7 +11968,8 @@
           "morosidad": 33,
           "utilizacion": 4,
           "cobranza": 5,
-          "margen": 0
+          "margen": 0,
+          "dicom": 0
         }
       },
       {
@@ -11734,6 +11990,7 @@
         "overdue_amount": 1349321,
         "siniestro_count": 0,
         "excepcion_count": 0,
+        "has_dicom": false,
         "avg_margin_pct": 10.7,
         "avg_price_rango": 0.0,
         "pricelist": "BOMBA +54 (CLP)",
@@ -11744,7 +12001,8 @@
           "morosidad": 31,
           "utilizacion": 5,
           "cobranza": 6,
-          "margen": 0
+          "margen": 0,
+          "dicom": 0
         }
       },
       {
@@ -11765,6 +12023,7 @@
         "overdue_amount": 0,
         "siniestro_count": 0,
         "excepcion_count": 0,
+        "has_dicom": false,
         "avg_margin_pct": 10.2,
         "avg_price_rango": -45.0,
         "pricelist": "BOMBA +16 (CLP)",
@@ -11775,7 +12034,8 @@
           "morosidad": 40,
           "utilizacion": 2,
           "cobranza": 0,
-          "margen": 0
+          "margen": 0,
+          "dicom": 0
         }
       },
       {
@@ -11796,6 +12056,7 @@
         "overdue_amount": 0,
         "siniestro_count": 0,
         "excepcion_count": 0,
+        "has_dicom": false,
         "avg_margin_pct": 6.0,
         "avg_price_rango": -35.5,
         "pricelist": "BOMBA -41 (CLP)",
@@ -11806,7 +12067,8 @@
           "morosidad": 23,
           "utilizacion": 13,
           "cobranza": 0,
-          "margen": 5
+          "margen": 5,
+          "dicom": 0
         }
       },
       {
@@ -11827,6 +12089,7 @@
         "overdue_amount": 0,
         "siniestro_count": 0,
         "excepcion_count": 0,
+        "has_dicom": false,
         "avg_margin_pct": 6.0,
         "avg_price_rango": -35.5,
         "pricelist": "BOMBA -41 (CLP)",
@@ -11837,7 +12100,8 @@
           "morosidad": 23,
           "utilizacion": 13,
           "cobranza": 0,
-          "margen": 5
+          "margen": 5,
+          "dicom": 0
         }
       },
       {
@@ -11858,6 +12122,7 @@
         "overdue_amount": 0,
         "siniestro_count": 0,
         "excepcion_count": 0,
+        "has_dicom": false,
         "avg_margin_pct": 6.0,
         "avg_price_rango": -35.5,
         "pricelist": "BOMBA -41 (CLP)",
@@ -11868,7 +12133,8 @@
           "morosidad": 23,
           "utilizacion": 13,
           "cobranza": 0,
-          "margen": 5
+          "margen": 5,
+          "dicom": 0
         }
       },
       {
@@ -11889,6 +12155,7 @@
         "overdue_amount": 0,
         "siniestro_count": 0,
         "excepcion_count": 0,
+        "has_dicom": false,
         "avg_margin_pct": 9.0,
         "avg_price_rango": -4.2,
         "pricelist": "BOMBA -5 (CLP)",
@@ -11899,7 +12166,8 @@
           "morosidad": 40,
           "utilizacion": 0,
           "cobranza": 0,
-          "margen": 0
+          "margen": 0,
+          "dicom": 0
         }
       },
       {
@@ -11920,6 +12188,7 @@
         "overdue_amount": 1794499,
         "siniestro_count": 0,
         "excepcion_count": 0,
+        "has_dicom": false,
         "avg_margin_pct": 11.1,
         "avg_price_rango": 20.3,
         "pricelist": "BOMBA +69 (CLP)",
@@ -11930,7 +12199,8 @@
           "morosidad": 13,
           "utilizacion": 22,
           "cobranza": 5,
-          "margen": 0
+          "margen": 0,
+          "dicom": 0
         }
       },
       {
@@ -11951,6 +12221,7 @@
         "overdue_amount": 0,
         "siniestro_count": 0,
         "excepcion_count": 0,
+        "has_dicom": false,
         "avg_margin_pct": 8.5,
         "avg_price_rango": 4.0,
         "pricelist": "BOMBA +4 (CLP)",
@@ -11961,7 +12232,8 @@
           "morosidad": 40,
           "utilizacion": 0,
           "cobranza": 0,
-          "margen": 0
+          "margen": 0,
+          "dicom": 0
         }
       },
       {
@@ -11982,6 +12254,7 @@
         "overdue_amount": 0,
         "siniestro_count": 0,
         "excepcion_count": 0,
+        "has_dicom": false,
         "avg_margin_pct": 8.9,
         "avg_price_rango": -67.0,
         "pricelist": "BOMBA -11 (CLP)",
@@ -11992,7 +12265,8 @@
           "morosidad": 40,
           "utilizacion": 0,
           "cobranza": 0,
-          "margen": 0
+          "margen": 0,
+          "dicom": 0
         }
       },
       {
@@ -12013,6 +12287,7 @@
         "overdue_amount": 0,
         "siniestro_count": 0,
         "excepcion_count": 0,
+        "has_dicom": false,
         "avg_margin_pct": 11.5,
         "avg_price_rango": -30.0,
         "pricelist": "BOMBA +43 (CLP)",
@@ -12023,7 +12298,8 @@
           "morosidad": 40,
           "utilizacion": 0,
           "cobranza": 0,
-          "margen": 0
+          "margen": 0,
+          "dicom": 0
         }
       },
       {
@@ -12044,6 +12320,7 @@
         "overdue_amount": 0,
         "siniestro_count": 0,
         "excepcion_count": 0,
+        "has_dicom": false,
         "avg_margin_pct": 14.6,
         "avg_price_rango": 40.0,
         "pricelist": "BOMBA +79 (CLP)",
@@ -12054,7 +12331,8 @@
           "morosidad": 40,
           "utilizacion": 0,
           "cobranza": 0,
-          "margen": 0
+          "margen": 0,
+          "dicom": 0
         }
       },
       {
@@ -12075,6 +12353,7 @@
         "overdue_amount": 0,
         "siniestro_count": 0,
         "excepcion_count": 0,
+        "has_dicom": false,
         "avg_margin_pct": 11.7,
         "avg_price_rango": -30.0,
         "pricelist": "BOMBA +43 (CLP)",
@@ -12085,7 +12364,8 @@
           "morosidad": 40,
           "utilizacion": 0,
           "cobranza": 0,
-          "margen": 0
+          "margen": 0,
+          "dicom": 0
         }
       },
       {
@@ -12106,6 +12386,7 @@
         "overdue_amount": 0,
         "siniestro_count": 0,
         "excepcion_count": 0,
+        "has_dicom": false,
         "avg_margin_pct": 8.8,
         "avg_price_rango": -20.0,
         "pricelist": "BOMBA +39 (CLP)",
@@ -12116,7 +12397,8 @@
           "morosidad": 40,
           "utilizacion": 0,
           "cobranza": 0,
-          "margen": 0
+          "margen": 0,
+          "dicom": 0
         }
       },
       {
@@ -12137,6 +12419,7 @@
         "overdue_amount": 0,
         "siniestro_count": 0,
         "excepcion_count": 0,
+        "has_dicom": false,
         "avg_margin_pct": 10.9,
         "avg_price_rango": 1.0,
         "pricelist": "BOMBA +66 (CLP)",
@@ -12147,7 +12430,8 @@
           "morosidad": 40,
           "utilizacion": 0,
           "cobranza": 0,
-          "margen": 0
+          "margen": 0,
+          "dicom": 0
         }
       },
       {
@@ -12168,6 +12452,7 @@
         "overdue_amount": 0,
         "siniestro_count": 0,
         "excepcion_count": 0,
+        "has_dicom": false,
         "avg_margin_pct": 10.2,
         "avg_price_rango": -45.0,
         "pricelist": "BOMBA +16 (CLP)",
@@ -12178,7 +12463,8 @@
           "morosidad": 40,
           "utilizacion": 0,
           "cobranza": 0,
-          "margen": 0
+          "margen": 0,
+          "dicom": 0
         }
       },
       {
@@ -12199,6 +12485,7 @@
         "overdue_amount": 0,
         "siniestro_count": 0,
         "excepcion_count": 0,
+        "has_dicom": false,
         "avg_margin_pct": 8.8,
         "avg_price_rango": -20.0,
         "pricelist": "BOMBA +28 (CLP)",
@@ -12209,7 +12496,8 @@
           "morosidad": 40,
           "utilizacion": 0,
           "cobranza": 0,
-          "margen": 0
+          "margen": 0,
+          "dicom": 0
         }
       },
       {
@@ -12230,6 +12518,7 @@
         "overdue_amount": 0,
         "siniestro_count": 0,
         "excepcion_count": 0,
+        "has_dicom": false,
         "avg_margin_pct": 10.9,
         "avg_price_rango": 1.0,
         "pricelist": "BOMBA +55 (CLP)",
@@ -12240,7 +12529,8 @@
           "morosidad": 34,
           "utilizacion": 6,
           "cobranza": 0,
-          "margen": 0
+          "margen": 0,
+          "dicom": 0
         }
       },
       {
@@ -12261,6 +12551,7 @@
         "overdue_amount": 0,
         "siniestro_count": 0,
         "excepcion_count": 0,
+        "has_dicom": false,
         "avg_margin_pct": 10.3,
         "avg_price_rango": -5.0,
         "pricelist": "BOMBA +65 (CLP)",
@@ -12271,7 +12562,41 @@
           "morosidad": 40,
           "utilizacion": 0,
           "cobranza": 0,
-          "margen": 0
+          "margen": 0,
+          "dicom": 0
+        }
+      },
+      {
+        "name": "SERVICIOS REVIVA SPA",
+        "vendedor": "TomEnergy",
+        "monto_credito": 5850000,
+        "saldo_credito": 5871999,
+        "utilizacion_pct": -0.4,
+        "avg_monthly_litros": 6271,
+        "avg_monthly_venta": 5340886,
+        "projected_monthly": 5341183,
+        "linea_ratio": 91.3,
+        "avg_payment_days": 2.0,
+        "plazo_pago_dias": 1,
+        "plazo_pago_label": "1 Día",
+        "mora_ratio": 2.0,
+        "overdue_count": 0,
+        "overdue_amount": 0,
+        "siniestro_count": 0,
+        "excepcion_count": 0,
+        "has_dicom": false,
+        "avg_margin_pct": 8.2,
+        "avg_price_rango": -19.4,
+        "pricelist": "BOMBA -6 (CLP)",
+        "ar_balance": -21999,
+        "risk_score": 40,
+        "risk_level": "Alto",
+        "score_detail": {
+          "morosidad": 40,
+          "utilizacion": 0,
+          "cobranza": 0,
+          "margen": 0,
+          "dicom": 0
         }
       },
       {
@@ -12292,6 +12617,7 @@
         "overdue_amount": 0,
         "siniestro_count": 0,
         "excepcion_count": 0,
+        "has_dicom": false,
         "avg_margin_pct": 9.5,
         "avg_price_rango": 7.6,
         "pricelist": "BOMBA +40 (CLP)",
@@ -12302,7 +12628,8 @@
           "morosidad": 40,
           "utilizacion": 0,
           "cobranza": 0,
-          "margen": 0
+          "margen": 0,
+          "dicom": 0
         }
       },
       {
@@ -12323,6 +12650,7 @@
         "overdue_amount": 0,
         "siniestro_count": 0,
         "excepcion_count": 0,
+        "has_dicom": false,
         "avg_margin_pct": 10.5,
         "avg_price_rango": -21.0,
         "pricelist": "BOMBA -28 (CLP)",
@@ -12333,7 +12661,8 @@
           "morosidad": 40,
           "utilizacion": 0,
           "cobranza": 0,
-          "margen": 0
+          "margen": 0,
+          "dicom": 0
         }
       },
       {
@@ -12354,6 +12683,7 @@
         "overdue_amount": 0,
         "siniestro_count": 0,
         "excepcion_count": 0,
+        "has_dicom": false,
         "avg_margin_pct": 14.0,
         "avg_price_rango": 19.0,
         "pricelist": "BOMBA +33 (CLP)",
@@ -12364,7 +12694,8 @@
           "morosidad": 40,
           "utilizacion": 0,
           "cobranza": 0,
-          "margen": 0
+          "margen": 0,
+          "dicom": 0
         }
       },
       {
@@ -12385,6 +12716,7 @@
         "overdue_amount": 0,
         "siniestro_count": 0,
         "excepcion_count": 0,
+        "has_dicom": false,
         "avg_margin_pct": 8.7,
         "avg_price_rango": -20.0,
         "pricelist": "BOMBA +28 (CLP)",
@@ -12395,7 +12727,8 @@
           "morosidad": 40,
           "utilizacion": 0,
           "cobranza": 0,
-          "margen": 0
+          "margen": 0,
+          "dicom": 0
         }
       },
       {
@@ -12416,6 +12749,7 @@
         "overdue_amount": 0,
         "siniestro_count": 0,
         "excepcion_count": 0,
+        "has_dicom": false,
         "avg_margin_pct": 12.4,
         "avg_price_rango": -20.0,
         "pricelist": "BOMBA +43 (CLP)",
@@ -12426,7 +12760,8 @@
           "morosidad": 40,
           "utilizacion": 0,
           "cobranza": 0,
-          "margen": 0
+          "margen": 0,
+          "dicom": 0
         }
       },
       {
@@ -12447,6 +12782,7 @@
         "overdue_amount": 0,
         "siniestro_count": 0,
         "excepcion_count": 0,
+        "has_dicom": false,
         "avg_margin_pct": 11.6,
         "avg_price_rango": -30.0,
         "pricelist": "BOMBA +43 (CLP)",
@@ -12457,7 +12793,8 @@
           "morosidad": 40,
           "utilizacion": 0,
           "cobranza": 0,
-          "margen": 0
+          "margen": 0,
+          "dicom": 0
         }
       },
       {
@@ -12478,6 +12815,7 @@
         "overdue_amount": 0,
         "siniestro_count": 0,
         "excepcion_count": 0,
+        "has_dicom": false,
         "avg_margin_pct": 9.8,
         "avg_price_rango": -10.0,
         "pricelist": "BOMBA +49 (CLP)",
@@ -12488,7 +12826,8 @@
           "morosidad": 40,
           "utilizacion": 0,
           "cobranza": 0,
-          "margen": 0
+          "margen": 0,
+          "dicom": 0
         }
       },
       {
@@ -12509,6 +12848,7 @@
         "overdue_amount": 0,
         "siniestro_count": 0,
         "excepcion_count": 0,
+        "has_dicom": false,
         "avg_margin_pct": 11.5,
         "avg_price_rango": -40.0,
         "pricelist": "BOMBA +33 (CLP)",
@@ -12519,7 +12859,8 @@
           "morosidad": 40,
           "utilizacion": 0,
           "cobranza": 0,
-          "margen": 0
+          "margen": 0,
+          "dicom": 0
         }
       },
       {
@@ -12540,6 +12881,7 @@
         "overdue_amount": 0,
         "siniestro_count": 0,
         "excepcion_count": 0,
+        "has_dicom": false,
         "avg_margin_pct": 11.5,
         "avg_price_rango": -40.0,
         "pricelist": "BOMBA +33 (CLP)",
@@ -12550,7 +12892,8 @@
           "morosidad": 40,
           "utilizacion": 0,
           "cobranza": 0,
-          "margen": 0
+          "margen": 0,
+          "dicom": 0
         }
       },
       {
@@ -12571,6 +12914,7 @@
         "overdue_amount": 0,
         "siniestro_count": 0,
         "excepcion_count": 0,
+        "has_dicom": false,
         "avg_margin_pct": 12.5,
         "avg_price_rango": -29.0,
         "pricelist": "BOMBA -11 (CLP)",
@@ -12581,7 +12925,8 @@
           "morosidad": 40,
           "utilizacion": 0,
           "cobranza": 0,
-          "margen": 0
+          "margen": 0,
+          "dicom": 0
         }
       },
       {
@@ -12602,6 +12947,7 @@
         "overdue_amount": 0,
         "siniestro_count": 0,
         "excepcion_count": 0,
+        "has_dicom": false,
         "avg_margin_pct": 11.5,
         "avg_price_rango": -30.0,
         "pricelist": "BOMBA +43 (CLP)",
@@ -12612,7 +12958,8 @@
           "morosidad": 40,
           "utilizacion": 0,
           "cobranza": 0,
-          "margen": 0
+          "margen": 0,
+          "dicom": 0
         }
       },
       {
@@ -12633,6 +12980,7 @@
         "overdue_amount": 0,
         "siniestro_count": 0,
         "excepcion_count": 0,
+        "has_dicom": false,
         "avg_margin_pct": 8.5,
         "avg_price_rango": -60.8,
         "pricelist": "BOMBA -21 (CLP)",
@@ -12643,7 +12991,8 @@
           "morosidad": 40,
           "utilizacion": 0,
           "cobranza": 0,
-          "margen": 0
+          "margen": 0,
+          "dicom": 0
         }
       },
       {
@@ -12664,6 +13013,7 @@
         "overdue_amount": 0,
         "siniestro_count": 0,
         "excepcion_count": 0,
+        "has_dicom": false,
         "avg_margin_pct": 11.5,
         "avg_price_rango": -30.0,
         "pricelist": "BOMBA +43 (CLP)",
@@ -12674,7 +13024,8 @@
           "morosidad": 40,
           "utilizacion": 0,
           "cobranza": 0,
-          "margen": 0
+          "margen": 0,
+          "dicom": 0
         }
       },
       {
@@ -12695,6 +13046,7 @@
         "overdue_amount": 0,
         "siniestro_count": 0,
         "excepcion_count": 0,
+        "has_dicom": false,
         "avg_margin_pct": 12.5,
         "avg_price_rango": -30.0,
         "pricelist": "BOMBA -70 (CLP)",
@@ -12705,7 +13057,8 @@
           "morosidad": 40,
           "utilizacion": 0,
           "cobranza": 0,
-          "margen": 0
+          "margen": 0,
+          "dicom": 0
         }
       },
       {
@@ -12726,6 +13079,7 @@
         "overdue_amount": 0,
         "siniestro_count": 0,
         "excepcion_count": 0,
+        "has_dicom": false,
         "avg_margin_pct": 15.7,
         "avg_price_rango": 7.0,
         "pricelist": "BOMBA +48 (CLP)",
@@ -12736,7 +13090,8 @@
           "morosidad": 40,
           "utilizacion": 0,
           "cobranza": 0,
-          "margen": 0
+          "margen": 0,
+          "dicom": 0
         }
       },
       {
@@ -12757,6 +13112,7 @@
         "overdue_amount": 0,
         "siniestro_count": 0,
         "excepcion_count": 0,
+        "has_dicom": false,
         "avg_margin_pct": 9.4,
         "avg_price_rango": -1.5,
         "pricelist": "BOMBA +39 (CLP)",
@@ -12767,7 +13123,8 @@
           "morosidad": 40,
           "utilizacion": 0,
           "cobranza": 0,
-          "margen": 0
+          "margen": 0,
+          "dicom": 0
         }
       },
       {
@@ -12788,6 +13145,7 @@
         "overdue_amount": 0,
         "siniestro_count": 0,
         "excepcion_count": 0,
+        "has_dicom": false,
         "avg_margin_pct": 8.4,
         "avg_price_rango": -54.6,
         "pricelist": "BOMBA -60 (CLP)",
@@ -12798,7 +13156,8 @@
           "morosidad": 40,
           "utilizacion": 0,
           "cobranza": 0,
-          "margen": 0
+          "margen": 0,
+          "dicom": 0
         }
       },
       {
@@ -12819,6 +13178,7 @@
         "overdue_amount": 5850001,
         "siniestro_count": 0,
         "excepcion_count": 0,
+        "has_dicom": false,
         "avg_margin_pct": 9.7,
         "avg_price_rango": -10.0,
         "pricelist": "BOMBA +38 (CLP)",
@@ -12829,7 +13189,8 @@
           "morosidad": 0,
           "utilizacion": 25,
           "cobranza": 15,
-          "margen": 0
+          "margen": 0,
+          "dicom": 0
         }
       },
       {
@@ -12850,6 +13211,7 @@
         "overdue_amount": 0,
         "siniestro_count": 0,
         "excepcion_count": 0,
+        "has_dicom": false,
         "avg_margin_pct": 8.7,
         "avg_price_rango": -20.0,
         "pricelist": "BOMBA +28 (CLP)",
@@ -12860,7 +13222,8 @@
           "morosidad": 40,
           "utilizacion": 0,
           "cobranza": 0,
-          "margen": 0
+          "margen": 0,
+          "dicom": 0
         }
       },
       {
@@ -12881,6 +13244,7 @@
         "overdue_amount": 0,
         "siniestro_count": 0,
         "excepcion_count": 0,
+        "has_dicom": false,
         "avg_margin_pct": 11.5,
         "avg_price_rango": -40.0,
         "pricelist": "BOMBA +33 (CLP)",
@@ -12891,7 +13255,8 @@
           "morosidad": 40,
           "utilizacion": 0,
           "cobranza": 0,
-          "margen": 0
+          "margen": 0,
+          "dicom": 0
         }
       },
       {
@@ -12912,6 +13277,7 @@
         "overdue_amount": 0,
         "siniestro_count": 0,
         "excepcion_count": 0,
+        "has_dicom": false,
         "avg_margin_pct": 11.4,
         "avg_price_rango": -40.0,
         "pricelist": "BOMBA -50 (CLP)",
@@ -12922,7 +13288,8 @@
           "morosidad": 40,
           "utilizacion": 0,
           "cobranza": 0,
-          "margen": 0
+          "margen": 0,
+          "dicom": 0
         }
       },
       {
@@ -12943,6 +13310,7 @@
         "overdue_amount": 0,
         "siniestro_count": 0,
         "excepcion_count": 0,
+        "has_dicom": false,
         "avg_margin_pct": 8.7,
         "avg_price_rango": -58.0,
         "pricelist": "BOMBA +27 (CLP)",
@@ -12953,7 +13321,41 @@
           "morosidad": 40,
           "utilizacion": 0,
           "cobranza": 0,
-          "margen": 0
+          "margen": 0,
+          "dicom": 0
+        }
+      },
+      {
+        "name": "ANDES SOLAR SA",
+        "vendedor": "TomEnergy",
+        "monto_credito": 11200000,
+        "saldo_credito": 3261104,
+        "utilizacion_pct": 70.9,
+        "avg_monthly_litros": 3177,
+        "avg_monthly_venta": 3491372,
+        "projected_monthly": 3491300,
+        "linea_ratio": 31.2,
+        "avg_payment_days": 32.0,
+        "plazo_pago_dias": 30,
+        "plazo_pago_label": "30 Days",
+        "mora_ratio": 1.07,
+        "overdue_count": 0,
+        "overdue_amount": 0,
+        "siniestro_count": 0,
+        "excepcion_count": 0,
+        "has_dicom": false,
+        "avg_margin_pct": 9.4,
+        "avg_price_rango": 14.9,
+        "pricelist": "BOMBA +15 (CLP)",
+        "ar_balance": 7938896,
+        "risk_score": 39,
+        "risk_level": "Medio",
+        "score_detail": {
+          "morosidad": 21,
+          "utilizacion": 18,
+          "cobranza": 0,
+          "margen": 0,
+          "dicom": 0
         }
       },
       {
@@ -12974,6 +13376,7 @@
         "overdue_amount": 0,
         "siniestro_count": 0,
         "excepcion_count": 0,
+        "has_dicom": false,
         "avg_margin_pct": 13.5,
         "avg_price_rango": 30.3,
         "pricelist": "BOMBA +48 (CLP)",
@@ -12984,7 +13387,8 @@
           "morosidad": 18,
           "utilizacion": 21,
           "cobranza": 0,
-          "margen": 0
+          "margen": 0,
+          "dicom": 0
         }
       },
       {
@@ -13005,6 +13409,7 @@
         "overdue_amount": 0,
         "siniestro_count": 0,
         "excepcion_count": 0,
+        "has_dicom": false,
         "avg_margin_pct": 9.7,
         "avg_price_rango": 14.0,
         "pricelist": "BOMBA +38 (CLP)",
@@ -13015,7 +13420,8 @@
           "morosidad": 22,
           "utilizacion": 17,
           "cobranza": 0,
-          "margen": 0
+          "margen": 0,
+          "dicom": 0
         }
       },
       {
@@ -13036,6 +13442,7 @@
         "overdue_amount": 0,
         "siniestro_count": 0,
         "excepcion_count": 2,
+        "has_dicom": false,
         "avg_margin_pct": 9.6,
         "avg_price_rango": 25.0,
         "pricelist": "BOMBA +30 (CLP)",
@@ -13046,7 +13453,8 @@
           "morosidad": 14,
           "utilizacion": 25,
           "cobranza": 0,
-          "margen": 0
+          "margen": 0,
+          "dicom": 0
         }
       },
       {
@@ -13067,6 +13475,7 @@
         "overdue_amount": 1825100,
         "siniestro_count": 0,
         "excepcion_count": 0,
+        "has_dicom": false,
         "avg_margin_pct": 15.2,
         "avg_price_rango": 31.9,
         "pricelist": "BOMBA +22 (CLP)",
@@ -13077,7 +13486,8 @@
           "morosidad": 12,
           "utilizacion": 24,
           "cobranza": 2,
-          "margen": 0
+          "margen": 0,
+          "dicom": 0
         }
       },
       {
@@ -13098,6 +13508,7 @@
         "overdue_amount": 0,
         "siniestro_count": 0,
         "excepcion_count": 0,
+        "has_dicom": false,
         "avg_margin_pct": 11.8,
         "avg_price_rango": 10.0,
         "pricelist": "BOMBA +80 (CLP)",
@@ -13108,38 +13519,41 @@
           "morosidad": 38,
           "utilizacion": 0,
           "cobranza": 0,
-          "margen": 0
+          "margen": 0,
+          "dicom": 0
         }
       },
       {
         "name": "INGENERIA Y CONSTRUCCIONES FEBLANCA SPA",
         "vendedor": "TomEnergy",
         "monto_credito": 23520000,
-        "saldo_credito": 9593800,
-        "utilizacion_pct": 59.2,
+        "saldo_credito": 10777000,
+        "utilizacion_pct": 54.2,
         "avg_monthly_litros": 22462,
         "avg_monthly_venta": 18516401,
         "projected_monthly": 18516795,
         "linea_ratio": 78.7,
-        "avg_payment_days": 11.0,
+        "avg_payment_days": 12.0,
         "plazo_pago_dias": 15,
         "plazo_pago_label": "15 Días",
-        "mora_ratio": 0.73,
-        "overdue_count": 4,
-        "overdue_amount": 12433200,
+        "mora_ratio": 0.8,
+        "overdue_count": 3,
+        "overdue_amount": 11250000,
         "siniestro_count": 0,
         "excepcion_count": 0,
+        "has_dicom": false,
         "avg_margin_pct": 6.4,
         "avg_price_rango": -36.4,
         "pricelist": "BOMBA -20 (CLP)",
-        "ar_balance": 13926200,
+        "ar_balance": 12743000,
         "risk_score": 36,
         "risk_level": "Medio",
         "score_detail": {
-          "morosidad": 15,
-          "utilizacion": 15,
+          "morosidad": 16,
+          "utilizacion": 14,
           "cobranza": 1,
-          "margen": 5
+          "margen": 5,
+          "dicom": 0
         }
       },
       {
@@ -13160,6 +13574,7 @@
         "overdue_amount": 0,
         "siniestro_count": 0,
         "excepcion_count": 9,
+        "has_dicom": false,
         "avg_margin_pct": 8.7,
         "avg_price_rango": -56.7,
         "pricelist": "BOMBA -40 (CLP)",
@@ -13170,7 +13585,8 @@
           "morosidad": 40,
           "utilizacion": -4,
           "cobranza": 0,
-          "margen": 0
+          "margen": 0,
+          "dicom": 0
         }
       },
       {
@@ -13191,6 +13607,7 @@
         "overdue_amount": 0,
         "siniestro_count": 0,
         "excepcion_count": 0,
+        "has_dicom": false,
         "avg_margin_pct": 10.4,
         "avg_price_rango": 21.0,
         "pricelist": "BOMBA +41 (CLP)",
@@ -13201,7 +13618,8 @@
           "morosidad": 33,
           "utilizacion": 3,
           "cobranza": 0,
-          "margen": 0
+          "margen": 0,
+          "dicom": 0
         }
       },
       {
@@ -13222,6 +13640,7 @@
         "overdue_amount": 8323385,
         "siniestro_count": 0,
         "excepcion_count": 0,
+        "has_dicom": false,
         "avg_margin_pct": 10.7,
         "avg_price_rango": -31.9,
         "pricelist": "BOMBA +9 (CLP)",
@@ -13232,7 +13651,8 @@
           "morosidad": 27,
           "utilizacion": 6,
           "cobranza": 3,
-          "margen": 0
+          "margen": 0,
+          "dicom": 0
         }
       },
       {
@@ -13253,6 +13673,7 @@
         "overdue_amount": 0,
         "siniestro_count": 0,
         "excepcion_count": 0,
+        "has_dicom": false,
         "avg_margin_pct": 12.8,
         "avg_price_rango": -6.0,
         "pricelist": "BOMBA +10 (CLP)",
@@ -13263,7 +13684,8 @@
           "morosidad": 11,
           "utilizacion": 25,
           "cobranza": 0,
-          "margen": 0
+          "margen": 0,
+          "dicom": 0
         }
       },
       {
@@ -13284,6 +13706,7 @@
         "overdue_amount": 0,
         "siniestro_count": 0,
         "excepcion_count": 0,
+        "has_dicom": false,
         "avg_margin_pct": 8.9,
         "avg_price_rango": -17.3,
         "pricelist": "BOMBA +10 (CLP)",
@@ -13294,7 +13717,8 @@
           "morosidad": 21,
           "utilizacion": 14,
           "cobranza": 0,
-          "margen": 0
+          "margen": 0,
+          "dicom": 0
         }
       },
       {
@@ -13315,6 +13739,7 @@
         "overdue_amount": 0,
         "siniestro_count": 0,
         "excepcion_count": 0,
+        "has_dicom": false,
         "avg_margin_pct": 4.9,
         "avg_price_rango": -40.0,
         "pricelist": "BOMBA -40 (CLP)",
@@ -13325,7 +13750,8 @@
           "morosidad": 0,
           "utilizacion": 25,
           "cobranza": 0,
-          "margen": 10
+          "margen": 10,
+          "dicom": 0
         }
       },
       {
@@ -13346,6 +13772,7 @@
         "overdue_amount": 0,
         "siniestro_count": 0,
         "excepcion_count": 0,
+        "has_dicom": false,
         "avg_margin_pct": 6.3,
         "avg_price_rango": -37.5,
         "pricelist": "BOMBA -50 (CLP)",
@@ -13356,38 +13783,8 @@
           "morosidad": 11,
           "utilizacion": 19,
           "cobranza": 0,
-          "margen": 5
-        }
-      },
-      {
-        "name": "SERVICIOS REVIVA SPA",
-        "vendedor": "TomEnergy",
-        "monto_credito": 5850000,
-        "saldo_credito": 2841999,
-        "utilizacion_pct": 51.4,
-        "avg_monthly_litros": 6271,
-        "avg_monthly_venta": 5340886,
-        "projected_monthly": 5341183,
-        "linea_ratio": 91.3,
-        "avg_payment_days": 1.0,
-        "plazo_pago_dias": 1,
-        "plazo_pago_label": "1 Día",
-        "mora_ratio": 1.0,
-        "overdue_count": 1,
-        "overdue_amount": 3030000,
-        "siniestro_count": 0,
-        "excepcion_count": 0,
-        "avg_margin_pct": 8.2,
-        "avg_price_rango": -19.4,
-        "pricelist": "BOMBA -6 (CLP)",
-        "ar_balance": 3008001,
-        "risk_score": 35,
-        "risk_level": "Medio",
-        "score_detail": {
-          "morosidad": 20,
-          "utilizacion": 13,
-          "cobranza": 2,
-          "margen": 0
+          "margen": 5,
+          "dicom": 0
         }
       },
       {
@@ -13408,6 +13805,7 @@
         "overdue_amount": 0,
         "siniestro_count": 0,
         "excepcion_count": 0,
+        "has_dicom": false,
         "avg_margin_pct": 9.4,
         "avg_price_rango": -28.0,
         "pricelist": "BOMBA -28 (CLP)",
@@ -13418,7 +13816,8 @@
           "morosidad": 28,
           "utilizacion": 7,
           "cobranza": 0,
-          "margen": 0
+          "margen": 0,
+          "dicom": 0
         }
       },
       {
@@ -13439,6 +13838,7 @@
         "overdue_amount": 0,
         "siniestro_count": 0,
         "excepcion_count": 0,
+        "has_dicom": false,
         "avg_margin_pct": 14.6,
         "avg_price_rango": 21.0,
         "pricelist": "BOMBA +15 (CLP)",
@@ -13449,7 +13849,8 @@
           "morosidad": 23,
           "utilizacion": 12,
           "cobranza": 0,
-          "margen": 0
+          "margen": 0,
+          "dicom": 0
         }
       },
       {
@@ -13470,6 +13871,7 @@
         "overdue_amount": 0,
         "siniestro_count": 0,
         "excepcion_count": 0,
+        "has_dicom": false,
         "avg_margin_pct": 18.1,
         "avg_price_rango": 35.0,
         "pricelist": "BOMBA +40 (CLP)",
@@ -13480,38 +13882,8 @@
           "morosidad": 35,
           "utilizacion": 0,
           "cobranza": 0,
-          "margen": 0
-        }
-      },
-      {
-        "name": "ANDES SOLAR SA",
-        "vendedor": "TomEnergy",
-        "monto_credito": 11200000,
-        "saldo_credito": 5295604,
-        "utilizacion_pct": 52.7,
-        "avg_monthly_litros": 2753,
-        "avg_monthly_venta": 2989623,
-        "projected_monthly": 2989458,
-        "linea_ratio": 26.7,
-        "avg_payment_days": 32.0,
-        "plazo_pago_dias": 30,
-        "plazo_pago_label": "30 Days",
-        "mora_ratio": 1.07,
-        "overdue_count": 0,
-        "overdue_amount": 0,
-        "siniestro_count": 0,
-        "excepcion_count": 0,
-        "avg_margin_pct": 9.7,
-        "avg_price_rango": 14.9,
-        "pricelist": "BOMBA +15 (CLP)",
-        "ar_balance": 5904396,
-        "risk_score": 34,
-        "risk_level": "Medio",
-        "score_detail": {
-          "morosidad": 21,
-          "utilizacion": 13,
-          "cobranza": 0,
-          "margen": 0
+          "margen": 0,
+          "dicom": 0
         }
       },
       {
@@ -13532,6 +13904,7 @@
         "overdue_amount": 0,
         "siniestro_count": 0,
         "excepcion_count": 0,
+        "has_dicom": false,
         "avg_margin_pct": 6.6,
         "avg_price_rango": -10.5,
         "pricelist": "BOMBA -9 (CLP)",
@@ -13542,38 +13915,8 @@
           "morosidad": 3,
           "utilizacion": 25,
           "cobranza": 0,
-          "margen": 5
-        }
-      },
-      {
-        "name": "TRANSPORTES SAN MARCELO SPA",
-        "vendedor": "TomEnergy",
-        "monto_credito": 5850000,
-        "saldo_credito": -1890000,
-        "utilizacion_pct": 132.3,
-        "avg_monthly_litros": 3587,
-        "avg_monthly_venta": 4444706,
-        "projected_monthly": 4444760,
-        "linea_ratio": 76.0,
-        "avg_payment_days": 4.0,
-        "plazo_pago_dias": 30,
-        "plazo_pago_label": "30 Days",
-        "mora_ratio": 0.13,
-        "overdue_count": 0,
-        "overdue_amount": 0,
-        "siniestro_count": 0,
-        "excepcion_count": 0,
-        "avg_margin_pct": 6.4,
-        "avg_price_rango": -15.5,
-        "pricelist": "BOMBA -1 (CLP)",
-        "ar_balance": 7740000,
-        "risk_score": 33,
-        "risk_level": "Medio",
-        "score_detail": {
-          "morosidad": 3,
-          "utilizacion": 25,
-          "cobranza": 0,
-          "margen": 5
+          "margen": 5,
+          "dicom": 0
         }
       },
       {
@@ -13594,6 +13937,7 @@
         "overdue_amount": 0,
         "siniestro_count": 0,
         "excepcion_count": 0,
+        "has_dicom": false,
         "avg_margin_pct": 5.1,
         "avg_price_rango": -74.0,
         "pricelist": "BOMBA -74 (CLP)",
@@ -13604,7 +13948,41 @@
           "morosidad": 0,
           "utilizacion": 23,
           "cobranza": 0,
-          "margen": 10
+          "margen": 10,
+          "dicom": 0
+        }
+      },
+      {
+        "name": "LUIS ANTONIO REYES FUENTES",
+        "vendedor": "Comber Sigall Pauline",
+        "monto_credito": 15000000,
+        "saldo_credito": -1580999,
+        "utilizacion_pct": 110.5,
+        "avg_monthly_litros": 4239,
+        "avg_monthly_venta": 4683130,
+        "projected_monthly": 4682986,
+        "linea_ratio": 31.2,
+        "avg_payment_days": 4.0,
+        "plazo_pago_dias": 30,
+        "plazo_pago_label": "30 Days",
+        "mora_ratio": 0.13,
+        "overdue_count": 0,
+        "overdue_amount": 0,
+        "siniestro_count": 0,
+        "excepcion_count": 0,
+        "has_dicom": false,
+        "avg_margin_pct": 6.7,
+        "avg_price_rango": -41.7,
+        "pricelist": "BOMBA -46 (CLP)",
+        "ar_balance": 16580999,
+        "risk_score": 33,
+        "risk_level": "Medio",
+        "score_detail": {
+          "morosidad": 3,
+          "utilizacion": 25,
+          "cobranza": 0,
+          "margen": 5,
+          "dicom": 0
         }
       },
       {
@@ -13625,6 +14003,7 @@
         "overdue_amount": 0,
         "siniestro_count": 0,
         "excepcion_count": 0,
+        "has_dicom": false,
         "avg_margin_pct": 13.7,
         "avg_price_rango": 10.0,
         "pricelist": "BOMBA -10 (CLP)",
@@ -13635,7 +14014,8 @@
           "morosidad": 19,
           "utilizacion": 14,
           "cobranza": 0,
-          "margen": 0
+          "margen": 0,
+          "dicom": 0
         }
       },
       {
@@ -13656,6 +14036,7 @@
         "overdue_amount": 0,
         "siniestro_count": 0,
         "excepcion_count": 0,
+        "has_dicom": false,
         "avg_margin_pct": 12.1,
         "avg_price_rango": -29.0,
         "pricelist": "BOMBA +10 (CLP)",
@@ -13666,7 +14047,8 @@
           "morosidad": 20,
           "utilizacion": 13,
           "cobranza": 0,
-          "margen": 0
+          "margen": 0,
+          "dicom": 0
         }
       },
       {
@@ -13687,6 +14069,7 @@
         "overdue_amount": 2015200,
         "siniestro_count": 0,
         "excepcion_count": 0,
+        "has_dicom": false,
         "avg_margin_pct": 10.7,
         "avg_price_rango": 1.0,
         "pricelist": "BOMBA +55 (CLP)",
@@ -13697,7 +14080,8 @@
           "morosidad": 16,
           "utilizacion": 9,
           "cobranza": 8,
-          "margen": 0
+          "margen": 0,
+          "dicom": 0
         }
       },
       {
@@ -13718,6 +14102,7 @@
         "overdue_amount": 0,
         "siniestro_count": 0,
         "excepcion_count": 0,
+        "has_dicom": false,
         "avg_margin_pct": 10.8,
         "avg_price_rango": 12.3,
         "pricelist": "BOMBA +7 (CLP)",
@@ -13728,7 +14113,8 @@
           "morosidad": 7,
           "utilizacion": 25,
           "cobranza": 0,
-          "margen": 0
+          "margen": 0,
+          "dicom": 0
         }
       },
       {
@@ -13749,6 +14135,7 @@
         "overdue_amount": 0,
         "siniestro_count": 0,
         "excepcion_count": 0,
+        "has_dicom": false,
         "avg_margin_pct": 10.2,
         "avg_price_rango": 9.5,
         "pricelist": "BOMBA +7 (CLP)",
@@ -13759,7 +14146,8 @@
           "morosidad": 7,
           "utilizacion": 25,
           "cobranza": 0,
-          "margen": 0
+          "margen": 0,
+          "dicom": 0
         }
       },
       {
@@ -13780,6 +14168,7 @@
         "overdue_amount": 0,
         "siniestro_count": 0,
         "excepcion_count": 0,
+        "has_dicom": false,
         "avg_margin_pct": 12.4,
         "avg_price_rango": 4.9,
         "pricelist": "BOMBA -9 (CLP)",
@@ -13790,7 +14179,8 @@
           "morosidad": 25,
           "utilizacion": 7,
           "cobranza": 0,
-          "margen": 0
+          "margen": 0,
+          "dicom": 0
         }
       },
       {
@@ -13811,6 +14201,7 @@
         "overdue_amount": 1578000,
         "siniestro_count": 0,
         "excepcion_count": 0,
+        "has_dicom": false,
         "avg_margin_pct": 9.3,
         "avg_price_rango": -3.0,
         "pricelist": "BOMBA +33 (CLP)",
@@ -13821,7 +14212,41 @@
           "morosidad": 21,
           "utilizacion": 7,
           "cobranza": 4,
-          "margen": 0
+          "margen": 0,
+          "dicom": 0
+        }
+      },
+      {
+        "name": "AGRICOLA LA SPEZIA LTDA",
+        "vendedor": "TomEnergy",
+        "monto_credito": 5160000,
+        "saldo_credito": 2359919,
+        "utilizacion_pct": 54.3,
+        "avg_monthly_litros": 717,
+        "avg_monthly_venta": 732337,
+        "projected_monthly": 731937,
+        "linea_ratio": 14.2,
+        "avg_payment_days": 27.0,
+        "plazo_pago_dias": 30,
+        "plazo_pago_label": "30 Days",
+        "mora_ratio": 0.9,
+        "overdue_count": 0,
+        "overdue_amount": 0,
+        "siniestro_count": 0,
+        "excepcion_count": 0,
+        "has_dicom": false,
+        "avg_margin_pct": 13.5,
+        "avg_price_rango": 12.5,
+        "pricelist": "BOMBA +10 (CLP) (CLP)",
+        "ar_balance": 1939200,
+        "risk_score": 32,
+        "risk_level": "Medio",
+        "score_detail": {
+          "morosidad": 18,
+          "utilizacion": 14,
+          "cobranza": 0,
+          "margen": 0,
+          "dicom": 0
         }
       },
       {
@@ -13842,6 +14267,7 @@
         "overdue_amount": 0,
         "siniestro_count": 0,
         "excepcion_count": 0,
+        "has_dicom": false,
         "avg_margin_pct": 14.1,
         "avg_price_rango": 15.0,
         "pricelist": "BOMBA +15 (CLP)",
@@ -13852,7 +14278,8 @@
           "morosidad": 23,
           "utilizacion": 9,
           "cobranza": 0,
-          "margen": 0
+          "margen": 0,
+          "dicom": 0
         }
       },
       {
@@ -13873,6 +14300,7 @@
         "overdue_amount": 0,
         "siniestro_count": 0,
         "excepcion_count": 0,
+        "has_dicom": false,
         "avg_margin_pct": 9.3,
         "avg_price_rango": 6.0,
         "pricelist": "BOMBA +38 (CLP)",
@@ -13883,7 +14311,8 @@
           "morosidad": 15,
           "utilizacion": 17,
           "cobranza": 0,
-          "margen": 0
+          "margen": 0,
+          "dicom": 0
         }
       },
       {
@@ -13904,6 +14333,7 @@
         "overdue_amount": 0,
         "siniestro_count": 0,
         "excepcion_count": 0,
+        "has_dicom": false,
         "avg_margin_pct": 10.8,
         "avg_price_rango": -24.2,
         "pricelist": "BOMBA -20 (CLP)",
@@ -13914,82 +14344,21 @@
           "morosidad": 11,
           "utilizacion": 20,
           "cobranza": 0,
-          "margen": 0
-        }
-      },
-      {
-        "name": "AGRÍCOLA CANCEL LIMITADA",
-        "vendedor": "TomEnergy",
-        "monto_credito": 5850000,
-        "saldo_credito": 3306600,
-        "utilizacion_pct": 43.5,
-        "avg_monthly_litros": 1507,
-        "avg_monthly_venta": 1495056,
-        "projected_monthly": 1495530,
-        "linea_ratio": 25.6,
-        "avg_payment_days": 30.0,
-        "plazo_pago_dias": 30,
-        "plazo_pago_label": "30 Days",
-        "mora_ratio": 1.0,
-        "overdue_count": 0,
-        "overdue_amount": 0,
-        "siniestro_count": 0,
-        "excepcion_count": 0,
-        "avg_margin_pct": 9.2,
-        "avg_price_rango": 7.0,
-        "pricelist": "BOMBA +25 (CLP)",
-        "ar_balance": 2543400,
-        "risk_score": 31,
-        "risk_level": "Medio",
-        "score_detail": {
-          "morosidad": 20,
-          "utilizacion": 11,
-          "cobranza": 0,
-          "margen": 0
-        }
-      },
-      {
-        "name": "AGRICOLA LOS BOLDOS SPA",
-        "vendedor": "Toro González Sebastian Enrique",
-        "monto_credito": 11200000,
-        "saldo_credito": 538002,
-        "utilizacion_pct": 95.2,
-        "avg_monthly_litros": 2283,
-        "avg_monthly_venta": 2781215,
-        "projected_monthly": 2781692,
-        "linea_ratio": 24.8,
-        "avg_payment_days": 2.0,
-        "plazo_pago_dias": 30,
-        "plazo_pago_label": "30 Days",
-        "mora_ratio": 0.07,
-        "overdue_count": 0,
-        "overdue_amount": 0,
-        "siniestro_count": 0,
-        "excepcion_count": 0,
-        "avg_margin_pct": 6.0,
-        "avg_price_rango": -71.0,
-        "pricelist": "BOMBA -71 (CLP)",
-        "ar_balance": 10661998,
-        "risk_score": 30,
-        "risk_level": "Medio",
-        "score_detail": {
-          "morosidad": 1,
-          "utilizacion": 24,
-          "cobranza": 0,
-          "margen": 5
+          "margen": 0,
+          "dicom": 0
         }
       }
     ],
     "summary": {
       "total_evaluados": 374,
-      "criticos": 5,
-      "altos": 62,
-      "medios": 155,
-      "bajos": 152,
-      "linea_insuficiente_count": 45,
+      "criticos": 6,
+      "altos": 63,
+      "medios": 152,
+      "bajos": 153,
+      "linea_insuficiente_count": 46,
       "total_siniestros": 0,
-      "total_overdue_amount": 108017526,
-      "avg_utilizacion": 26.3
+      "total_overdue_amount": 98844826,
+      "avg_utilizacion": 26.0
     }
   },
   "vendor_goals": {
