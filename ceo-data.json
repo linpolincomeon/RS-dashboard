@@ -1,32 +1,32 @@
 {
-  "updated": "2026-05-04T17:01:59.502200",
+  "updated": "2026-05-04T20:29:51.921264",
   "weeks": [
     {
       "label": "30apr-06may",
       "start": "2026-04-30",
       "end": "2026-05-06",
-      "ventas": 132066724,
-      "neto": 99936151,
-      "litros": 85576,
-      "litros_retail": 63674,
-      "litros_volumen": 21902,
-      "precio_neto": 1168,
-      "precio_bruto": 1543,
-      "margin": 0.06542,
-      "margin_retail": 0.06878,
-      "margin_volumen": 0.0555,
-      "facturas": 41,
+      "ventas": 157722907,
+      "neto": 119373192,
+      "litros": 101717,
+      "litros_retail": 77044,
+      "litros_volumen": 24673,
+      "precio_neto": 1174,
+      "precio_bruto": 1551,
+      "margin": 0.06979,
+      "margin_retail": 0.07394,
+      "margin_volumen": 0.05654,
+      "facturas": 56,
       "nc": 0,
-      "clientes": 35,
-      "recaud": 71556470,
-      "cheques": 3206000,
-      "transf": 68350470,
+      "clientes": 45,
+      "recaud": 111912562,
+      "cheques": 28389333,
+      "transf": 83523229,
       "factoring": 0,
       "compras_odoo": 86379097,
       "cheq_cartera_saldo": 0,
       "cheq_recibidos": 0,
-      "facturas_contado": 5,
-      "facturas_credito": 36,
+      "facturas_contado": 6,
+      "facturas_credito": 50,
       "margin_by_term": {
         "Prepago": {
           "margin": 0.09518,
@@ -35,9 +35,9 @@
           "days": 0
         },
         "1 Día": {
-          "margin": 0.0482,
-          "normalizado": 0.05787,
-          "count": 4,
+          "margin": 0.05189,
+          "normalizado": 0.06155,
+          "count": 5,
           "days": 1
         },
         "7 Días": {
@@ -47,9 +47,9 @@
           "days": 7
         },
         "30 Días": {
-          "margin": 0.06697,
-          "normalizado": 0.06697,
-          "count": 33,
+          "margin": 0.07164,
+          "normalizado": 0.07164,
+          "count": 47,
           "days": 30
         },
         "60 Días": {
@@ -60,7 +60,7 @@
         }
       },
       "cotiz_canceladas": 0,
-      "visitas": 0,
+      "visitas": 1,
       "clientes_nuevos": 1,
       "ppto": 269236,
       "ppto_retail": 199235,
@@ -1278,8 +1278,8 @@
     {
       "date": "04may",
       "day": "Lun",
-      "litros": 37374,
-      "neto": 43605239
+      "litros": 53515,
+      "neto": 63042280
     },
     {
       "date": "01may",
@@ -1375,7 +1375,7 @@
   "banks": [
     {
       "name": "DE CHILE",
-      "balance": 16074992
+      "balance": 32084348
     },
     {
       "name": "CAJA",
@@ -1402,15 +1402,15 @@
       "balance": -838790
     }
   ],
-  "total_cash": 20886246,
+  "total_cash": 36895602,
   "receivables": {
-    "open_invoices": 271,
-    "total_due": 649230599,
-    "current": 530835189,
-    "overdue": 118395410,
-    "pct_overdue": 18.2,
+    "open_invoices": 280,
+    "total_due": 659032422,
+    "current": 555397271,
+    "overdue": 103635151,
+    "pct_overdue": 15.7,
     "aging": {
-      "0-30": 97024026,
+      "0-30": 82263767,
       "31-60": 11605821,
       "61-90": 0,
       "90+": 9765563
@@ -1418,7 +1418,7 @@
     "top_debtors": [
       {
         "name": "JOSE RODRIGO ORMAZABAL VIDAL",
-        "amount": 35549701
+        "amount": 32950700
       },
       {
         "name": "EL PARRON SPA",
@@ -1469,6 +1469,10 @@
         "amount": 12319999
       },
       {
+        "name": "EMPRESAS TUCAPEL S A",
+        "amount": 11929749
+      },
+      {
         "name": "AGROINDUSTRIAL SIRACUSA S A",
         "amount": 11617500
       },
@@ -1491,10 +1495,6 @@
       {
         "name": "VICTOR FAVIO VILCHES MARDONES",
         "amount": 8824001
-      },
-      {
-        "name": "AGROMORANDE S A",
-        "amount": 7945602
       }
     ]
   },
@@ -1582,15 +1582,15 @@
   "riesgo": {
     "cubierto": 0,
     "cubierto_count": 0,
-    "no_cubierto": 649230599,
-    "no_cubierto_count": 271,
+    "no_cubierto": 659032422,
+    "no_cubierto_count": 280,
     "pct_monto": 100.0,
     "pct_count": 100.0
   },
   "churn": {
-    "eligible_clients": 163,
-    "churned_count": 54,
-    "pct": 33.1,
+    "eligible_clients": 164,
+    "churned_count": 51,
+    "pct": 31.1,
     "churned": [
       {
         "name": "ERIKA DEL PILAR GUZMAN MANRIQUEZ",
@@ -1713,16 +1713,6 @@
         "new_this_week": false
       },
       {
-        "name": "AGRICOLA QUILAÑANCO LTDA",
-        "freq": "Irregular (Promedio: 25 días)",
-        "freq_days": 25,
-        "last_invoice": "2026-03-05",
-        "days_since": 60,
-        "threshold": 50,
-        "invoices_8m": 8,
-        "new_this_week": false
-      },
-      {
         "name": "JORGE ALFONSO CATALAN FIGUEROA",
         "freq": "Bimensual (Quincenal)",
         "freq_days": 15,
@@ -1750,16 +1740,6 @@
         "days_since": 56,
         "threshold": 30,
         "invoices_8m": 10,
-        "new_this_week": false
-      },
-      {
-        "name": "AGRICOLA LA SORPRESA SPA",
-        "freq": "Bimensual (Quincenal)",
-        "freq_days": 15,
-        "last_invoice": "2026-03-09",
-        "days_since": 56,
-        "threshold": 30,
-        "invoices_8m": 19,
         "new_this_week": false
       },
       {
@@ -1810,16 +1790,6 @@
         "days_since": 53,
         "threshold": 52,
         "invoices_8m": 9,
-        "new_this_week": true
-      },
-      {
-        "name": "AGRICOLA Y COMERCIAL DON CARLOS",
-        "freq": "Irregular (Promedio: 24 días)",
-        "freq_days": 24,
-        "last_invoice": "2026-03-12",
-        "days_since": 53,
-        "threshold": 48,
-        "invoices_8m": 8,
         "new_this_week": true
       },
       {
@@ -1891,6 +1861,36 @@
         "threshold": 30,
         "invoices_8m": 10,
         "new_this_week": false
+      },
+      {
+        "name": "SOCIEDAD DE EXPLOTACION AGRICOLA LTDA",
+        "freq": "Irregular (Promedio: 20 días)",
+        "freq_days": 20,
+        "last_invoice": "2026-03-17",
+        "days_since": 48,
+        "threshold": 40,
+        "invoices_8m": 8,
+        "new_this_week": false
+      },
+      {
+        "name": "DOMINGO SEGUNDO GALAZ QUEZADA",
+        "freq": "Irregular (Promedio: 13 días)",
+        "freq_days": 13,
+        "last_invoice": "2026-03-18",
+        "days_since": 47,
+        "threshold": 26,
+        "invoices_8m": 13,
+        "new_this_week": false
+      },
+      {
+        "name": "CLAUDIO AZOCAR SANDOVAL",
+        "freq": "Irregular (Promedio: 21 días)",
+        "freq_days": 21,
+        "last_invoice": "2026-03-18",
+        "days_since": 47,
+        "threshold": 42,
+        "invoices_8m": 8,
+        "new_this_week": true
       }
     ],
     "filters": "≥8 facturas, frecuencia ≤45d, silencio >2x freq",
@@ -1921,15 +1921,15 @@
       },
       {
         "month": "Apr 2026",
-        "pct": 71.4,
-        "new_churn": 30,
-        "active_start": 42
+        "pct": 69.2,
+        "new_churn": 27,
+        "active_start": 39
       },
       {
         "month": "May 2026",
-        "pct": 80.4,
-        "new_churn": 82,
-        "active_start": 102
+        "pct": 80.2,
+        "new_churn": 77,
+        "active_start": 96
       }
     ]
   },
