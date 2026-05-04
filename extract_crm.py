@@ -1278,7 +1278,7 @@ def extract_credit_risk(models, uid):
         ["customer_rank", ">", 0],
     ], ["id", "name", "monto_credito", "saldo_credito",
         "property_payment_term_id", "property_product_pricelist",
-        "credit"],  # credit = standard Odoo AR balance
+        "credit", "category_id"],  # credit = AR balance, category_id = tags
     limit=2000)
 
     print(f"  Partners with credit line: {len(credit_partners)}")
@@ -1287,6 +1287,30 @@ def extract_credit_risk(models, uid):
 
     partner_map = {p["id"]: p for p in credit_partners}
     partner_ids = list(partner_map.keys())
+
+    # ── 1b. Resolve tag names to detect DICOM ──
+    all_tag_ids = set()
+    for p in credit_partners:
+        for tid in (p.get("category_id") or []):
+            all_tag_ids.add(tid)
+
+    dicom_tag_ids = set()
+    if all_tag_ids:
+        tags = sr(models, uid, "res.partner.category", [
+            ["id", "in", list(all_tag_ids)],
+        ], ["id", "name"], limit=500)
+        for t in tags:
+            if "dicom" in (t.get("name") or "").lower():
+                dicom_tag_ids.add(t["id"])
+        print(f"  DICOM tag IDs: {dicom_tag_ids}")
+
+    # Flag partners with DICOM
+    partner_has_dicom = {}
+    for p in credit_partners:
+        has = bool(set(p.get("category_id") or []) & dicom_tag_ids)
+        partner_has_dicom[p["id"]] = has
+    dicom_count = sum(1 for v in partner_has_dicom.values() if v)
+    print(f"  Partners with DICOM tag: {dicom_count}")
 
     # ── 2. Get invoices last 3 months for these partners ──
     batch_size = 200
@@ -1467,7 +1491,11 @@ def extract_credit_risk(models, uid):
             elif avg_margin < 8:
                 score_margin = 5
 
-        risk_score = score_mora + score_util + score_cobranza + score_margin
+        # Component 5: DICOM (0-20 pts) — immediate high risk flag
+        has_dicom = partner_has_dicom.get(pid, False)
+        score_dicom = 20 if has_dicom else 0
+
+        risk_score = score_mora + score_util + score_cobranza + score_margin + score_dicom
 
         # Risk level label
         if risk_score >= 60:
@@ -1497,6 +1525,7 @@ def extract_credit_risk(models, uid):
             "overdue_amount": round(stats["overdue_amount"]),
             "siniestro_count": stats["siniestro_count"],
             "excepcion_count": stats["excepcion_count"],
+            "has_dicom": has_dicom,
             "avg_margin_pct": avg_margin,
             "avg_price_rango": avg_price_rango,
             "pricelist": pricelist or "—",
@@ -1508,6 +1537,7 @@ def extract_credit_risk(models, uid):
                 "utilizacion": score_util,
                 "cobranza": score_cobranza,
                 "margen": score_margin,
+                "dicom": score_dicom,
             },
         }
 
