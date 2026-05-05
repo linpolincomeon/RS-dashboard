@@ -1,32 +1,32 @@
 {
-  "updated": "2026-05-05T16:54:29.912277",
+  "updated": "2026-05-05T20:20:03.480268",
   "weeks": [
     {
       "label": "30apr-06may",
       "start": "2026-04-30",
       "end": "2026-05-06",
-      "ventas": 173930907,
-      "neto": 131632184,
-      "litros": 112067,
-      "litros_retail": 88894,
+      "ventas": 204435963,
+      "neto": 154728455,
+      "litros": 131368,
+      "litros_retail": 108195,
       "litros_volumen": 25673,
-      "precio_neto": 1175,
-      "precio_bruto": 1552,
-      "margin": 0.07056,
-      "margin_retail": 0.07443,
+      "precio_neto": 1178,
+      "precio_bruto": 1554,
+      "margin": 0.0731,
+      "margin_retail": 0.07687,
       "margin_volumen": 0.05683,
-      "facturas": 65,
+      "facturas": 80,
       "nc": 2,
-      "clientes": 54,
-      "recaud": 199708735,
-      "cheques": 28389333,
-      "transf": 109092067,
+      "clientes": 67,
+      "recaud": 230893724,
+      "cheques": 38534472,
+      "transf": 130131917,
       "factoring": 62227335,
       "compras_odoo": 100925725,
       "cheq_cartera_saldo": 0,
       "cheq_recibidos": 0,
-      "facturas_contado": 8,
-      "facturas_credito": 57,
+      "facturas_contado": 11,
+      "facturas_credito": 69,
       "margin_by_term": {
         "Prepago": {
           "margin": 0.09518,
@@ -35,9 +35,9 @@
           "days": 0
         },
         "1 Día": {
-          "margin": 0.05572,
-          "normalizado": 0.06539,
-          "count": 7,
+          "margin": 0.06209,
+          "normalizado": 0.07175,
+          "count": 10,
           "days": 1
         },
         "7 Días": {
@@ -47,15 +47,15 @@
           "days": 7
         },
         "15 Días": {
-          "margin": 0.05592,
-          "normalizado": 0.06092,
-          "count": 1,
+          "margin": 0.06651,
+          "normalizado": 0.07151,
+          "count": 5,
           "days": 15
         },
         "30 Días": {
-          "margin": 0.07252,
-          "normalizado": 0.07252,
-          "count": 49,
+          "margin": 0.07513,
+          "normalizado": 0.07513,
+          "count": 57,
           "days": 30
         },
         "45 Días": {
@@ -72,7 +72,7 @@
         }
       },
       "cotiz_canceladas": 0,
-      "visitas": 1,
+      "visitas": 9,
       "clientes_nuevos": 1,
       "ppto": 269236,
       "ppto_retail": 199235,
@@ -1290,8 +1290,8 @@
     {
       "date": "05may",
       "day": "Mar",
-      "litros": 12851,
-      "neto": 15338909
+      "litros": 32151,
+      "neto": 38253787
     },
     {
       "date": "04may",
@@ -1387,7 +1387,7 @@
   "banks": [
     {
       "name": "DE CHILE",
-      "balance": 21395733
+      "balance": 30280722
     },
     {
       "name": "ITAU",
@@ -1414,15 +1414,15 @@
       "balance": -838790
     }
   ],
-  "total_cash": 52191987,
+  "total_cash": 61076976,
   "receivables": {
-    "open_invoices": 277,
-    "total_due": 645243481,
-    "current": 562844529,
-    "overdue": 82398952,
-    "pct_overdue": 12.8,
+    "open_invoices": 286,
+    "total_due": 654492829,
+    "current": 579340377,
+    "overdue": 75152452,
+    "pct_overdue": 11.5,
     "aging": {
-      "0-30": 65682568,
+      "0-30": 58436068,
       "31-60": 6950821,
       "61-90": 0,
       "90+": 9765563
@@ -1430,11 +1430,7 @@
     "top_debtors": [
       {
         "name": "JOSE RODRIGO ORMAZABAL VIDAL",
-        "amount": 32950700
-      },
-      {
-        "name": "EL PARRON SPA",
-        "amount": 22470000
+        "amount": 32217200
       },
       {
         "name": "SOC AGRICOLA GRANJA SAN RAFAEL LIMITADA",
@@ -1471,6 +1467,10 @@
       {
         "name": "CIA AGRICOLA Y FORESTAL EL ALAMO LIMITADA",
         "amount": 12319999
+      },
+      {
+        "name": "EL PARRON SPA",
+        "amount": 12000000
       },
       {
         "name": "EMPRESAS TUCAPEL S A",
@@ -1604,15 +1604,15 @@
   "riesgo": {
     "cubierto": 0,
     "cubierto_count": 0,
-    "no_cubierto": 645243481,
-    "no_cubierto_count": 277,
+    "no_cubierto": 654492829,
+    "no_cubierto_count": 286,
     "pct_monto": 100.0,
     "pct_count": 100.0
   },
   "churn": {
-    "eligible_clients": 164,
-    "churned_count": 52,
-    "pct": 31.7,
+    "eligible_clients": 165,
+    "churned_count": 51,
+    "pct": 30.9,
     "churned": [
       {
         "name": "ERIKA DEL PILAR GUZMAN MANRIQUEZ",
@@ -1943,15 +1943,15 @@
       },
       {
         "month": "Apr 2026",
-        "pct": 68.4,
+        "pct": 70.3,
         "new_churn": 26,
-        "active_start": 38
+        "active_start": 37
       },
       {
         "month": "May 2026",
-        "pct": 79.3,
-        "new_churn": 73,
-        "active_start": 92
+        "pct": 82.1,
+        "new_churn": 69,
+        "active_start": 84
       }
     ]
   },
@@ -2098,15 +2098,15 @@
         "month": "2026-05",
         "label": "May 2026",
         "budget": 10055583,
-        "actual": 4824746,
-        "compliance_pct": 48.0,
+        "actual": 5124746,
+        "compliance_pct": 51.0,
         "categories": {
           "Petróleo": 4724746,
           "Mantención y Reparación": 0,
           "Gastos Traslados (TAG)": 0,
           "Seguros": 0,
           "Gastos Vehículos": 0,
-          "Arriendo": 100000,
+          "Arriendo": 400000,
           "EPP": 0,
           "Mantenciones Varias": 0
         }
