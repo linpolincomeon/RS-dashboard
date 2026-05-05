@@ -1724,7 +1724,11 @@ function renderMesVencido(){
   }
   var mLbu=mergeByNorm(TP.litros_by_user||{});
   var mNcBu=mergeByNorm(ncP.by_user||{});
-  var _uSet=new Set([].concat(Object.keys(mLbu),Object.keys(VG)));
+  // Deduplicate user list by normalized name (fixes VG having "Yeniré Ron" vs mLbu "Ron Yenire")
+  var _allNames=[].concat(Object.keys(mLbu),Object.keys(VG));
+  var _seenNorm={},_dedupNames=[];
+  _allNames.forEach(function(n){var nn=norm(n);if(!_seenNorm[nn]){_seenNorm[nn]=true;_dedupNames.push(n);}});
+  var _uSet=new Set(_dedupNames);
   var users=Array.from(_uSet).filter(function(u){return u!=='Sin asignar'&&isAllowed(u)});
   if(users.length){
     h+='<div class="sec"><div class="sec-h"><h2>Resumen '+(VP.month_label||'Mes')+'</h2></div>';
