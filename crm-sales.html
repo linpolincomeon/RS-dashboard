@@ -111,6 +111,7 @@ tr:hover td{background:#fafaf8}
       <button class="tab-btn" onclick="switchTab('mesvencido')">📋 Mes Vencido</button>
       <button class="tab-btn" onclick="switchTab('riesgo')">⚠️ Riesgo</button>
       <button class="tab-btn" onclick="switchTab('glosario')">📖 Glosario</button>
+      <button class="tab-btn" onclick="switchTab('pendientes')" style="color:#c8360e">⚙️ Pendientes</button>
     </div>
 
     <!-- ═══ TAB: EJECUTIVOS ═══ -->
@@ -143,6 +144,11 @@ tr:hover td{background:#fafaf8}
         <div class="sec"><div class="sec-h"><h2>📊 Ranking Equipo</h2></div><div class="sec-b">
           <table><thead><tr><th>#</th><th>Ejecutivo</th><th>% Meta</th><th>Mov. 7d</th><th>Mov. 30d</th></tr></thead><tbody id="rankingBody"></tbody></table>
         </div></div>
+
+        <!-- Clientes Nuevos de la semana -->
+        <div class="sec"><div class="sec-h"><h2>🆕 Clientes Nuevos</h2><span class="badge" id="newClientsCount">0</span></div>
+          <div class="sec-b" style="max-height:400px;overflow-y:auto"><table><thead><tr><th>Cliente</th><th>Ejecutivo</th><th>Fecha 1ª Factura</th><th style="text-align:right">Litros</th></tr></thead><tbody id="newClientsBody"></tbody></table>
+          <div class="nodata" id="noNewClients" style="display:none">Sin clientes nuevos</div></div></div>
 
         <!-- Margen grids -->
         <div class="grid-2">
@@ -275,6 +281,24 @@ tr:hover td{background:#fafaf8}
           <table><thead><tr><th>Score</th><th>Cliente</th><th>Nivel</th><th>DICOM</th><th>Mora (días)</th><th>Plazo</th><th>Utiliz.</th><th>Vencido</th><th>Siniestro</th><th>Margen</th><th>L/mes</th></tr></thead>
           <tbody id="scoreBody"></tbody></table>
           <div class="nodata" id="noScore" style="display:none">Sin datos de riesgo</div></div></div>
+    </div>
+
+    <!-- ═══ TAB: PENDIENTES ═══ -->
+    <div class="tab-panel" id="tab-pendientes">
+      <div class="sec"><div class="sec-h"><h2>⚙️ Issues Pendientes</h2></div>
+      <div class="sec-b" style="font-size:13px;line-height:1.8">
+        <table style="width:100%">
+          <thead><tr><th style="width:200px">Issue</th><th>Detalle</th><th style="width:100px">Estado</th></tr></thead>
+          <tbody>
+            <tr><td class="bold" style="color:#c8360e">Litros Toro — NC</td><td>Las notas de crédito "por monto" (sin línea diesel B1) no restan litros. El campo <code>reversed_entry_id</code> no vincula NC a factura original en Odoo 18. Se agregó <code>nc_debug</code> al JSON para diagnosticar. Pendiente: identificar cómo matchear NC con factura original para restar litros correctos.</td><td><span class="tag tag-r">Bloqueado</span></td></tr>
+            <tr><td class="bold" style="color:#c8360e">Churn %</td><td>El cálculo de churn muestra valores incorrectos (ej: 100%). La lógica en <code>extract_crm.py</code> necesita revisión del threshold de días y la base de clientes activos. Definición correcta: clientes que compraron mes anterior pero no este mes, dividido por total clientes mes anterior.</td><td><span class="tag tag-r">Por revisar</span></td></tr>
+            <tr><td class="bold" style="color:#e65100">Oportunidades históricas</td><td>En semanas pasadas, las oportunidades muestran datos aproximados. Solo tenemos snapshot actual del pipeline, no histórico semanal. Para datos exactos por semana se necesitaría guardar snapshots semanales del pipeline.</td><td><span class="tag tag-y">Limitación</span></td></tr>
+            <tr><td class="bold" style="color:#e65100">Score Crediticio</td><td>Componentes definidos: Morosidad (40pts), Utilización (25pts), Cobranza (20pts), DICOM (20pts), Margen (15pts). Campos Odoo identificados. Pendiente implementación.</td><td><span class="tag tag-y">Diseñado</span></td></tr>
+            <tr><td class="bold" style="color:#e65100">AVLA cruce</td><td>Pendiente subir planilla mensual AVLA para cruzar contra monto_credito/saldo_credito en Odoo. Histórico en <code>riesgo-historico.json</code>.</td><td><span class="tag tag-y">Pendiente</span></td></tr>
+            <tr><td class="bold" style="color:#e65100">Crons Odoo</td><td>Scripts de alerta temprana y mover a "En Riesgo" entregados. Verificar si están instalados como Acciones Planificadas.</td><td><span class="tag tag-y">Por verificar</span></td></tr>
+          </tbody>
+        </table>
+      </div></div>
     </div>
 
     <!-- ═══ TAB: GLOSARIO ═══ -->
@@ -1015,9 +1039,36 @@ function renderVentasData() {
   } else {
     renderWeeklyChart();
     renderRanking();
+    renderNewClientsTable();
     renderMargenCharts();
     renderHotDeals();
   }
+}
+
+function renderNewClientsTable() {
+  if (!D) return;
+  const V = D.ventas || {};
+  const ncDetail = V.new_clients?.detail || [];
+  const ncPrev = (D.ventas_prev || {}).new_clients?.detail || [];
+  const all = [...ncDetail, ...ncPrev];
+  const week = getCurrentWeek();
+  const ws = week?.week_start || '', we = week?.week_end || '';
+  const filtered = all.filter(c => ws && we && c.fecha >= ws && c.fecha <= we);
+  const body = document.getElementById('newClientsBody');
+  const badge = document.getElementById('newClientsCount');
+  const noData = document.getElementById('noNewClients');
+  if (!body) return;
+  badge.textContent = filtered.length;
+  if (filtered.length === 0) {
+    body.innerHTML = '';
+    noData.style.display = '';
+    return;
+  }
+  noData.style.display = 'none';
+  filtered.sort((a, b) => (b.litros || 0) - (a.litros || 0));
+  body.innerHTML = filtered.map(c =>
+    `<tr><td class="bold">${H(c.cliente || '')}</td><td>${H(c.vendedor || '')}</td><td>${c.fecha || '—'}</td><td style="text-align:right">${fL(c.litros)}</td></tr>`
+  ).join('');
 }
 
 function renderVentas() {
@@ -1119,7 +1170,12 @@ function renderVentas() {
   kh += mkKpi('c-green', 'Litros Fidelización', fL(litrosFidelizacion), 'CS + otros', null, null);
   kh += mkKpi('c-red', 'Leads', wLeads, 'Meta: ' + leadsGoal, wLeads, leadsGoal);
   kh += mkKpi('c-yellow', 'Cotizaciones', wCotiz, 'Meta: ' + cotizGoal, wCotiz, cotizGoal);
-  kh += mkKpi('c-green', 'Nuevos Clientes', wCierre, 'Meta: ' + cierreGoal + ' · ' + fL(litrosNuevos), wCierre, cierreGoal);
+  // Nuevos Clientes: usar primera factura diesel real, NO funnel cierre
+  const ncAllForKpi = [...ncDetail, ...((D.ventas_prev || {}).new_clients?.detail || [])];
+  const wNuevos = isAccum
+    ? ncDetail.length
+    : ncAllForKpi.filter(c => ws && we && c.fecha >= ws && c.fecha <= we).length;
+  kh += mkKpi('c-green', 'Nuevos Clientes', wNuevos, 'Meta: 6 · ' + fL(litrosNuevos), null, null);
   // At-risk clients
   const atRisk = D.at_risk || {};
   kh += mkKpi('c-amber', 'En Riesgo', (atRisk.count || 0) + ' clientes', fL(atRisk.total_litros_at_risk || 0) + '/mes en juego', atRisk.count || 0, 1);
