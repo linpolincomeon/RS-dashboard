@@ -60,6 +60,44 @@ def safe_id(v):
 def strip_html(text):
     return re.sub(r'<[^>]+>', '', text or '').strip()
 
+import unicodedata
+def norm_name(s):
+    """Normalize a user name: lowercase, remove accents, sort words → canonical key."""
+    if not s: return ""
+    s = unicodedata.normalize('NFD', s.lower())
+    s = ''.join(c for c in s if unicodedata.category(c) != 'Mn')
+    return ' '.join(sorted(s.split()))
+
+def merge_by_user(d):
+    """Merge dict entries whose keys normalize to the same name. Keeps the longest original key."""
+    merged = {}
+    key_map = {}  # norm → best original key
+    for k, v in d.items():
+        nk = norm_name(k)
+        if nk in merged:
+            merged[nk] += v
+            if len(k) > len(key_map[nk]):
+                key_map[nk] = k
+        else:
+            merged[nk] = v
+            key_map[nk] = k
+    return {key_map[nk]: v for nk, v in merged.items()}
+
+def merge_by_user_lists(d):
+    """Like merge_by_user but for dict of lists (concatenate instead of sum)."""
+    merged = {}
+    key_map = {}
+    for k, v in d.items():
+        nk = norm_name(k)
+        if nk in merged:
+            merged[nk].extend(v)
+            if len(k) > len(key_map[nk]):
+                key_map[nk] = k
+        else:
+            merged[nk] = list(v)
+            key_map[nk] = k
+    return {key_map[nk]: v for nk, v in merged.items()}
+
 
 # ── ENAP week: Thursday to Wednesday ──
 def get_enap_week(offset=0):
@@ -227,6 +265,7 @@ def extract_crm_data(models, uid):
             "last_update": (l.get("write_date") or l.get("date_last_stage_update") or "")[:10],
             "origin": l.get("x_origen_oportunidad") or "—",
             "created": (l.get("create_date") or "")[:10],
+            "probability": l.get("probability", 0),
         }
         if cls == "won":
             won_deals.append(entry)
@@ -308,6 +347,7 @@ def extract_crm_data(models, uid):
         })
 
     msg_list = []
+    last_msg_by_lead = {}  # lead_id → latest message summary
     for m in messages:
         body = strip_html(m.get("body") or "")
         if len(body) < 3: continue
@@ -316,6 +356,15 @@ def extract_crm_data(models, uid):
             "who": m["author_id"][1] if m.get("author_id") else "—",
             "desc": body[:200],
         })
+        rid = m.get("res_id")
+        if rid and rid not in last_msg_by_lead:
+            last_msg_by_lead[rid] = body[:120]
+
+    # Enrich pipeline entries with last weekly message
+    for p in pipeline:
+        p["last_note"] = last_msg_by_lead.get(p["id"], "")
+    for w in won_deals:
+        w["last_note"] = last_msg_by_lead.get(w["id"], "")
 
     return {
         "has_litros": cf["x_litros_estimados"],
@@ -677,51 +726,85 @@ def extract_sales_data(models, uid, custom_start=None, custom_end=None, label_ov
     nc_partner_map = {n["id"]: safe_id(n.get("partner_id")) for n in ncs}
     nc_margin_map = {n["id"]: n.get("margin_zone", 0) or 0 for n in ncs}
 
+    # Descontar NC: usar amount_untaxed del header para venta (cubre NC sin producto diesel)
+    # y litros solo de líneas con diesel (si las hay)
     if nc_ids:
+        # Litros: solo de líneas con producto diesel
         nc_lines = sr(models, uid, "account.move.line", [
             ["move_id", "in", nc_ids],
             ["product_id", "=", DIESEL_PRODUCT_ID],
-        ], ["move_id", "quantity", "price_subtotal"], limit=2000)
-
+        ], ["move_id", "quantity"], limit=2000)
+        nc_litros_by_move = defaultdict(float)
         for ln in nc_lines:
             mid = safe_id(ln.get("move_id"))
-            qty = abs(ln.get("quantity", 0))   # abs: Odoo 18 out_refund puede traer qty negativa
-            sub = abs(ln.get("price_subtotal", 0))  # abs: idem para montos
-            user = nc_user_map.get(mid, "Sin asignar")
-            nc_margin = nc_margin_map.get(mid, 0)
-            litros_by_user[user] -= qty
-            venta_by_user[user] -= sub
-            total_litros -= qty
-            total_venta -= sub
-            margin_by_user_venta[user] -= sub
-            margin_by_user_costo[user] -= sub * (1 - nc_margin) if nc_margin else sub
-            nc_pid = nc_partner_map.get(mid)
-            if nc_pid:
-                litros_by_partner[nc_pid] -= qty
+            nc_litros_by_move[mid] += abs(ln.get("quantity", 0))
 
+    for nc in ncs:
+        ncid = nc["id"]
+        user = nc_user_map.get(ncid, "Sin asignar")
+        nc_margin = nc_margin_map.get(ncid, 0)
+        nc_pid = nc_partner_map.get(ncid)
+        # Venta: usar amount_untaxed del header (cubre toda NC, no solo diesel)
+        sub = abs(nc.get("amount_untaxed", 0) or 0)
+        # Litros: solo si la NC tenía líneas con diesel
+        qty = nc_litros_by_move.get(ncid, 0) if nc_ids else 0
+
+        litros_by_user[user] -= qty
+        venta_by_user[user] -= sub
+        total_litros -= qty
+        total_venta -= sub
+        margin_by_user_venta[user] -= sub
+        margin_by_user_costo[user] -= sub * (1 - nc_margin) if nc_margin else sub
+        if nc_pid:
+            litros_by_partner[nc_pid] -= qty
+
+    # ── Clientes Nuevos: primera factura con Diesel B1 (product_id=14) en este mes ──
     new_cl_by_user = defaultdict(int)
     new_cl_detail = []
     new_cl_count = 0
-    new_cl_litros_by_user = defaultdict(float)  # liters of NEW clients, per salesperson
+    new_cl_litros_by_user = defaultdict(float)
+    # Get all partner_ids that have diesel lines in THIS month's invoices
+    diesel_partners_this_month = set()
+    for ln in lines:
+        mid = safe_id(ln.get("move_id"))
+        pid = inv_partner_map.get(mid)
+        if pid:
+            diesel_partners_this_month.add(pid)
     seen = set()
-    for inv in invoices:
-        pid = safe_id(inv.get("partner_id"))
-        if not pid or pid in seen: continue
+    for pid in diesel_partners_this_month:
+        if pid in seen: continue
         seen.add(pid)
-        prev = s_count(models, uid, "account.move", [
+        # Check if this partner had ANY previous invoice with Diesel B1 line
+        prev_inv = sr(models, uid, "account.move", [
             ["move_type", "=", "out_invoice"],
             ["state", "=", "posted"],
             ["partner_id", "=", pid],
             ["invoice_date", "<", fmt(m_start)],
-        ])
-        if prev == 0:
-            u = safe_name(inv.get("invoice_user_id"))
-            pname = safe_name(inv.get("partner_id"))
-            new_cl_by_user[u] += 1
-            new_cl_count += 1
-            partner_litros = max(litros_by_partner.get(pid, 0), 0)
-            new_cl_litros_by_user[u] += partner_litros
-            new_cl_detail.append({"cliente": pname, "vendedor": u, "fecha": inv.get("invoice_date", ""), "litros": round(partner_litros)})
+        ], ["id"], limit=500)
+        prev_ids = [i["id"] for i in prev_inv]
+        had_diesel_before = False
+        if prev_ids:
+            # Check if any previous invoice had a diesel line
+            for chunk_start in range(0, len(prev_ids), 200):
+                chunk = prev_ids[chunk_start:chunk_start+200]
+                prev_diesel = s_count(models, uid, "account.move.line", [
+                    ["move_id", "in", chunk],
+                    ["product_id", "=", DIESEL_PRODUCT_ID],
+                ])
+                if prev_diesel > 0:
+                    had_diesel_before = True
+                    break
+        if not had_diesel_before:
+            # Find the first invoice for this partner in this month
+            inv_match = next((i for i in invoices if safe_id(i.get("partner_id")) == pid), None)
+            if inv_match:
+                u = safe_name(inv_match.get("invoice_user_id"))
+                pname = safe_name(inv_match.get("partner_id"))
+                new_cl_by_user[u] += 1
+                new_cl_count += 1
+                partner_litros = max(litros_by_partner.get(pid, 0), 0)
+                new_cl_litros_by_user[u] += partner_litros
+                new_cl_detail.append({"cliente": pname, "vendedor": u, "fecha": inv_match.get("invoice_date", ""), "litros": round(partner_litros)})
 
     weekly_sales = []
     for offset in range(4):
@@ -799,9 +882,9 @@ def extract_sales_data(models, uid, custom_start=None, custom_end=None, label_ov
         weekly_history.append({
             "label": f"{ws_d.day}/{ws_d.month}-{we_d.day}/{we_d.month}",
             "litros": round(wk_l),
-            "litros_by_user": {k: round(v) for k, v in wk_lbu.items()},
-            "venta_by_user": {k: round(v) for k, v in wk_vbu.items()},
-            "margin_by_user": wk_margin_by_user,
+            "litros_by_user": merge_by_user({k: round(v) for k, v in wk_lbu.items()}),
+            "venta_by_user": merge_by_user({k: round(v) for k, v in wk_vbu.items()}),
+            "margin_by_user": merge_by_user(wk_margin_by_user),
         })
     weekly_history.reverse()  # oldest first
 
@@ -838,8 +921,8 @@ def extract_sales_data(models, uid, custom_start=None, custom_end=None, label_ov
             "total_venta_neta": round(total_venta),
             "invoice_count": len(invoices),
             "nc_count": len(ncs),
-            "litros_by_user": {k: round(v) for k, v in litros_by_user.items()},
-            "venta_by_user": {k: round(v) for k, v in venta_by_user.items()},
+            "litros_by_user": merge_by_user({k: round(v) for k, v in litros_by_user.items()}),
+            "venta_by_user": merge_by_user({k: round(v) for k, v in venta_by_user.items()}),
             "margin_retail_pct": margin_retail_pct,
             "margin_volume_pct": margin_volume_pct,
             "retail_venta": round(retail_venta),
@@ -847,17 +930,17 @@ def extract_sales_data(models, uid, custom_start=None, custom_end=None, label_ov
             "litros_by_zone": {k: round(v) for k, v in sorted(litros_by_zone.items(), key=lambda x: -x[1])},
             "venta_by_zone": {k: round(v) for k, v in sorted(venta_by_zone.items(), key=lambda x: -x[1])},
             "margin_by_zone": {k: round((1 - margin_by_zone_costo[k] / margin_by_zone_venta[k]) * 100, 1) if margin_by_zone_venta[k] > 0 else 0 for k in litros_by_zone},
-            "margin_by_user": {k: round((1 - margin_by_user_costo[k] / margin_by_user_venta[k]) * 100, 1) if margin_by_user_venta.get(k, 0) > 0 else 0 for k in litros_by_user},
+            "margin_by_user": merge_by_user({k: round((1 - margin_by_user_costo[k] / margin_by_user_venta[k]) * 100, 1) if margin_by_user_venta.get(k, 0) > 0 else 0 for k in litros_by_user}),
         },
         "new_clients": {
             "count": new_cl_count,
-            "by_user": dict(new_cl_by_user),
-            "litros_by_user": {k: round(v) for k, v in new_cl_litros_by_user.items()},
+            "by_user": merge_by_user(dict(new_cl_by_user)),
+            "litros_by_user": merge_by_user({k: round(v) for k, v in new_cl_litros_by_user.items()}),
             "detail": new_cl_detail,
         },
         "weekly": list(reversed(weekly_sales)),
         "weekly_history": weekly_history,
-        "detail_by_user": {k: v for k, v in detail_by_user.items()},
+        "detail_by_user": merge_by_user_lists(detail_by_user),
     }
 
 
