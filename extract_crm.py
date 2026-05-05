@@ -778,7 +778,38 @@ def extract_sales_data(models, uid, custom_start=None, custom_end=None, label_ov
         nc_venta_total += sub
         print(f"    NC {nc.get('name','?')}: litros={qty} venta={sub} user={user} rev={safe_id(nc.get('reversed_entry_id'))}")
 
+    # Also get ALL nc lines (any product) for debug
+    nc_all_lines_debug = []
+    if nc_ids:
+        all_nc_lines = sr(models, uid, "account.move.line", [
+            ["move_id", "in", nc_ids],
+            ["exclude_from_invoice_tab", "=", False],
+        ], ["move_id", "product_id", "quantity", "price_subtotal", "name"], limit=2000)
+        for ln in all_nc_lines:
+            nc_all_lines_debug.append({
+                "nc_id": safe_id(ln.get("move_id")),
+                "product": safe_name(ln.get("product_id")),
+                "product_id": safe_id(ln.get("product_id")),
+                "qty": ln.get("quantity", 0),
+                "subtotal": ln.get("price_subtotal", 0),
+                "desc": (ln.get("name") or "")[:60],
+            })
+
+    nc_debug = []
+    for nc in ncs:
+        nc_debug.append({
+            "name": nc.get("name", ""),
+            "user": nc_user_map.get(nc["id"], ""),
+            "amount": abs(nc.get("amount_untaxed", 0) or 0),
+            "partner": safe_name(nc.get("partner_id")),
+            "litros_restados": nc_litros_by_move.get(nc["id"], 0),
+            "reversed_entry_id": safe_id(nc.get("reversed_entry_id")),
+            "lines": [l for l in nc_all_lines_debug if l["nc_id"] == nc["id"]],
+        })
+
     print(f"  NC resumen: {len(ncs)} NCs, litros restados={round(nc_litros_total)}, venta restada={round(nc_venta_total)}")
+    for ncd in nc_debug:
+        print(f"    {ncd['name']}: L={ncd['litros_restados']} $={ncd['amount']} user={ncd['user']} rev={ncd['reversed_entry_id']} lines={len(ncd['lines'])}")
 
     # ── Clientes Nuevos: primera factura con Diesel B1 (product_id=14) en este mes ──
     new_cl_by_user = defaultdict(int)
@@ -943,6 +974,7 @@ def extract_sales_data(models, uid, custom_start=None, custom_end=None, label_ov
             "total_venta_neta": round(total_venta),
             "invoice_count": len(invoices),
             "nc_count": len(ncs),
+            "nc_debug": nc_debug,
             "litros_by_user": merge_by_user({k: round(v) for k, v in litros_by_user.items()}),
             "venta_by_user": merge_by_user({k: round(v) for k, v in venta_by_user.items()}),
             "margin_retail_pct": margin_retail_pct,
