@@ -1,5 +1,5 @@
 {
-  "updated": "2026-05-04T20:29:51.921264",
+  "updated": "2026-05-05T00:08:13.441385",
   "weeks": [
     {
       "label": "30apr-06may",
@@ -1276,6 +1276,12 @@
   ],
   "daily": [
     {
+      "date": "05may",
+      "day": "Mar",
+      "litros": 0,
+      "neto": 0
+    },
+    {
       "date": "04may",
       "day": "Lun",
       "litros": 53515,
@@ -1364,12 +1370,6 @@
       "day": "Mar",
       "litros": 41430,
       "neto": 53979522
-    },
-    {
-      "date": "13apr",
-      "day": "Lun",
-      "litros": 42397,
-      "neto": 56061926
     }
   ],
   "banks": [
@@ -1406,11 +1406,11 @@
   "receivables": {
     "open_invoices": 280,
     "total_due": 659032422,
-    "current": 555397271,
-    "overdue": 103635151,
-    "pct_overdue": 15.7,
+    "current": 554392271,
+    "overdue": 104640151,
+    "pct_overdue": 15.9,
     "aging": {
-      "0-30": 82263767,
+      "0-30": 83268767,
       "31-60": 11605821,
       "61-90": 0,
       "90+": 9765563
@@ -1589,15 +1589,15 @@
   },
   "churn": {
     "eligible_clients": 164,
-    "churned_count": 51,
-    "pct": 31.1,
+    "churned_count": 53,
+    "pct": 32.3,
     "churned": [
       {
         "name": "ERIKA DEL PILAR GUZMAN MANRIQUEZ",
         "freq": "Semanal",
         "freq_days": 7,
         "last_invoice": "2025-11-06",
-        "days_since": 179,
+        "days_since": 180,
         "threshold": 14,
         "invoices_8m": 11,
         "new_this_week": false
@@ -1607,7 +1607,7 @@
         "freq": "Irregular (Promedio: 4 días)",
         "freq_days": 4,
         "last_invoice": "2025-12-17",
-        "days_since": 138,
+        "days_since": 139,
         "threshold": 8,
         "invoices_8m": 11,
         "new_this_week": false
@@ -1617,7 +1617,7 @@
         "freq": "Irregular (Promedio: 9 días)",
         "freq_days": 9,
         "last_invoice": "2025-12-26",
-        "days_since": 129,
+        "days_since": 130,
         "threshold": 18,
         "invoices_8m": 8,
         "new_this_week": false
@@ -1627,7 +1627,7 @@
         "freq": "Semanal",
         "freq_days": 7,
         "last_invoice": "2026-01-05",
-        "days_since": 119,
+        "days_since": 120,
         "threshold": 14,
         "invoices_8m": 15,
         "new_this_week": false
@@ -1637,7 +1637,7 @@
         "freq": "Irregular (Promedio: 10 días)",
         "freq_days": 10,
         "last_invoice": "2026-01-05",
-        "days_since": 119,
+        "days_since": 120,
         "threshold": 20,
         "invoices_8m": 12,
         "new_this_week": false
@@ -1647,7 +1647,7 @@
         "freq": "Semanal",
         "freq_days": 7,
         "last_invoice": "2026-02-06",
-        "days_since": 87,
+        "days_since": 88,
         "threshold": 14,
         "invoices_8m": 13,
         "new_this_week": false
@@ -1657,7 +1657,7 @@
         "freq": "Bimensual (Quincenal)",
         "freq_days": 15,
         "last_invoice": "2026-02-16",
-        "days_since": 77,
+        "days_since": 78,
         "threshold": 30,
         "invoices_8m": 8,
         "new_this_week": false
@@ -1667,7 +1667,7 @@
         "freq": "Bimensual (Quincenal)",
         "freq_days": 15,
         "last_invoice": "2026-02-17",
-        "days_since": 76,
+        "days_since": 77,
         "threshold": 30,
         "invoices_8m": 8,
         "new_this_week": false
@@ -1677,7 +1677,7 @@
         "freq": "Irregular (Promedio: 9 días)",
         "freq_days": 9,
         "last_invoice": "2026-02-24",
-        "days_since": 69,
+        "days_since": 70,
         "threshold": 18,
         "invoices_8m": 16,
         "new_this_week": false
@@ -1687,7 +1687,7 @@
         "freq": "Semanal",
         "freq_days": 7,
         "last_invoice": "2026-03-02",
-        "days_since": 63,
+        "days_since": 64,
         "threshold": 14,
         "invoices_8m": 20,
         "new_this_week": false
@@ -1697,7 +1697,7 @@
         "freq": "Bimensual (Quincenal)",
         "freq_days": 15,
         "last_invoice": "2026-03-02",
-        "days_since": 63,
+        "days_since": 64,
         "threshold": 30,
         "invoices_8m": 8,
         "new_this_week": false
@@ -1707,7 +1707,7 @@
         "freq": "Irregular (Promedio: 19 días)",
         "freq_days": 19,
         "last_invoice": "2026-03-04",
-        "days_since": 61,
+        "days_since": 62,
         "threshold": 38,
         "invoices_8m": 12,
         "new_this_week": false
@@ -1717,7 +1717,7 @@
         "freq": "Bimensual (Quincenal)",
         "freq_days": 15,
         "last_invoice": "2026-03-06",
-        "days_since": 59,
+        "days_since": 60,
         "threshold": 30,
         "invoices_8m": 8,
         "new_this_week": false
@@ -1727,7 +1727,7 @@
         "freq": "Bimensual (Quincenal)",
         "freq_days": 15,
         "last_invoice": "2026-03-06",
-        "days_since": 59,
+        "days_since": 60,
         "threshold": 30,
         "invoices_8m": 14,
         "new_this_week": false
@@ -1737,7 +1737,7 @@
         "freq": "Bimensual (Quincenal)",
         "freq_days": 15,
         "last_invoice": "2026-03-09",
-        "days_since": 56,
+        "days_since": 57,
         "threshold": 30,
         "invoices_8m": 10,
         "new_this_week": false
@@ -1747,7 +1747,7 @@
         "freq": "Bimensual (Quincenal)",
         "freq_days": 15,
         "last_invoice": "2026-03-09",
-        "days_since": 56,
+        "days_since": 57,
         "threshold": 30,
         "invoices_8m": 9,
         "new_this_week": false
@@ -1757,7 +1757,7 @@
         "freq": "Irregular (Promedio: 13 días)",
         "freq_days": 13,
         "last_invoice": "2026-03-10",
-        "days_since": 55,
+        "days_since": 56,
         "threshold": 26,
         "invoices_8m": 11,
         "new_this_week": false
@@ -1767,7 +1767,7 @@
         "freq": "Diaria",
         "freq_days": 1,
         "last_invoice": "2026-03-12",
-        "days_since": 53,
+        "days_since": 54,
         "threshold": 2,
         "invoices_8m": 180,
         "new_this_week": false
@@ -1777,7 +1777,7 @@
         "freq": "Bimensual (Quincenal)",
         "freq_days": 15,
         "last_invoice": "2026-03-12",
-        "days_since": 53,
+        "days_since": 54,
         "threshold": 30,
         "invoices_8m": 13,
         "new_this_week": false
@@ -1787,7 +1787,7 @@
         "freq": "Irregular (Promedio: 26 días)",
         "freq_days": 26,
         "last_invoice": "2026-03-12",
-        "days_since": 53,
+        "days_since": 54,
         "threshold": 52,
         "invoices_8m": 9,
         "new_this_week": true
@@ -1797,7 +1797,7 @@
         "freq": "Diaria",
         "freq_days": 1,
         "last_invoice": "2026-03-12",
-        "days_since": 53,
+        "days_since": 54,
         "threshold": 2,
         "invoices_8m": 14,
         "new_this_week": false
@@ -1807,7 +1807,7 @@
         "freq": "Semanal",
         "freq_days": 7,
         "last_invoice": "2026-03-12",
-        "days_since": 53,
+        "days_since": 54,
         "threshold": 14,
         "invoices_8m": 13,
         "new_this_week": false
@@ -1817,7 +1817,7 @@
         "freq": "Irregular (Promedio: 9 días)",
         "freq_days": 9,
         "last_invoice": "2026-03-16",
-        "days_since": 49,
+        "days_since": 50,
         "threshold": 18,
         "invoices_8m": 18,
         "new_this_week": false
@@ -1827,7 +1827,7 @@
         "freq": "Irregular (Promedio: 3 días)",
         "freq_days": 3,
         "last_invoice": "2026-03-16",
-        "days_since": 49,
+        "days_since": 50,
         "threshold": 6,
         "invoices_8m": 58,
         "new_this_week": false
@@ -1837,7 +1837,7 @@
         "freq": "Irregular / Poca data",
         "freq_days": 15,
         "last_invoice": "2026-03-16",
-        "days_since": 49,
+        "days_since": 50,
         "threshold": 30,
         "invoices_8m": 9,
         "new_this_week": false
@@ -1847,7 +1847,7 @@
         "freq": "Semanal",
         "freq_days": 7,
         "last_invoice": "2026-03-17",
-        "days_since": 48,
+        "days_since": 49,
         "threshold": 14,
         "invoices_8m": 22,
         "new_this_week": false
@@ -1857,7 +1857,7 @@
         "freq": "Irregular / Poca data",
         "freq_days": 15,
         "last_invoice": "2026-03-17",
-        "days_since": 48,
+        "days_since": 49,
         "threshold": 30,
         "invoices_8m": 10,
         "new_this_week": false
@@ -1867,7 +1867,7 @@
         "freq": "Irregular (Promedio: 20 días)",
         "freq_days": 20,
         "last_invoice": "2026-03-17",
-        "days_since": 48,
+        "days_since": 49,
         "threshold": 40,
         "invoices_8m": 8,
         "new_this_week": false
@@ -1877,7 +1877,7 @@
         "freq": "Irregular (Promedio: 13 días)",
         "freq_days": 13,
         "last_invoice": "2026-03-18",
-        "days_since": 47,
+        "days_since": 48,
         "threshold": 26,
         "invoices_8m": 13,
         "new_this_week": false
@@ -1887,7 +1887,7 @@
         "freq": "Irregular (Promedio: 21 días)",
         "freq_days": 21,
         "last_invoice": "2026-03-18",
-        "days_since": 47,
+        "days_since": 48,
         "threshold": 42,
         "invoices_8m": 8,
         "new_this_week": true
@@ -1935,7 +1935,7 @@
   },
   "enap": {
     "month": "2026-05",
-    "days_elapsed": 4,
+    "days_elapsed": 5,
     "days_in_month": 31,
     "suppliers": {
       "enap": {
