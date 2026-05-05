@@ -766,19 +766,42 @@ def extract_sales_data(models, uid, custom_start=None, custom_end=None, label_ov
             ["state", "=", "posted"],
             ["invoice_date", ">=", fmt(ws_d)],
             ["invoice_date", "<=", fmt(we_d)],
-        ], ["id"], limit=5000)
+        ], ["id", "invoice_user_id", "margin_zone"], limit=5000)
         wk_ids = [i["id"] for i in wk_inv]
+        wk_user_map = {i["id"]: safe_name(i.get("invoice_user_id")) for i in wk_inv}
+        wk_margin_map = {i["id"]: i.get("margin_zone", 0) or 0 for i in wk_inv}
         wk_l = 0
+        wk_lbu = defaultdict(float)
+        wk_vbu = defaultdict(float)
+        wk_mbu_venta = defaultdict(float)
+        wk_mbu_costo = defaultdict(float)
         if wk_ids:
             wk_lines = sr(models, uid, "account.move.line", [
                 ["move_id", "in", wk_ids],
                 ["product_id", "=", DIESEL_PRODUCT_ID],
-            ], ["quantity"], limit=5000)
+            ], ["move_id", "quantity", "price_subtotal"], limit=5000)
             for ln in wk_lines:
-                wk_l += ln.get("quantity", 0)
+                q = ln.get("quantity", 0)
+                s = ln.get("price_subtotal", 0)
+                mid = safe_id(ln.get("move_id"))
+                wk_l += q
+                u = wk_user_map.get(mid, "Sin asignar")
+                m = wk_margin_map.get(mid, 0)
+                wk_lbu[u] += q
+                wk_vbu[u] += s
+                wk_mbu_venta[u] += s
+                wk_mbu_costo[u] += s * (1 - m) if m else s
+        wk_margin_by_user = {}
+        for u in wk_lbu:
+            v = wk_mbu_venta.get(u, 0)
+            c = wk_mbu_costo.get(u, 0)
+            wk_margin_by_user[u] = round((1 - c / v) * 100, 1) if v > 0 else 0
         weekly_history.append({
             "label": f"{ws_d.day}/{ws_d.month}-{we_d.day}/{we_d.month}",
             "litros": round(wk_l),
+            "litros_by_user": {k: round(v) for k, v in wk_lbu.items()},
+            "venta_by_user": {k: round(v) for k, v in wk_vbu.items()},
+            "margin_by_user": wk_margin_by_user,
         })
     weekly_history.reverse()  # oldest first
 
