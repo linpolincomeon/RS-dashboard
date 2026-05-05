@@ -452,18 +452,31 @@ def extract_funnel_data(models, uid):
                 "fecha": (q.get("create_date") or "")[:10],
             })
 
-        # 4. Cotizaciones Confirmadas (quotes that became sale orders)
-        confirmed_count = 0
+        # 4. Cotizaciones Gestionadas (invoice_status = 'no' = nada que facturar)
+        managed_count = 0
+        managed_by_user = defaultdict(int)
+        managed_detail = []
         if quote_count:
             try:
-                confirmed_count = s_count(models, uid, "sale.order", [
+                managed_orders = sr(models, uid, "sale.order", [
                     ["create_date", ">=", fdt_s(ws)],
                     ["create_date", "<=", fdt_e(we)],
-                    ["state", "in", ["sale", "done"]],
-                ])
+                    ["invoice_status", "=", "no"],
+                ], ["name", "partner_id", "user_id", "amount_untaxed", "create_date"], limit=200)
+                managed_count = len(managed_orders)
+                for o in managed_orders:
+                    u = safe_name(o.get("user_id"))
+                    managed_by_user[u] += 1
+                    managed_detail.append({
+                        "name": o.get("name", ""),
+                        "cliente": safe_name(o.get("partner_id")),
+                        "vendedor": u,
+                        "monto": o.get("amount_untaxed", 0),
+                        "fecha": (o.get("create_date") or "")[:10],
+                    })
             except:
                 pass
-        followup_pct = min(round((confirmed_count / max(quote_count, 1)) * 100), 100) if quote_count else 0
+        followup_pct = min(round((managed_count / max(quote_count, 1)) * 100), 100) if quote_count else 0
 
         # 5. Cierres (nuevos clientes)
         close_orders = sr(models, uid, "sale.order", [
@@ -507,7 +520,7 @@ def extract_funnel_data(models, uid):
                 "leads":       {"value": lead_count, "goal": 15, "by_user": dict(leads_by_user), "detail": lead_rows},
                 "contacto":    {"value": contact_count, "goal": 10, "by_user": dict(contacts_by_user)},
                 "cotizacion":  {"value": quote_count, "goal": 8, "by_user": dict(quotes_by_user), "detail": quote_rows},
-                "seguimiento": {"value": followup_pct, "goal": 100, "unit": "%"},
+                "seguimiento": {"value": followup_pct, "goal": 100, "unit": "%", "count": managed_count, "by_user": dict(managed_by_user), "detail": managed_detail},
                 "cierre":      {"value": close_count, "goal": 2, "by_user": dict(close_by_user), "detail": close_detail},
             }
         })
@@ -1900,7 +1913,7 @@ def main():
             "leads": {"goal": 15, "label": "Leads", "freq": "semanal"},
             "contacto": {"goal": 10, "label": "Contacto Efectivo", "freq": "semanal"},
             "cotizacion": {"goal": 8, "label": "Cotizacion", "freq": "semanal"},
-            "seguimiento": {"goal": 100, "label": "Cotiz. Confirmadas", "unit": "%", "freq": "semanal"},
+            "seguimiento": {"goal": 100, "label": "Cotiz. Gestionadas", "unit": "%", "freq": "semanal"},
             "cierre": {"goal": 2, "label": "Cierre", "freq": "semanal"},
             "retencion": {"goal": 90, "label": "Retencion 90d", "unit": "%", "freq": "mensual"},
         },
