@@ -781,10 +781,13 @@ def extract_sales_data(models, uid, custom_start=None, custom_end=None, label_ov
     # Also get ALL nc lines (any product) for debug
     nc_all_lines_debug = []
     if nc_ids:
-        all_nc_lines = sr(models, uid, "account.move.line", [
-            ["move_id", "in", nc_ids],
-            ["exclude_from_invoice_tab", "=", False],
-        ], ["move_id", "product_id", "quantity", "price_subtotal", "name"], limit=2000)
+        try:
+            all_nc_lines = sr(models, uid, "account.move.line", [
+                ["move_id", "in", nc_ids],
+                ["product_id", "!=", False],
+            ], ["move_id", "product_id", "quantity", "price_subtotal", "name"], limit=2000)
+        except Exception:
+            all_nc_lines = []
         for ln in all_nc_lines:
             nc_all_lines_debug.append({
                 "nc_id": safe_id(ln.get("move_id")),
