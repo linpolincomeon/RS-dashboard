@@ -881,11 +881,12 @@ function renderEjecutivos() {
     for (const [user, val] of Object.entries(st.cotizacion?.by_user || {})) { if (matchesExec(user)) cotizaciones += val; }
   }
 
-  // Nuevos Clientes
+  // Nuevos Clientes (incluir ventas_prev para semanas que caen en mes anterior)
+  const _ncAll = isExecAccum ? ncDetail : [...ncDetail, ...((D.ventas_prev || {}).new_clients?.detail || [])];
   if (isExecAccum) {
-    for (const c of ncDetail) { if (matchesExec(c.vendedor)) nuevoClientes += 1; }
+    for (const c of _ncAll) { if (matchesExec(c.vendedor)) nuevoClientes += 1; }
   } else {
-    for (const c of ncDetail) { if (matchesExec(c.vendedor) && ws && we && c.fecha >= ws && c.fecha <= we) nuevoClientes += 1; }
+    for (const c of _ncAll) { if (matchesExec(c.vendedor) && ws && we && c.fecha >= ws && c.fecha <= we) nuevoClientes += 1; }
   }
 
   // Margen
@@ -948,11 +949,18 @@ function renderEjecutivos() {
   h += '</tbody></table></div></div>';
 
   // Oportunidades table — filtered to this exec + selected week
+  const isCurrentWeek = selectedWeek === 0;
   const thisExecOpportunities = pipeline.filter(p => {
     if (!matchesExec(p.exec)) return false;
-    if (isExecAccum) return p.days_since_activity <= 30; // month: any recent activity
-    // Weekly: only show if last_update falls within the selected week
-    if (ws && we && p.last_update) return p.last_update >= ws && p.last_update <= we;
+    if (isExecAccum) return true; // month: show all active
+    if (isCurrentWeek) {
+      // Current week: show opportunities with recent activity (≤7 days)
+      const days = p.days_since_activity ?? p.days_in_stage ?? 999;
+      return days <= 7;
+    }
+    // Past weeks: show if last_update falls within or after the selected week
+    // (best approximation — we only have current snapshot, not historical)
+    if (ws && we && p.last_update) return p.last_update >= ws;
     return false;
   });
 
