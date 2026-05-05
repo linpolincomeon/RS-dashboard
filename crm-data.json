@@ -1,5 +1,5 @@
 {
-  "updated": "2026-05-05T16:26:54.038941",
+  "updated": "2026-05-05T16:33:16.039036",
   "week": {
     "start": "2026-04-30",
     "end": "2026-05-06",
@@ -1133,8 +1133,8 @@
       "exec": "MUÑOZ ENCALADA JOAQUIN",
       "exec_id": 262,
       "value": 0,
-      "days_in_stage": 4,
-      "days_since_activity": 4,
+      "days_in_stage": 5,
+      "days_since_activity": 5,
       "last_update": "2026-04-30",
       "origin": "—",
       "created": "2025-08-19"
@@ -2465,8 +2465,8 @@
       "exec": "MUÑOZ ENCALADA JOAQUIN",
       "exec_id": 262,
       "value": 3000,
-      "days_in_stage": 5,
-      "days_since_activity": 5,
+      "days_in_stage": 6,
+      "days_since_activity": 6,
       "last_update": "2026-04-29",
       "origin": "—",
       "created": "2026-02-11"
@@ -5936,6 +5936,21 @@
       "action": "Llamar o enviar mail"
     },
     {
+      "id": 31,
+      "name": "Contacto Ale Feña (Agricola Santa María de graneros)",
+      "stage": "Cotizado",
+      "stage_class": "cotizado",
+      "exec": "Toro González Sebastian Enrique",
+      "exec_id": 56,
+      "value": 0,
+      "days_in_stage": 271,
+      "days_since_activity": 43,
+      "last_update": "2026-03-23",
+      "origin": "—",
+      "created": "2025-07-24",
+      "action": "Seguimiento cotización"
+    },
+    {
       "id": 61,
       "name": "VIÑEDOS PUERTA",
       "stage": "Contactado",
@@ -5964,21 +5979,6 @@
       "origin": "—",
       "created": "2025-08-07",
       "action": "Agendar visita (Ruta)"
-    },
-    {
-      "id": 31,
-      "name": "Contacto Ale Feña (Agricola Santa María de graneros)",
-      "stage": "Cotizado",
-      "stage_class": "cotizado",
-      "exec": "Toro González Sebastian Enrique",
-      "exec_id": 56,
-      "value": 0,
-      "days_in_stage": 270,
-      "days_since_activity": 43,
-      "last_update": "2026-03-23",
-      "origin": "—",
-      "created": "2025-07-24",
-      "action": "Seguimiento cotización"
     },
     {
       "id": 62,
@@ -10490,67 +10490,346 @@
     "weekly_history": [
       {
         "label": "15/1-21/1",
-        "litros": 225381
+        "litros": 225381,
+        "litros_by_user": {
+          "TomEnergy": 197783,
+          "Toro González Sebastian Enrique": 17050,
+          "Fernando Jullian": 2000,
+          "GARRIDO CISTERNA JUAN MANUEL": 5548,
+          "Comber Sigall Pauline": 3000
+        },
+        "venta_by_user": {
+          "TomEnergy": 125544759,
+          "Toro González Sebastian Enrique": 10543805,
+          "Fernando Jullian": 1320079,
+          "GARRIDO CISTERNA JUAN MANUEL": 3450298,
+          "Comber Sigall Pauline": 1894369
+        },
+        "margin_by_user": {
+          "TomEnergy": 11.0,
+          "Toro González Sebastian Enrique": 9.0,
+          "Fernando Jullian": 13.5,
+          "GARRIDO CISTERNA JUAN MANUEL": 10.5,
+          "Comber Sigall Pauline": 10.8
+        }
       },
       {
         "label": "22/1-28/1",
-        "litros": 226554
+        "litros": 226554,
+        "litros_by_user": {
+          "TomEnergy": 201474,
+          "Toro González Sebastian Enrique": 12990,
+          "Comber Sigall Pauline": 6670,
+          "GARRIDO CISTERNA JUAN MANUEL": 5420
+        },
+        "venta_by_user": {
+          "TomEnergy": 128985088,
+          "Toro González Sebastian Enrique": 8270561,
+          "Comber Sigall Pauline": 4177667,
+          "GARRIDO CISTERNA JUAN MANUEL": 3337380
+        },
+        "margin_by_user": {
+          "TomEnergy": 11.0,
+          "Toro González Sebastian Enrique": 10.6,
+          "Comber Sigall Pauline": 10.2,
+          "GARRIDO CISTERNA JUAN MANUEL": 9.0
+        }
       },
       {
         "label": "29/1-4/2",
-        "litros": 193305
+        "litros": 193305,
+        "litros_by_user": {
+          "TomEnergy": 189435,
+          "Toro González Sebastian Enrique": 2920,
+          "Comber Sigall Pauline": 950
+        },
+        "venta_by_user": {
+          "TomEnergy": 124936732,
+          "Toro González Sebastian Enrique": 1929550,
+          "Comber Sigall Pauline": 650019
+        },
+        "margin_by_user": {
+          "TomEnergy": 11.2,
+          "Toro González Sebastian Enrique": 11.5,
+          "Comber Sigall Pauline": 13.3
+        }
       },
       {
         "label": "5/2-11/2",
-        "litros": 219165
+        "litros": 219165,
+        "litros_by_user": {
+          "TomEnergy": 195565,
+          "Toro González Sebastian Enrique": 23000,
+          "Comber Sigall Pauline": 600
+        },
+        "venta_by_user": {
+          "TomEnergy": 130740398,
+          "Toro González Sebastian Enrique": 15195100,
+          "Comber Sigall Pauline": 422735
+        },
+        "margin_by_user": {
+          "TomEnergy": 11.4,
+          "Toro González Sebastian Enrique": 10.3,
+          "Comber Sigall Pauline": 14.2
+        }
       },
       {
         "label": "12/2-18/2",
-        "litros": 260083
+        "litros": 260083,
+        "litros_by_user": {
+          "TomEnergy": 232483,
+          "Toro González Sebastian Enrique": 23600,
+          "Fernando Jullian": 2000,
+          "Comber Sigall Pauline": 2000
+        },
+        "venta_by_user": {
+          "TomEnergy": 157682952,
+          "Toro González Sebastian Enrique": 15004180,
+          "Fernando Jullian": 1422829,
+          "Comber Sigall Pauline": 1348880
+        },
+        "margin_by_user": {
+          "TomEnergy": 11.0,
+          "Toro González Sebastian Enrique": 6.9,
+          "Fernando Jullian": 14.0,
+          "Comber Sigall Pauline": 10.9
+        }
       },
       {
         "label": "19/2-25/2",
-        "litros": 228304
+        "litros": 228304,
+        "litros_by_user": {
+          "TomEnergy": 217344,
+          "Toro González Sebastian Enrique": 10960
+        },
+        "venta_by_user": {
+          "TomEnergy": 146301884,
+          "Toro González Sebastian Enrique": 7285474
+        },
+        "margin_by_user": {
+          "TomEnergy": 11.3,
+          "Toro González Sebastian Enrique": 11.0
+        }
       },
       {
         "label": "26/2-4/3",
-        "litros": 233933
+        "litros": 233933,
+        "litros_by_user": {
+          "TomEnergy": 207813,
+          "Fernando Jullian": 2000,
+          "Comber Sigall Pauline": 8700,
+          "Toro González Sebastian Enrique": 15420
+        },
+        "venta_by_user": {
+          "TomEnergy": 140722012,
+          "Fernando Jullian": 1418660,
+          "Comber Sigall Pauline": 5697811,
+          "Toro González Sebastian Enrique": 10312275
+        },
+        "margin_by_user": {
+          "TomEnergy": 10.7,
+          "Fernando Jullian": 14.0,
+          "Comber Sigall Pauline": 8.8,
+          "Toro González Sebastian Enrique": 10.2
+        }
       },
       {
         "label": "5/3-11/3",
-        "litros": 218961
+        "litros": 218961,
+        "litros_by_user": {
+          "TomEnergy": 187721,
+          "Toro González Sebastian Enrique": 26240,
+          "Comber Sigall Pauline": 5000
+        },
+        "venta_by_user": {
+          "TomEnergy": 131629126,
+          "Toro González Sebastian Enrique": 18323171,
+          "Comber Sigall Pauline": 3446416
+        },
+        "margin_by_user": {
+          "TomEnergy": 9.6,
+          "Toro González Sebastian Enrique": 10.2,
+          "Comber Sigall Pauline": 9.1
+        }
       },
       {
         "label": "12/3-18/3",
-        "litros": 192209
+        "litros": 192209,
+        "litros_by_user": {
+          "TomEnergy": 175439,
+          "Toro González Sebastian Enrique": 11900,
+          "Comber Sigall Pauline": 4870
+        },
+        "venta_by_user": {
+          "TomEnergy": 151325621,
+          "Toro González Sebastian Enrique": 10494537,
+          "Comber Sigall Pauline": 3643207
+        },
+        "margin_by_user": {
+          "TomEnergy": 11.1,
+          "Toro González Sebastian Enrique": 9.6,
+          "Comber Sigall Pauline": 11.1
+        }
       },
       {
         "label": "19/3-25/3",
-        "litros": 327527
+        "litros": 327527,
+        "litros_by_user": {
+          "TomEnergy": 247077,
+          "Toro González Sebastian Enrique": 57400,
+          "Comber Sigall Pauline": 17050,
+          "De Trenqualye Merino Andre Jean": 6000
+        },
+        "venta_by_user": {
+          "TomEnergy": 265671951,
+          "Toro González Sebastian Enrique": 60877978,
+          "Comber Sigall Pauline": 17747442,
+          "De Trenqualye Merino Andre Jean": 6348795
+        },
+        "margin_by_user": {
+          "TomEnergy": 9.0,
+          "Toro González Sebastian Enrique": 8.6,
+          "Comber Sigall Pauline": 8.3,
+          "De Trenqualye Merino Andre Jean": 8.7
+        }
       },
       {
         "label": "26/3-1/4",
-        "litros": 198136
+        "litros": 198136,
+        "litros_by_user": {
+          "Toro González Sebastian Enrique": 61530,
+          "TomEnergy": 129506,
+          "Comber Sigall Pauline": 7100
+        },
+        "venta_by_user": {
+          "Toro González Sebastian Enrique": 77369943,
+          "TomEnergy": 152855636,
+          "Comber Sigall Pauline": 8550184
+        },
+        "margin_by_user": {
+          "Toro González Sebastian Enrique": -5.6,
+          "TomEnergy": 7.2,
+          "Comber Sigall Pauline": 9.0
+        }
       },
       {
         "label": "2/4-8/4",
-        "litros": 133707
+        "litros": 133707,
+        "litros_by_user": {
+          "TomEnergy": 86415,
+          "Toro González Sebastian Enrique": 42522,
+          "Comber Sigall Pauline": 4770
+        },
+        "venta_by_user": {
+          "TomEnergy": 108211017,
+          "Toro González Sebastian Enrique": 53022851,
+          "Comber Sigall Pauline": 5990382
+        },
+        "margin_by_user": {
+          "TomEnergy": 8.2,
+          "Toro González Sebastian Enrique": 8.4,
+          "Comber Sigall Pauline": 11.3
+        }
       },
       {
         "label": "9/4-15/4",
-        "litros": 194521
+        "litros": 194521,
+        "litros_by_user": {
+          "TomEnergy": 127701,
+          "Comber Sigall Pauline": 7040,
+          "Toro González Sebastian Enrique": 54280,
+          "MUÑOZ ENCALADA JOAQUIN": 1500,
+          "LABBE ORTIZ CARLOS ALBERTO": 2000,
+          "De Trenqualye Merino Andre Jean": 2000
+        },
+        "venta_by_user": {
+          "TomEnergy": 167498908,
+          "Comber Sigall Pauline": 9149036,
+          "Toro González Sebastian Enrique": 70213003,
+          "MUÑOZ ENCALADA JOAQUIN": 1969900,
+          "LABBE ORTIZ CARLOS ALBERTO": 2559306,
+          "De Trenqualye Merino Andre Jean": 2530735
+        },
+        "margin_by_user": {
+          "TomEnergy": 9.1,
+          "Comber Sigall Pauline": 8.1,
+          "Toro González Sebastian Enrique": 7.6,
+          "MUÑOZ ENCALADA JOAQUIN": 8.5,
+          "LABBE ORTIZ CARLOS ALBERTO": 6.1,
+          "De Trenqualye Merino Andre Jean": 5.8
+        }
       },
       {
         "label": "16/4-22/4",
-        "litros": 209117
+        "litros": 209117,
+        "litros_by_user": {
+          "Toro González Sebastian Enrique": 57450,
+          "TomEnergy": 125267,
+          "Comber Sigall Pauline": 12500,
+          "MUÑOZ ENCALADA JOAQUIN": 9500,
+          "Toledo Núñez Madelaine Camila": 4400
+        },
+        "venta_by_user": {
+          "Toro González Sebastian Enrique": 73623453,
+          "TomEnergy": 161782601,
+          "Comber Sigall Pauline": 15769410,
+          "MUÑOZ ENCALADA JOAQUIN": 12106093,
+          "Toledo Núñez Madelaine Camila": 5734472
+        },
+        "margin_by_user": {
+          "Toro González Sebastian Enrique": 7.0,
+          "TomEnergy": 8.4,
+          "Comber Sigall Pauline": 5.7,
+          "MUÑOZ ENCALADA JOAQUIN": 7.0,
+          "Toledo Núñez Madelaine Camila": 7.5
+        }
       },
       {
         "label": "23/4-29/4",
-        "litros": 144769
+        "litros": 144769,
+        "litros_by_user": {
+          "TomEnergy": 91355,
+          "Toro González Sebastian Enrique": 28844,
+          "Ron Yenire": 15000,
+          "Comber Sigall Pauline": 5200,
+          "Toledo Núñez Madelaine Camila": 1870,
+          "MUÑOZ ENCALADA JOAQUIN": 2500
+        },
+        "venta_by_user": {
+          "TomEnergy": 107087275,
+          "Toro González Sebastian Enrique": 33838752,
+          "Ron Yenire": 16909634,
+          "Comber Sigall Pauline": 6293603,
+          "Toledo Núñez Madelaine Camila": 2219639,
+          "MUÑOZ ENCALADA JOAQUIN": 2990541
+        },
+        "margin_by_user": {
+          "TomEnergy": 9.1,
+          "Toro González Sebastian Enrique": 7.4,
+          "Ron Yenire": 3.5,
+          "Comber Sigall Pauline": 9.7,
+          "Toledo Núñez Madelaine Camila": 8.5,
+          "MUÑOZ ENCALADA JOAQUIN": 8.5
+        }
       },
       {
         "label": "30/4-6/5",
-        "litros": 113567
+        "litros": 113567,
+        "litros_by_user": {
+          "TomEnergy": 64674,
+          "Toro González Sebastian Enrique": 40893,
+          "Comber Sigall Pauline": 8000
+        },
+        "venta_by_user": {
+          "TomEnergy": 76952493,
+          "Toro González Sebastian Enrique": 47303863,
+          "Comber Sigall Pauline": 9117631
+        },
+        "margin_by_user": {
+          "TomEnergy": 8.1,
+          "Toro González Sebastian Enrique": 5.8,
+          "Comber Sigall Pauline": 4.9
+        }
       }
     ],
     "detail_by_user": {
@@ -11249,67 +11528,346 @@
     "weekly_history": [
       {
         "label": "15/1-21/1",
-        "litros": 225381
+        "litros": 225381,
+        "litros_by_user": {
+          "TomEnergy": 197783,
+          "Toro González Sebastian Enrique": 17050,
+          "Fernando Jullian": 2000,
+          "GARRIDO CISTERNA JUAN MANUEL": 5548,
+          "Comber Sigall Pauline": 3000
+        },
+        "venta_by_user": {
+          "TomEnergy": 125544759,
+          "Toro González Sebastian Enrique": 10543805,
+          "Fernando Jullian": 1320079,
+          "GARRIDO CISTERNA JUAN MANUEL": 3450298,
+          "Comber Sigall Pauline": 1894369
+        },
+        "margin_by_user": {
+          "TomEnergy": 11.0,
+          "Toro González Sebastian Enrique": 9.0,
+          "Fernando Jullian": 13.5,
+          "GARRIDO CISTERNA JUAN MANUEL": 10.5,
+          "Comber Sigall Pauline": 10.8
+        }
       },
       {
         "label": "22/1-28/1",
-        "litros": 226554
+        "litros": 226554,
+        "litros_by_user": {
+          "TomEnergy": 201474,
+          "Toro González Sebastian Enrique": 12990,
+          "Comber Sigall Pauline": 6670,
+          "GARRIDO CISTERNA JUAN MANUEL": 5420
+        },
+        "venta_by_user": {
+          "TomEnergy": 128985088,
+          "Toro González Sebastian Enrique": 8270561,
+          "Comber Sigall Pauline": 4177667,
+          "GARRIDO CISTERNA JUAN MANUEL": 3337380
+        },
+        "margin_by_user": {
+          "TomEnergy": 11.0,
+          "Toro González Sebastian Enrique": 10.6,
+          "Comber Sigall Pauline": 10.2,
+          "GARRIDO CISTERNA JUAN MANUEL": 9.0
+        }
       },
       {
         "label": "29/1-4/2",
-        "litros": 193305
+        "litros": 193305,
+        "litros_by_user": {
+          "TomEnergy": 189435,
+          "Toro González Sebastian Enrique": 2920,
+          "Comber Sigall Pauline": 950
+        },
+        "venta_by_user": {
+          "TomEnergy": 124936732,
+          "Toro González Sebastian Enrique": 1929550,
+          "Comber Sigall Pauline": 650019
+        },
+        "margin_by_user": {
+          "TomEnergy": 11.2,
+          "Toro González Sebastian Enrique": 11.5,
+          "Comber Sigall Pauline": 13.3
+        }
       },
       {
         "label": "5/2-11/2",
-        "litros": 219165
+        "litros": 219165,
+        "litros_by_user": {
+          "TomEnergy": 195565,
+          "Toro González Sebastian Enrique": 23000,
+          "Comber Sigall Pauline": 600
+        },
+        "venta_by_user": {
+          "TomEnergy": 130740398,
+          "Toro González Sebastian Enrique": 15195100,
+          "Comber Sigall Pauline": 422735
+        },
+        "margin_by_user": {
+          "TomEnergy": 11.4,
+          "Toro González Sebastian Enrique": 10.3,
+          "Comber Sigall Pauline": 14.2
+        }
       },
       {
         "label": "12/2-18/2",
-        "litros": 260083
+        "litros": 260083,
+        "litros_by_user": {
+          "TomEnergy": 232483,
+          "Toro González Sebastian Enrique": 23600,
+          "Fernando Jullian": 2000,
+          "Comber Sigall Pauline": 2000
+        },
+        "venta_by_user": {
+          "TomEnergy": 157682952,
+          "Toro González Sebastian Enrique": 15004180,
+          "Fernando Jullian": 1422829,
+          "Comber Sigall Pauline": 1348880
+        },
+        "margin_by_user": {
+          "TomEnergy": 11.0,
+          "Toro González Sebastian Enrique": 6.9,
+          "Fernando Jullian": 14.0,
+          "Comber Sigall Pauline": 10.9
+        }
       },
       {
         "label": "19/2-25/2",
-        "litros": 228304
+        "litros": 228304,
+        "litros_by_user": {
+          "TomEnergy": 217344,
+          "Toro González Sebastian Enrique": 10960
+        },
+        "venta_by_user": {
+          "TomEnergy": 146301884,
+          "Toro González Sebastian Enrique": 7285474
+        },
+        "margin_by_user": {
+          "TomEnergy": 11.3,
+          "Toro González Sebastian Enrique": 11.0
+        }
       },
       {
         "label": "26/2-4/3",
-        "litros": 233933
+        "litros": 233933,
+        "litros_by_user": {
+          "TomEnergy": 207813,
+          "Fernando Jullian": 2000,
+          "Comber Sigall Pauline": 8700,
+          "Toro González Sebastian Enrique": 15420
+        },
+        "venta_by_user": {
+          "TomEnergy": 140722012,
+          "Fernando Jullian": 1418660,
+          "Comber Sigall Pauline": 5697811,
+          "Toro González Sebastian Enrique": 10312275
+        },
+        "margin_by_user": {
+          "TomEnergy": 10.7,
+          "Fernando Jullian": 14.0,
+          "Comber Sigall Pauline": 8.8,
+          "Toro González Sebastian Enrique": 10.2
+        }
       },
       {
         "label": "5/3-11/3",
-        "litros": 218961
+        "litros": 218961,
+        "litros_by_user": {
+          "TomEnergy": 187721,
+          "Toro González Sebastian Enrique": 26240,
+          "Comber Sigall Pauline": 5000
+        },
+        "venta_by_user": {
+          "TomEnergy": 131629126,
+          "Toro González Sebastian Enrique": 18323171,
+          "Comber Sigall Pauline": 3446416
+        },
+        "margin_by_user": {
+          "TomEnergy": 9.6,
+          "Toro González Sebastian Enrique": 10.2,
+          "Comber Sigall Pauline": 9.1
+        }
       },
       {
         "label": "12/3-18/3",
-        "litros": 192209
+        "litros": 192209,
+        "litros_by_user": {
+          "TomEnergy": 175439,
+          "Toro González Sebastian Enrique": 11900,
+          "Comber Sigall Pauline": 4870
+        },
+        "venta_by_user": {
+          "TomEnergy": 151325621,
+          "Toro González Sebastian Enrique": 10494537,
+          "Comber Sigall Pauline": 3643207
+        },
+        "margin_by_user": {
+          "TomEnergy": 11.1,
+          "Toro González Sebastian Enrique": 9.6,
+          "Comber Sigall Pauline": 11.1
+        }
       },
       {
         "label": "19/3-25/3",
-        "litros": 327527
+        "litros": 327527,
+        "litros_by_user": {
+          "TomEnergy": 247077,
+          "Toro González Sebastian Enrique": 57400,
+          "Comber Sigall Pauline": 17050,
+          "De Trenqualye Merino Andre Jean": 6000
+        },
+        "venta_by_user": {
+          "TomEnergy": 265671951,
+          "Toro González Sebastian Enrique": 60877978,
+          "Comber Sigall Pauline": 17747442,
+          "De Trenqualye Merino Andre Jean": 6348795
+        },
+        "margin_by_user": {
+          "TomEnergy": 9.0,
+          "Toro González Sebastian Enrique": 8.6,
+          "Comber Sigall Pauline": 8.3,
+          "De Trenqualye Merino Andre Jean": 8.7
+        }
       },
       {
         "label": "26/3-1/4",
-        "litros": 198136
+        "litros": 198136,
+        "litros_by_user": {
+          "Toro González Sebastian Enrique": 61530,
+          "TomEnergy": 129506,
+          "Comber Sigall Pauline": 7100
+        },
+        "venta_by_user": {
+          "Toro González Sebastian Enrique": 77369943,
+          "TomEnergy": 152855636,
+          "Comber Sigall Pauline": 8550184
+        },
+        "margin_by_user": {
+          "Toro González Sebastian Enrique": -5.6,
+          "TomEnergy": 7.2,
+          "Comber Sigall Pauline": 9.0
+        }
       },
       {
         "label": "2/4-8/4",
-        "litros": 133707
+        "litros": 133707,
+        "litros_by_user": {
+          "TomEnergy": 86415,
+          "Toro González Sebastian Enrique": 42522,
+          "Comber Sigall Pauline": 4770
+        },
+        "venta_by_user": {
+          "TomEnergy": 108211017,
+          "Toro González Sebastian Enrique": 53022851,
+          "Comber Sigall Pauline": 5990382
+        },
+        "margin_by_user": {
+          "TomEnergy": 8.2,
+          "Toro González Sebastian Enrique": 8.4,
+          "Comber Sigall Pauline": 11.3
+        }
       },
       {
         "label": "9/4-15/4",
-        "litros": 194521
+        "litros": 194521,
+        "litros_by_user": {
+          "TomEnergy": 127701,
+          "Comber Sigall Pauline": 7040,
+          "Toro González Sebastian Enrique": 54280,
+          "MUÑOZ ENCALADA JOAQUIN": 1500,
+          "LABBE ORTIZ CARLOS ALBERTO": 2000,
+          "De Trenqualye Merino Andre Jean": 2000
+        },
+        "venta_by_user": {
+          "TomEnergy": 167498908,
+          "Comber Sigall Pauline": 9149036,
+          "Toro González Sebastian Enrique": 70213003,
+          "MUÑOZ ENCALADA JOAQUIN": 1969900,
+          "LABBE ORTIZ CARLOS ALBERTO": 2559306,
+          "De Trenqualye Merino Andre Jean": 2530735
+        },
+        "margin_by_user": {
+          "TomEnergy": 9.1,
+          "Comber Sigall Pauline": 8.1,
+          "Toro González Sebastian Enrique": 7.6,
+          "MUÑOZ ENCALADA JOAQUIN": 8.5,
+          "LABBE ORTIZ CARLOS ALBERTO": 6.1,
+          "De Trenqualye Merino Andre Jean": 5.8
+        }
       },
       {
         "label": "16/4-22/4",
-        "litros": 209117
+        "litros": 209117,
+        "litros_by_user": {
+          "Toro González Sebastian Enrique": 57450,
+          "TomEnergy": 125267,
+          "Comber Sigall Pauline": 12500,
+          "MUÑOZ ENCALADA JOAQUIN": 9500,
+          "Toledo Núñez Madelaine Camila": 4400
+        },
+        "venta_by_user": {
+          "Toro González Sebastian Enrique": 73623453,
+          "TomEnergy": 161782601,
+          "Comber Sigall Pauline": 15769410,
+          "MUÑOZ ENCALADA JOAQUIN": 12106093,
+          "Toledo Núñez Madelaine Camila": 5734472
+        },
+        "margin_by_user": {
+          "Toro González Sebastian Enrique": 7.0,
+          "TomEnergy": 8.4,
+          "Comber Sigall Pauline": 5.7,
+          "MUÑOZ ENCALADA JOAQUIN": 7.0,
+          "Toledo Núñez Madelaine Camila": 7.5
+        }
       },
       {
         "label": "23/4-29/4",
-        "litros": 144769
+        "litros": 144769,
+        "litros_by_user": {
+          "TomEnergy": 91355,
+          "Toro González Sebastian Enrique": 28844,
+          "Ron Yenire": 15000,
+          "Comber Sigall Pauline": 5200,
+          "Toledo Núñez Madelaine Camila": 1870,
+          "MUÑOZ ENCALADA JOAQUIN": 2500
+        },
+        "venta_by_user": {
+          "TomEnergy": 107087275,
+          "Toro González Sebastian Enrique": 33838752,
+          "Ron Yenire": 16909634,
+          "Comber Sigall Pauline": 6293603,
+          "Toledo Núñez Madelaine Camila": 2219639,
+          "MUÑOZ ENCALADA JOAQUIN": 2990541
+        },
+        "margin_by_user": {
+          "TomEnergy": 9.1,
+          "Toro González Sebastian Enrique": 7.4,
+          "Ron Yenire": 3.5,
+          "Comber Sigall Pauline": 9.7,
+          "Toledo Núñez Madelaine Camila": 8.5,
+          "MUÑOZ ENCALADA JOAQUIN": 8.5
+        }
       },
       {
         "label": "30/4-6/5",
-        "litros": 113567
+        "litros": 113567,
+        "litros_by_user": {
+          "TomEnergy": 64674,
+          "Toro González Sebastian Enrique": 40893,
+          "Comber Sigall Pauline": 8000
+        },
+        "venta_by_user": {
+          "TomEnergy": 76952493,
+          "Toro González Sebastian Enrique": 47303863,
+          "Comber Sigall Pauline": 9117631
+        },
+        "margin_by_user": {
+          "TomEnergy": 8.1,
+          "Toro González Sebastian Enrique": 5.8,
+          "Comber Sigall Pauline": 4.9
+        }
       }
     ],
     "detail_by_user": {
