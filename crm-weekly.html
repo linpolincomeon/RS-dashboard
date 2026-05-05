@@ -456,6 +456,12 @@ function renderFunnel(){
     qd.forEach(q=>{h+=`<tr><td class="bold">${H(q.name)}</td><td>${H(q.cliente)}</td><td>${H(q.vendedor)}</td><td>${fC(q.monto)}</td><td><span class="tag ${q.estado==='sent'?'tag-g':'tag-y'}">${q.estado==='sent'?'Enviada':'Borrador'}</span></td></tr>`});
     h+=`</tbody></table></div></div>`;
   }
+  const md=(st.seguimiento&&st.seguimiento.detail)||[];
+  if(md.length){
+    h+=`<div class="sec"><div class="sec-h"><h2>📨 Cotizaciones Gestionadas (Nada que Facturar)</h2><span style="font-size:12px;color:var(--dim)">${md.length}</span></div><div class="sec-b" style="padding:0;overflow-x:auto"><table><thead><tr><th>Nº</th><th>Cliente</th><th>Vendedor</th><th>Monto</th><th>Fecha</th></tr></thead><tbody>`;
+    md.forEach(m=>{h+=`<tr><td class="bold">${H(m.name)}</td><td>${H(m.cliente)}</td><td>${H(m.vendedor)}</td><td>${fC(m.monto)}</td><td>${m.fecha}</td></tr>`});
+    h+=`</tbody></table></div></div>`;
+  }
   document.getElementById('p-funnel').innerHTML=h;
 
   const labels=STG.map(s=>(fg[s.key]||{}).label||s.key);
