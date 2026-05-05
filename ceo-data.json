@@ -1,32 +1,32 @@
 {
-  "updated": "2026-05-05T12:15:31.346259",
+  "updated": "2026-05-05T16:54:29.912277",
   "weeks": [
     {
       "label": "30apr-06may",
       "start": "2026-04-30",
       "end": "2026-05-06",
-      "ventas": 157722907,
-      "neto": 119373192,
-      "litros": 101717,
-      "litros_retail": 77044,
-      "litros_volumen": 24673,
-      "precio_neto": 1174,
-      "precio_bruto": 1551,
-      "margin": 0.06979,
-      "margin_retail": 0.07394,
-      "margin_volumen": 0.05654,
-      "facturas": 56,
-      "nc": 0,
-      "clientes": 45,
-      "recaud": 111912562,
+      "ventas": 173930907,
+      "neto": 131632184,
+      "litros": 112067,
+      "litros_retail": 88894,
+      "litros_volumen": 25673,
+      "precio_neto": 1175,
+      "precio_bruto": 1552,
+      "margin": 0.07056,
+      "margin_retail": 0.07443,
+      "margin_volumen": 0.05683,
+      "facturas": 65,
+      "nc": 2,
+      "clientes": 54,
+      "recaud": 199708735,
       "cheques": 28389333,
-      "transf": 83523229,
-      "factoring": 0,
-      "compras_odoo": 86379097,
+      "transf": 109092067,
+      "factoring": 62227335,
+      "compras_odoo": 100925725,
       "cheq_cartera_saldo": 0,
       "cheq_recibidos": 0,
-      "facturas_contado": 6,
-      "facturas_credito": 50,
+      "facturas_contado": 8,
+      "facturas_credito": 57,
       "margin_by_term": {
         "Prepago": {
           "margin": 0.09518,
@@ -35,9 +35,9 @@
           "days": 0
         },
         "1 Día": {
-          "margin": 0.05189,
-          "normalizado": 0.06155,
-          "count": 5,
+          "margin": 0.05572,
+          "normalizado": 0.06539,
+          "count": 7,
           "days": 1
         },
         "7 Días": {
@@ -46,16 +46,28 @@
           "count": 2,
           "days": 7
         },
+        "15 Días": {
+          "margin": 0.05592,
+          "normalizado": 0.06092,
+          "count": 1,
+          "days": 15
+        },
         "30 Días": {
-          "margin": 0.07164,
-          "normalizado": 0.07164,
-          "count": 47,
+          "margin": 0.07252,
+          "normalizado": 0.07252,
+          "count": 49,
           "days": 30
         },
-        "60 Días": {
-          "margin": 0.11295,
-          "normalizado": 0.10295,
+        "45 Días": {
+          "margin": 0.10193,
+          "normalizado": 0.09693,
           "count": 1,
+          "days": 45
+        },
+        "60 Días": {
+          "margin": 0.07761,
+          "normalizado": 0.06761,
+          "count": 4,
           "days": 60
         }
       },
@@ -1278,8 +1290,8 @@
     {
       "date": "05may",
       "day": "Mar",
-      "litros": 0,
-      "neto": 0
+      "litros": 12851,
+      "neto": 15338909
     },
     {
       "date": "04may",
@@ -1375,43 +1387,43 @@
   "banks": [
     {
       "name": "DE CHILE",
-      "balance": 32084348
+      "balance": 21395733
+    },
+    {
+      "name": "ITAU",
+      "balance": 15016391
+    },
+    {
+      "name": "BCI",
+      "balance": 6323881
+    },
+    {
+      "name": "ESTADO",
+      "balance": 6228576
     },
     {
       "name": "CAJA",
       "balance": 3291177
     },
     {
-      "name": "ESTADO",
-      "balance": 1228576
-    },
-    {
-      "name": "BCI",
-      "balance": 823881
-    },
-    {
       "name": "SANTANDER",
-      "balance": 290019
-    },
-    {
-      "name": "ITAU",
-      "balance": 16391
+      "balance": 775019
     },
     {
       "name": "DE CREDITO",
       "balance": -838790
     }
   ],
-  "total_cash": 36895602,
+  "total_cash": 52191987,
   "receivables": {
-    "open_invoices": 280,
-    "total_due": 659032422,
-    "current": 554392271,
-    "overdue": 104640151,
-    "pct_overdue": 15.9,
+    "open_invoices": 277,
+    "total_due": 645243481,
+    "current": 562844529,
+    "overdue": 82398952,
+    "pct_overdue": 12.8,
     "aging": {
-      "0-30": 83268767,
-      "31-60": 11605821,
+      "0-30": 65682568,
+      "31-60": 6950821,
       "61-90": 0,
       "90+": 9765563
     },
@@ -1441,6 +1453,10 @@
         "amount": 19961403
       },
       {
+        "name": "SOC. DE TRANSPORTES TRACMAVI LTDA.",
+        "amount": 18887251
+      },
+      {
         "name": "LUIS ANTONIO REYES FUENTES",
         "amount": 16598999
       },
@@ -1449,20 +1465,8 @@
         "amount": 15411835
       },
       {
-        "name": "SOC. DE TRANSPORTES TRACMAVI LTDA.",
-        "amount": 15354752
-      },
-      {
-        "name": "TRANSPORTES SAN MARCELO SPA",
-        "amount": 15225000
-      },
-      {
         "name": "FORESTAL PUIHUA SPA",
         "amount": 13390401
-      },
-      {
-        "name": "INGENERIA Y CONSTRUCCIONES FEBLANCA SPA",
-        "amount": 12769000
       },
       {
         "name": "CIA AGRICOLA Y FORESTAL EL ALAMO LIMITADA",
@@ -1475,6 +1479,10 @@
       {
         "name": "AGROINDUSTRIAL SIRACUSA S A",
         "amount": 11617500
+      },
+      {
+        "name": "INGENERIA Y CONSTRUCCIONES FEBLANCA SPA",
+        "amount": 11519000
       },
       {
         "name": "URAN ANTONIO LUNA DOMÍNGUEZ",
@@ -1495,6 +1503,10 @@
       {
         "name": "VICTOR FAVIO VILCHES MARDONES",
         "amount": 8824001
+      },
+      {
+        "name": "AGROMORANDE S A",
+        "amount": 7945602
       }
     ]
   },
@@ -1592,15 +1604,15 @@
   "riesgo": {
     "cubierto": 0,
     "cubierto_count": 0,
-    "no_cubierto": 659032422,
-    "no_cubierto_count": 280,
+    "no_cubierto": 645243481,
+    "no_cubierto_count": 277,
     "pct_monto": 100.0,
     "pct_count": 100.0
   },
   "churn": {
     "eligible_clients": 164,
-    "churned_count": 53,
-    "pct": 32.3,
+    "churned_count": 52,
+    "pct": 31.7,
     "churned": [
       {
         "name": "ERIKA DEL PILAR GUZMAN MANRIQUEZ",
@@ -1720,16 +1732,6 @@
         "days_since": 62,
         "threshold": 38,
         "invoices_8m": 12,
-        "new_this_week": false
-      },
-      {
-        "name": "JORGE ALFONSO CATALAN FIGUEROA",
-        "freq": "Bimensual (Quincenal)",
-        "freq_days": 15,
-        "last_invoice": "2026-03-06",
-        "days_since": 60,
-        "threshold": 30,
-        "invoices_8m": 8,
         "new_this_week": false
       },
       {
@@ -1901,6 +1903,16 @@
         "threshold": 42,
         "invoices_8m": 8,
         "new_this_week": true
+      },
+      {
+        "name": "MOVIMIENTOS DE TIERRA Y TRANSPORTES C.A.E.Z. SPA",
+        "freq": "Semanal",
+        "freq_days": 7,
+        "last_invoice": "2026-03-18",
+        "days_since": 48,
+        "threshold": 14,
+        "invoices_8m": 16,
+        "new_this_week": false
       }
     ],
     "filters": "≥8 facturas, frecuencia ≤45d, silencio >2x freq",
@@ -1931,15 +1943,15 @@
       },
       {
         "month": "Apr 2026",
-        "pct": 69.2,
-        "new_churn": 27,
-        "active_start": 39
+        "pct": 68.4,
+        "new_churn": 26,
+        "active_start": 38
       },
       {
         "month": "May 2026",
-        "pct": 80.2,
-        "new_churn": 77,
-        "active_start": 96
+        "pct": 79.3,
+        "new_churn": 73,
+        "active_start": 92
       }
     ]
   },
@@ -1953,10 +1965,10 @@
           "5667"
         ],
         "target_total": 502563,
-        "mtd_litros": 0,
-        "compliance_pct": 0.0,
-        "projected": 0,
-        "projected_pct": 0.0,
+        "mtd_litros": 10031,
+        "compliance_pct": 2.0,
+        "projected": 62192,
+        "projected_pct": 12.4,
         "plants": {
           "Maipu": {
             "target": 183025
@@ -1990,10 +2002,10 @@
       }
     },
     "total_target": 876932,
-    "total_mtd": 0,
-    "total_compliance_pct": 0.0,
-    "total_projected": 0,
-    "total_projected_pct": 0.0
+    "total_mtd": 10031,
+    "total_compliance_pct": 1.1,
+    "total_projected": 62192,
+    "total_projected_pct": 7.1
   },
   "operaciones": {
     "months": [
@@ -2073,11 +2085,11 @@
         "compliance_pct": 169.1,
         "categories": {
           "Petróleo": 10773700,
-          "Mantención y Reparación": 10242356,
+          "Mantención y Reparación": 10197356,
           "Gastos Traslados (TAG)": 2149836,
           "Seguros": 0,
           "Gastos Vehículos": 1083421,
-          "Arriendo": 300000,
+          "Arriendo": 345000,
           "EPP": 0,
           "Mantenciones Varias": 0
         }
