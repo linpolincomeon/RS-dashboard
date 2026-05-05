@@ -843,6 +843,14 @@ def extract_churn_data(models, uid):
     ], ["partner_id"], limit=10000)
 
     curr_month_partners = set(safe_id(i.get("partner_id")) for i in curr_inv if safe_id(i.get("partner_id")))
+
+    # Build name set from current month invoices for matching when CRM lead has no partner_id
+    curr_month_partner_names = set()
+    for i in curr_inv:
+        pname = safe_name(i.get("partner_id"))
+        if pname and pname != "Sin asignar":
+            curr_month_partner_names.add(pname.strip().upper())
+
     prev_month_partners = set(safe_id(i.get("partner_id")) for i in prev_inv if safe_id(i.get("partner_id")))
     prev_month_clients = len(prev_month_partners)
 
@@ -850,14 +858,21 @@ def extract_churn_data(models, uid):
     dormant_by_user = Counter()
     rescued_dormant_list = []
     rescued_dormant_by_user = Counter()
+    seen_dormant = set()
 
     for lead in durmiente_leads:
         pid = safe_id(lead.get("partner_id"))
         user = safe_name(lead.get("user_id"))
         name = safe_name(lead.get("partner_id")) or lead.get("partner_name", "?")
+        name_key = name.strip().upper()
+        if name_key in seen_dormant:
+            continue
+        seen_dormant.add(name_key)
         write_date = (lead.get("write_date") or "")[:10]
 
-        if pid and pid in curr_month_partners:
+        invoiced = (pid and pid in curr_month_partners) or (name_key in curr_month_partner_names)
+
+        if invoiced:
             rescued_dormant_list.append({"name": name, "user": user, "last_update": write_date, "partner_id": pid})
             rescued_dormant_by_user[user] += 1
         else:
@@ -941,17 +956,24 @@ def extract_churn_data(models, uid):
     rescued_lost_list = []
     rescued_lost_by_user = Counter()
     newly_lost = 0
+    seen_lost = set()
 
     for lead in perdido_leads:
         pid = safe_id(lead.get("partner_id"))
         user = safe_name(lead.get("user_id"))
         name = safe_name(lead.get("partner_id")) or lead.get("partner_name", "?")
+        name_key = name.strip().upper()
+        if name_key in seen_lost:
+            continue
+        seen_lost.add(name_key)
         write_date = (lead.get("write_date") or "")[:10]
 
         if write_date >= fmt(month_start):
             newly_lost += 1
 
-        if pid and pid in curr_month_partners:
+        invoiced = (pid and pid in curr_month_partners) or (name_key in curr_month_partner_names)
+
+        if invoiced:
             rescued_lost_list.append({"name": name, "user": user, "last_update": write_date})
             rescued_lost_by_user[user] += 1
         else:
