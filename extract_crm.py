@@ -576,27 +576,34 @@ def extract_sales_data(models, uid, custom_start=None, custom_end=None, label_ov
         ["state", "=", "posted"],
         ["invoice_date", ">=", fmt(m_start)],
         ["invoice_date", "<=", fmt(m_end)],
-    ], ["name", "partner_id", "invoice_user_id", "amount_untaxed", "invoice_date", "margin_zone"], limit=2000)
+    ], ["name", "partner_id", "invoice_user_id", "amount_untaxed", "invoice_date", "margin_zone",
+        "invoice_payment_term_id"], limit=2000)
 
     inv_ids = [i["id"] for i in invoices]
     inv_user_map = {i["id"]: safe_name(i.get("invoice_user_id")) for i in invoices}
     inv_margin_map = {i["id"]: i.get("margin_zone", 0) or 0 for i in invoices}
+    inv_date_map = {i["id"]: i.get("invoice_date", "") for i in invoices}
+    inv_term_map = {i["id"]: safe_name(i.get("invoice_payment_term_id")) for i in invoices}
 
     partner_ids = list(set(safe_id(i.get("partner_id")) for i in invoices if safe_id(i.get("partner_id"))))
     volume_partners = set()
     partner_zone = {}
+    partner_name_map = {}
+    partner_vat_map = {}
     if partner_ids:
         for i in range(0, len(partner_ids), 200):
             chunk = partner_ids[i:i+200]
             partners = sr(models, uid, "res.partner", [
                 ["id", "in", chunk],
-            ], ["id", "is_volume_client", "delivery_zone_id"], limit=200)
+            ], ["id", "name", "vat", "is_volume_client", "delivery_zone_id"], limit=200)
             for p in partners:
                 if p.get("is_volume_client"):
                     volume_partners.add(p["id"])
                 zn = safe_name(p.get("delivery_zone_id"))
                 if zn and zn != "False" and zn != "Sin asignar":
                     partner_zone[p["id"]] = zn
+                partner_name_map[p["id"]] = p.get("name", "")
+                partner_vat_map[p["id"]] = p.get("vat", "") or ""
     inv_partner_map = {i["id"]: safe_id(i.get("partner_id")) for i in invoices}
 
     litros_by_user = defaultdict(float)
@@ -620,7 +627,7 @@ def extract_sales_data(models, uid, custom_start=None, custom_end=None, label_ov
         lines = sr(models, uid, "account.move.line", [
             ["move_id", "in", inv_ids],
             ["product_id", "=", DIESEL_PRODUCT_ID],
-        ], ["move_id", "quantity", "price_subtotal"], limit=5000)
+        ], ["move_id", "quantity", "price_unit", "price_subtotal"], limit=5000)
 
         for ln in lines:
             mid = safe_id(ln.get("move_id"))
@@ -678,8 +685,8 @@ def extract_sales_data(models, uid, custom_start=None, custom_end=None, label_ov
 
         for ln in nc_lines:
             mid = safe_id(ln.get("move_id"))
-            qty = ln.get("quantity", 0)
-            sub = ln.get("price_subtotal", 0)
+            qty = abs(ln.get("quantity", 0))   # abs: Odoo 18 out_refund puede traer qty negativa
+            sub = abs(ln.get("price_subtotal", 0))  # abs: idem para montos
             user = nc_user_map.get(mid, "Sin asignar")
             nc_margin = nc_margin_map.get(mid, 0)
             litros_by_user[user] -= qty
@@ -775,7 +782,28 @@ def extract_sales_data(models, uid, custom_start=None, custom_end=None, label_ov
         })
     weekly_history.reverse()  # oldest first
 
+    # ── Detalle por ejecutivo (para comisiones / mes vencido) ──
+    detail_by_user = defaultdict(list)
+    if inv_ids:
+        for ln in lines:
+            mid = safe_id(ln.get("move_id"))
+            user = inv_user_map.get(mid, "Sin asignar")
+            pid = inv_partner_map.get(mid)
+            detail_by_user[user].append({
+                "fecha": inv_date_map.get(mid, ""),
+                "cliente": partner_name_map.get(pid, safe_name(next((i.get("partner_id") for i in invoices if i["id"] == mid), ""))),
+                "rut": partner_vat_map.get(pid, ""),
+                "litros": round(ln.get("quantity", 0)),
+                "pv": round(ln.get("price_unit", 0), 2),
+                "venta_neta": round(ln.get("price_subtotal", 0)),
+                "zona": partner_zone.get(pid, "Sin zona"),
+                "plazo_pago": inv_term_map.get(mid, "—"),
+            })
+    for u in detail_by_user:
+        detail_by_user[u].sort(key=lambda x: x["fecha"])
+
     print(f"  Litros: {round(total_litros)} Facturas: {len(invoices)} NC: {len(ncs)}")
+    print(f"  Detalle ejecutivo: {len(detail_by_user)} vendedores, {sum(len(v) for v in detail_by_user.values())} lineas")
     print(f"  Clientes nuevos: {new_cl_count}")
 
     return {
@@ -806,6 +834,7 @@ def extract_sales_data(models, uid, custom_start=None, custom_end=None, label_ov
         },
         "weekly": list(reversed(weekly_sales)),
         "weekly_history": weekly_history,
+        "detail_by_user": {k: v for k, v in detail_by_user.items()},
     }
 
 

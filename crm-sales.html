@@ -789,7 +789,49 @@ function renderEjecutivos() {
   h += '<div class="tab-bar" style="margin-bottom:12px">';
   h += '<button class="tab-btn' + (execSubTab === 'semanal' ? ' active' : '') + '" onclick="switchExecSubTab(\'semanal\')">Semanal</button>';
   h += '<button class="tab-btn' + (execSubTab === 'acumulado' ? ' active' : '') + '" onclick="switchExecSubTab(\'acumulado\')">Acumulado Mes</button>';
+  h += '<button class="tab-btn' + (execSubTab === 'mesvencido' ? ' active' : '') + '" onclick="switchExecSubTab(\'mesvencido\')">💰 Mes Vencido</button>';
   h += '</div>';
+
+  // ── Mes Vencido sub-tab: show previous month invoice detail for commissions ──
+  if (execSubTab === 'mesvencido') {
+    const VP = D.ventas_prev || {};
+    const prevLabel = VP.month_label || 'Mes Anterior';
+    const prevTotals = VP.totals || {};
+    const prevLbu = prevTotals.litros_by_user || {};
+    const prevVbu = prevTotals.venta_by_user || {};
+    const detailByUser = VP.detail_by_user || {};
+
+    let execDetail = [];
+    let execLitros = 0, execVenta = 0;
+    for (const [user, rows] of Object.entries(detailByUser)) {
+      if (matchesExec(user)) { execDetail = rows; break; }
+    }
+    for (const [user, val] of Object.entries(prevLbu)) { if (matchesExec(user)) { execLitros = val; break; } }
+    for (const [user, val] of Object.entries(prevVbu)) { if (matchesExec(user)) { execVenta = val; break; } }
+
+    h += `<div class="sec"><div class="sec-h"><h2>💰 Detalle ${H(prevLabel)} — ${EJECUTIVOS[selectedExec]?.name || ''}</h2></div>`;
+    h += '<div style="display:flex;gap:16px;margin:12px 0">';
+    h += `<div class="kpi c-red" style="flex:1"><div class="kpi-label">Total Litros</div><div class="kpi-val">${fL(execLitros)}</div></div>`;
+    h += `<div class="kpi c-yellow" style="flex:1"><div class="kpi-label">Venta Neta</div><div class="kpi-val">$${fL(execVenta)}</div></div>`;
+    h += `<div class="kpi c-green" style="flex:1"><div class="kpi-label">Líneas</div><div class="kpi-val">${execDetail.length}</div></div>`;
+    h += '</div>';
+    h += '<div class="sec-b" style="max-height:600px;overflow:auto"><table>';
+    h += '<thead><tr><th>Fecha</th><th>Cliente</th><th>RUT</th><th style="text-align:right">Litros</th><th style="text-align:right">PV</th><th style="text-align:right">Venta Neta</th><th>Zona</th><th>Plazo Pago</th></tr></thead><tbody>';
+    if (execDetail.length === 0) {
+      h += '<tr><td colspan="8" style="text-align:center;color:var(--dim);padding:20px">Sin datos de mes vencido</td></tr>';
+    } else {
+      execDetail.forEach(r => {
+        h += `<tr><td>${r.fecha || '—'}</td><td class="bold">${H(r.cliente || '')}</td><td>${H(r.rut || '—')}</td>`;
+        h += `<td style="text-align:right">${fL(r.litros)}</td><td style="text-align:right">$${(r.pv || 0).toLocaleString('es-CL')}</td>`;
+        h += `<td style="text-align:right">$${fL(r.venta_neta)}</td><td>${H(r.zona || '—')}</td><td>${H(r.plazo_pago || '—')}</td></tr>`;
+      });
+    }
+    h += '</tbody></table></div></div>';
+
+    document.getElementById('tab-ejecutivos').innerHTML = h;
+    renderWeekSelector();
+    return;
+  }
 
   // Get data for this exec
   const freelancerNames = []; // no longer used as aggregate
