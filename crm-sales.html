@@ -927,11 +927,11 @@ function renderEjecutivos() {
   h += '</div>';
 
   // Clientes Nuevos table — filtered to week or month (also check ventas_prev for past weeks)
+  // Clientes nuevos: mes actual para Acumulado, ambos meses para vista semanal (cubre semanas de abril)
   const ncDetailPrev = (D.ventas_prev || {}).new_clients?.detail || [];
-  const allNcDetail = [...ncDetail, ...ncDetailPrev];
-  const thisExecNewClients = allNcDetail.filter(c => {
+  const thisExecNewClients = (isExecAccum ? ncDetail : [...ncDetail, ...ncDetailPrev]).filter(c => {
     if (!matchesExec(c.vendedor)) return false;
-    if (isExecAccum) return !ncDetailPrev.includes(c); // current month only for acumulado
+    if (isExecAccum) return true;
     if (ws && we && c.fecha) return c.fecha >= ws && c.fecha <= we;
     return false;
   });
@@ -947,11 +947,13 @@ function renderEjecutivos() {
   }
   h += '</tbody></table></div></div>';
 
-  // Oportunidades table — filtered to this exec, only with activity in selected week (≤7d)
+  // Oportunidades table — filtered to this exec + selected week
   const thisExecOpportunities = pipeline.filter(p => {
     if (!matchesExec(p.exec)) return false;
-    const days = p.days_since_activity ?? p.days_in_stage ?? 999;
-    return days <= 7;
+    if (isExecAccum) return p.days_since_activity <= 30; // month: any recent activity
+    // Weekly: only show if last_update falls within the selected week
+    if (ws && we && p.last_update) return p.last_update >= ws && p.last_update <= we;
+    return false;
   });
 
   h += '<div class="sec"><div class="sec-h"><h2>🎯 Oportunidades</h2></div><div class="sec-b" style="max-height:400px;overflow-y:auto"><table>';
