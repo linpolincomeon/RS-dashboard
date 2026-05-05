@@ -828,6 +828,22 @@ function renderEjecutivos() {
     }
     h += '</tbody></table></div></div>';
 
+    // ── Clientes Nuevos del mes vencido (primera factura diesel B1 en el mes) ──
+    const prevNewClients = (VP.new_clients?.detail || []).filter(c => matchesExec(c.vendedor));
+    h += `<div class="sec" style="margin-top:18px"><div class="sec-h"><h2>🆕 Clientes Nuevos ${H(prevLabel)}</h2></div>`;
+    h += '<div class="sec-b" style="max-height:400px;overflow:auto"><table>';
+    h += '<thead><tr><th>Cliente</th><th>Primera Factura</th><th style="text-align:right">Litros</th></tr></thead><tbody>';
+    if (prevNewClients.length === 0) {
+      h += '<tr><td colspan="3" style="text-align:center;color:var(--dim);padding:20px">Sin clientes nuevos</td></tr>';
+    } else {
+      prevNewClients.sort((a, b) => (b.litros || 0) - (a.litros || 0)).forEach(c => {
+        h += `<tr><td class="bold">${H(c.cliente || '')}</td><td>${c.fecha || '—'}</td><td style="text-align:right">${fL(c.litros)}</td></tr>`;
+      });
+      const totalNewLitros = prevNewClients.reduce((s, c) => s + (c.litros || 0), 0);
+      h += `<tr style="font-weight:700;border-top:2px solid var(--border)"><td>Total: ${prevNewClients.length} clientes</td><td></td><td style="text-align:right">${fL(totalNewLitros)}</td></tr>`;
+    }
+    h += '</tbody></table></div></div>';
+
     document.getElementById('tab-ejecutivos').innerHTML = h;
     renderWeekSelector();
     return;
@@ -1696,15 +1712,27 @@ function renderMesVencido(){
   }); else h+='<tr><td colspan="3" class="nodata">Sin perdidos</td></tr>';
   h+='</tbody></table></div></div>';
 
-  // Resumen por vendedor
-  var _uSet=new Set([].concat(Object.keys(TP.litros_by_user||{}),Object.keys(VG)));
+  // Resumen por vendedor (merge duplicates like "Ron Yenire" / "Yeniré Ron")
+  function mergeByNorm(obj){
+    var m={},km={};
+    for(var k in obj){
+      var nk=norm(k);
+      m[nk]=(m[nk]||0)+obj[k];
+      if(!km[nk]||k.length>km[nk].length) km[nk]=k;
+    }
+    var r={};for(var nk in m) r[km[nk]]=m[nk];return r;
+  }
+  var mLbu=mergeByNorm(TP.litros_by_user||{});
+  var mNcBu=mergeByNorm(ncP.by_user||{});
+  var _uSet=new Set([].concat(Object.keys(mLbu),Object.keys(VG)));
   var users=Array.from(_uSet).filter(function(u){return u!=='Sin asignar'&&isAllowed(u)});
   if(users.length){
     h+='<div class="sec"><div class="sec-h"><h2>Resumen '+(VP.month_label||'Mes')+'</h2></div>';
     h+='<div class="sec-b" style="padding:0;overflow-x:auto"><table><thead><tr><th>Vendedor</th><th>Litros</th><th>Clientes Nuevos</th></tr></thead><tbody>';
     users.forEach(function(u){
-      var lt=(TP.litros_by_user||{})[u]||0;
-      var nc2=(ncP.by_user||{})[u]||0;
+      var lt=0,nc2=0,un=norm(u);
+      for(var k in mLbu){if(norm(k)===un){lt=mLbu[k];break;}}
+      for(var k in mNcBu){if(norm(k)===un){nc2=mNcBu[k];break;}}
       h+='<tr><td class="bold">'+H(u)+'</td><td>'+fL(lt)+'</td><td>'+nc2+'</td></tr>';
     });
     h+='</tbody></table></div></div>';
