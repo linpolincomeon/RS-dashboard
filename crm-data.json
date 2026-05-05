@@ -1,5 +1,5 @@
 {
-  "updated": "2026-05-05T16:59:58.899247",
+  "updated": "2026-05-05T17:11:46.954511",
   "week": {
     "start": "2026-04-30",
     "end": "2026-05-06",
@@ -167,12 +167,12 @@
     {
       "stage": "En Riesgo",
       "class": "oportunidad",
-      "count": 201
+      "count": 202
     },
     {
       "stage": "No Cerrados",
       "class": "oportunidad",
-      "count": 201
+      "count": 202
     },
     {
       "stage": "Ruta",
@@ -182,7 +182,7 @@
     {
       "stage": "Cotizado",
       "class": "cotizado",
-      "count": 247
+      "count": 246
     },
     {
       "stage": "Durmiente",
@@ -192,7 +192,7 @@
     {
       "stage": "Oportunidad de Negocio",
       "class": "oportunidad",
-      "count": 201
+      "count": 202
     },
     {
       "stage": "Contactado",
@@ -201,6 +201,20 @@
     }
   ],
   "pipeline": [
+    {
+      "id": 2020,
+      "name": "JOSE SANTELICES LUCERO",
+      "stage": "Oportunidad de Negocio",
+      "stage_class": "oportunidad",
+      "exec": "Carolina Avilés",
+      "exec_id": 266,
+      "value": 3000,
+      "days_in_stage": 0,
+      "days_since_activity": 0,
+      "last_update": "2026-05-05",
+      "origin": "—",
+      "created": "2026-05-04"
+    },
     {
       "id": 2021,
       "name": "AGRICOLA JOAQUIN ARRAZTIO",
@@ -216,8 +230,8 @@
       "created": "2026-05-04"
     },
     {
-      "id": 1982,
-      "name": "JOSE EDGARDO RAMON MEZA BANADOS",
+      "id": 1980,
+      "name": "MAQUINARIAS Y ARIDOS SAN PEDRO SPA.",
       "stage": "En Riesgo",
       "stage_class": "oportunidad",
       "exec": "Vial Comber Pauline",
@@ -230,8 +244,8 @@
       "created": "2026-04-29"
     },
     {
-      "id": 1980,
-      "name": "MAQUINARIAS Y ARIDOS SAN PEDRO SPA.",
+      "id": 1982,
+      "name": "JOSE EDGARDO RAMON MEZA BANADOS",
       "stage": "En Riesgo",
       "stage_class": "oportunidad",
       "exec": "Vial Comber Pauline",
@@ -298,20 +312,6 @@
       "last_update": "2026-05-05",
       "origin": "—",
       "created": "2026-05-05"
-    },
-    {
-      "id": 2020,
-      "name": "JOSE SANTELICES LUCERO",
-      "stage": "Cotizado",
-      "stage_class": "cotizado",
-      "exec": "Carolina Avilés",
-      "exec_id": 266,
-      "value": 3000,
-      "days_in_stage": 0,
-      "days_since_activity": 0,
-      "last_update": "2026-05-05",
-      "origin": "—",
-      "created": "2026-05-04"
     },
     {
       "id": 2027,
@@ -503,7 +503,7 @@
       "exec": "Marcela Márquez",
       "exec_id": 265,
       "value": 0,
-      "days_in_stage": 0,
+      "days_in_stage": 1,
       "days_since_activity": 0,
       "last_update": "2026-05-04",
       "origin": "—",
@@ -1105,7 +1105,7 @@
       "exec": "MUÑOZ ENCALADA JOAQUIN",
       "exec_id": 262,
       "value": 10000,
-      "days_in_stage": 4,
+      "days_in_stage": 5,
       "days_since_activity": 4,
       "last_update": "2026-04-30",
       "origin": "—",
@@ -1119,8 +1119,8 @@
       "exec": "MUÑOZ ENCALADA JOAQUIN",
       "exec_id": 262,
       "value": 0,
-      "days_in_stage": 4,
-      "days_since_activity": 4,
+      "days_in_stage": 5,
+      "days_since_activity": 5,
       "last_update": "2026-04-30",
       "origin": "—",
       "created": "2025-09-25"
@@ -2872,7 +2872,7 @@
       "exec_id": 2,
       "value": 0,
       "days_in_stage": 17,
-      "days_since_activity": 6,
+      "days_since_activity": 7,
       "last_update": "2026-04-28",
       "origin": "—",
       "created": "2025-10-29"
@@ -2886,7 +2886,7 @@
       "exec_id": 2,
       "value": 0,
       "days_in_stage": 17,
-      "days_since_activity": 6,
+      "days_since_activity": 7,
       "last_update": "2026-04-28",
       "origin": "—",
       "created": "2025-10-03"
@@ -4446,20 +4446,6 @@
       "created": "2025-10-29"
     },
     {
-      "id": 681,
-      "name": "AGRÍCOLA , GANADERA, FORESTAL CASTELLANI SPA.",
-      "stage": "Won",
-      "stage_class": "won",
-      "exec": "Administrator",
-      "exec_id": 2,
-      "value": 0,
-      "days_in_stage": 47,
-      "days_since_activity": 46,
-      "last_update": "2026-03-20",
-      "origin": "—",
-      "created": "2025-10-03"
-    },
-    {
       "id": 1192,
       "name": "AGRÍCOLA , GANADERA, FORESTAL CASTELLANI SPA.",
       "stage": "Won",
@@ -4472,6 +4458,20 @@
       "last_update": "2026-03-20",
       "origin": "—",
       "created": "2025-10-29"
+    },
+    {
+      "id": 681,
+      "name": "AGRÍCOLA , GANADERA, FORESTAL CASTELLANI SPA.",
+      "stage": "Won",
+      "stage_class": "won",
+      "exec": "Administrator",
+      "exec_id": 2,
+      "value": 0,
+      "days_in_stage": 47,
+      "days_since_activity": 46,
+      "last_update": "2026-03-20",
+      "origin": "—",
+      "created": "2025-10-03"
     },
     {
       "id": 724,
@@ -6011,6 +6011,21 @@
       "action": "Seguimiento cotización"
     },
     {
+      "id": 96,
+      "name": "pobeña",
+      "stage": "Contactado",
+      "stage_class": "contactado",
+      "exec": "Vanessa Vazquez",
+      "exec_id": 67,
+      "value": 0,
+      "days_in_stage": 265,
+      "days_since_activity": 43,
+      "last_update": "2026-03-23",
+      "origin": "—",
+      "created": "2025-08-13",
+      "action": "Agendar visita (Ruta)"
+    },
+    {
       "id": 93,
       "name": "Oportunidad de AGRICOLA TOPOCALMA LIMITADA",
       "stage": "Contactado",
@@ -6298,21 +6313,6 @@
     {
       "id": 98,
       "name": "MAYOL Y PIRAINO",
-      "stage": "Contactado",
-      "stage_class": "contactado",
-      "exec": "Vanessa Vazquez",
-      "exec_id": 67,
-      "value": 0,
-      "days_in_stage": 264,
-      "days_since_activity": 43,
-      "last_update": "2026-03-23",
-      "origin": "—",
-      "created": "2025-08-13",
-      "action": "Agendar visita (Ruta)"
-    },
-    {
-      "id": 96,
-      "name": "pobeña",
       "stage": "Contactado",
       "stage_class": "contactado",
       "exec": "Vanessa Vazquez",
@@ -6820,6 +6820,11 @@
   ],
   "messages": [
     {
+      "date": "2026-05-05 17:02",
+      "who": "Carolina Avilés",
+      "desc": "5/5/26 CLIENTE RESPONDIÓ MAIL INDICANDO QUE ESTA SEMANA YA COMPRO PERO QUE TENDRÁ PRESENTE NUESTRA COTIZACIÓN PARA PROXIMA COMPRA SEMANA SIGUIENTE"
+    },
+    {
       "date": "2026-05-05 16:40",
       "who": "Carolina Avilés",
       "desc": "5/5/26 SE LE ENVIO COTIZACIÓN POR $1.590 YA QUE EN CHIMBARONGO ESTA A $1.600 Y NO ES POSIBLE IGUALAR SU ULTIMO PRECIO DE COMPRA DE $1.540,"
@@ -6871,13 +6876,13 @@
     },
     {
       "date": "2026-05-05 14:36",
-      "who": "OdooBot",
-      "desc": "Lead Enrichment (based on email address)\n        \n            Enrichment could not be done because the email address does not look valid."
+      "who": "Carolina Avilés",
+      "desc": "Hay un nuevo lead para el equipo \"Ventas\"."
     },
     {
       "date": "2026-05-05 14:36",
-      "who": "Carolina Avilés",
-      "desc": "Hay un nuevo lead para el equipo \"Ventas\"."
+      "who": "OdooBot",
+      "desc": "Lead Enrichment (based on email address)\n        \n            Enrichment could not be done because the email address does not look valid."
     },
     {
       "date": "2026-05-05 14:34",
@@ -6901,13 +6906,13 @@
     },
     {
       "date": "2026-05-05 14:28",
-      "who": "Carolina Avilés",
-      "desc": "Hay un nuevo lead para el equipo \"Ventas\"."
+      "who": "OdooBot",
+      "desc": "Lead Enrichment (based on email address)\n        \n            Enrichment could not be done because the email address does not look valid."
     },
     {
       "date": "2026-05-05 14:28",
-      "who": "OdooBot",
-      "desc": "Lead Enrichment (based on email address)\n        \n            Enrichment could not be done because the email address does not look valid."
+      "who": "Carolina Avilés",
+      "desc": "Hay un nuevo lead para el equipo \"Ventas\"."
     },
     {
       "date": "2026-05-05 13:46",
@@ -6946,13 +6951,13 @@
     },
     {
       "date": "2026-05-04 16:46",
-      "who": "OdooBot",
-      "desc": "Lead Enrichment (based on email address)\n        \n             No company data found based on the email address or email address is one of an email provider. No credit was consumed."
+      "who": "Carolina Avilés",
+      "desc": "Hay un nuevo lead para el equipo \"Ventas\"."
     },
     {
       "date": "2026-05-04 16:46",
-      "who": "Carolina Avilés",
-      "desc": "Hay un nuevo lead para el equipo \"Ventas\"."
+      "who": "OdooBot",
+      "desc": "Lead Enrichment (based on email address)\n        \n             No company data found based on the email address or email address is one of an email provider. No credit was consumed."
     },
     {
       "date": "2026-05-04 16:42",
@@ -6963,11 +6968,6 @@
       "date": "2026-05-04 16:38",
       "who": "Carolina Avilés",
       "desc": "Hay un nuevo lead para el equipo \"Ventas\"."
-    },
-    {
-      "date": "2026-05-04 16:27",
-      "who": "Carolina Avilés",
-      "desc": "04/5/26 ME DEVOLVIO LLAMADO DON JAIME FLORES, LUEGO DE REVISAR COTIZACION ME INDICÓ QUE NUESTRA COTIZACIÓN A $1.550 ESTA $95 PESOS MÁS ALTA QUE LO QUE LE VENDEN ACTUALMENTE SU PROVEEDOR (SHELL), LE IN"
     }
   ],
   "funnel_weeks": [
@@ -7062,7 +7062,7 @@
               "name": "Oportunidad de JOSE SANTELICES LUCERO",
               "empresa": "JOSE SANTELICES LUCERO",
               "vendedor": "Carolina Avilés",
-              "etapa": "Cotizado",
+              "etapa": "Oportunidad de Negocio",
               "fecha": "2026-05-04"
             },
             {
@@ -7131,10 +7131,10 @@
           ]
         },
         "contacto": {
-          "value": 166,
+          "value": 168,
           "goal": 10,
           "by_user": {
-            "Carolina Avilés": 31,
+            "Carolina Avilés": 33,
             "Vial Comber Pauline": 7,
             "Comber Sigall Pauline": 19,
             "Ron Yenire": 4,
@@ -7218,7 +7218,7 @@
               "name": "S30618",
               "cliente": "FRUAL QUILVO SPA",
               "vendedor": "TomEnergy",
-              "monto": 1646468.0,
+              "monto": 1629997.0,
               "litros": 1400,
               "estado": "draft",
               "fecha": "2026-05-05"
@@ -7346,16 +7346,23 @@
           "value": 100,
           "goal": 100,
           "unit": "%",
-          "count": 26,
+          "count": 27,
           "by_user": {
+            "TomEnergy": 12,
             "MUÑOZ ENCALADA JOAQUIN": 2,
             "Ron Yenire": 2,
-            "TomEnergy": 11,
             "Toro González Sebastian Enrique": 8,
             "Marcela Márquez": 2,
             "Carolina Avilés": 1
           },
           "detail": [
+            {
+              "name": "S30641",
+              "cliente": "FRUTICOLA AGUA BUENA LTDA",
+              "vendedor": "TomEnergy",
+              "monto": 961679.0,
+              "fecha": "2026-05-05"
+            },
             {
               "name": "S30635",
               "cliente": "AGRICOLA SANTA BERTA SPA",
@@ -7402,7 +7409,7 @@
               "name": "S30618",
               "cliente": "FRUAL QUILVO SPA",
               "vendedor": "TomEnergy",
-              "monto": 1646468.0,
+              "monto": 1629997.0,
               "fecha": "2026-05-05"
             },
             {
