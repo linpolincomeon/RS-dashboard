@@ -910,10 +910,12 @@ function renderEjecutivos() {
   h += mkKpi('c-green', 'Ganados', ganados, 'En semana actual', null, null);
   h += '</div>';
 
-  // Clientes Nuevos table — filtered to week or month
-  const thisExecNewClients = ncDetail.filter(c => {
+  // Clientes Nuevos table — filtered to week or month (also check ventas_prev for past weeks)
+  const ncDetailPrev = (D.ventas_prev || {}).new_clients?.detail || [];
+  const allNcDetail = [...ncDetail, ...ncDetailPrev];
+  const thisExecNewClients = allNcDetail.filter(c => {
     if (!matchesExec(c.vendedor)) return false;
-    if (isExecAccum) return true; // show all month
+    if (isExecAccum) return !ncDetailPrev.includes(c); // current month only for acumulado
     if (ws && we && c.fecha) return c.fecha >= ws && c.fecha <= we;
     return false;
   });
@@ -937,12 +939,14 @@ function renderEjecutivos() {
   });
 
   h += '<div class="sec"><div class="sec-h"><h2>🎯 Oportunidades</h2></div><div class="sec-b" style="max-height:400px;overflow-y:auto"><table>';
-  h += '<thead><tr><th>Cliente</th><th>Etapa</th><th>Litros Est.</th><th>Fecha</th></tr></thead><tbody>';
+  h += '<thead><tr><th>Cliente</th><th>Etapa</th><th>Prob.</th><th>Litros Est.</th><th>Última Actividad</th></tr></thead><tbody>';
   if (thisExecOpportunities.length === 0) {
-    h += '<tr><td colspan="4" style="text-align:center;color:var(--dim);padding:20px">Sin oportunidades</td></tr>';
+    h += '<tr><td colspan="5" style="text-align:center;color:var(--dim);padding:20px">Sin oportunidades</td></tr>';
   } else {
     thisExecOpportunities.sort((a, b) => (b.value || 0) - (a.value || 0)).slice(0, 20).forEach(p => {
-      h += `<tr><td class="bold">${H(p.name)}</td><td>${stageTag(p.stage, p.stage_class)}</td><td>${fL(p.value)}</td><td>${p.last_update || '—'}</td></tr>`;
+      const prob = p.probability != null ? Math.round(p.probability) + '%' : '—';
+      const note = p.last_note ? `<div style="font-size:11px;color:var(--dim);max-width:250px;white-space:normal">${H(p.last_note)}</div>` : '';
+      h += `<tr><td class="bold">${H(p.name)}</td><td>${stageTag(p.stage, p.stage_class)}</td><td>${prob}</td><td>${fL(p.value)}</td><td>${p.last_update || '—'}${note}</td></tr>`;
     });
   }
   h += '</tbody></table></div></div>';
