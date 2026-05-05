@@ -719,35 +719,52 @@ def extract_sales_data(models, uid, custom_start=None, custom_end=None, label_ov
         ["state", "=", "posted"],
         ["invoice_date", ">=", fmt(m_start)],
         ["invoice_date", "<=", fmt(m_end)],
-    ], ["name", "invoice_user_id", "amount_untaxed", "partner_id", "margin_zone"], limit=500)
+    ], ["name", "invoice_user_id", "amount_untaxed", "partner_id", "margin_zone",
+        "reversed_entry_id"], limit=500)
 
     nc_ids = [n["id"] for n in ncs]
     nc_user_map = {n["id"]: safe_name(n.get("invoice_user_id")) for n in ncs}
     nc_partner_map = {n["id"]: safe_id(n.get("partner_id")) for n in ncs}
     nc_margin_map = {n["id"]: n.get("margin_zone", 0) or 0 for n in ncs}
 
-    # Descontar NC: usar amount_untaxed del header para venta (cubre NC sin producto diesel)
-    # y litros solo de líneas con diesel (si las hay)
+    # ── Descontar NC ──
+    # Estrategia: para litros, buscar en 3 fuentes (en orden):
+    #   1. Líneas diesel en la propia NC
+    #   2. Si no tiene → buscar litros diesel en la factura original (reversed_entry_id)
+    #   3. Si tampoco → 0 litros (NC puramente monetaria)
+    # Para venta: siempre usar amount_untaxed del header de la NC
+    nc_litros_by_move = defaultdict(float)
     if nc_ids:
-        # Litros: solo de líneas con producto diesel
         nc_lines = sr(models, uid, "account.move.line", [
             ["move_id", "in", nc_ids],
             ["product_id", "=", DIESEL_PRODUCT_ID],
         ], ["move_id", "quantity"], limit=2000)
-        nc_litros_by_move = defaultdict(float)
         for ln in nc_lines:
             mid = safe_id(ln.get("move_id"))
             nc_litros_by_move[mid] += abs(ln.get("quantity", 0))
 
+    # For NCs without diesel lines, check the reversed (original) invoice
+    for nc in ncs:
+        ncid = nc["id"]
+        if ncid not in nc_litros_by_move or nc_litros_by_move[ncid] == 0:
+            rev_id = safe_id(nc.get("reversed_entry_id"))
+            if rev_id:
+                orig_lines = sr(models, uid, "account.move.line", [
+                    ["move_id", "=", rev_id],
+                    ["product_id", "=", DIESEL_PRODUCT_ID],
+                ], ["quantity"], limit=20)
+                for oln in orig_lines:
+                    nc_litros_by_move[ncid] += abs(oln.get("quantity", 0))
+
+    nc_litros_total = 0
+    nc_venta_total = 0
     for nc in ncs:
         ncid = nc["id"]
         user = nc_user_map.get(ncid, "Sin asignar")
         nc_margin = nc_margin_map.get(ncid, 0)
         nc_pid = nc_partner_map.get(ncid)
-        # Venta: usar amount_untaxed del header (cubre toda NC, no solo diesel)
         sub = abs(nc.get("amount_untaxed", 0) or 0)
-        # Litros: solo si la NC tenía líneas con diesel
-        qty = nc_litros_by_move.get(ncid, 0) if nc_ids else 0
+        qty = nc_litros_by_move.get(ncid, 0)
 
         litros_by_user[user] -= qty
         venta_by_user[user] -= sub
@@ -757,6 +774,11 @@ def extract_sales_data(models, uid, custom_start=None, custom_end=None, label_ov
         margin_by_user_costo[user] -= sub * (1 - nc_margin) if nc_margin else sub
         if nc_pid:
             litros_by_partner[nc_pid] -= qty
+        nc_litros_total += qty
+        nc_venta_total += sub
+        print(f"    NC {nc.get('name','?')}: litros={qty} venta={sub} user={user} rev={safe_id(nc.get('reversed_entry_id'))}")
+
+    print(f"  NC resumen: {len(ncs)} NCs, litros restados={round(nc_litros_total)}, venta restada={round(nc_venta_total)}")
 
     # ── Clientes Nuevos: primera factura con Diesel B1 (product_id=14) en este mes ──
     new_cl_by_user = defaultdict(int)
