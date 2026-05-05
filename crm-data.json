@@ -1,5 +1,5 @@
 {
-  "updated": "2026-05-05T16:33:16.039036",
+  "updated": "2026-05-05T16:59:58.899247",
   "week": {
     "start": "2026-04-30",
     "end": "2026-05-06",
@@ -167,12 +167,12 @@
     {
       "stage": "En Riesgo",
       "class": "oportunidad",
-      "count": 202
+      "count": 201
     },
     {
       "stage": "No Cerrados",
       "class": "oportunidad",
-      "count": 202
+      "count": 201
     },
     {
       "stage": "Ruta",
@@ -182,7 +182,7 @@
     {
       "stage": "Cotizado",
       "class": "cotizado",
-      "count": 246
+      "count": 247
     },
     {
       "stage": "Durmiente",
@@ -192,7 +192,7 @@
     {
       "stage": "Oportunidad de Negocio",
       "class": "oportunidad",
-      "count": 202
+      "count": 201
     },
     {
       "stage": "Contactado",
@@ -202,8 +202,22 @@
   ],
   "pipeline": [
     {
-      "id": 1980,
-      "name": "MAQUINARIAS Y ARIDOS SAN PEDRO SPA.",
+      "id": 2021,
+      "name": "AGRICOLA JOAQUIN ARRAZTIO",
+      "stage": "Cotizado",
+      "stage_class": "cotizado",
+      "exec": "Carolina Avilés",
+      "exec_id": 266,
+      "value": 1000,
+      "days_in_stage": 0,
+      "days_since_activity": 0,
+      "last_update": "2026-05-05",
+      "origin": "—",
+      "created": "2026-05-04"
+    },
+    {
+      "id": 1982,
+      "name": "JOSE EDGARDO RAMON MEZA BANADOS",
       "stage": "En Riesgo",
       "stage_class": "oportunidad",
       "exec": "Vial Comber Pauline",
@@ -216,8 +230,8 @@
       "created": "2026-04-29"
     },
     {
-      "id": 1982,
-      "name": "JOSE EDGARDO RAMON MEZA BANADOS",
+      "id": 1980,
+      "name": "MAQUINARIAS Y ARIDOS SAN PEDRO SPA.",
       "stage": "En Riesgo",
       "stage_class": "oportunidad",
       "exec": "Vial Comber Pauline",
@@ -494,20 +508,6 @@
       "last_update": "2026-05-04",
       "origin": "—",
       "created": "2026-04-28"
-    },
-    {
-      "id": 2021,
-      "name": "AGRICOLA JOAQUIN ARRAZTIO",
-      "stage": "Oportunidad de Negocio",
-      "stage_class": "oportunidad",
-      "exec": "Carolina Avilés",
-      "exec_id": 266,
-      "value": 1000,
-      "days_in_stage": 0,
-      "days_since_activity": 0,
-      "last_update": "2026-05-05",
-      "origin": "—",
-      "created": "2026-05-04"
     },
     {
       "id": 2017,
@@ -1427,7 +1427,7 @@
       "exec": "MUÑOZ ENCALADA JOAQUIN",
       "exec_id": 262,
       "value": 0,
-      "days_in_stage": 5,
+      "days_in_stage": 6,
       "days_since_activity": 5,
       "last_update": "2026-04-29",
       "origin": "—",
@@ -1441,8 +1441,8 @@
       "exec": "MUÑOZ ENCALADA JOAQUIN",
       "exec_id": 262,
       "value": 1000,
-      "days_in_stage": 5,
-      "days_since_activity": 5,
+      "days_in_stage": 6,
+      "days_since_activity": 6,
       "last_update": "2026-04-29",
       "origin": "—",
       "created": "2026-04-22"
@@ -1455,8 +1455,8 @@
       "exec": "MUÑOZ ENCALADA JOAQUIN",
       "exec_id": 262,
       "value": 1000,
-      "days_in_stage": 5,
-      "days_since_activity": 5,
+      "days_in_stage": 6,
+      "days_since_activity": 6,
       "last_update": "2026-04-29",
       "origin": "—",
       "created": "2026-04-22"
@@ -1694,7 +1694,7 @@
       "exec_id": 265,
       "value": 0,
       "days_in_stage": 6,
-      "days_since_activity": 0,
+      "days_since_activity": 1,
       "last_update": "2026-05-04",
       "origin": "—",
       "created": "2026-04-28"
@@ -1750,7 +1750,7 @@
       "exec_id": 56,
       "value": 0,
       "days_in_stage": 7,
-      "days_since_activity": 6,
+      "days_since_activity": 7,
       "last_update": "2026-04-28",
       "origin": "—",
       "created": "2026-04-28"
@@ -2304,20 +2304,6 @@
   ],
   "won_deals": [
     {
-      "id": 674,
-      "name": "AGRICOLA Y COMERCIAL DON CARLOS",
-      "stage": "Won",
-      "stage_class": "won",
-      "exec": "Administrator",
-      "exec_id": 2,
-      "value": 0,
-      "days_in_stage": 0,
-      "days_since_activity": 0,
-      "last_update": "2026-05-04",
-      "origin": "—",
-      "created": "2025-10-03"
-    },
-    {
       "id": 1016,
       "name": "AGRICOLA Y COMERCIAL DON CARLOS",
       "stage": "Won",
@@ -2330,6 +2316,20 @@
       "last_update": "2026-05-04",
       "origin": "—",
       "created": "2025-10-29"
+    },
+    {
+      "id": 674,
+      "name": "AGRICOLA Y COMERCIAL DON CARLOS",
+      "stage": "Won",
+      "stage_class": "won",
+      "exec": "Administrator",
+      "exec_id": 2,
+      "value": 0,
+      "days_in_stage": 0,
+      "days_since_activity": 0,
+      "last_update": "2026-05-04",
+      "origin": "—",
+      "created": "2025-10-03"
     },
     {
       "id": 1709,
@@ -2634,7 +2634,7 @@
       "exec_id": 2,
       "value": 0,
       "days_in_stage": 11,
-      "days_since_activity": 10,
+      "days_since_activity": 11,
       "last_update": "2026-04-24",
       "origin": "—",
       "created": "2025-10-03"
@@ -2648,7 +2648,7 @@
       "exec_id": 2,
       "value": 0,
       "days_in_stage": 11,
-      "days_since_activity": 10,
+      "days_since_activity": 11,
       "last_update": "2026-04-24",
       "origin": "—",
       "created": "2025-10-29"
@@ -3488,7 +3488,7 @@
       "exec_id": 52,
       "value": 8000,
       "days_in_stage": 26,
-      "days_since_activity": 5,
+      "days_since_activity": 6,
       "last_update": "2026-04-29",
       "origin": "—",
       "created": "2025-09-22"
@@ -3544,7 +3544,7 @@
       "exec_id": 56,
       "value": 0,
       "days_in_stage": 27,
-      "days_since_activity": 26,
+      "days_since_activity": 27,
       "last_update": "2026-04-08",
       "origin": "—",
       "created": "2026-03-27"
@@ -3711,8 +3711,8 @@
       "exec": "Comber Sigall Pauline",
       "exec_id": 52,
       "value": 0,
-      "days_in_stage": 33,
-      "days_since_activity": 33,
+      "days_in_stage": 34,
+      "days_since_activity": 34,
       "last_update": "2026-04-01",
       "origin": "—",
       "created": "2026-04-01"
@@ -5014,7 +5014,7 @@
       "exec_id": 56,
       "value": 1000,
       "days_in_stage": 83,
-      "days_since_activity": 33,
+      "days_since_activity": 34,
       "last_update": "2026-04-01",
       "origin": "—",
       "created": "2026-02-04"
@@ -5531,7 +5531,7 @@
       "exec": "Vanessa Vazquez",
       "exec_id": 67,
       "value": 0,
-      "days_in_stage": 196,
+      "days_in_stage": 197,
       "days_since_activity": 98,
       "last_update": "2026-01-27",
       "origin": "—",
@@ -5936,21 +5936,6 @@
       "action": "Llamar o enviar mail"
     },
     {
-      "id": 31,
-      "name": "Contacto Ale Feña (Agricola Santa María de graneros)",
-      "stage": "Cotizado",
-      "stage_class": "cotizado",
-      "exec": "Toro González Sebastian Enrique",
-      "exec_id": 56,
-      "value": 0,
-      "days_in_stage": 271,
-      "days_since_activity": 43,
-      "last_update": "2026-03-23",
-      "origin": "—",
-      "created": "2025-07-24",
-      "action": "Seguimiento cotización"
-    },
-    {
       "id": 61,
       "name": "VIÑEDOS PUERTA",
       "stage": "Contactado",
@@ -5958,7 +5943,7 @@
       "exec": "Toro González Sebastian Enrique",
       "exec_id": 56,
       "value": 0,
-      "days_in_stage": 270,
+      "days_in_stage": 271,
       "days_since_activity": 43,
       "last_update": "2026-03-23",
       "origin": "—",
@@ -5973,12 +5958,27 @@
       "exec": "Toro González Sebastian Enrique",
       "exec_id": 56,
       "value": 0,
-      "days_in_stage": 270,
+      "days_in_stage": 271,
       "days_since_activity": 43,
       "last_update": "2026-03-23",
       "origin": "—",
       "created": "2025-08-07",
       "action": "Agendar visita (Ruta)"
+    },
+    {
+      "id": 31,
+      "name": "Contacto Ale Feña (Agricola Santa María de graneros)",
+      "stage": "Cotizado",
+      "stage_class": "cotizado",
+      "exec": "Toro González Sebastian Enrique",
+      "exec_id": 56,
+      "value": 0,
+      "days_in_stage": 271,
+      "days_since_activity": 43,
+      "last_update": "2026-03-23",
+      "origin": "—",
+      "created": "2025-07-24",
+      "action": "Seguimiento cotización"
     },
     {
       "id": 62,
@@ -6009,6 +6009,21 @@
       "origin": "—",
       "created": "2025-08-11",
       "action": "Seguimiento cotización"
+    },
+    {
+      "id": 93,
+      "name": "Oportunidad de AGRICOLA TOPOCALMA LIMITADA",
+      "stage": "Contactado",
+      "stage_class": "contactado",
+      "exec": "Vanessa Vazquez",
+      "exec_id": 67,
+      "value": 0,
+      "days_in_stage": 265,
+      "days_since_activity": 147,
+      "last_update": "2025-12-09",
+      "origin": "—",
+      "created": "2025-08-13",
+      "action": "Agendar visita (Ruta)"
     },
     {
       "id": 90,
@@ -6311,21 +6326,6 @@
       "action": "Agendar visita (Ruta)"
     },
     {
-      "id": 93,
-      "name": "Oportunidad de AGRICOLA TOPOCALMA LIMITADA",
-      "stage": "Contactado",
-      "stage_class": "contactado",
-      "exec": "Vanessa Vazquez",
-      "exec_id": 67,
-      "value": 0,
-      "days_in_stage": 264,
-      "days_since_activity": 147,
-      "last_update": "2025-12-09",
-      "origin": "—",
-      "created": "2025-08-13",
-      "action": "Agendar visita (Ruta)"
-    },
-    {
       "id": 136,
       "name": "Carlos",
       "stage": "Cotizado",
@@ -6563,10 +6563,10 @@
     },
     {
       "date": "2026-05-08",
-      "who": "Vial Comber Pauline",
+      "who": "Carolina Avilés",
       "type": "Call",
       "summary": "follow up on quote sent",
-      "lead": "Servicios de construcción y maquinarias Talmaqq Ltda.'s opportunity",
+      "lead": "Oportunidad de JOSE SANTELICES LUCERO",
       "state": "planned"
     },
     {
@@ -6574,7 +6574,15 @@
       "who": "Carolina Avilés",
       "type": "Call",
       "summary": "follow up on quote sent",
-      "lead": "Oportunidad de JOSE SANTELICES LUCERO",
+      "lead": "Oportunidad de AGRICOLA JOAQUIN ARRAZTIO",
+      "state": "planned"
+    },
+    {
+      "date": "2026-05-08",
+      "who": "Vial Comber Pauline",
+      "type": "Call",
+      "summary": "follow up on quote sent",
+      "lead": "Servicios de construcción y maquinarias Talmaqq Ltda.'s opportunity",
       "state": "planned"
     },
     {
@@ -6808,17 +6816,14 @@
       "summary": "Re-engage dormant client",
       "lead": "Oportunidad de AGRÍCOLA KUNAKO SPA",
       "state": "overdue"
-    },
-    {
-      "date": "2026-05-04",
-      "who": "Toro González Sebastian Enrique",
-      "type": "Email",
-      "summary": "Re-engage dormant client",
-      "lead": "BARRIOS OROSTEGUI GABRIEL DEL CARMEN",
-      "state": "overdue"
     }
   ],
   "messages": [
+    {
+      "date": "2026-05-05 16:40",
+      "who": "Carolina Avilés",
+      "desc": "5/5/26 SE LE ENVIO COTIZACIÓN POR $1.590 YA QUE EN CHIMBARONGO ESTA A $1.600 Y NO ES POSIBLE IGUALAR SU ULTIMO PRECIO DE COMPRA DE $1.540,"
+    },
     {
       "date": "2026-05-05 16:04",
       "who": "Carolina Avilés",
@@ -6906,13 +6911,13 @@
     },
     {
       "date": "2026-05-05 13:46",
-      "who": "OdooBot",
-      "desc": "Lead Enrichment (based on email address)\n        \n            Enrichment could not be done because the email address does not look valid."
+      "who": "Comber Sigall Pauline",
+      "desc": "Hay un nuevo lead para el equipo \"Ventas\"."
     },
     {
       "date": "2026-05-05 13:46",
-      "who": "Comber Sigall Pauline",
-      "desc": "Hay un nuevo lead para el equipo \"Ventas\"."
+      "who": "OdooBot",
+      "desc": "Lead Enrichment (based on email address)\n        \n            Enrichment could not be done because the email address does not look valid."
     },
     {
       "date": "2026-05-05 00:17",
@@ -6963,11 +6968,6 @@
       "date": "2026-05-04 16:27",
       "who": "Carolina Avilés",
       "desc": "04/5/26 ME DEVOLVIO LLAMADO DON JAIME FLORES, LUEGO DE REVISAR COTIZACION ME INDICÓ QUE NUESTRA COTIZACIÓN A $1.550 ESTA $95 PESOS MÁS ALTA QUE LO QUE LE VENDEN ACTUALMENTE SU PROVEEDOR (SHELL), LE IN"
-    },
-    {
-      "date": "2026-05-04 16:24",
-      "who": "Carolina Avilés",
-      "desc": "29/4 ME CONTACTE CON DON JAIME FLORES, ME INDICÓ LE ENVIE COTIZACIÓN, NO QUISO INDICAR VALOR DE ULTIMA COMPRA ME DIJO LE OFREZCAMOS NOSOTROS  Y AHI ME DICE SI LE CONVIENE O SI ESTA ALTO NUESTRO VALOR."
     }
   ],
   "funnel_weeks": [
@@ -7055,7 +7055,7 @@
               "name": "Oportunidad de AGRICOLA JOAQUIN ARRAZTIO",
               "empresa": "AGRICOLA JOAQUIN ARRAZTIO",
               "vendedor": "Carolina Avilés",
-              "etapa": "Oportunidad de Negocio",
+              "etapa": "Cotizado",
               "fecha": "2026-05-04"
             },
             {
@@ -7131,11 +7131,11 @@
           ]
         },
         "contacto": {
-          "value": 164,
+          "value": 166,
           "goal": 10,
           "by_user": {
+            "Carolina Avilés": 31,
             "Vial Comber Pauline": 7,
-            "Carolina Avilés": 29,
             "Comber Sigall Pauline": 19,
             "Ron Yenire": 4,
             "De Trenqualye Merino Andre Jean": 2,
@@ -10422,24 +10422,24 @@
     "month_start": "2026-05-01",
     "month_end": "2026-05-31",
     "totals": {
-      "total_litros": 62865,
-      "total_venta_neta": 74144551,
-      "invoice_count": 39,
+      "total_litros": 63865,
+      "total_venta_neta": 75301272,
+      "invoice_count": 41,
       "nc_count": 2,
       "litros_by_user": {
         "Toro González Sebastian Enrique": 14491,
-        "Comber Sigall Pauline": 48374
+        "Comber Sigall Pauline": 49374
       },
       "venta_by_user": {
         "Toro González Sebastian Enrique": 16803327,
-        "Comber Sigall Pauline": 57341224
+        "Comber Sigall Pauline": 58497945
       },
       "margin_retail_pct": 7.89,
-      "margin_volume_pct": 4.47,
+      "margin_volume_pct": 4.62,
       "retail_venta": 63664919,
-      "volume_venta": 13378156,
+      "volume_venta": 14534877,
       "litros_by_zone": {
-        "Curico": 20950,
+        "Curico": 21950,
         "Talca": 16974,
         "San Fernando": 10100,
         "Chillan": 9271,
@@ -10447,7 +10447,7 @@
         "VI Costa": 1600
       },
       "venta_by_zone": {
-        "Curico": 24261870,
+        "Curico": 25418591,
         "Talca": 20202128,
         "San Fernando": 12201702,
         "Chillan": 10630892,
@@ -10455,8 +10455,8 @@
         "VI Costa": 1963526
       },
       "margin_by_zone": {
-        "VI Costa": 10.6,
         "Curico": 6.5,
+        "VI Costa": 10.6,
         "Talca": 7.2,
         "San Fernando": 9.4,
         "Rancagua": 9.0,
@@ -10467,10 +10467,10 @@
         "Comber Sigall Pauline": 7.7
       },
       "comber_mantencion_detail": {
-        "tomenergy_litros": 43374,
+        "tomenergy_litros": 44374,
         "comber_own_litros": 5000,
-        "total": 48374,
-        "merged_venta_neta": 57341224,
+        "total": 49374,
+        "merged_venta_neta": 58497945,
         "merged_margin_pct": 7.7
       }
     },
@@ -10483,8 +10483,8 @@
     "weekly": [
       {
         "label": "1/5-6/5",
-        "litros": 65365,
-        "venta_neta": 77043075
+        "litros": 66365,
+        "venta_neta": 78199796
       }
     ],
     "weekly_history": [
@@ -10814,19 +10814,19 @@
       },
       {
         "label": "30/4-6/5",
-        "litros": 113567,
+        "litros": 114567,
         "litros_by_user": {
-          "TomEnergy": 64674,
+          "TomEnergy": 65674,
           "Toro González Sebastian Enrique": 40893,
           "Comber Sigall Pauline": 8000
         },
         "venta_by_user": {
-          "TomEnergy": 76952493,
+          "TomEnergy": 78109214,
           "Toro González Sebastian Enrique": 47303863,
           "Comber Sigall Pauline": 9117631
         },
         "margin_by_user": {
-          "TomEnergy": 8.1,
+          "TomEnergy": 8.0,
           "Toro González Sebastian Enrique": 5.8,
           "Comber Sigall Pauline": 4.9
         }
@@ -11073,6 +11073,16 @@
           "venta_neta": 257107,
           "zona": "Talca",
           "plazo_pago": "30 Days"
+        },
+        {
+          "fecha": "2026-05-05",
+          "cliente": "PATRICIO REYES SERRANO",
+          "rut": "12370037-6",
+          "litros": 1000,
+          "pv": 1533.0,
+          "venta_neta": 1156721,
+          "zona": "Curico",
+          "plazo_pago": "1 Día"
         },
         {
           "fecha": "2026-05-05",
@@ -11852,19 +11862,19 @@
       },
       {
         "label": "30/4-6/5",
-        "litros": 113567,
+        "litros": 114567,
         "litros_by_user": {
-          "TomEnergy": 64674,
+          "TomEnergy": 65674,
           "Toro González Sebastian Enrique": 40893,
           "Comber Sigall Pauline": 8000
         },
         "venta_by_user": {
-          "TomEnergy": 76952493,
+          "TomEnergy": 78109214,
           "Toro González Sebastian Enrique": 47303863,
           "Comber Sigall Pauline": 9117631
         },
         "margin_by_user": {
-          "TomEnergy": 8.1,
+          "TomEnergy": 8.0,
           "Toro González Sebastian Enrique": 5.8,
           "Comber Sigall Pauline": 4.9
         }
@@ -17888,12 +17898,12 @@
         "name": "PATRICIO REYES SERRANO",
         "vendedor": "TomEnergy",
         "monto_credito": 17000000,
-        "saldo_credito": 17050000,
-        "utilizacion_pct": -0.3,
-        "avg_monthly_litros": 16919,
-        "avg_monthly_venta": 14900005,
-        "projected_monthly": 14899693,
-        "linea_ratio": 87.6,
+        "saldo_credito": 15517000,
+        "utilizacion_pct": 8.7,
+        "avg_monthly_litros": 17242,
+        "avg_monthly_venta": 15273141,
+        "projected_monthly": 15273198,
+        "linea_ratio": 89.8,
         "avg_payment_days": 12.0,
         "plazo_pago_dias": 1,
         "plazo_pago_label": "1 Día",
@@ -17903,15 +17913,15 @@
         "siniestro_count": 0,
         "excepcion_count": 0,
         "has_dicom": false,
-        "avg_margin_pct": 9.4,
-        "avg_price_rango": -6.3,
+        "avg_margin_pct": 9.1,
+        "avg_price_rango": -7.1,
         "pricelist": "BOMBA -16 (CLP)",
-        "ar_balance": -50000,
-        "risk_score": 40,
+        "ar_balance": 1483000,
+        "risk_score": 42,
         "risk_level": "Alto",
         "score_detail": {
           "morosidad": 40,
-          "utilizacion": 0,
+          "utilizacion": 2,
           "cobranza": 0,
           "margen": 0,
           "dicom": 0
@@ -19537,6 +19547,39 @@
         }
       },
       {
+        "name": "PATRICIO REYES SERRANO",
+        "vendedor": "TomEnergy",
+        "monto_credito": 17000000,
+        "saldo_credito": 15517000,
+        "utilizacion_pct": 8.7,
+        "avg_monthly_litros": 17242,
+        "avg_monthly_venta": 15273141,
+        "projected_monthly": 15273198,
+        "linea_ratio": 89.8,
+        "avg_payment_days": 12.0,
+        "plazo_pago_dias": 1,
+        "plazo_pago_label": "1 Día",
+        "mora_ratio": 12.0,
+        "overdue_count": 0,
+        "overdue_amount": 0,
+        "siniestro_count": 0,
+        "excepcion_count": 0,
+        "has_dicom": false,
+        "avg_margin_pct": 9.1,
+        "avg_price_rango": -7.1,
+        "pricelist": "BOMBA -16 (CLP)",
+        "ar_balance": 1483000,
+        "risk_score": 42,
+        "risk_level": "Alto",
+        "score_detail": {
+          "morosidad": 40,
+          "utilizacion": 2,
+          "cobranza": 0,
+          "margen": 0,
+          "dicom": 0
+        }
+      },
+      {
         "name": "MANUEL ANTONIO MENDEZ MUÑOZ",
         "vendedor": "TomEnergy",
         "monto_credito": 0,
@@ -20186,39 +20229,6 @@
         "avg_price_rango": -19.4,
         "pricelist": "BOMBA -6 (CLP)",
         "ar_balance": -21999,
-        "risk_score": 40,
-        "risk_level": "Alto",
-        "score_detail": {
-          "morosidad": 40,
-          "utilizacion": 0,
-          "cobranza": 0,
-          "margen": 0,
-          "dicom": 0
-        }
-      },
-      {
-        "name": "PATRICIO REYES SERRANO",
-        "vendedor": "TomEnergy",
-        "monto_credito": 17000000,
-        "saldo_credito": 17050000,
-        "utilizacion_pct": -0.3,
-        "avg_monthly_litros": 16919,
-        "avg_monthly_venta": 14900005,
-        "projected_monthly": 14899693,
-        "linea_ratio": 87.6,
-        "avg_payment_days": 12.0,
-        "plazo_pago_dias": 1,
-        "plazo_pago_label": "1 Día",
-        "mora_ratio": 12.0,
-        "overdue_count": 0,
-        "overdue_amount": 0,
-        "siniestro_count": 0,
-        "excepcion_count": 0,
-        "has_dicom": false,
-        "avg_margin_pct": 9.4,
-        "avg_price_rango": -6.3,
-        "pricelist": "BOMBA -16 (CLP)",
-        "ar_balance": -50000,
         "risk_score": 40,
         "risk_level": "Alto",
         "score_detail": {
@@ -22053,7 +22063,7 @@
       "bajos": 153,
       "linea_insuficiente_count": 46,
       "total_siniestros": 0,
-      "total_overdue_amount": 64098368,
+      "total_overdue_amount": 62848368,
       "avg_utilizacion": 25.3
     }
   },
