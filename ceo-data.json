@@ -1,32 +1,32 @@
 {
-  "updated": "2026-05-06T18:44:10.454899",
+  "updated": "2026-05-06T19:26:37.135534",
   "weeks": [
     {
       "label": "30apr-06may",
       "start": "2026-04-30",
       "end": "2026-05-06",
-      "ventas": 246422909,
-      "neto": 186461368,
-      "litros": 158363,
-      "litros_retail": 121545,
-      "litros_volumen": 41118,
-      "precio_neto": 1177,
-      "precio_bruto": 1554,
-      "margin": 0.07263,
-      "margin_retail": 0.07767,
-      "margin_volumen": 0.05737,
-      "facturas": 95,
+      "ventas": 251810414,
+      "neto": 190545610,
+      "litros": 161732,
+      "litros_retail": 123445,
+      "litros_volumen": 42587,
+      "precio_neto": 1178,
+      "precio_bruto": 1555,
+      "margin": 0.07313,
+      "margin_retail": 0.07834,
+      "margin_volumen": 0.05763,
+      "facturas": 97,
       "nc": 4,
       "clientes": 80,
-      "recaud": 243854768,
+      "recaud": 257741060,
       "cheques": 38534472,
-      "transf": 143092961,
+      "transf": 156979253,
       "factoring": 62227335,
       "compras_odoo": 187521168,
       "cheq_cartera_saldo": 0,
       "cheq_recibidos": 5369800,
       "facturas_contado": 15,
-      "facturas_credito": 80,
+      "facturas_credito": 82,
       "margin_by_term": {
         "Prepago": {
           "margin": 0.09518,
@@ -53,9 +53,9 @@
           "days": 15
         },
         "30 Días": {
-          "margin": 0.07583,
-          "normalizado": 0.07583,
-          "count": 65,
+          "margin": 0.07644,
+          "normalizado": 0.07644,
+          "count": 67,
           "days": 30
         },
         "45 Días": {
@@ -1290,8 +1290,8 @@
     {
       "date": "06may",
       "day": "Mié",
-      "litros": 20790,
-      "neto": 24630012
+      "litros": 24159,
+      "neto": 28714254
     },
     {
       "date": "05may",
@@ -1390,6 +1390,10 @@
       "balance": 15016391
     },
     {
+      "name": "DE CHILE",
+      "balance": 12136164
+    },
+    {
       "name": "SANTANDER",
       "balance": 9775019
     },
@@ -1406,23 +1410,19 @@
       "balance": 3291177
     },
     {
-      "name": "DE CHILE",
-      "balance": 310126
-    },
-    {
       "name": "DE CREDITO",
       "balance": -1727275
     }
   ],
-  "total_cash": 37598813,
+  "total_cash": 49424851,
   "receivables": {
-    "open_invoices": 271,
-    "total_due": 622906707,
-    "current": 551201255,
-    "overdue": 71705452,
-    "pct_overdue": 11.5,
+    "open_invoices": 266,
+    "total_due": 617526920,
+    "current": 550307758,
+    "overdue": 67219162,
+    "pct_overdue": 10.9,
     "aging": {
-      "0-30": 54526567,
+      "0-30": 50040277,
       "31-60": 7413322,
       "61-90": 0,
       "90+": 9765563
@@ -1481,6 +1481,10 @@
         "amount": 11215200
       },
       {
+        "name": "EMPRESAS TUCAPEL S A",
+        "amount": 10922410
+      },
+      {
         "name": "SOC AGRICOLA SANTA TERESA SPA",
         "amount": 10037272
       },
@@ -1495,10 +1499,6 @@
       {
         "name": "VICTOR FAVIO VILCHES MARDONES",
         "amount": 8824001
-      },
-      {
-        "name": "EMPRESAS TUCAPEL S A",
-        "amount": 8652805
       },
       {
         "name": "AGROMORANDE S A",
@@ -1618,8 +1618,8 @@
   "riesgo": {
     "cubierto": 0,
     "cubierto_count": 0,
-    "no_cubierto": 622906707,
-    "no_cubierto_count": 271,
+    "no_cubierto": 617526920,
+    "no_cubierto_count": 266,
     "pct_monto": 100.0,
     "pct_count": 100.0
   },
