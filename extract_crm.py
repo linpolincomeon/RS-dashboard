@@ -743,18 +743,20 @@ def extract_sales_data(models, uid, custom_start=None, custom_end=None, label_ov
             mid = safe_id(ln.get("move_id"))
             nc_litros_by_move[mid] += abs(ln.get("quantity", 0))
 
-    # For NCs without diesel lines, check the reversed (original) invoice
+    # For NCs with dummy qty (<=1 litro = NC por monto), get real litros from original invoice
     for nc in ncs:
         ncid = nc["id"]
-        if ncid not in nc_litros_by_move or nc_litros_by_move[ncid] == 0:
-            rev_id = safe_id(nc.get("reversed_entry_id"))
-            if rev_id:
-                orig_lines = sr(models, uid, "account.move.line", [
-                    ["move_id", "=", rev_id],
-                    ["product_id", "=", DIESEL_PRODUCT_ID],
-                ], ["quantity"], limit=20)
-                for oln in orig_lines:
-                    nc_litros_by_move[ncid] += abs(oln.get("quantity", 0))
+        nc_qty = nc_litros_by_move.get(ncid, 0)
+        rev_id = safe_id(nc.get("reversed_entry_id"))
+        if rev_id and nc_qty <= 1:
+            orig_lines = sr(models, uid, "account.move.line", [
+                ["move_id", "=", rev_id],
+                ["product_id", "=", DIESEL_PRODUCT_ID],
+            ], ["quantity"], limit=20)
+            orig_litros = sum(abs(oln.get("quantity", 0)) for oln in orig_lines)
+            if orig_litros > nc_qty:
+                nc_litros_by_move[ncid] = orig_litros
+                print(f"    NC {nc.get('name','?')}: replaced dummy {nc_qty}L with original invoice litros {orig_litros}L (rev={rev_id})")
 
     nc_litros_total = 0
     nc_venta_total = 0
