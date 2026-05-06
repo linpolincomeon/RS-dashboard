@@ -352,12 +352,18 @@ const FREELANCERS = [
   'carolina avilés','fernando jullian','marcela márquez','raúl bisquertt'
 ];
 const CS_TEAM = ['comber sigall pauline','mauro boccardo','tomenergy'];
-const _aN = new Set(ALLOWED_VENDORS.map(norm));
-const _csN = new Set(CS_TEAM.map(norm));
-const isAllowed = n => n && _aN.has(norm(n));
-const isCS = n => n && _csN.has(norm(n));
-const _fN = new Set(FREELANCERS.map(norm));
-const isFreelancer = n => n && _fN.has(norm(n));
+const _aN = ALLOWED_VENDORS.map(n => norm(n).split(' '));
+const _csN = CS_TEAM.map(n => norm(n).split(' '));
+const _fN = FREELANCERS.map(n => norm(n).split(' '));
+// Partial match: all words of the reference name must appear in the test name (handles "RON ROJAS YENIRE DEL VALLE" matching "ron yenire")
+function _partialMatch(testName, refWordsList) {
+  if (!testName) return false;
+  const tw = norm(testName).split(' ');
+  return refWordsList.some(rw => rw.length >= 2 && rw.every(w => tw.includes(w)));
+}
+const isAllowed = n => _partialMatch(n, _aN);
+const isCS = n => _partialMatch(n, _csN);
+const isFreelancer = n => _partialMatch(n, _fN);
 
 function getGoal(name) {
   if (!D || !D.vendor_goals) return {};
