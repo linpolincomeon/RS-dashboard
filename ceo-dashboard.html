@@ -800,45 +800,117 @@ function renderRiesgo(){
         h+=`<tr><td class="hi">${c.name}</td><td>${scoreBadge(c.risk_score,lv)}</td><td class="r">${fMon(c.monto_credito)}</td><td class="r">${fMon(c.saldo_credito)}</td><td class="r ${uc}">${c.utilizacion_pct}%</td><td class="r">${fMon(c.projected_monthly)}</td><td class="r ${c.linea_ratio>=100?'bad':''}">${c.linea_ratio}%</td></tr>`;
     });
     h+='</tbody></table></div>';
-    // ═══ AJUSTE DE PRECIOS — Algoritmo de sugerencia bomba ═══
-    // Sort by materiality (litros/mes desc)
-    const scoreByMat=[...scoreData].sort((a,b)=>(b.avg_monthly_litros||0)-(a.avg_monthly_litros||0));
-    // Suggest bomba adjustment based on payment delay
-    function suggestBomba(c){
-        const diff=Math.round((c.avg_payment_days||0)-(c.plazo_pago_dias||30));
-        let adj=0;
-        if(diff>60) adj=30;
-        else if(diff>30) adj=20;
-        else if(diff>15) adj=15;
-        else if(diff>7) adj=10;
-        else if(diff>0) adj=5;
-        // Agravantes
-        if(c.has_dicom) adj+=10;
-        if(c.siniestro_count>0) adj+=15;
-        if((c.avg_margin_pct||0)<4 && (c.avg_margin_pct||0)>0) adj+=5;
-        return {diff, adj};
+    // ═══ ALGORITMO DE PRICING — Documentación + Tabla agrupada por margen ═══
+    // ── Parse bomba from pricelist string ──
+    function parseBomba(plist){
+        if(!plist||plist==='—') return null;
+        const m=plist.match(/BOMBA\s*([+-]?\d+)/i);
+        return m?parseInt(m[1]):null;
     }
-    const withAdj=scoreByMat.map(c=>{const s=suggestBomba(c);return {...c,_diff:s.diff,_adj:s.adj}});
-    const needAdj=withAdj.filter(c=>c._adj>0);
-    h+='<div class="section-label">Ajuste de Precios — Sugerencia Algorítmica ('+needAdj.length+' de '+scoreData.length+' clientes)</div>';
-    h+='<div class="table-scroll"><table><thead><tr><th>Cliente</th><th>Score</th><th>Pricelist</th><th class="r">Plazo</th><th class="r">Paga en</th><th class="r">Dif.</th><th>DICOM</th><th class="r">Margen</th><th class="r">L/mes</th><th style="text-align:center">Sugerencia</th></tr></thead><tbody>';
-    withAdj.forEach(c=>{
-        const lv=c.risk_level||riskLevel(c.risk_score);
-        const diffCls=c._diff>15?'bad':c._diff>0?'':'ok';
-        const dc2=c.has_dicom?'<span style="color:var(--red);font-weight:700">DICOM</span>':'—';
-        const plist=c.pricelist||'—';
-        // Sugerencia badge
-        let sugHtml='<span style="color:var(--green);font-weight:600">OK</span>';
-        if(c._adj>0){
-            const bgAdj=c._adj>=20?'#fcebeb':c._adj>=10?'#faeeda':'#e8f0fc';
-            const clAdj=c._adj>=20?'#a32d2d':c._adj>=10?'#854f0b':'#1a5fb4';
-            sugHtml=`<span style="display:inline-block;background:${bgAdj};color:${clAdj};font-weight:700;padding:3px 10px;border-radius:6px;font-size:11px">+${c._adj} bomba</span>`;
-        }
-        h+=`<tr><td class="hi">${c.name}</td><td>${scoreBadge(c.risk_score,lv)}</td><td style="font-size:11px">${plist}</td><td class="r">${c.plazo_pago_dias}d</td><td class="r ${diffCls}">${c.avg_payment_days}d</td><td class="r ${diffCls}">${c._diff>0?'+':''}${c._diff}d</td><td>${dc2}</td><td class="r">${c.avg_margin_pct}%</td><td class="r">${fL(c.avg_monthly_litros)}</td><td style="text-align:center">${sugHtml}</td></tr>`;
+    // ── Margin bands definition ──
+    const BANDS=[
+        {label:'Margen < 4%',  id:'lt4',  min:-999, max:4,   targetBomba:'+40 a +60', color:'#a32d2d', bg:'#fcebeb'},
+        {label:'Margen 4–6%',  id:'4to6', min:4,    max:6,   targetBomba:'+25 a +40', color:'#854f0b', bg:'#faeeda'},
+        {label:'Margen 6–8%',  id:'6to8', min:6,    max:8,   targetBomba:'+10 a +25', color:'#1a5fb4', bg:'#e8f0fc'},
+        {label:'Margen 8–10%', id:'8to10',min:8,    max:10,  targetBomba:'+0 a +10',  color:'#0f6e56', bg:'#e1f5ee'},
+        {label:'Margen ≥ 10%', id:'gt10', min:10,   max:999, targetBomba:'−50 a +0',  color:'#0f6e56', bg:'#e1f5ee'},
+    ];
+    function getBand(margin){return BANDS.find(b=>margin>=b.min&&margin<b.max)||BANDS[0]}
+    // ── Two-component adjustment ──
+    function calcAdjuste(c){
+        const diff=Math.round((c.avg_payment_days||0)-(c.plazo_pago_dias||30));
+        // Component 1: Morosidad (costo financiero del atraso)
+        let adjMora=0;
+        if(diff>60) adjMora=30;
+        else if(diff>30) adjMora=20;
+        else if(diff>15) adjMora=15;
+        else if(diff>7) adjMora=10;
+        else if(diff>0) adjMora=5;
+        // Component 2: Margen insuficiente (el precio actual no cubre el riesgo)
+        const mg=c.avg_margin_pct||0;
+        let adjMargen=0;
+        if(mg>0 && mg<2) adjMargen=18;
+        else if(mg>=2 && mg<4) adjMargen=12;
+        else if(mg>=4 && mg<6) adjMargen=7;
+        else if(mg>=6 && mg<8) adjMargen=3;
+        // Component 3: Agravantes
+        let adjFlag=0;
+        if(c.has_dicom) adjFlag+=10;
+        if(c.siniestro_count>0) adjFlag+=15;
+        const adjTotal=adjMora+adjMargen+adjFlag;
+        const bombaActual=parseBomba(c.pricelist);
+        const bombaNueva=bombaActual!=null?bombaActual+adjTotal:null;
+        return {diff, adjMora, adjMargen, adjFlag, adjTotal, bombaActual, bombaNueva};
+    }
+    // ── Build enriched data ──
+    const withAdj=scoreData.map(c=>{
+        const s=calcAdjuste(c);
+        const band=getBand(c.avg_margin_pct||0);
+        return {...c, _diff:s.diff, _adjMora:s.adjMora, _adjMargen:s.adjMargen, _adjFlag:s.adjFlag, _adj:s.adjTotal, _bombaAct:s.bombaActual, _bombaNueva:s.bombaNueva, _band:band};
     });
-    h+='</tbody></table>';
-    h+='<div class="note">Algoritmo: +5 (1-7d atraso), +10 (8-15d), +15 (16-30d), +20 (31-60d), +30 (>60d). Agravantes: DICOM +10, Siniestro +15, Margen &lt;4% +5. Ordenado por litros/mes. Los "OK" pagan dentro del plazo.</div>';
+    const needAdj=withAdj.filter(c=>c._adj>0);
+
+    // ── Algorithm documentation box ──
+    h+='<div class="section-label">Política de Ajuste de Precios — Algoritmo</div>';
+    h+='<div class="chart-card" style="font-size:12px;line-height:1.8;color:var(--text2)">';
+    h+='<div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem">';
+    // Col 1: Componentes
+    h+='<div>';
+    h+='<div style="font-weight:700;color:var(--text);margin-bottom:8px;font-size:13px">Componentes del Ajuste</div>';
+    h+='<div style="margin-bottom:12px"><strong style="color:var(--accent)">1. Morosidad</strong> (costo financiero del atraso)<br>';
+    h+='Atraso 1-7d → +5 · 8-15d → +10 · 16-30d → +15 · 31-60d → +20 · >60d → +30</div>';
+    h+='<div style="margin-bottom:12px"><strong style="color:var(--accent)">2. Margen insuficiente</strong> (precio no cubre riesgo)<br>';
+    h+='Margen &lt;2% → +18 · 2-4% → +12 · 4-6% → +7 · 6-8% → +3 · ≥8% → 0</div>';
+    h+='<div><strong style="color:var(--accent)">3. Agravantes</strong><br>';
+    h+='DICOM → +10 · Siniestro AVLA → +15</div>';
     h+='</div>';
+    // Col 2: Bandas de margen
+    h+='<div>';
+    h+='<div style="font-weight:700;color:var(--text);margin-bottom:8px;font-size:13px">Bandas de Margen — Bomba Esperada</div>';
+    BANDS.forEach(b=>{
+        h+=`<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><span style="display:inline-block;width:10px;height:10px;border-radius:3px;background:${b.color}"></span><strong>${b.label}</strong> → Bomba ${b.targetBomba}</div>`;
+    });
+    h+='<div style="margin-top:12px;font-size:11px;color:var(--text3)">Clientes en la misma banda de margen deberían tener bombas similares. Outliers abajo de su banda requieren ajuste.</div>';
+    h+='</div>';
+    h+='</div>';
+    h+='<div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border);font-size:11px;color:var(--text3)"><strong>Fórmula:</strong> Bomba sugerida = Bomba actual + Ajuste morosidad + Ajuste margen + Agravantes. Ejemplo: cliente en B+7 con 10d atraso y 5% margen → B+7 + 10 (mora) + 7 (margen) = <strong>B+24</strong></div>';
+    h+='</div>';
+
+    // ── Table grouped by margin bands ──
+    h+='<div class="section-label">Clientes por Banda de Margen ('+needAdj.length+' de '+scoreData.length+' requieren ajuste)</div>';
+    BANDS.forEach(band=>{
+        const clients=withAdj.filter(c=>c._band.id===band.id).sort((a,b)=>(b.avg_monthly_litros||0)-(a.avg_monthly_litros||0));
+        if(clients.length===0) return;
+        const avgBomba=clients.filter(c=>c._bombaAct!=null);
+        const avgB=avgBomba.length?Math.round(avgBomba.reduce((s,c)=>s+c._bombaAct,0)/avgBomba.length):null;
+        const needCount=clients.filter(c=>c._adj>0).length;
+        h+=`<div style="background:${band.bg};color:${band.color};font-weight:700;font-size:12px;padding:8px 12px;margin-top:1.5rem;border-radius:6px 6px 0 0;display:flex;justify-content:space-between;align-items:center">`;
+        h+=`<span>${band.label} — ${clients.length} clientes</span>`;
+        h+=`<span style="font-weight:500;font-size:11px">Bomba esperada: ${band.targetBomba}${avgB!=null?' · Promedio actual: B'+(avgB>=0?'+':'')+avgB:''} · ${needCount} requieren ajuste</span>`;
+        h+='</div>';
+        h+='<div class="table-scroll" style="max-height:350px;border-radius:0 0 8px 8px;margin-bottom:0"><table><thead><tr><th>Cliente</th><th>Score</th><th>Actual</th><th class="r">Plazo</th><th class="r">Paga en</th><th class="r">Atraso</th><th class="r">+Mora</th><th class="r">+Margen</th><th class="r">+Flag</th><th class="r">L/mes</th><th style="text-align:center">Sugerencia</th></tr></thead><tbody>';
+        clients.forEach(c=>{
+            const lv=c.risk_level||riskLevel(c.risk_score);
+            const diffCls=c._diff>15?'bad':c._diff>0?'':'ok';
+            const actLabel=c._bombaAct!=null?'B'+(c._bombaAct>=0?'+':'')+c._bombaAct:(c.pricelist||'—');
+            let sugHtml='<span style="color:var(--green);font-weight:600">OK</span>';
+            if(c._adj>0){
+                if(c._bombaNueva!=null){
+                    const bgAdj=c._adj>=20?'#fcebeb':c._adj>=10?'#faeeda':'#e8f0fc';
+                    const clAdj=c._adj>=20?'#a32d2d':c._adj>=10?'#854f0b':'#1a5fb4';
+                    sugHtml=`<span style="display:inline-block;background:${bgAdj};color:${clAdj};font-weight:700;padding:3px 10px;border-radius:6px;font-size:11px">B${c._bombaNueva>=0?'+':''}${c._bombaNueva}</span>`;
+                } else {
+                    sugHtml=`<span style="color:var(--red);font-weight:700">+${c._adj}</span>`;
+                }
+            }
+            h+=`<tr><td class="hi">${c.name}</td><td>${scoreBadge(c.risk_score,lv)}</td><td style="font-size:11px;white-space:nowrap">${actLabel}</td><td class="r">${c.plazo_pago_dias}d</td><td class="r ${diffCls}">${c.avg_payment_days}d</td><td class="r ${diffCls}">${c._diff>0?'+':''}${c._diff}d</td>`;
+            h+=`<td class="r" style="color:${c._adjMora?'var(--red)':'var(--text3)'}">${c._adjMora||'—'}</td>`;
+            h+=`<td class="r" style="color:${c._adjMargen?'var(--amber)':'var(--text3)'}">${c._adjMargen||'—'}</td>`;
+            h+=`<td class="r" style="color:${c._adjFlag?'var(--red)':'var(--text3)'}">${c._adjFlag||'—'}</td>`;
+            h+=`<td class="r">${fL(c.avg_monthly_litros)}</td><td style="text-align:center">${sugHtml}</td></tr>`;
+        });
+        h+='</tbody></table></div>';
+    });
     el.innerHTML=h;
     // ── Chart 1: Donut with percentages ──
     dc('cRD');
