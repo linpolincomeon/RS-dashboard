@@ -650,12 +650,16 @@ def extract_sales_data(models, uid, custom_start=None, custom_end=None, label_ov
         ["state", "=", "posted"],
         ["invoice_date", ">=", fmt(m_start)],
         ["invoice_date", "<=", fmt(m_end)],
-    ], ["name", "invoice_user_id", "amount_untaxed", "partner_id", "margin_zone"], limit=500)
+    ], ["name", "invoice_user_id", "amount_untaxed", "partner_id", "margin_zone", "invoice_date"], limit=500)
 
     nc_ids = [n["id"] for n in ncs]
+    nc_name_map = {n["id"]: n.get("name", "?") for n in ncs}
     nc_user_map = {n["id"]: safe_name(n.get("invoice_user_id")) for n in ncs}
     nc_partner_map = {n["id"]: safe_id(n.get("partner_id")) for n in ncs}
     nc_margin_map = {n["id"]: n.get("margin_zone", 0) or 0 for n in ncs}
+    nc_date_map = {n["id"]: (n.get("invoice_date") or "")[:10] for n in ncs}
+
+    nc_debug_list = []  # Debug: track all NC diesel subtractions
 
     if nc_ids:
         nc_lines = sr(models, uid, "account.move.line", [
@@ -678,6 +682,18 @@ def extract_sales_data(models, uid, custom_start=None, custom_end=None, label_ov
             nc_pid = nc_partner_map.get(mid)
             if nc_pid:
                 litros_by_partner[nc_pid] -= qty
+
+            # Debug: record each NC diesel subtraction
+            nc_debug_list.append({
+                "nc_name": nc_name_map.get(mid, "?"),
+                "nc_date": nc_date_map.get(mid, "?"),
+                "user": user,
+                "partner_id": nc_pid,
+                "litros": round(qty, 1),
+                "subtotal": round(sub),
+            })
+
+    print(f"  NC diesel lines: {len(nc_debug_list)} (total: {sum(d['litros'] for d in nc_debug_list):.0f} L subtracted)")
 
     new_cl_by_user = defaultdict(int)
     new_cl_detail = []
@@ -774,6 +790,7 @@ def extract_sales_data(models, uid, custom_start=None, custom_end=None, label_ov
             "total_venta_neta": round(total_venta),
             "invoice_count": len(invoices),
             "nc_count": len(ncs),
+            "nc_debug": nc_debug_list,
             "litros_by_user": {k: round(v) for k, v in litros_by_user.items()},
             "venta_by_user": {k: round(v) for k, v in venta_by_user.items()},
             "margin_retail_pct": margin_retail_pct,
