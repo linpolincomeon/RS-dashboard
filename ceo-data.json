@@ -1,32 +1,32 @@
 {
-  "updated": "2026-05-06T13:03:56.672589",
+  "updated": "2026-05-06T16:56:10.188692",
   "weeks": [
     {
       "label": "30apr-06may",
       "start": "2026-04-30",
       "end": "2026-05-06",
-      "ventas": 213859512,
-      "neto": 161831356,
-      "litros": 137573,
-      "litros_retail": 110995,
-      "litros_volumen": 30878,
-      "precio_neto": 1176,
-      "precio_bruto": 1552,
-      "margin": 0.07186,
-      "margin_retail": 0.07655,
-      "margin_volumen": 0.05454,
-      "facturas": 84,
+      "ventas": 237414611,
+      "neto": 179646263,
+      "litros": 152623,
+      "litros_retail": 117545,
+      "litros_volumen": 39378,
+      "precio_neto": 1177,
+      "precio_bruto": 1554,
+      "margin": 0.07238,
+      "margin_retail": 0.0774,
+      "margin_volumen": 0.05704,
+      "facturas": 91,
       "nc": 4,
-      "clientes": 71,
+      "clientes": 77,
       "recaud": 243854768,
       "cheques": 38534472,
       "transf": 143092961,
       "factoring": 62227335,
-      "compras_odoo": 100925725,
+      "compras_odoo": 187521168,
       "cheq_cartera_saldo": 0,
       "cheq_recibidos": 5369800,
-      "facturas_contado": 14,
-      "facturas_credito": 70,
+      "facturas_contado": 15,
+      "facturas_credito": 76,
       "margin_by_term": {
         "Prepago": {
           "margin": 0.09518,
@@ -35,9 +35,9 @@
           "days": 0
         },
         "1 Día": {
-          "margin": 0.05835,
-          "normalizado": 0.06802,
-          "count": 13,
+          "margin": 0.05984,
+          "normalizado": 0.06951,
+          "count": 14,
           "days": 1
         },
         "7 Días": {
@@ -53,9 +53,9 @@
           "days": 15
         },
         "30 Días": {
-          "margin": 0.07513,
-          "normalizado": 0.07513,
-          "count": 57,
+          "margin": 0.07575,
+          "normalizado": 0.07575,
+          "count": 62,
           "days": 30
         },
         "45 Días": {
@@ -65,14 +65,14 @@
           "days": 45
         },
         "60 Días": {
-          "margin": 0.07761,
-          "normalizado": 0.06761,
-          "count": 4,
+          "margin": 0.07208,
+          "normalizado": 0.06208,
+          "count": 5,
           "days": 60
         }
       },
       "cotiz_canceladas": 0,
-      "visitas": 9,
+      "visitas": 11,
       "clientes_nuevos": 1,
       "ppto": 269236,
       "ppto_retail": 199235,
@@ -150,7 +150,7 @@
         }
       },
       "cotiz_canceladas": 8,
-      "visitas": 7,
+      "visitas": 5,
       "clientes_nuevos": 5,
       "ppto": 269236,
       "ppto_retail": 199235,
@@ -1290,8 +1290,8 @@
     {
       "date": "06may",
       "day": "Mié",
-      "litros": 0,
-      "neto": 0
+      "litros": 15050,
+      "neto": 17814907
     },
     {
       "date": "05may",
@@ -1386,41 +1386,41 @@
   ],
   "banks": [
     {
-      "name": "DE CHILE",
-      "balance": 34938698
-    },
-    {
       "name": "ITAU",
       "balance": 15016391
     },
     {
-      "name": "BCI",
-      "balance": 6323881
+      "name": "SANTANDER",
+      "balance": 9775019
     },
     {
       "name": "ESTADO",
       "balance": 6228576
     },
     {
+      "name": "BCI",
+      "balance": 4704799
+    },
+    {
       "name": "CAJA",
       "balance": 3291177
     },
     {
-      "name": "SANTANDER",
-      "balance": 775019
+      "name": "DE CHILE",
+      "balance": 310126
     },
     {
       "name": "DE CREDITO",
       "balance": -838790
     }
   ],
-  "total_cash": 65734952,
+  "total_cash": 38487298,
   "receivables": {
-    "open_invoices": 277,
-    "total_due": 648101823,
-    "current": 576396371,
+    "open_invoices": 267,
+    "total_due": 613898409,
+    "current": 542192957,
     "overdue": 71705452,
-    "pct_overdue": 11.1,
+    "pct_overdue": 11.7,
     "aging": {
       "0-30": 54526567,
       "31-60": 7413322,
@@ -1437,6 +1437,10 @@
         "amount": 22390681
       },
       {
+        "name": "AGROINDUSTRIAL SIRACUSA S A",
+        "amount": 21686000
+      },
+      {
         "name": "PATRICIO VISCAY ALBORNOZ",
         "amount": 21178792
       },
@@ -1449,12 +1453,12 @@
         "amount": 19961403
       },
       {
-        "name": "SOC. DE TRANSPORTES TRACMAVI LTDA.",
-        "amount": 18887251
-      },
-      {
         "name": "LUIS ANTONIO REYES FUENTES",
         "amount": 16598999
+      },
+      {
+        "name": "SOC. DE TRANSPORTES TRACMAVI LTDA.",
+        "amount": 16135050
       },
       {
         "name": "SAMUEL BUDINICH SPA",
@@ -1465,20 +1469,8 @@
         "amount": 13390401
       },
       {
-        "name": "CIA AGRICOLA Y FORESTAL EL ALAMO LIMITADA",
-        "amount": 12319999
-      },
-      {
         "name": "EL PARRON SPA",
         "amount": 12000000
-      },
-      {
-        "name": "EMPRESAS TUCAPEL S A",
-        "amount": 11929749
-      },
-      {
-        "name": "AGROINDUSTRIAL SIRACUSA S A",
-        "amount": 11617500
       },
       {
         "name": "URAN ANTONIO LUNA DOMÍNGUEZ",
@@ -1489,8 +1481,8 @@
         "amount": 11215200
       },
       {
-        "name": "INVERSIONES SANTA BERTINA",
-        "amount": 10731000
+        "name": "SOC AGRICOLA SANTA TERESA SPA",
+        "amount": 10037272
       },
       {
         "name": "AGROSERVICIOS JR SPA",
@@ -1507,6 +1499,14 @@
       {
         "name": "AGROMORANDE S A",
         "amount": 7945602
+      },
+      {
+        "name": "ANDES SOLAR SA",
+        "amount": 7938896
+      },
+      {
+        "name": "VALENZUELA LEIVA MAX",
+        "amount": 7895000
       }
     ]
   },
@@ -1618,8 +1618,8 @@
   "riesgo": {
     "cubierto": 0,
     "cubierto_count": 0,
-    "no_cubierto": 648101823,
-    "no_cubierto_count": 277,
+    "no_cubierto": 613898409,
+    "no_cubierto_count": 267,
     "pct_monto": 100.0,
     "pct_count": 100.0
   },
@@ -1963,9 +1963,9 @@
       },
       {
         "month": "May 2026",
-        "pct": 82.1,
-        "new_churn": 69,
-        "active_start": 84
+        "pct": 81.2,
+        "new_churn": 65,
+        "active_start": 80
       }
     ]
   },
@@ -1979,10 +1979,10 @@
           "5667"
         ],
         "target_total": 502563,
-        "mtd_litros": 10031,
-        "compliance_pct": 2.0,
-        "projected": 51827,
-        "projected_pct": 10.3,
+        "mtd_litros": 25080,
+        "compliance_pct": 5.0,
+        "projected": 129580,
+        "projected_pct": 25.8,
         "plants": {
           "Maipu": {
             "target": 183025
@@ -2001,10 +2001,10 @@
           "15293"
         ],
         "target_total": 374369,
-        "mtd_litros": 0,
-        "compliance_pct": 0.0,
-        "projected": 0,
-        "projected_pct": 0.0,
+        "mtd_litros": 45000,
+        "compliance_pct": 12.0,
+        "projected": 232500,
+        "projected_pct": 62.1,
         "plants": {
           "Maipu": {
             "target": 0
@@ -2016,10 +2016,10 @@
       }
     },
     "total_target": 876932,
-    "total_mtd": 10031,
-    "total_compliance_pct": 1.1,
-    "total_projected": 51827,
-    "total_projected_pct": 5.9
+    "total_mtd": 70080,
+    "total_compliance_pct": 8.0,
+    "total_projected": 362080,
+    "total_projected_pct": 41.3
   },
   "operaciones": {
     "months": [
