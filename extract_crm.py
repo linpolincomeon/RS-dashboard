@@ -60,44 +60,6 @@ def safe_id(v):
 def strip_html(text):
     return re.sub(r'<[^>]+>', '', text or '').strip()
 
-import unicodedata
-def norm_name(s):
-    """Normalize a user name: lowercase, remove accents, sort words → canonical key."""
-    if not s: return ""
-    s = unicodedata.normalize('NFD', s.lower())
-    s = ''.join(c for c in s if unicodedata.category(c) != 'Mn')
-    return ' '.join(sorted(s.split()))
-
-def merge_by_user(d):
-    """Merge dict entries whose keys normalize to the same name. Keeps the longest original key."""
-    merged = {}
-    key_map = {}  # norm → best original key
-    for k, v in d.items():
-        nk = norm_name(k)
-        if nk in merged:
-            merged[nk] += v
-            if len(k) > len(key_map[nk]):
-                key_map[nk] = k
-        else:
-            merged[nk] = v
-            key_map[nk] = k
-    return {key_map[nk]: v for nk, v in merged.items()}
-
-def merge_by_user_lists(d):
-    """Like merge_by_user but for dict of lists (concatenate instead of sum)."""
-    merged = {}
-    key_map = {}
-    for k, v in d.items():
-        nk = norm_name(k)
-        if nk in merged:
-            merged[nk].extend(v)
-            if len(k) > len(key_map[nk]):
-                key_map[nk] = k
-        else:
-            merged[nk] = list(v)
-            key_map[nk] = k
-    return {key_map[nk]: v for nk, v in merged.items()}
-
 
 # ── ENAP week: Thursday to Wednesday ──
 def get_enap_week(offset=0):
@@ -265,7 +227,6 @@ def extract_crm_data(models, uid):
             "last_update": (l.get("write_date") or l.get("date_last_stage_update") or "")[:10],
             "origin": l.get("x_origen_oportunidad") or "—",
             "created": (l.get("create_date") or "")[:10],
-            "probability": l.get("probability", 0),
         }
         if cls == "won":
             won_deals.append(entry)
@@ -346,31 +307,15 @@ def extract_crm_data(models, uid):
             "state": a.get("state") or "",
         })
 
-    # Noise phrases to skip (auto-generated Odoo messages, not real user activity)
-    _noise = ["lead enrichment", "nuevo lead para el equipo", "new lead for", "stage changed",
-              "enrichment could", "no company data", "meeting scheduled"]
-
     msg_list = []
-    last_msg_by_lead = {}  # lead_id → latest REAL message (skip auto-generated noise)
     for m in messages:
         body = strip_html(m.get("body") or "")
         if len(body) < 3: continue
-        # Skip auto-generated noise
-        if any(noise in body.lower()[:80] for noise in _noise): continue
         msg_list.append({
             "date": (m.get("date") or "")[:16],
             "who": m["author_id"][1] if m.get("author_id") else "—",
             "desc": body[:200],
         })
-        rid = m.get("res_id")
-        if rid and rid not in last_msg_by_lead:
-            last_msg_by_lead[rid] = body[:120]
-
-    # Enrich pipeline entries with last weekly message
-    for p in pipeline:
-        p["last_note"] = last_msg_by_lead.get(p["id"], "")
-    for w in won_deals:
-        w["last_note"] = last_msg_by_lead.get(w["id"], "")
 
     return {
         "has_litros": cf["x_litros_estimados"],
@@ -507,31 +452,18 @@ def extract_funnel_data(models, uid):
                 "fecha": (q.get("create_date") or "")[:10],
             })
 
-        # 4. Cotizaciones Gestionadas (invoice_status = 'no' = nada que facturar)
-        managed_count = 0
-        managed_by_user = defaultdict(int)
-        managed_detail = []
+        # 4. Cotizaciones Confirmadas (quotes that became sale orders)
+        confirmed_count = 0
         if quote_count:
             try:
-                managed_orders = sr(models, uid, "sale.order", [
+                confirmed_count = s_count(models, uid, "sale.order", [
                     ["create_date", ">=", fdt_s(ws)],
                     ["create_date", "<=", fdt_e(we)],
-                    ["invoice_status", "=", "no"],
-                ], ["name", "partner_id", "user_id", "amount_untaxed", "create_date"], limit=200)
-                managed_count = len(managed_orders)
-                for o in managed_orders:
-                    u = safe_name(o.get("user_id"))
-                    managed_by_user[u] += 1
-                    managed_detail.append({
-                        "name": o.get("name", ""),
-                        "cliente": safe_name(o.get("partner_id")),
-                        "vendedor": u,
-                        "monto": o.get("amount_untaxed", 0),
-                        "fecha": (o.get("create_date") or "")[:10],
-                    })
+                    ["state", "in", ["sale", "done"]],
+                ])
             except:
                 pass
-        followup_pct = min(round((managed_count / max(quote_count, 1)) * 100), 100) if quote_count else 0
+        followup_pct = min(round((confirmed_count / max(quote_count, 1)) * 100), 100) if quote_count else 0
 
         # 5. Cierres (nuevos clientes)
         close_orders = sr(models, uid, "sale.order", [
@@ -575,7 +507,7 @@ def extract_funnel_data(models, uid):
                 "leads":       {"value": lead_count, "goal": 15, "by_user": dict(leads_by_user), "detail": lead_rows},
                 "contacto":    {"value": contact_count, "goal": 10, "by_user": dict(contacts_by_user)},
                 "cotizacion":  {"value": quote_count, "goal": 8, "by_user": dict(quotes_by_user), "detail": quote_rows},
-                "seguimiento": {"value": followup_pct, "goal": 100, "unit": "%", "count": managed_count, "by_user": dict(managed_by_user), "detail": managed_detail},
+                "seguimiento": {"value": followup_pct, "goal": 100, "unit": "%"},
                 "cierre":      {"value": close_count, "goal": 2, "by_user": dict(close_by_user), "detail": close_detail},
             }
         })
@@ -631,34 +563,27 @@ def extract_sales_data(models, uid, custom_start=None, custom_end=None, label_ov
         ["state", "=", "posted"],
         ["invoice_date", ">=", fmt(m_start)],
         ["invoice_date", "<=", fmt(m_end)],
-    ], ["name", "partner_id", "invoice_user_id", "amount_untaxed", "invoice_date", "margin_zone",
-        "invoice_payment_term_id"], limit=2000)
+    ], ["name", "partner_id", "invoice_user_id", "amount_untaxed", "invoice_date", "margin_zone"], limit=2000)
 
     inv_ids = [i["id"] for i in invoices]
     inv_user_map = {i["id"]: safe_name(i.get("invoice_user_id")) for i in invoices}
     inv_margin_map = {i["id"]: i.get("margin_zone", 0) or 0 for i in invoices}
-    inv_date_map = {i["id"]: i.get("invoice_date", "") for i in invoices}
-    inv_term_map = {i["id"]: safe_name(i.get("invoice_payment_term_id")) for i in invoices}
 
     partner_ids = list(set(safe_id(i.get("partner_id")) for i in invoices if safe_id(i.get("partner_id"))))
     volume_partners = set()
     partner_zone = {}
-    partner_name_map = {}
-    partner_vat_map = {}
     if partner_ids:
         for i in range(0, len(partner_ids), 200):
             chunk = partner_ids[i:i+200]
             partners = sr(models, uid, "res.partner", [
                 ["id", "in", chunk],
-            ], ["id", "name", "vat", "is_volume_client", "delivery_zone_id"], limit=200)
+            ], ["id", "is_volume_client", "delivery_zone_id"], limit=200)
             for p in partners:
                 if p.get("is_volume_client"):
                     volume_partners.add(p["id"])
                 zn = safe_name(p.get("delivery_zone_id"))
                 if zn and zn != "False" and zn != "Sin asignar":
                     partner_zone[p["id"]] = zn
-                partner_name_map[p["id"]] = p.get("name", "")
-                partner_vat_map[p["id"]] = p.get("vat", "") or ""
     inv_partner_map = {i["id"]: safe_id(i.get("partner_id")) for i in invoices}
 
     litros_by_user = defaultdict(float)
@@ -682,7 +607,7 @@ def extract_sales_data(models, uid, custom_start=None, custom_end=None, label_ov
         lines = sr(models, uid, "account.move.line", [
             ["move_id", "in", inv_ids],
             ["product_id", "=", DIESEL_PRODUCT_ID],
-        ], ["move_id", "quantity", "price_unit", "price_subtotal"], limit=5000)
+        ], ["move_id", "quantity", "price_subtotal"], limit=5000)
 
         for ln in lines:
             mid = safe_id(ln.get("move_id"))
@@ -725,150 +650,58 @@ def extract_sales_data(models, uid, custom_start=None, custom_end=None, label_ov
         ["state", "=", "posted"],
         ["invoice_date", ">=", fmt(m_start)],
         ["invoice_date", "<=", fmt(m_end)],
-    ], ["name", "invoice_user_id", "amount_untaxed", "partner_id", "margin_zone",
-        "reversed_entry_id"], limit=500)
+    ], ["name", "invoice_user_id", "amount_untaxed", "partner_id", "margin_zone"], limit=500)
 
     nc_ids = [n["id"] for n in ncs]
     nc_user_map = {n["id"]: safe_name(n.get("invoice_user_id")) for n in ncs}
     nc_partner_map = {n["id"]: safe_id(n.get("partner_id")) for n in ncs}
     nc_margin_map = {n["id"]: n.get("margin_zone", 0) or 0 for n in ncs}
 
-    # ── Descontar NC ──
-    # Estrategia: para litros, buscar en 3 fuentes (en orden):
-    #   1. Líneas diesel en la propia NC
-    #   2. Si no tiene → buscar litros diesel en la factura original (reversed_entry_id)
-    #   3. Si tampoco → 0 litros (NC puramente monetaria)
-    # Para venta: siempre usar amount_untaxed del header de la NC
-    nc_litros_by_move = defaultdict(float)
     if nc_ids:
         nc_lines = sr(models, uid, "account.move.line", [
             ["move_id", "in", nc_ids],
             ["product_id", "=", DIESEL_PRODUCT_ID],
-        ], ["move_id", "quantity"], limit=2000)
+        ], ["move_id", "quantity", "price_subtotal"], limit=2000)
+
         for ln in nc_lines:
             mid = safe_id(ln.get("move_id"))
-            nc_litros_by_move[mid] += abs(ln.get("quantity", 0))
+            qty = ln.get("quantity", 0)
+            sub = ln.get("price_subtotal", 0)
+            user = nc_user_map.get(mid, "Sin asignar")
+            nc_margin = nc_margin_map.get(mid, 0)
+            litros_by_user[user] -= qty
+            venta_by_user[user] -= sub
+            total_litros -= qty
+            total_venta -= sub
+            margin_by_user_venta[user] -= sub
+            margin_by_user_costo[user] -= sub * (1 - nc_margin) if nc_margin else sub
+            nc_pid = nc_partner_map.get(mid)
+            if nc_pid:
+                litros_by_partner[nc_pid] -= qty
 
-    # For NCs with dummy qty (<=1 litro = NC por monto), get real litros from original invoice
-    for nc in ncs:
-        ncid = nc["id"]
-        nc_qty = nc_litros_by_move.get(ncid, 0)
-        rev_id = safe_id(nc.get("reversed_entry_id"))
-        if rev_id and nc_qty <= 1:
-            orig_lines = sr(models, uid, "account.move.line", [
-                ["move_id", "=", rev_id],
-                ["product_id", "=", DIESEL_PRODUCT_ID],
-            ], ["quantity"], limit=20)
-            orig_litros = sum(abs(oln.get("quantity", 0)) for oln in orig_lines)
-            if orig_litros > nc_qty:
-                nc_litros_by_move[ncid] = orig_litros
-                print(f"    NC {nc.get('name','?')}: replaced dummy {nc_qty}L with original invoice litros {orig_litros}L (rev={rev_id})")
-
-    nc_litros_total = 0
-    nc_venta_total = 0
-    for nc in ncs:
-        ncid = nc["id"]
-        user = nc_user_map.get(ncid, "Sin asignar")
-        nc_margin = nc_margin_map.get(ncid, 0)
-        nc_pid = nc_partner_map.get(ncid)
-        sub = abs(nc.get("amount_untaxed", 0) or 0)
-        qty = nc_litros_by_move.get(ncid, 0)
-
-        litros_by_user[user] -= qty
-        venta_by_user[user] -= sub
-        total_litros -= qty
-        total_venta -= sub
-        margin_by_user_venta[user] -= sub
-        margin_by_user_costo[user] -= sub * (1 - nc_margin) if nc_margin else sub
-        if nc_pid:
-            litros_by_partner[nc_pid] -= qty
-        nc_litros_total += qty
-        nc_venta_total += sub
-        print(f"    NC {nc.get('name','?')}: litros={qty} venta={sub} user={user} rev={safe_id(nc.get('reversed_entry_id'))}")
-
-    # Also get ALL nc lines (any product) for debug
-    nc_all_lines_debug = []
-    if nc_ids:
-        try:
-            all_nc_lines = sr(models, uid, "account.move.line", [
-                ["move_id", "in", nc_ids],
-                ["product_id", "!=", False],
-            ], ["move_id", "product_id", "quantity", "price_subtotal", "name"], limit=2000)
-        except Exception:
-            all_nc_lines = []
-        for ln in all_nc_lines:
-            nc_all_lines_debug.append({
-                "nc_id": safe_id(ln.get("move_id")),
-                "product": safe_name(ln.get("product_id")),
-                "product_id": safe_id(ln.get("product_id")),
-                "qty": ln.get("quantity", 0),
-                "subtotal": ln.get("price_subtotal", 0),
-                "desc": (ln.get("name") or "")[:60],
-            })
-
-    nc_debug = []
-    for nc in ncs:
-        nc_debug.append({
-            "name": nc.get("name", ""),
-            "user": nc_user_map.get(nc["id"], ""),
-            "amount": abs(nc.get("amount_untaxed", 0) or 0),
-            "partner": safe_name(nc.get("partner_id")),
-            "litros_restados": nc_litros_by_move.get(nc["id"], 0),
-            "reversed_entry_id": safe_id(nc.get("reversed_entry_id")),
-            "lines": [l for l in nc_all_lines_debug if l["nc_id"] == nc["id"]],
-        })
-
-    print(f"  NC resumen: {len(ncs)} NCs, litros restados={round(nc_litros_total)}, venta restada={round(nc_venta_total)}")
-    for ncd in nc_debug:
-        print(f"    {ncd['name']}: L={ncd['litros_restados']} $={ncd['amount']} user={ncd['user']} rev={ncd['reversed_entry_id']} lines={len(ncd['lines'])}")
-
-    # ── Clientes Nuevos: primera factura con Diesel B1 (product_id=14) en este mes ──
     new_cl_by_user = defaultdict(int)
     new_cl_detail = []
     new_cl_count = 0
-    new_cl_litros_by_user = defaultdict(float)
-    # Get all partner_ids that have diesel lines in THIS month's invoices
-    diesel_partners_this_month = set()
-    for ln in lines:
-        mid = safe_id(ln.get("move_id"))
-        pid = inv_partner_map.get(mid)
-        if pid:
-            diesel_partners_this_month.add(pid)
+    new_cl_litros_by_user = defaultdict(float)  # liters of NEW clients, per salesperson
     seen = set()
-    for pid in diesel_partners_this_month:
-        if pid in seen: continue
+    for inv in invoices:
+        pid = safe_id(inv.get("partner_id"))
+        if not pid or pid in seen: continue
         seen.add(pid)
-        # Check if this partner had ANY previous invoice with Diesel B1 line
-        prev_inv = sr(models, uid, "account.move", [
+        prev = s_count(models, uid, "account.move", [
             ["move_type", "=", "out_invoice"],
             ["state", "=", "posted"],
             ["partner_id", "=", pid],
             ["invoice_date", "<", fmt(m_start)],
-        ], ["id"], limit=500)
-        prev_ids = [i["id"] for i in prev_inv]
-        had_diesel_before = False
-        if prev_ids:
-            # Check if any previous invoice had a diesel line
-            for chunk_start in range(0, len(prev_ids), 200):
-                chunk = prev_ids[chunk_start:chunk_start+200]
-                prev_diesel = s_count(models, uid, "account.move.line", [
-                    ["move_id", "in", chunk],
-                    ["product_id", "=", DIESEL_PRODUCT_ID],
-                ])
-                if prev_diesel > 0:
-                    had_diesel_before = True
-                    break
-        if not had_diesel_before:
-            # Find the first invoice for this partner in this month
-            inv_match = next((i for i in invoices if safe_id(i.get("partner_id")) == pid), None)
-            if inv_match:
-                u = safe_name(inv_match.get("invoice_user_id"))
-                pname = safe_name(inv_match.get("partner_id"))
-                new_cl_by_user[u] += 1
-                new_cl_count += 1
-                partner_litros = max(litros_by_partner.get(pid, 0), 0)
-                new_cl_litros_by_user[u] += partner_litros
-                new_cl_detail.append({"cliente": pname, "vendedor": u, "fecha": inv_match.get("invoice_date", ""), "litros": round(partner_litros)})
+        ])
+        if prev == 0:
+            u = safe_name(inv.get("invoice_user_id"))
+            pname = safe_name(inv.get("partner_id"))
+            new_cl_by_user[u] += 1
+            new_cl_count += 1
+            partner_litros = max(litros_by_partner.get(pid, 0), 0)
+            new_cl_litros_by_user[u] += partner_litros
+            new_cl_detail.append({"cliente": pname, "vendedor": u, "fecha": inv.get("invoice_date", ""), "litros": round(partner_litros)})
 
     weekly_sales = []
     for offset in range(4):
@@ -913,67 +746,23 @@ def extract_sales_data(models, uid, custom_start=None, custom_end=None, label_ov
             ["state", "=", "posted"],
             ["invoice_date", ">=", fmt(ws_d)],
             ["invoice_date", "<=", fmt(we_d)],
-        ], ["id", "invoice_user_id", "margin_zone"], limit=5000)
+        ], ["id"], limit=5000)
         wk_ids = [i["id"] for i in wk_inv]
-        wk_user_map = {i["id"]: safe_name(i.get("invoice_user_id")) for i in wk_inv}
-        wk_margin_map = {i["id"]: i.get("margin_zone", 0) or 0 for i in wk_inv}
         wk_l = 0
-        wk_lbu = defaultdict(float)
-        wk_vbu = defaultdict(float)
-        wk_mbu_venta = defaultdict(float)
-        wk_mbu_costo = defaultdict(float)
         if wk_ids:
             wk_lines = sr(models, uid, "account.move.line", [
                 ["move_id", "in", wk_ids],
                 ["product_id", "=", DIESEL_PRODUCT_ID],
-            ], ["move_id", "quantity", "price_subtotal"], limit=5000)
+            ], ["quantity"], limit=5000)
             for ln in wk_lines:
-                q = ln.get("quantity", 0)
-                s = ln.get("price_subtotal", 0)
-                mid = safe_id(ln.get("move_id"))
-                wk_l += q
-                u = wk_user_map.get(mid, "Sin asignar")
-                m = wk_margin_map.get(mid, 0)
-                wk_lbu[u] += q
-                wk_vbu[u] += s
-                wk_mbu_venta[u] += s
-                wk_mbu_costo[u] += s * (1 - m) if m else s
-        wk_margin_by_user = {}
-        for u in wk_lbu:
-            v = wk_mbu_venta.get(u, 0)
-            c = wk_mbu_costo.get(u, 0)
-            wk_margin_by_user[u] = round((1 - c / v) * 100, 1) if v > 0 else 0
+                wk_l += ln.get("quantity", 0)
         weekly_history.append({
             "label": f"{ws_d.day}/{ws_d.month}-{we_d.day}/{we_d.month}",
             "litros": round(wk_l),
-            "litros_by_user": merge_by_user({k: round(v) for k, v in wk_lbu.items()}),
-            "venta_by_user": merge_by_user({k: round(v) for k, v in wk_vbu.items()}),
-            "margin_by_user": merge_by_user(wk_margin_by_user),
         })
     weekly_history.reverse()  # oldest first
 
-    # ── Detalle por ejecutivo (para comisiones / mes vencido) ──
-    detail_by_user = defaultdict(list)
-    if inv_ids:
-        for ln in lines:
-            mid = safe_id(ln.get("move_id"))
-            user = inv_user_map.get(mid, "Sin asignar")
-            pid = inv_partner_map.get(mid)
-            detail_by_user[user].append({
-                "fecha": inv_date_map.get(mid, ""),
-                "cliente": partner_name_map.get(pid, safe_name(next((i.get("partner_id") for i in invoices if i["id"] == mid), ""))),
-                "rut": partner_vat_map.get(pid, ""),
-                "litros": round(ln.get("quantity", 0)),
-                "pv": round(ln.get("price_unit", 0), 2),
-                "venta_neta": round(ln.get("price_subtotal", 0)),
-                "zona": partner_zone.get(pid, "Sin zona"),
-                "plazo_pago": inv_term_map.get(mid, "—"),
-            })
-    for u in detail_by_user:
-        detail_by_user[u].sort(key=lambda x: x["fecha"])
-
     print(f"  Litros: {round(total_litros)} Facturas: {len(invoices)} NC: {len(ncs)}")
-    print(f"  Detalle ejecutivo: {len(detail_by_user)} vendedores, {sum(len(v) for v in detail_by_user.values())} lineas")
     print(f"  Clientes nuevos: {new_cl_count}")
 
     return {
@@ -985,9 +774,8 @@ def extract_sales_data(models, uid, custom_start=None, custom_end=None, label_ov
             "total_venta_neta": round(total_venta),
             "invoice_count": len(invoices),
             "nc_count": len(ncs),
-            "nc_debug": nc_debug,
-            "litros_by_user": merge_by_user({k: round(v) for k, v in litros_by_user.items()}),
-            "venta_by_user": merge_by_user({k: round(v) for k, v in venta_by_user.items()}),
+            "litros_by_user": {k: round(v) for k, v in litros_by_user.items()},
+            "venta_by_user": {k: round(v) for k, v in venta_by_user.items()},
             "margin_retail_pct": margin_retail_pct,
             "margin_volume_pct": margin_volume_pct,
             "retail_venta": round(retail_venta),
@@ -995,17 +783,16 @@ def extract_sales_data(models, uid, custom_start=None, custom_end=None, label_ov
             "litros_by_zone": {k: round(v) for k, v in sorted(litros_by_zone.items(), key=lambda x: -x[1])},
             "venta_by_zone": {k: round(v) for k, v in sorted(venta_by_zone.items(), key=lambda x: -x[1])},
             "margin_by_zone": {k: round((1 - margin_by_zone_costo[k] / margin_by_zone_venta[k]) * 100, 1) if margin_by_zone_venta[k] > 0 else 0 for k in litros_by_zone},
-            "margin_by_user": merge_by_user({k: round((1 - margin_by_user_costo[k] / margin_by_user_venta[k]) * 100, 1) if margin_by_user_venta.get(k, 0) > 0 else 0 for k in litros_by_user}),
+            "margin_by_user": {k: round((1 - margin_by_user_costo[k] / margin_by_user_venta[k]) * 100, 1) if margin_by_user_venta.get(k, 0) > 0 else 0 for k in litros_by_user},
         },
         "new_clients": {
             "count": new_cl_count,
-            "by_user": merge_by_user(dict(new_cl_by_user)),
-            "litros_by_user": merge_by_user({k: round(v) for k, v in new_cl_litros_by_user.items()}),
+            "by_user": dict(new_cl_by_user),
+            "litros_by_user": {k: round(v) for k, v in new_cl_litros_by_user.items()},
             "detail": new_cl_detail,
         },
         "weekly": list(reversed(weekly_sales)),
         "weekly_history": weekly_history,
-        "detail_by_user": merge_by_user_lists(detail_by_user),
     }
 
 
@@ -1028,12 +815,12 @@ def extract_churn_data(models, uid):
     durmiente_leads = sr(models, uid, "crm.lead", [
         ["stage_id", "in", durmiente_ids],
         ["active", "=", True],
-    ], ["partner_id", "user_id", "partner_name", "write_date", "create_date"], limit=5000)
+    ], ["partner_id", "user_id", "partner_name", "write_date", "create_date", "description"], limit=5000)
 
     perdido_leads = sr(models, uid, "crm.lead", [
         ["stage_id", "in", perdido_ids],
         ["active", "=", True],
-    ], ["partner_id", "user_id", "partner_name", "write_date", "create_date"], limit=5000)
+    ], ["partner_id", "user_id", "partner_name", "write_date", "create_date", "description"], limit=5000)
 
     print(f"  CRM: {len(durmiente_leads)} durmientes, {len(perdido_leads)} perdidos")
 
@@ -1056,14 +843,6 @@ def extract_churn_data(models, uid):
     ], ["partner_id"], limit=10000)
 
     curr_month_partners = set(safe_id(i.get("partner_id")) for i in curr_inv if safe_id(i.get("partner_id")))
-
-    # Build name set from current month invoices for matching when CRM lead has no partner_id
-    curr_month_partner_names = set()
-    for i in curr_inv:
-        pname = safe_name(i.get("partner_id"))
-        if pname and pname != "Sin asignar":
-            curr_month_partner_names.add(pname.strip().upper())
-
     prev_month_partners = set(safe_id(i.get("partner_id")) for i in prev_inv if safe_id(i.get("partner_id")))
     prev_month_clients = len(prev_month_partners)
 
@@ -1071,33 +850,68 @@ def extract_churn_data(models, uid):
     dormant_by_user = Counter()
     rescued_dormant_list = []
     rescued_dormant_by_user = Counter()
-    seen_dormant = set()
 
     for lead in durmiente_leads:
         pid = safe_id(lead.get("partner_id"))
         user = safe_name(lead.get("user_id"))
         name = safe_name(lead.get("partner_id")) or lead.get("partner_name", "?")
-        name_key = name.strip().upper()
-        if name_key in seen_dormant:
-            continue
-        seen_dormant.add(name_key)
         write_date = (lead.get("write_date") or "")[:10]
+        desc = lead.get("description") or ""
+        # Clean HTML from description
+        if desc and "<" in desc:
+            desc = re.sub(r'<[^>]+>', ' ', desc).strip()
+        desc = desc[:120] if desc else ""
 
-        invoiced = (pid and pid in curr_month_partners) or (name_key in curr_month_partner_names)
-
-        if invoiced:
-            rescued_dormant_list.append({"name": name, "user": user, "last_update": write_date, "partner_id": pid})
+        entry = {"name": name, "user": user, "last_update": write_date, "partner_id": pid, "notes": desc}
+        if pid and pid in curr_month_partners:
+            rescued_dormant_list.append(entry)
             rescued_dormant_by_user[user] += 1
         else:
-            dormant_list.append({"name": name, "user": user, "last_update": write_date, "partner_id": pid})
+            dormant_list.append(entry)
             dormant_by_user[user] += 1
+
+    # ── Resolve DICOM tags for dormant/lost clients ──
+    all_dormant_pids = [c["partner_id"] for c in dormant_list + rescued_dormant_list if c.get("partner_id")]
+    partner_tags = {}
+    batch_size = 200
+    if all_dormant_pids:
+        for i in range(0, len(all_dormant_pids), batch_size):
+            batch = all_dormant_pids[i:i+batch_size]
+            partners_info = sr(models, uid, "res.partner", [
+                ["id", "in", batch],
+            ], ["id", "category_id"], limit=batch_size)
+            for p in partners_info:
+                partner_tags[p["id"]] = p.get("category_id") or []
+
+        # Resolve tag names
+        all_tag_ids = set()
+        for tags in partner_tags.values():
+            all_tag_ids.update(tags)
+        tag_names = {}
+        if all_tag_ids:
+            tags_data = sr(models, uid, "res.partner.category", [
+                ["id", "in", list(all_tag_ids)],
+            ], ["id", "name"], limit=500)
+            tag_names = {t["id"]: t.get("name", "") for t in tags_data}
+
+        # Build linea string per partner
+        for c in dormant_list + rescued_dormant_list:
+            pid = c.get("partner_id")
+            if pid and pid in partner_tags:
+                relevant_tags = [tag_names.get(tid, "") for tid in partner_tags[pid]
+                                 if tag_names.get(tid, "")]
+                # Filter to relevant tags (dicom, riesgo, etc)
+                linea_tags = [t for t in relevant_tags if any(k in t.lower() for k in ["dicom", "riesgo", "crédito", "credito", "bloq", "mora"])]
+                c["linea"] = ", ".join(linea_tags) if linea_tags else ""
+            else:
+                c["linea"] = ""
+        print(f"  DICOM/tag enrichment done for {len(all_dormant_pids)} dormant partners")
 
     # ── Avg monthly litros (8 months) for dormant clients ──
     eight_months_ago = (today.replace(day=1) - timedelta(days=1))  # end of prev month
     for _ in range(7):
         eight_months_ago = (eight_months_ago.replace(day=1) - timedelta(days=1))
     eight_months_start = eight_months_ago.replace(day=1)
-    batch_size = 200
 
     dormant_pids = [c["partner_id"] for c in dormant_list if c.get("partner_id")]
     avg_litros_map = {}
@@ -1159,58 +973,6 @@ def extract_churn_data(models, uid):
         avg_litros_map = {pid: round(max(total, 0) / 8) for pid, total in avg_litros_map.items()}
         print(f"  Avg monthly litros computed for {len(avg_litros_map)} partners")
 
-    # ── Last vendor note for dormant clients ──
-    # Search in BOTH res.partner AND crm.lead messages
-    last_note_by_pid = {}
-    if dormant_pids:
-        try:
-            # 1. Try res.partner messages (most direct)
-            for i in range(0, len(dormant_pids), batch_size):
-                batch = dormant_pids[i:i+batch_size]
-                msgs = sr(models, uid, "mail.message", [
-                    ["model", "=", "res.partner"],
-                    ["res_id", "in", batch],
-                    ["message_type", "in", ["comment", "email"]],
-                ], ["res_id", "body", "date"], limit=500, order="date desc")
-                for m in msgs:
-                    pid = m.get("res_id")
-                    if pid and pid not in last_note_by_pid:
-                        body = strip_html(m.get("body") or "")
-                        if len(body) > 3 and not any(n in body.lower()[:60] for n in _noise):
-                            last_note_by_pid[pid] = body[:150]
-
-            # 2. Also try crm.lead messages for partners without notes yet
-            missing_pids = [p for p in dormant_pids if p not in last_note_by_pid]
-            if missing_pids:
-                for i in range(0, len(missing_pids), batch_size):
-                    batch = missing_pids[i:i+batch_size]
-                    leads = sr(models, uid, "crm.lead", [
-                        ["partner_id", "in", batch],
-                        ["active", "in", [True, False]],
-                    ], ["id", "partner_id"], limit=1000)
-                    lead_ids = [l["id"] for l in leads]
-                    lead_pid = {l["id"]: safe_id(l.get("partner_id")) for l in leads}
-                    if lead_ids:
-                        msgs = sr(models, uid, "mail.message", [
-                            ["model", "=", "crm.lead"],
-                            ["res_id", "in", lead_ids],
-                            ["message_type", "in", ["comment", "email"]],
-                        ], ["res_id", "body", "date"], limit=500, order="date desc")
-                        for m in msgs:
-                            pid = lead_pid.get(m.get("res_id"))
-                            if pid and pid not in last_note_by_pid:
-                                body = strip_html(m.get("body") or "")
-                                if len(body) > 3 and not any(n in body.lower()[:60] for n in _noise):
-                                    last_note_by_pid[pid] = body[:150]
-
-            print(f"  Last notes found for {len(last_note_by_pid)}/{len(dormant_pids)} dormant clients")
-        except Exception as e:
-            print(f"  Dormant notes skipped: {e}")
-
-    for c in dormant_list:
-        pid = c.get("partner_id")
-        c["last_note"] = last_note_by_pid.get(pid, "")
-
     # Attach avg_monthly_litros and remove internal partner_id
     for c in dormant_list:
         c["avg_monthly_litros"] = avg_litros_map.get(c.get("partner_id"), 0)
@@ -1221,24 +983,17 @@ def extract_churn_data(models, uid):
     rescued_lost_list = []
     rescued_lost_by_user = Counter()
     newly_lost = 0
-    seen_lost = set()
 
     for lead in perdido_leads:
         pid = safe_id(lead.get("partner_id"))
         user = safe_name(lead.get("user_id"))
         name = safe_name(lead.get("partner_id")) or lead.get("partner_name", "?")
-        name_key = name.strip().upper()
-        if name_key in seen_lost:
-            continue
-        seen_lost.add(name_key)
         write_date = (lead.get("write_date") or "")[:10]
 
         if write_date >= fmt(month_start):
             newly_lost += 1
 
-        invoiced = (pid and pid in curr_month_partners) or (name_key in curr_month_partner_names)
-
-        if invoiced:
+        if pid and pid in curr_month_partners:
             rescued_lost_list.append({"name": name, "user": user, "last_update": write_date})
             rescued_lost_by_user[user] += 1
         else:
@@ -1345,7 +1100,7 @@ def extract_churn_data(models, uid):
 
 
 # ==============================================================
-# PART 5: RESCUED CLIENTS (based on frecuencia_facturacion)
+# PART 4b: HELPERS & AT-RISK CLIENTS
 # ==============================================================
 def parse_frecuencia_days(freq_str):
     """Parse frecuencia_facturacion char field into days.
@@ -1365,17 +1120,190 @@ def parse_frecuencia_days(freq_str):
         return 60
     if "trimestral" in f:
         return 90
-    # Irregular (Promedio: X días)
     m = re.search(r'(\d+)\s*d[ií]a', f)
     if m:
         return int(m.group(1))
-    # Fallback: try to find any number
     m2 = re.search(r'(\d+)', f)
     if m2:
         return int(m2.group(1))
     return None
 
 
+def extract_at_risk(models, uid):
+    """
+    Clients whose days-since-last-purchase exceed 1.5× their frecuencia_facturacion
+    but are NOT yet in CRM stage durmiente/perdido.  These are still recoverable.
+    """
+    print("\nExtracting At-Risk Clients...")
+    today = datetime.now().date()
+    batch_size = 200
+
+    # 1. Read all active customers with frecuencia_facturacion
+    all_partners = []
+    offset = 0
+    while True:
+        batch = sr(models, uid, "res.partner", [
+            ["frecuencia_facturacion", "!=", False],
+            ["customer_rank", ">", 0],
+        ], ["id", "name", "frecuencia_facturacion", "category_id"],
+        limit=batch_size, offset=offset)
+        all_partners.extend(batch)
+        if len(batch) < batch_size:
+            break
+        offset += batch_size
+
+    print(f"  Partners with frecuencia: {len(all_partners)}")
+
+    # Parse frecuencia for each partner
+    partner_map = {}
+    for p in all_partners:
+        freq_days = parse_frecuencia_days(p.get("frecuencia_facturacion"))
+        if freq_days and freq_days <= 60:  # exclude estacionales (>60d)
+            partner_map[p["id"]] = {
+                "name": p.get("name", "?"),
+                "freq": p.get("frecuencia_facturacion", ""),
+                "freq_days": freq_days,
+                "tags": p.get("category_id") or [],
+            }
+
+    pids = list(partner_map.keys())
+    print(f"  Non-seasonal partners: {len(pids)}")
+
+    if not pids:
+        return {"count": 0, "total_litros_at_risk": 0, "clients": []}
+
+    # 2. Find last invoice date for each partner (batch)
+    last_inv_map = {}
+    for i in range(0, len(pids), batch_size):
+        batch = pids[i:i+batch_size]
+        invs = sr(models, uid, "account.move", [
+            ["move_type", "=", "out_invoice"],
+            ["state", "=", "posted"],
+            ["partner_id", "in", batch],
+        ], ["partner_id", "invoice_date", "invoice_user_id"],
+        limit=50000, order="invoice_date desc")
+        for inv in invs:
+            pid = safe_id(inv.get("partner_id"))
+            if pid and pid not in last_inv_map:
+                last_inv_map[pid] = {
+                    "date": (inv.get("invoice_date") or "")[:10],
+                    "user": safe_name(inv.get("invoice_user_id")),
+                }
+
+    # 3. Also get CRM lead user as fallback
+    lead_user_map = {}
+    for i in range(0, len(pids), batch_size):
+        batch = pids[i:i+batch_size]
+        leads = sr(models, uid, "crm.lead", [
+            ["partner_id", "in", batch],
+            ["active", "=", True],
+        ], ["partner_id", "user_id", "stage_id"], limit=50000)
+        for lead in leads:
+            pid = safe_id(lead.get("partner_id"))
+            if pid and pid not in lead_user_map:
+                lead_user_map[pid] = {
+                    "user": safe_name(lead.get("user_id")),
+                    "stage": safe_name(lead.get("stage_id")),
+                }
+
+    # 4. 8-month avg litros
+    eight_months_ago = (today.replace(day=1) - timedelta(days=1))
+    for _ in range(7):
+        eight_months_ago = (eight_months_ago.replace(day=1) - timedelta(days=1))
+    eight_months_start = eight_months_ago.replace(day=1)
+
+    avg_litros = {}
+    for i in range(0, len(pids), batch_size):
+        batch = pids[i:i+batch_size]
+        invs = sr(models, uid, "account.move", [
+            ["move_type", "=", "out_invoice"],
+            ["state", "=", "posted"],
+            ["partner_id", "in", batch],
+            ["invoice_date", ">=", fmt(eight_months_start)],
+            ["invoice_date", "<=", fmt(today)],
+        ], ["id", "partner_id"], limit=50000)
+        inv_ids = [inv["id"] for inv in invs]
+        inv_pid = {inv["id"]: safe_id(inv.get("partner_id")) for inv in invs}
+        if inv_ids:
+            lines = sr(models, uid, "account.move.line", [
+                ["move_id", "in", inv_ids],
+                ["product_id", "=", DIESEL_PRODUCT_ID],
+            ], ["move_id", "quantity"], limit=50000)
+            for ln in lines:
+                mid = safe_id(ln.get("move_id"))
+                pid_ln = inv_pid.get(mid)
+                if pid_ln:
+                    avg_litros[pid_ln] = avg_litros.get(pid_ln, 0) + (ln.get("quantity", 0) or 0)
+    avg_litros = {pid: round(max(total, 0) / 8) for pid, total in avg_litros.items()}
+
+    # 5. Resolve DICOM tags
+    all_tag_ids = set()
+    for info in partner_map.values():
+        all_tag_ids.update(info["tags"])
+    tag_names = {}
+    if all_tag_ids:
+        tags_data = sr(models, uid, "res.partner.category", [
+            ["id", "in", list(all_tag_ids)],
+        ], ["id", "name"], limit=500)
+        tag_names = {t["id"]: t.get("name", "") for t in tags_data}
+
+    # 6. Filter at-risk: gap > 1.5× freq AND < 2.5× freq, exclude durmiente/perdido CRM stage
+    at_risk_clients = []
+    for pid, info in partner_map.items():
+        inv_info = last_inv_map.get(pid)
+        if not inv_info or not inv_info["date"]:
+            continue
+        try:
+            last_date = datetime.strptime(inv_info["date"], "%Y-%m-%d").date()
+        except ValueError:
+            continue
+        gap_days = (today - last_date).days
+        threshold = info["freq_days"] * 1.5
+        max_threshold = info["freq_days"] * 2.5
+
+        if gap_days <= threshold or gap_days > max_threshold:
+            continue
+
+        # Skip if CRM stage is already durmiente/perdido
+        lead_info = lead_user_map.get(pid, {})
+        stage = (lead_info.get("stage") or "").lower()
+        if any(k in stage for k in ["durmiente", "perdido", "no cerrado"]):
+            continue
+
+        user = inv_info.get("user") or lead_info.get("user") or "Sin asignar"
+        monthly_litros = avg_litros.get(pid, 0)
+        urgency = "alta" if gap_days > info["freq_days"] * 2 else "media"
+
+        # DICOM / relevant tags
+        relevant = [tag_names.get(tid, "") for tid in info["tags"] if tag_names.get(tid, "")]
+        linea = ", ".join(t for t in relevant if any(k in t.lower() for k in ["dicom", "riesgo", "bloq", "mora"])) or ""
+
+        at_risk_clients.append({
+            "name": info["name"],
+            "freq": info["freq"],
+            "dias_sin_compra": gap_days,
+            "threshold": round(threshold, 1),
+            "avg_monthly_litros": monthly_litros,
+            "user": user,
+            "urgency": urgency,
+            "linea": linea,
+        })
+
+    # Sort: alta first, then by avg_monthly_litros desc
+    at_risk_clients.sort(key=lambda x: (0 if x["urgency"] == "alta" else 1, -x["avg_monthly_litros"]))
+    total_litros = sum(c["avg_monthly_litros"] for c in at_risk_clients)
+
+    print(f"  At-risk clients: {len(at_risk_clients)} ({total_litros} L/mes en juego)")
+    return {
+        "count": len(at_risk_clients),
+        "total_litros_at_risk": total_litros,
+        "clients": at_risk_clients,
+    }
+
+
+# ==============================================================
+# PART 5: RESCUED CLIENTS (based on frecuencia_facturacion)
+# ==============================================================
 def extract_rescued_clients(models, uid):
     """
     Detect 'rescued' clients: bought this month BUT the gap since their
@@ -1967,6 +1895,82 @@ def extract_sla_data(models, uid, m_start, m_end):
 
 
 # ==============================================================
+# PART 8: GRADUATING CLIENTS (new → fidelización after 3 months)
+# ==============================================================
+def extract_graduating(models, uid):
+    """
+    Clients whose FIRST invoice was ~3 months ago (80-100 days).
+    These are transitioning from 'new client' to long-term 'fidelización'.
+    """
+    print("\nExtracting Graduating Clients...")
+    today = datetime.now().date()
+    # Window: first invoice between 80 and 100 days ago
+    window_start = today - timedelta(days=100)
+    window_end = today - timedelta(days=80)
+    batch_size = 200
+
+    # Get all invoices in that window
+    invs = sr(models, uid, "account.move", [
+        ["move_type", "=", "out_invoice"],
+        ["state", "=", "posted"],
+        ["invoice_date", ">=", fmt(window_start)],
+        ["invoice_date", "<=", fmt(window_end)],
+    ], ["partner_id", "invoice_user_id", "invoice_date"], limit=10000)
+
+    # Unique partners
+    partner_data = {}
+    for inv in invs:
+        pid = safe_id(inv.get("partner_id"))
+        if pid and pid not in partner_data:
+            partner_data[pid] = {
+                "name": safe_name(inv.get("partner_id")),
+                "vendedor": safe_name(inv.get("invoice_user_id")),
+                "first_invoice": inv.get("invoice_date", "")[:10],
+            }
+
+    if not partner_data:
+        print("  No candidates found")
+        return []
+
+    # For each candidate, check if it was truly their FIRST invoice
+    graduating = []
+    pids = list(partner_data.keys())
+    for i in range(0, len(pids), batch_size):
+        batch = pids[i:i+batch_size]
+        for pid in batch:
+            first_inv_date = partner_data[pid]["first_invoice"]
+            # Count invoices BEFORE that date
+            prev_count = s_count(models, uid, "account.move", [
+                ["move_type", "=", "out_invoice"],
+                ["state", "=", "posted"],
+                ["partner_id", "=", pid],
+                ["invoice_date", "<", first_inv_date],
+            ])
+            if prev_count > 0:
+                continue  # Not their first invoice
+
+            # Count total invoices since then
+            total_invs = s_count(models, uid, "account.move", [
+                ["move_type", "=", "out_invoice"],
+                ["state", "=", "posted"],
+                ["partner_id", "=", pid],
+            ])
+
+            days_since = (today - datetime.strptime(first_inv_date, "%Y-%m-%d").date()).days
+            graduating.append({
+                "name": partner_data[pid]["name"],
+                "vendedor": partner_data[pid]["vendedor"],
+                "first_invoice": first_inv_date,
+                "days_since": days_since,
+                "total_invoices": total_invs,
+            })
+
+    graduating.sort(key=lambda x: -x["total_invoices"])
+    print(f"  Graduating clients: {len(graduating)}")
+    return graduating
+
+
+# ==============================================================
 # MAIN
 # ==============================================================
 def main():
@@ -1991,6 +1995,9 @@ def main():
     # Part 4: Churn & Rescue
     churn = extract_churn_data(models, uid)
 
+    # Part 4b: At-risk clients
+    at_risk = extract_at_risk(models, uid)
+
     # Part 5: Rescued clients (frecuencia-based)
     rescued = extract_rescued_clients(models, uid)
 
@@ -2000,6 +2007,9 @@ def main():
     # Part 6b: SLA entrega mes anterior
     sla_prev = extract_sla_data(models, uid, prev_m_start, prev_m_end)
     ventas_prev["sla"] = sla_prev
+
+    # Part 8: Graduating clients (new → fidelización)
+    graduating = extract_graduating(models, uid)
 
     # Part 7: Pauline Comber "mantención" — absorbs the TomEnergy bucket into Comber's row.
     # Liters = TomEnergy liters + Comber liters (simple sum, no subtraction).
@@ -2142,7 +2152,9 @@ def main():
         "ventas": ventas,
         "ventas_prev": ventas_prev,
         "churn": churn,
+        "at_risk": at_risk,
         "rescued": rescued,
+        "graduating": graduating,
         "credit_risk": credit_risk,
         "vendor_goals": vendor_goals,
         "company_goals": {
@@ -2165,7 +2177,7 @@ def main():
             "leads": {"goal": 15, "label": "Leads", "freq": "semanal"},
             "contacto": {"goal": 10, "label": "Contacto Efectivo", "freq": "semanal"},
             "cotizacion": {"goal": 8, "label": "Cotizacion", "freq": "semanal"},
-            "seguimiento": {"goal": 100, "label": "Cotiz. Gestionadas", "unit": "%", "freq": "semanal"},
+            "seguimiento": {"goal": 100, "label": "Cotiz. Confirmadas", "unit": "%", "freq": "semanal"},
             "cierre": {"goal": 2, "label": "Cierre", "freq": "semanal"},
             "retencion": {"goal": 90, "label": "Retencion 90d", "unit": "%", "freq": "mensual"},
         },
