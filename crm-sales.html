@@ -141,8 +141,8 @@ tr:hover td{background:#fafaf8}
         <div class="chart-cont"><h3>📈 Venta Semanal (Litros)</h3><canvas id="chartWeekly"></canvas></div>
 
         <!-- Ranking -->
-        <div class="sec"><div class="sec-h"><h2>📊 Ranking Ejecutivos</h2><span style="font-size:12px;color:var(--dim)">ordenado por movimientos últimos 30d</span></div><div class="sec-b" style="overflow-x:auto">
-          <table><thead><tr><th>#</th><th>Ejecutivo</th><th>Pipeline</th><th>Mov. 7d</th><th>Mov. 30d</th><th>Estancadas</th><th>Litros</th><th>% Meta</th></tr></thead><tbody id="rankingBody"></tbody></table>
+        <div class="sec"><div class="sec-h"><h2>📊 Ranking Equipo</h2></div><div class="sec-b">
+          <table><thead><tr><th>#</th><th>Ejecutivo</th><th>% Meta</th><th>Mov. 7d</th><th>Mov. 30d</th></tr></thead><tbody id="rankingBody"></tbody></table>
         </div></div>
 
         <!-- Clientes Nuevos de la semana -->
@@ -165,8 +165,8 @@ tr:hover td{background:#fafaf8}
       <!-- ACUMULADO MES SUB-TAB -->
       <div class="ventas-panel" id="ventas-acumulado">
         <!-- Ranking (same as semanal, shared) -->
-        <div class="sec"><div class="sec-h"><h2>📊 Ranking Ejecutivos</h2><span style="font-size:12px;color:var(--dim)">ordenado por movimientos últimos 30d</span></div><div class="sec-b" style="overflow-x:auto">
-          <table><thead><tr><th>#</th><th>Ejecutivo</th><th>Pipeline</th><th>Mov. 7d</th><th>Mov. 30d</th><th>Estancadas</th><th>Litros</th><th>% Meta</th></tr></thead><tbody id="rankingBodyAccum"></tbody></table>
+        <div class="sec"><div class="sec-h"><h2>📊 Ranking Equipo</h2></div><div class="sec-b">
+          <table><thead><tr><th>#</th><th>Ejecutivo</th><th>% Meta</th><th>Mov. 7d</th><th>Mov. 30d</th></tr></thead><tbody id="rankingBodyAccum"></tbody></table>
         </div></div>
 
         <!-- Margen grids (same as semanal, shared) -->
@@ -352,42 +352,12 @@ const FREELANCERS = [
   'carolina avilés','fernando jullian','marcela márquez','raúl bisquertt'
 ];
 const CS_TEAM = ['comber sigall pauline','mauro boccardo','tomenergy'];
-const _aNorms = ALLOWED_VENDORS.map(norm);
-const _csNorms = CS_TEAM.map(norm);
-const _fNorms = FREELANCERS.map(norm);
-function _partialMatch(nn, list) {
-  const nw = nn.split(' ');
-  for (const ref of list) {
-    if (ref === nn) return true;
-    const rw = ref.split(' ');
-    const shorter = nw.length <= rw.length ? nw : rw;
-    const longer = nw.length <= rw.length ? rw : nw;
-    if (shorter.length >= 2 && shorter.every(w => longer.includes(w))) return true;
-  }
-  return false;
-}
-function canonicalNorm(n) {
-  const nn = norm(n);
-  const nw = nn.split(' ');
-  for (const ref of _aNorms) {
-    if (ref === nn) return ref;
-    const rw = ref.split(' ');
-    const shorter = nw.length <= rw.length ? nw : rw;
-    const longer = nw.length <= rw.length ? rw : nw;
-    if (shorter.length >= 2 && shorter.every(w => longer.includes(w))) return ref;
-  }
-  for (const ref of _fNorms) {
-    if (ref === nn) return ref;
-    const rw = ref.split(' ');
-    const shorter = nw.length <= rw.length ? nw : rw;
-    const longer = nw.length <= rw.length ? rw : nw;
-    if (shorter.length >= 2 && shorter.every(w => longer.includes(w))) return ref;
-  }
-  return nn;
-}
-const isAllowed = n => n && _partialMatch(norm(n), _aNorms);
-const isCS = n => n && _partialMatch(norm(n), _csNorms);
-const isFreelancer = n => n && _partialMatch(norm(n), _fNorms);
+const _aN = new Set(ALLOWED_VENDORS.map(norm));
+const _csN = new Set(CS_TEAM.map(norm));
+const isAllowed = n => n && _aN.has(norm(n));
+const isCS = n => n && _csN.has(norm(n));
+const _fN = new Set(FREELANCERS.map(norm));
+const isFreelancer = n => n && _fN.has(norm(n));
 
 function getGoal(name) {
   if (!D || !D.vendor_goals) return {};
@@ -410,15 +380,22 @@ const H = s => { if (!s) return ''; const d = document.createElement('div'); d.t
 const fL = n => n ? Math.round(n).toLocaleString('es-CL') + ' L' : '0 L';
 const pct = (v, g) => g ? Math.min(Math.round((v / g) * 100), 999) : 0;
 
-// Global helper to lookup values in byUser maps — sums all partial matches via canonicalNorm
+// Global helper to lookup values in byUser maps by normalized name
 const findInByUser = (byUser, name) => {
   if (!byUser) return 0;
-  const nn = canonicalNorm(name);
-  let total = 0, found = false;
+  if (byUser[name] !== undefined) return byUser[name];
+  const nn = norm(name);
+  const nWords = nn.split(' ');
   for (const [k, v] of Object.entries(byUser)) {
-    if (canonicalNorm(k) === nn) { total += v; found = true; }
+    const kn = norm(k);
+    if (kn === nn) return v;
+    // Partial match: shorter name's words all in longer
+    const kWords = kn.split(' ');
+    const shorter = nWords.length <= kWords.length ? nWords : kWords;
+    const longer = nWords.length <= kWords.length ? kWords : nWords;
+    if (shorter.length >= 2 && shorter.every(w => longer.includes(w))) return v;
   }
-  return found ? total : 0;
+  return 0;
 };
 const clr = (v, g) => { const p = g ? (v / g) * 100 : 0; return p >= 100 ? 'g' : p >= 60 ? 'y' : 'r'; };
 const tagC = c => c === 'g' ? 'tag-g' : c === 'y' ? 'tag-y' : 'tag-r';
@@ -604,7 +581,7 @@ function renderVendedores() {
 
   // All allowed vendors (deduplicated)
   const nameMap = {};
-  const addN = n => { const nn = canonicalNorm(n); if (!nameMap[nn]) nameMap[nn] = n; };
+  const addN = n => { const nn = norm(n); if (!nameMap[nn]) nameMap[nn] = n; };
   Object.keys(VG).forEach(n => { if (isAllowed(n)) addN(n); });
   Object.keys(T.litros_by_user || {}).forEach(n => { if (isAllowed(n)) addN(n); });
   (D.executives || []).forEach(e => { if (isAllowed(e.name)) addN(e.name); });
@@ -809,10 +786,17 @@ function renderEjecutivos() {
   // Determine current exec name
   let currentExecName = EJECUTIVOS[selectedExec] ? EJECUTIVOS[selectedExec].fullName : null;
 
-  // Filter helper — uses canonicalNorm so all name variants merge
+  // Filter helper
   const matchesExec = (testName) => {
     if (!currentExecName) return false;
-    return canonicalNorm(testName) === canonicalNorm(currentExecName);
+    const nn = norm(testName);
+    const cn = norm(currentExecName);
+    if (nn === cn) return true;
+    // Partial match for names with middle names
+    const nWords = nn.split(' '), cWords = cn.split(' ');
+    const shorter = nWords.length <= cWords.length ? nWords : cWords;
+    const longer = nWords.length <= cWords.length ? cWords : nWords;
+    return shorter.length >= 2 && shorter.every(w => longer.includes(w));
   };
 
   // Build HTML
@@ -1253,52 +1237,92 @@ function renderWeeklyChart() {
   });
 }
 
-// — Ranking Table (Semanal & Acumulado — shared logic) —
-function _renderRankingTable(tbodyId) {
-  const tbody = document.getElementById(tbodyId); tbody.innerHTML = '';
+// — Ranking Table (Semanal) —
+function renderRanking() {
+  const tbody = document.getElementById('rankingBody'); tbody.innerHTML = '';
   const T = (D.ventas || {}).totals || {};
   const lbuMonth = T.litros_by_user || {};
   const pf = getProratedFactor(D.ventas?.month_start || new Date());
+  const week = getCurrentWeek();
 
-  // Build unified set of names (everyone with pipeline or litros)
+  // Weekly litros from weekly_history
+  const hist = ((D.ventas || {}).weekly_history || []).slice().reverse();
+  const wkLbu = (hist[selectedWeek] || {}).litros_by_user || {};
+  const hasWkLbu = Object.keys(wkLbu).length > 0;
+
+  // Build unified set of allowed vendor names, deduplicated by norm()
   const nameMap = {};
-  const addName = n => { const nn = canonicalNorm(n); if (!nameMap[nn]) nameMap[nn] = n; };
+  const addName = n => { const nn = norm(n); if (!nameMap[nn]) nameMap[nn] = n; };
   Object.keys(D.vendor_goals || {}).forEach(n => { if (isAllowed(n)) addName(n); });
-  Object.keys(lbuMonth).forEach(n => { if (isAllowed(n) || isFreelancer(n) || isCS(n)) addName(n); });
-  (D.executives || []).forEach(e => addName(e.name));
-  const allNames = Object.values(nameMap);
+  Object.keys(lbuMonth).forEach(n => { if (isAllowed(n)) addName(n); });
+  if (hasWkLbu) Object.keys(wkLbu).forEach(n => { if (isAllowed(n)) addName(n); });
+  (D.executives || []).forEach(e => { if (isAllowed(e.name)) addName(e.name); });
+  const vendorNames = Object.values(nameMap);
 
+  // Build exec lookup
   const execMap = {};
-  (D.executives || []).forEach(e => { execMap[canonicalNorm(e.name)] = e; });
+  (D.executives || []).forEach(e => { execMap[norm(e.name)] = e; });
 
-  const rows = allNames.map(n => {
+  // Use weekly litros for semanal ranking, monthly for % meta
+  const rows = vendorNames.map(n => {
+    const ltWeek = hasWkLbu ? findInByUser(wkLbu, n) : 0;
     const ltMonth = findInByUser(lbuMonth, n);
     const g = getGoal(n);
     const gL = g.litros_mes || 0;
     const pM = gL > 0 ? gL * pf : 1;
-    const ltP = gL > 0 ? Math.round((ltMonth / pM) * 100) : 0;
-    const ex = execMap[canonicalNorm(n)] || {};
-    return { name: n, pipeline: ex.total || 0, m7: ex.moved || 0, m30: ex.moved_30d || 0, stale: ex.stale || 0, litros: ltMonth, ltP };
-  }).sort((a, b) => b.m30 - a.m30);
+    const ltP = gL > 0 ? Math.round((ltMonth / pM) * 100) : (ltMonth > 0 ? 1 : 0);
+    const ex = execMap[norm(n)] || {};
+    return { name: n, ltWeek, ltMonth, ltP, m7: ex.moved || 0, m30: ex.moved_30d || 0 };
+  }).sort((a, b) => b.ltMonth - a.ltMonth);
+
+  // Update header
+  const thead = tbody.closest('table').querySelector('thead tr');
+  if (thead) thead.innerHTML = '<th>#</th><th>Ejecutivo</th><th>Litros Sem.</th><th>% Meta Mes</th><th>Mov. 7d</th><th>Mov. 30d</th>';
 
   rows.forEach((r, i) => {
-    const m7c = r.m7 > 0 ? 'color:var(--green);font-weight:700' : 'color:var(--red);font-weight:700';
-    const stC = r.stale > r.pipeline * 0.5 ? 'color:var(--red);font-weight:700' : r.stale > 0 ? 'color:var(--yellow);font-weight:700' : '';
     const lc = r.ltP >= 100 ? 'tag-g' : r.ltP >= 60 ? 'tag-y' : 'tag-r';
     const tr = document.createElement('tr');
-    tr.innerHTML = '<td><strong>' + (i+1) + '</strong></td>'
-      + '<td><strong>' + H(r.name) + '</strong></td>'
-      + '<td>' + r.pipeline + '</td>'
-      + '<td style="' + m7c + '">' + r.m7 + '</td>'
-      + '<td><strong>' + r.m30 + '</strong></td>'
-      + '<td style="' + stC + '">' + r.stale + '</td>'
-      + '<td>' + fL(r.litros) + '</td>'
-      + '<td><span class="tag ' + lc + '">' + r.ltP + '%</span></td>';
+    tr.innerHTML = '<td><strong>' + (i+1) + '</strong></td><td>' + H(r.name) + '</td><td><strong>' + fL(r.ltWeek) + '</strong></td><td><span class="tag ' + lc + '">' + r.ltP + '%</span></td><td><strong>' + r.m7 + '</strong></td><td><strong>' + r.m30 + '</strong></td>';
     tbody.appendChild(tr);
   });
 }
-function renderRanking() { _renderRankingTable('rankingBody'); }
-function renderRankingAccum() { _renderRankingTable('rankingBodyAccum'); }
+
+// — Ranking Table (Acumulado Mes) —
+function renderRankingAccum() {
+  const tbody = document.getElementById('rankingBodyAccum'); tbody.innerHTML = '';
+  const T = (D.ventas || {}).totals || {};
+  const lbu = T.litros_by_user || {};
+  const pf = getProratedFactor(D.ventas?.month_start || new Date());
+
+  // Build unified set of allowed vendor names
+  const nameMap = {};
+  const addName = n => { const nn = norm(n); if (!nameMap[nn]) nameMap[nn] = n; };
+  Object.keys(D.vendor_goals || {}).forEach(n => { if (isAllowed(n)) addName(n); });
+  Object.keys(lbu).forEach(n => { if (isAllowed(n)) addName(n); });
+  (D.executives || []).forEach(e => { if (isAllowed(e.name)) addName(e.name); });
+  const vendorNames = Object.values(nameMap);
+
+  // Build exec lookup
+  const execMap = {};
+  (D.executives || []).forEach(e => { execMap[norm(e.name)] = e; });
+
+  const rows = vendorNames.map(n => {
+    const lt = findInByUser(lbu, n);
+    const g = getGoal(n);
+    const gL = g.litros_mes || 0;
+    const pM = gL > 0 ? gL * pf : 1;
+    const ltP = gL > 0 ? Math.round((lt / pM) * 100) : 0;
+    const ex = execMap[norm(n)] || {};
+    return { name: n, ltP, m7: ex.moved || 0, m30: ex.moved_30d || 0 };
+  }).sort((a, b) => b.ltP - a.ltP);
+
+  rows.forEach((r, i) => {
+    const lc = r.ltP >= 100 ? 'tag-g' : r.ltP >= 60 ? 'tag-y' : 'tag-r';
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td><strong>${i + 1}</strong></td><td>${H(r.name)}</td><td><span class="tag ${lc}">${r.ltP}%</span></td><td><strong>${r.m7}</strong></td><td><strong>${r.m30}</strong></td>`;
+    tbody.appendChild(tr);
+  });
+}
 
 // — Margen Charts (Semanal) —
 let chartMargenZonaAccum = null, chartMargenExecAccum = null;
@@ -1785,17 +1809,19 @@ function renderMesVencido(){
   }
   var mLbu=mergeByNorm(TP.litros_by_user||{});
   var mNcBu=mergeByNorm(ncP.by_user||{});
-  // Deduplicate user list by canonicalNorm (fixes "RON ROJAS YENIRE DEL VALLE" vs "ron yenire")
+  // Deduplicate user list by normalized name (fixes VG having "Yeniré Ron" vs mLbu "Ron Yenire")
   var _allNames=[].concat(Object.keys(mLbu),Object.keys(VG));
-  var _seenCN={},_dedupNames=[];
-  _allNames.forEach(function(n){var cn=canonicalNorm(n);if(!_seenCN[cn]){_seenCN[cn]=true;_dedupNames.push(n);}});
-  var users=_dedupNames.filter(function(u){return u!=='Sin asignar'&&isAllowed(u)});
+  var _seenNorm={},_dedupNames=[];
+  _allNames.forEach(function(n){var nn=norm(n);if(!_seenNorm[nn]){_seenNorm[nn]=true;_dedupNames.push(n);}});
+  var _uSet=new Set(_dedupNames);
+  var users=Array.from(_uSet).filter(function(u){return u!=='Sin asignar'&&isAllowed(u)});
   if(users.length){
     h+='<div class="sec"><div class="sec-h"><h2>Resumen '+(VP.month_label||'Mes')+'</h2></div>';
     h+='<div class="sec-b" style="padding:0;overflow-x:auto"><table><thead><tr><th>Vendedor</th><th>Litros</th><th>Clientes Nuevos</th></tr></thead><tbody>';
     users.forEach(function(u){
-      var lt=findInByUser(mLbu,u);
-      var nc2=findInByUser(mNcBu,u);
+      var lt=0,nc2=0,un=norm(u);
+      for(var k in mLbu){if(norm(k)===un){lt=mLbu[k];break;}}
+      for(var k in mNcBu){if(norm(k)===un){nc2=mNcBu[k];break;}}
       h+='<tr><td class="bold">'+H(u)+'</td><td>'+fL(lt)+'</td><td>'+nc2+'</td></tr>';
     });
     h+='</tbody></table></div></div>';
