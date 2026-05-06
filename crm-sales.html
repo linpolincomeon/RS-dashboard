@@ -254,6 +254,9 @@ tr:hover td{background:#fafaf8}
           <div class="sec-b" style="max-height:450px;overflow-y:auto"><table><thead><tr><th>Cliente</th><th>Vendedor</th><th>Litros</th><th>Gap</th><th>Freq</th></tr></thead><tbody id="rescLostBody"></tbody></table>
           <div class="nodata" id="noRescLost" style="display:none">Sin rescatados perdidos</div></div></div>
       </div>
+
+      <!-- Actividades CS -->
+      <div id="csActivitiesSection"></div>
     </div>
 
     <!-- ═══ TAB: MES VENCIDO ═══ -->
@@ -1019,6 +1022,32 @@ function renderEjecutivos() {
   }
   h += '</tbody></table></div></div>';
 
+  // ── Actividades de la Semana — notas y to-dos del ejecutivo ──
+  const allMsgs = D.messages || [];
+  const allActs = D.activities || [];
+
+  // Messages (comments) filtered to this exec
+  const execMsgs = allMsgs.filter(m => matchesExec(m.who));
+  // Activities (to-dos) filtered to this exec
+  const execActs = allActs.filter(a => matchesExec(a.who));
+
+  // Combine and sort by date desc
+  const combined = [];
+  execMsgs.forEach(m => combined.push({date: m.date || '', type: '💬 Nota', client: '', desc: m.desc || ''}));
+  execActs.forEach(a => combined.push({date: a.date || '', type: '📋 ' + (a.type || 'To-Do'), client: a.lead || '', desc: a.summary || ''}));
+  combined.sort((a, b) => (b.date || '').localeCompare(a.date || ''));
+
+  h += '<div class="sec"><div class="sec-h"><h2>📝 Actividades de la Semana</h2></div><div class="sec-b" style="max-height:500px;overflow-y:auto"><table>';
+  h += '<thead><tr><th>Fecha</th><th>Tipo</th><th>Cliente</th><th>Detalle</th></tr></thead><tbody>';
+  if (combined.length === 0) {
+    h += '<tr><td colspan="4" style="text-align:center;color:var(--dim);padding:20px">Sin actividades registradas</td></tr>';
+  } else {
+    combined.slice(0, 30).forEach(a => {
+      h += `<tr><td style="white-space:nowrap">${a.date}</td><td>${a.type}</td><td class="bold">${H(a.client)}</td><td style="max-width:400px;white-space:normal;font-size:12px">${H(a.desc)}</td></tr>`;
+    });
+  }
+  h += '</tbody></table></div></div>';
+
   document.getElementById('tab-ejecutivos').innerHTML = h;
   renderWeekSelector();
 }
@@ -1742,6 +1771,29 @@ function renderCS() {
   const rescued = D.rescued || {};
   renderRescuedTable(rescued.rescued_durmientes || [], 'rescDormBody', 'noRescDorm', 'rescDormCount');
   renderRescuedTable(rescued.rescued_perdidos || [], 'rescLostBody', 'noRescLost', 'rescLostCount');
+
+  // ── Actividades CS de la Semana ──
+  const csMsgs = (D.messages || []).filter(m => isCS(m.who));
+  const csActs = (D.activities || []).filter(a => isCS(a.who));
+  const csCombined = [];
+  csMsgs.forEach(m => csCombined.push({date: m.date || '', type: '💬 Nota', client: '', desc: m.desc || ''}));
+  csActs.forEach(a => csCombined.push({date: a.date || '', type: '📋 ' + (a.type || 'To-Do'), client: a.lead || '', desc: a.summary || ''}));
+  csCombined.sort((a, b) => (b.date || '').localeCompare(a.date || ''));
+
+  const csActSection = document.getElementById('csActivitiesSection');
+  if (csActSection) {
+    let ah = '<div class="sec"><div class="sec-h"><h2>📝 Actividades CS</h2></div><div class="sec-b" style="max-height:500px;overflow-y:auto"><table>';
+    ah += '<thead><tr><th>Fecha</th><th>Quién</th><th>Tipo</th><th>Cliente</th><th>Detalle</th></tr></thead><tbody>';
+    if (csCombined.length === 0) {
+      ah += '<tr><td colspan="5" style="text-align:center;color:var(--dim);padding:20px">Sin actividades</td></tr>';
+    } else {
+      csCombined.slice(0, 30).forEach(a => {
+        ah += `<tr><td style="white-space:nowrap">${a.date}</td><td>${a.type}</td><td class="bold">${H(a.client)}</td><td style="max-width:400px;white-space:normal;font-size:12px">${H(a.desc)}</td></tr>`;
+      });
+    }
+    ah += '</tbody></table></div></div>';
+    csActSection.innerHTML = ah;
+  }
 }
 
 // ═══════════════════════════════════════
