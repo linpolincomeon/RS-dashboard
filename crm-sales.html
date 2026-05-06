@@ -208,9 +208,14 @@ tr:hover td{background:#fafaf8}
         <table><thead><tr><th>Cliente</th><th>Vendedor</th><th>Fecha</th><th>Estado Actual</th></tr></thead><tbody id="lostMonthBody"></tbody></table>
         <div class="nodata" id="noLostMonth" style="display:none">Sin perdidos en el mes</div></div></div>
 
+      <!-- Clientes En Riesgo Crediticio -->
+      <div class="sec"><div class="sec-h"><h2>⚠️ Clientes En Riesgo Crediticio</h2><span class="badge" id="riskClientCount">0</span></div><div class="sec-b" style="max-height:500px;overflow-y:auto">
+        <table><thead><tr><th>Nivel</th><th>Cliente</th><th>Vendedor</th><th style="text-align:right">Línea Crédito</th><th style="text-align:right">Utilización</th><th style="text-align:right">Mora</th><th>DICOM</th><th style="text-align:right">Score</th></tr></thead><tbody id="riskClientsBody"></tbody></table>
+        <div class="nodata" id="noRiskClients" style="display:none">Sin clientes en riesgo</div></div></div>
+
       <!-- Todos los Durmientes -->
-      <div class="sec"><div class="sec-h"><h2>🎯 Todos los Durmientes</h2></div><div class="sec-b" style="max-height:500px;overflow-y:auto">
-        <table><thead><tr><th>Cliente</th><th>Prom. Mensual 8M</th><th>Responsable</th><th>Última actualización</th></tr></thead><tbody id="allDormantBody"></tbody></table>
+      <div class="sec"><div class="sec-h"><h2>😴 Todos los Durmientes</h2><span class="badge" id="allDormantCount">0</span></div><div class="sec-b" style="max-height:600px;overflow-y:auto">
+        <table><thead><tr><th>Cliente</th><th style="text-align:right">Litros Prom/Mes</th><th>Responsable</th><th>Última Actividad</th><th>Observaciones</th></tr></thead><tbody id="allDormantBody"></tbody></table>
         <div class="nodata" id="noAllDormant" style="display:none">Sin durmientes registrados</div></div></div>
     </div>
 
@@ -1616,22 +1621,67 @@ function renderFidelizacion() {
     });
   }
 
-  // Todos los Durmientes (all deduped, sorted by avg_monthly_litros desc)
+  // ── Clientes En Riesgo Crediticio (Crítico + Alto del score_table) ──
+  const crData = D.credit_risk || {};
+  const scoreTable = crData.score_table || [];
+  const riskClients = scoreTable.filter(s => s.risk_level === 'Crítico' || s.risk_level === 'Alto');
+  riskClients.sort((a, b) => (b.risk_score || 0) - (a.risk_score || 0));
+
+  const rcBadge = document.getElementById('riskClientCount');
+  if (rcBadge) rcBadge.textContent = riskClients.length;
+  const rcBody = document.getElementById('riskClientsBody');
+  const noRisk = document.getElementById('noRiskClients');
+  if (rcBody) {
+    rcBody.innerHTML = '';
+    if (riskClients.length === 0) {
+      noRisk.style.display = 'block';
+    } else {
+      noRisk.style.display = 'none';
+      riskClients.forEach(s => {
+        const lvlTag = s.risk_level === 'Crítico'
+          ? '<span class="tag tag-r">Crítico</span>'
+          : '<span class="tag tag-y">Alto</span>';
+        const dicom = s.has_dicom ? '<span class="tag tag-r">DICOM</span>' : '';
+        const tr = document.createElement('tr');
+        tr.innerHTML = `<td>${lvlTag}</td><td class="bold">${H(s.name)}</td><td>${H(s.vendedor || '—')}</td><td style="text-align:right">$${fL(s.monto_credito || 0)}</td><td style="text-align:right">${s.utilizacion_pct || 0}%</td><td style="text-align:right">${s.mora_ratio || 0}</td><td>${dicom}</td><td style="text-align:right">${s.risk_score || 0}</td>`;
+        rcBody.appendChild(tr);
+      });
+    }
+  }
+
+  // ── Todos los Durmientes (con última actividad y observaciones) ──
   const allDormantDedup = _dedup(dormantListAll);
   allDormantDedup.sort((a, b) => (b.avg_monthly_litros || 0) - (a.avg_monthly_litros || 0));
 
+  const dormBadge = document.getElementById('allDormantCount');
+  if (dormBadge) dormBadge.textContent = allDormantDedup.length;
   const adb = document.getElementById('allDormantBody'); adb.innerHTML = '';
   if (allDormantDedup.length === 0) {
     document.getElementById('noAllDormant').style.display = 'block';
   } else {
     document.getElementById('noAllDormant').style.display = 'none';
+    // Try to match dormant clients with credit_risk data for observations
+    const crByName = {};
+    scoreTable.forEach(s => { crByName[s.name?.trim().toUpperCase()] = s; });
+
     allDormantDedup.forEach(c => {
       const l = c.avg_monthly_litros || 0;
       const lTag = l >= 5000 ? '<span style="color:var(--red);font-weight:700">' + fL(l) + '</span>'
         : l >= 1000 ? '<span style="color:var(--yellow);font-weight:700">' + fL(l) + '</span>'
         : '<span style="color:var(--dim)">' + fL(l) + '</span>';
+      const note = c.last_note
+        ? `<div style="font-size:11px">${c.last_update || ''}</div><div style="font-size:11px;color:var(--dim);max-width:250px;white-space:normal">${H(c.last_note)}</div>`
+        : (c.last_update || '—');
+      // Observations from credit_risk
+      const crMatch = crByName[(c.name || '').trim().toUpperCase()];
+      let obs = '';
+      if (crMatch) {
+        if (crMatch.has_dicom) obs += '<span class="tag tag-r">DICOM</span> ';
+        if (crMatch.risk_level) obs += '<span class="tag ' + (crMatch.risk_level === 'Crítico' ? 'tag-r' : crMatch.risk_level === 'Alto' ? 'tag-y' : 'tag-g') + '">' + crMatch.risk_level + '</span> ';
+        if (crMatch.overdue_amount > 0) obs += '<span style="font-size:11px;color:var(--red)">Mora: $' + fL(crMatch.overdue_amount) + '</span>';
+      }
       const tr = document.createElement('tr');
-      tr.innerHTML = `<td class="bold">${H(c.name)}</td><td>${lTag}</td><td>${H(c.user || '—')}</td><td>${c.last_update || '—'}</td>`;
+      tr.innerHTML = `<td class="bold">${H(c.name)}</td><td style="text-align:right">${lTag}</td><td>${H(c.user || '—')}</td><td>${note}</td><td>${obs || '—'}</td>`;
       adb.appendChild(tr);
     });
   }
