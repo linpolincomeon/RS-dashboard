@@ -111,6 +111,7 @@ tr:hover td{background:#fafaf8}
       <button class="tab-btn" onclick="switchTab('mesvencido')">📋 Mes Vencido</button>
       <button class="tab-btn" onclick="switchTab('riesgo')">⚠️ Riesgo</button>
       <button class="tab-btn" onclick="switchTab('glosario')">📖 Glosario</button>
+      <button class="tab-btn" onclick="switchTab('pendientes')" style="color:#c8360e">⚙️ Pendientes</button>
     </div>
 
     <!-- ═══ TAB: EJECUTIVOS ═══ -->
@@ -140,9 +141,14 @@ tr:hover td{background:#fafaf8}
         <div class="chart-cont"><h3>📈 Venta Semanal (Litros)</h3><canvas id="chartWeekly"></canvas></div>
 
         <!-- Ranking -->
-        <div class="sec"><div class="sec-h"><h2>📊 Ranking Equipo</h2></div><div class="sec-b">
-          <table><thead><tr><th>#</th><th>Ejecutivo</th><th>% Meta</th><th>Mov. 7d</th><th>Mov. 30d</th></tr></thead><tbody id="rankingBody"></tbody></table>
+        <div class="sec"><div class="sec-h"><h2>📊 Ranking Ejecutivos</h2><span style="font-size:12px;color:var(--dim)">ordenado por movimientos últimos 30d</span></div><div class="sec-b" style="overflow-x:auto">
+          <table><thead><tr><th>#</th><th>Ejecutivo</th><th>Pipeline</th><th>Mov. 7d</th><th>Mov. 30d</th><th>Estancadas</th><th>Litros</th><th>% Meta</th></tr></thead><tbody id="rankingBody"></tbody></table>
         </div></div>
+
+        <!-- Clientes Nuevos de la semana -->
+        <div class="sec"><div class="sec-h"><h2>🆕 Clientes Nuevos</h2><span class="badge" id="newClientsCount">0</span></div>
+          <div class="sec-b" style="max-height:400px;overflow-y:auto"><table><thead><tr><th>Cliente</th><th>Ejecutivo</th><th>Fecha 1ª Factura</th><th style="text-align:right">Litros</th></tr></thead><tbody id="newClientsBody"></tbody></table>
+          <div class="nodata" id="noNewClients" style="display:none">Sin clientes nuevos</div></div></div>
 
         <!-- Margen grids -->
         <div class="grid-2">
@@ -159,8 +165,8 @@ tr:hover td{background:#fafaf8}
       <!-- ACUMULADO MES SUB-TAB -->
       <div class="ventas-panel" id="ventas-acumulado">
         <!-- Ranking (same as semanal, shared) -->
-        <div class="sec"><div class="sec-h"><h2>📊 Ranking Equipo</h2></div><div class="sec-b">
-          <table><thead><tr><th>#</th><th>Ejecutivo</th><th>% Meta</th><th>Mov. 7d</th><th>Mov. 30d</th></tr></thead><tbody id="rankingBodyAccum"></tbody></table>
+        <div class="sec"><div class="sec-h"><h2>📊 Ranking Ejecutivos</h2><span style="font-size:12px;color:var(--dim)">ordenado por movimientos últimos 30d</span></div><div class="sec-b" style="overflow-x:auto">
+          <table><thead><tr><th>#</th><th>Ejecutivo</th><th>Pipeline</th><th>Mov. 7d</th><th>Mov. 30d</th><th>Estancadas</th><th>Litros</th><th>% Meta</th></tr></thead><tbody id="rankingBodyAccum"></tbody></table>
         </div></div>
 
         <!-- Margen grids (same as semanal, shared) -->
@@ -189,7 +195,7 @@ tr:hover td{background:#fafaf8}
 
       <!-- Nuevos Durmientes de la Semana -->
       <div class="sec"><div class="sec-h"><h2>😴 Nuevos Durmientes de la Semana</h2></div><div class="sec-b" style="max-height:400px;overflow-y:auto">
-        <table><thead><tr><th>Prioridad</th><th>Cliente</th><th>Prom. Mensual 8M</th><th>Responsable</th><th>Fecha cambio</th></tr></thead><tbody id="newDormantBody"></tbody></table>
+        <table><thead><tr><th>Prioridad</th><th>Cliente</th><th>Prom. Mensual 8M</th><th>Responsable</th><th>Última Actividad</th></tr></thead><tbody id="newDormantBody"></tbody></table>
         <div class="nodata" id="noNewDormant" style="display:none">Sin nuevos durmientes esta semana</div></div></div>
 
       <!-- Nuevos Perdidos de la Semana -->
@@ -204,7 +210,7 @@ tr:hover td{background:#fafaf8}
 
       <!-- Todos los Durmientes -->
       <div class="sec"><div class="sec-h"><h2>🎯 Todos los Durmientes</h2></div><div class="sec-b" style="max-height:500px;overflow-y:auto">
-        <table><thead><tr><th>Cliente</th><th>Prom. Mensual 8M</th><th>Responsable</th><th>Última Actividad</th><th>Notas</th></tr></thead><tbody id="allDormantBody"></tbody></table>
+        <table><thead><tr><th>Cliente</th><th>Prom. Mensual 8M</th><th>Responsable</th><th>Última actualización</th></tr></thead><tbody id="allDormantBody"></tbody></table>
         <div class="nodata" id="noAllDormant" style="display:none">Sin durmientes registrados</div></div></div>
     </div>
 
@@ -277,6 +283,24 @@ tr:hover td{background:#fafaf8}
           <div class="nodata" id="noScore" style="display:none">Sin datos de riesgo</div></div></div>
     </div>
 
+    <!-- ═══ TAB: PENDIENTES ═══ -->
+    <div class="tab-panel" id="tab-pendientes">
+      <div class="sec"><div class="sec-h"><h2>⚙️ Issues Pendientes</h2></div>
+      <div class="sec-b" style="font-size:13px;line-height:1.8">
+        <table style="width:100%">
+          <thead><tr><th style="width:200px">Issue</th><th>Detalle</th><th style="width:100px">Estado</th></tr></thead>
+          <tbody>
+            <tr><td class="bold" style="color:#c8360e">Litros Toro — NC</td><td>Las notas de crédito "por monto" (sin línea diesel B1) no restan litros. El campo <code>reversed_entry_id</code> no vincula NC a factura original en Odoo 18. Se agregó <code>nc_debug</code> al JSON para diagnosticar. Pendiente: identificar cómo matchear NC con factura original para restar litros correctos.</td><td><span class="tag tag-r">Bloqueado</span></td></tr>
+            <tr><td class="bold" style="color:#c8360e">Churn %</td><td>El cálculo de churn muestra valores incorrectos (ej: 100%). La lógica en <code>extract_crm.py</code> necesita revisión del threshold de días y la base de clientes activos. Definición correcta: clientes que compraron mes anterior pero no este mes, dividido por total clientes mes anterior.</td><td><span class="tag tag-r">Por revisar</span></td></tr>
+            <tr><td class="bold" style="color:#e65100">Oportunidades históricas</td><td>En semanas pasadas, las oportunidades muestran datos aproximados. Solo tenemos snapshot actual del pipeline, no histórico semanal. Para datos exactos por semana se necesitaría guardar snapshots semanales del pipeline.</td><td><span class="tag tag-y">Limitación</span></td></tr>
+            <tr><td class="bold" style="color:#e65100">Score Crediticio</td><td>Componentes definidos: Morosidad (40pts), Utilización (25pts), Cobranza (20pts), DICOM (20pts), Margen (15pts). Campos Odoo identificados. Pendiente implementación.</td><td><span class="tag tag-y">Diseñado</span></td></tr>
+            <tr><td class="bold" style="color:#e65100">AVLA cruce</td><td>Pendiente subir planilla mensual AVLA para cruzar contra monto_credito/saldo_credito en Odoo. Histórico en <code>riesgo-historico.json</code>.</td><td><span class="tag tag-y">Pendiente</span></td></tr>
+            <tr><td class="bold" style="color:#e65100">Crons Odoo</td><td>Scripts de alerta temprana y mover a "En Riesgo" entregados. Verificar si están instalados como Acciones Planificadas.</td><td><span class="tag tag-y">Por verificar</span></td></tr>
+          </tbody>
+        </table>
+      </div></div>
+    </div>
+
     <!-- ═══ TAB: GLOSARIO ═══ -->
     <div class="tab-panel" id="tab-glosario">
       <div class="sec"><div class="sec-h"><h2>📖 Glosario — Definición de Variables</h2></div>
@@ -342,7 +366,6 @@ function _partialMatch(nn, list) {
   }
   return false;
 }
-// Returns the canonical ALLOWED_VENDOR norm for a name, so duplicate names merge to one key
 function canonicalNorm(n) {
   const nn = norm(n);
   const nw = nn.split(' ');
@@ -387,7 +410,7 @@ const H = s => { if (!s) return ''; const d = document.createElement('div'); d.t
 const fL = n => n ? Math.round(n).toLocaleString('es-CL') + ' L' : '0 L';
 const pct = (v, g) => g ? Math.min(Math.round((v / g) * 100), 999) : 0;
 
-// Global helper to lookup values in byUser maps by normalized name (sums all partial matches)
+// Global helper to lookup values in byUser maps — sums all partial matches via canonicalNorm
 const findInByUser = (byUser, name) => {
   if (!byUser) return 0;
   const nn = canonicalNorm(name);
@@ -587,7 +610,13 @@ function renderVendedores() {
   (D.executives || []).forEach(e => { if (isAllowed(e.name)) addN(e.name); });
   const vendors = Object.values(nameMap);
 
-  const findIn = findInByUser;
+  const findIn = (byUser, name) => {
+    if (!byUser) return 0;
+    if (byUser[name] !== undefined) return byUser[name];
+    const nn = norm(name);
+    for (const [k, v] of Object.entries(byUser)) { if (norm(k) === nn) return v; }
+    return 0;
+  };
 
   // Prorated factor
   const mStart = V.month_start ? new Date(V.month_start + 'T00:00:00') : null;
@@ -800,7 +829,77 @@ function renderEjecutivos() {
   h += '<div class="tab-bar" style="margin-bottom:12px">';
   h += '<button class="tab-btn' + (execSubTab === 'semanal' ? ' active' : '') + '" onclick="switchExecSubTab(\'semanal\')">Semanal</button>';
   h += '<button class="tab-btn' + (execSubTab === 'acumulado' ? ' active' : '') + '" onclick="switchExecSubTab(\'acumulado\')">Acumulado Mes</button>';
+  h += '<button class="tab-btn' + (execSubTab === 'mesvencido' ? ' active' : '') + '" onclick="switchExecSubTab(\'mesvencido\')">💰 Mes Vencido</button>';
   h += '</div>';
+
+  // ── Mes Vencido sub-tab: show previous month invoice detail for commissions ──
+  if (execSubTab === 'mesvencido') {
+    const VP = D.ventas_prev || {};
+    const prevLabel = VP.month_label || 'Mes Anterior';
+    const prevTotals = VP.totals || {};
+    const prevLbu = prevTotals.litros_by_user || {};
+    const prevVbu = prevTotals.venta_by_user || {};
+    const detailByUser = VP.detail_by_user || {};
+
+    let execDetail = [];
+    let execLitros = 0, execVenta = 0, execMargen = 0;
+    for (const [user, rows] of Object.entries(detailByUser)) {
+      if (matchesExec(user)) { execDetail = rows; break; }
+    }
+    for (const [user, val] of Object.entries(prevLbu)) { if (matchesExec(user)) { execLitros = val; break; } }
+    for (const [user, val] of Object.entries(prevVbu)) { if (matchesExec(user)) { execVenta = val; break; } }
+    for (const [user, val] of Object.entries(prevTotals.margin_by_user || {})) { if (matchesExec(user)) { execMargen = val; break; } }
+
+    // KPIs del mes vencido
+    const mvNcDetail = VP.new_clients?.detail || [];
+    const mvNewClients = mvNcDetail.filter(c => matchesExec(c.vendedor));
+    const prevWon = (D.won_deals || []).filter(w => {
+      const ms = VP.month_start || '', me = VP.month_end || '';
+      return matchesExec(w.exec) && (w.last_update || '') >= ms && (w.last_update || '') <= me;
+    });
+
+    h += `<div class="sec"><div class="sec-h"><h2>💰 Detalle ${H(prevLabel)} — ${EJECUTIVOS[selectedExec]?.name || ''}</h2></div>`;
+    h += '<div class="kpi-row">';
+    h += mkKpi('c-red', 'Litros', fL(execLitros), prevLabel, null, null);
+    h += mkKpi('c-green', 'Nuevos Clientes', mvNewClients.length, 'Primera factura', null, null);
+    h += mkKpi('c-blue', 'Margen', execMargen > 0 ? execMargen + '%' : '—', 'Porcentaje neto', null, null);
+    h += mkKpi('c-yellow', 'Venta Neta', '$' + fL(execVenta), prevLabel, null, null);
+    h += mkKpi('c-green', 'Ganados', prevWon.length, 'En el mes', null, null);
+    h += mkKpi('c-red', 'Líneas', execDetail.length, 'Facturas diesel', null, null);
+    h += '</div>';
+    h += '<div class="sec-b" style="max-height:600px;overflow:auto"><table>';
+    h += '<thead><tr><th>Fecha</th><th>Cliente</th><th>RUT</th><th style="text-align:right">Litros</th><th style="text-align:right">PV</th><th style="text-align:right">Venta Neta</th><th>Zona</th><th>Plazo Pago</th></tr></thead><tbody>';
+    if (execDetail.length === 0) {
+      h += '<tr><td colspan="8" style="text-align:center;color:var(--dim);padding:20px">Sin datos de mes vencido</td></tr>';
+    } else {
+      execDetail.forEach(r => {
+        h += `<tr><td>${r.fecha || '—'}</td><td class="bold">${H(r.cliente || '')}</td><td>${H(r.rut || '—')}</td>`;
+        h += `<td style="text-align:right">${fL(r.litros)}</td><td style="text-align:right">$${(r.pv || 0).toLocaleString('es-CL')}</td>`;
+        h += `<td style="text-align:right">$${fL(r.venta_neta)}</td><td>${H(r.zona || '—')}</td><td>${H(r.plazo_pago || '—')}</td></tr>`;
+      });
+    }
+    h += '</tbody></table></div></div>';
+
+    // ── Clientes Nuevos del mes vencido (primera factura diesel B1 en el mes) ──
+    const prevNewClients = (VP.new_clients?.detail || []).filter(c => matchesExec(c.vendedor));
+    h += `<div class="sec" style="margin-top:18px"><div class="sec-h"><h2>🆕 Clientes Nuevos ${H(prevLabel)}</h2></div>`;
+    h += '<div class="sec-b" style="max-height:400px;overflow:auto"><table>';
+    h += '<thead><tr><th>Cliente</th><th>Primera Factura</th><th style="text-align:right">Litros</th></tr></thead><tbody>';
+    if (prevNewClients.length === 0) {
+      h += '<tr><td colspan="3" style="text-align:center;color:var(--dim);padding:20px">Sin clientes nuevos</td></tr>';
+    } else {
+      prevNewClients.sort((a, b) => (b.litros || 0) - (a.litros || 0)).forEach(c => {
+        h += `<tr><td class="bold">${H(c.cliente || '')}</td><td>${c.fecha || '—'}</td><td style="text-align:right">${fL(c.litros)}</td></tr>`;
+      });
+      const totalNewLitros = prevNewClients.reduce((s, c) => s + (c.litros || 0), 0);
+      h += `<tr style="font-weight:700;border-top:2px solid var(--border)"><td>Total: ${prevNewClients.length} clientes</td><td></td><td style="text-align:right">${fL(totalNewLitros)}</td></tr>`;
+    }
+    h += '</tbody></table></div></div>';
+
+    document.getElementById('tab-ejecutivos').innerHTML = h;
+    renderWeekSelector();
+    return;
+  }
 
   // Get data for this exec
   const freelancerNames = []; // no longer used as aggregate
@@ -834,11 +933,12 @@ function renderEjecutivos() {
     for (const [user, val] of Object.entries(st.cotizacion?.by_user || {})) { if (matchesExec(user)) cotizaciones += val; }
   }
 
-  // Nuevos Clientes
+  // Nuevos Clientes (incluir ventas_prev para semanas que caen en mes anterior)
+  const _ncAll = isExecAccum ? ncDetail : [...ncDetail, ...((D.ventas_prev || {}).new_clients?.detail || [])];
   if (isExecAccum) {
-    for (const c of ncDetail) { if (matchesExec(c.vendedor)) nuevoClientes += 1; }
+    for (const c of _ncAll) { if (matchesExec(c.vendedor)) nuevoClientes += 1; }
   } else {
-    for (const c of ncDetail) { if (matchesExec(c.vendedor) && ws && we && c.fecha >= ws && c.fecha <= we) nuevoClientes += 1; }
+    for (const c of _ncAll) { if (matchesExec(c.vendedor) && ws && we && c.fecha >= ws && c.fecha <= we) nuevoClientes += 1; }
   }
 
   // Margen
@@ -879,10 +979,12 @@ function renderEjecutivos() {
   h += mkKpi('c-green', 'Ganados', ganados, 'En semana actual', null, null);
   h += '</div>';
 
-  // Clientes Nuevos table — filtered to week or month
-  const thisExecNewClients = ncDetail.filter(c => {
+  // Clientes Nuevos table — filtered to week or month (also check ventas_prev for past weeks)
+  // Clientes nuevos: mes actual para Acumulado, ambos meses para vista semanal (cubre semanas de abril)
+  const ncDetailPrev = (D.ventas_prev || {}).new_clients?.detail || [];
+  const thisExecNewClients = (isExecAccum ? ncDetail : [...ncDetail, ...ncDetailPrev]).filter(c => {
     if (!matchesExec(c.vendedor)) return false;
-    if (isExecAccum) return true; // show all month
+    if (isExecAccum) return true;
     if (ws && we && c.fecha) return c.fecha >= ws && c.fecha <= we;
     return false;
   });
@@ -898,22 +1000,31 @@ function renderEjecutivos() {
   }
   h += '</tbody></table></div></div>';
 
-  // Oportunidades table — filtered to this exec and selected week/month
+  // Oportunidades table — filtered to this exec + selected week
+  const isCurrentWeek = selectedWeek === 0;
   const thisExecOpportunities = pipeline.filter(p => {
     if (!matchesExec(p.exec)) return false;
-    if (isExecAccum) return true; // show all month
-    const upd = p.last_update || '';
-    if (ws && we && upd) return upd >= ws && upd <= we;
+    if (isExecAccum) return true; // month: show all active
+    if (isCurrentWeek) {
+      // Current week: show opportunities with recent activity (≤7 days)
+      const days = p.days_since_activity ?? p.days_in_stage ?? 999;
+      return days <= 7;
+    }
+    // Past weeks: show if last_update falls within or after the selected week
+    // (best approximation — we only have current snapshot, not historical)
+    if (ws && we && p.last_update) return p.last_update >= ws;
     return false;
   });
 
   h += '<div class="sec"><div class="sec-h"><h2>🎯 Oportunidades</h2></div><div class="sec-b" style="max-height:400px;overflow-y:auto"><table>';
-  h += '<thead><tr><th>Cliente</th><th>Etapa</th><th>Litros Est.</th><th>Fecha</th></tr></thead><tbody>';
+  h += '<thead><tr><th>Cliente</th><th>Etapa</th><th>Prob.</th><th>Litros Est.</th><th>Última Actividad</th></tr></thead><tbody>';
   if (thisExecOpportunities.length === 0) {
-    h += '<tr><td colspan="4" style="text-align:center;color:var(--dim);padding:20px">Sin oportunidades</td></tr>';
+    h += '<tr><td colspan="5" style="text-align:center;color:var(--dim);padding:20px">Sin oportunidades</td></tr>';
   } else {
     thisExecOpportunities.sort((a, b) => (b.value || 0) - (a.value || 0)).slice(0, 20).forEach(p => {
-      h += `<tr><td class="bold">${H(p.name)}</td><td>${stageTag(p.stage, p.stage_class)}</td><td>${fL(p.value)}</td><td>${p.last_update || '—'}</td></tr>`;
+      const prob = p.probability != null ? Math.round(p.probability) + '%' : '—';
+      const note = p.last_note ? `<div style="font-size:11px;color:var(--dim);max-width:250px;white-space:normal">${H(p.last_note)}</div>` : '';
+      h += `<tr><td class="bold">${H(p.name)}</td><td>${stageTag(p.stage, p.stage_class)}</td><td>${prob}</td><td>${fL(p.value)}</td><td>${p.last_update || '—'}${note}</td></tr>`;
     });
   }
   h += '</tbody></table></div></div>';
@@ -956,9 +1067,36 @@ function renderVentasData() {
   } else {
     renderWeeklyChart();
     renderRanking();
+    renderNewClientsTable();
     renderMargenCharts();
     renderHotDeals();
   }
+}
+
+function renderNewClientsTable() {
+  if (!D) return;
+  const V = D.ventas || {};
+  const ncDetail = V.new_clients?.detail || [];
+  const ncPrev = (D.ventas_prev || {}).new_clients?.detail || [];
+  const all = [...ncDetail, ...ncPrev];
+  const week = getCurrentWeek();
+  const ws = week?.week_start || '', we = week?.week_end || '';
+  const filtered = all.filter(c => ws && we && c.fecha >= ws && c.fecha <= we);
+  const body = document.getElementById('newClientsBody');
+  const badge = document.getElementById('newClientsCount');
+  const noData = document.getElementById('noNewClients');
+  if (!body) return;
+  badge.textContent = filtered.length;
+  if (filtered.length === 0) {
+    body.innerHTML = '';
+    noData.style.display = '';
+    return;
+  }
+  noData.style.display = 'none';
+  filtered.sort((a, b) => (b.litros || 0) - (a.litros || 0));
+  body.innerHTML = filtered.map(c =>
+    `<tr><td class="bold">${H(c.cliente || '')}</td><td>${H(c.vendedor || '')}</td><td>${c.fecha || '—'}</td><td style="text-align:right">${fL(c.litros)}</td></tr>`
+  ).join('');
 }
 
 function renderVentas() {
@@ -1060,10 +1198,16 @@ function renderVentas() {
   kh += mkKpi('c-green', 'Litros Fidelización', fL(litrosFidelizacion), 'CS + otros', null, null);
   kh += mkKpi('c-red', 'Leads', wLeads, 'Meta: ' + leadsGoal, wLeads, leadsGoal);
   kh += mkKpi('c-yellow', 'Cotizaciones', wCotiz, 'Meta: ' + cotizGoal, wCotiz, cotizGoal);
-  kh += mkKpi('c-green', 'Nuevos Clientes', wCierre, 'Meta: ' + cierreGoal + ' · ' + fL(litrosNuevos), wCierre, cierreGoal);
+  // Nuevos Clientes: usar primera factura diesel real, NO funnel cierre
+  const ncAllForKpi = [...ncDetail, ...((D.ventas_prev || {}).new_clients?.detail || [])];
+  const wNuevos = isAccum
+    ? ncDetail.length
+    : ncAllForKpi.filter(c => ws && we && c.fecha >= ws && c.fecha <= we).length;
+  kh += mkKpi('c-green', 'Nuevos Clientes', wNuevos, 'Meta: 6 · ' + fL(litrosNuevos), null, null);
   // At-risk clients
-  const atRisk = D.at_risk || {};
-  kh += mkKpi('c-amber', 'En Riesgo', (atRisk.count || 0) + ' clientes', fL(atRisk.total_litros_at_risk || 0) + '/mes en juego', atRisk.count || 0, 1);
+  const crSummary = (D.credit_risk || {}).summary || {};
+  const enRiesgoCount = (crSummary.criticos || 0) + (crSummary.altos || 0);
+  kh += mkKpi('c-amber', 'En Riesgo', enRiesgoCount + ' clientes', 'Críticos: ' + (crSummary.criticos || 0) + ' | Altos: ' + (crSummary.altos || 0), null, null);
   kh += mkKpi('c-blue', 'Margen Retail', mRetail + '%', 'Meta: ' + (CG.margen_retail || 8.5) + '%', mRetail, CG.margen_retail || 8.5);
   kh += mkKpi('c-red', 'Margen Volumen', mVol + '%', 'Meta: ' + (CG.margen_volumen || 6) + '%', mVol, CG.margen_volumen || 6);
   kh += mkKpi('c-yellow', 'Ganados', wGanados.length, isAccum ? 'Mes' : 'Esta semana', null, null);
@@ -1109,88 +1253,52 @@ function renderWeeklyChart() {
   });
 }
 
-// — Ranking Table (Semanal) —
-function renderRanking() {
-  const tbody = document.getElementById('rankingBody'); tbody.innerHTML = '';
+// — Ranking Table (Semanal & Acumulado — shared logic) —
+function _renderRankingTable(tbodyId) {
+  const tbody = document.getElementById(tbodyId); tbody.innerHTML = '';
   const T = (D.ventas || {}).totals || {};
   const lbuMonth = T.litros_by_user || {};
   const pf = getProratedFactor(D.ventas?.month_start || new Date());
-  const week = getCurrentWeek();
 
-  // Weekly litros from weekly_history
-  const hist = ((D.ventas || {}).weekly_history || []).slice().reverse();
-  const wkLbu = (hist[selectedWeek] || {}).litros_by_user || {};
-  const hasWkLbu = Object.keys(wkLbu).length > 0;
-
-  // Build unified set of allowed vendor names, deduplicated by norm()
+  // Build unified set of names (everyone with pipeline or litros)
   const nameMap = {};
   const addName = n => { const nn = canonicalNorm(n); if (!nameMap[nn]) nameMap[nn] = n; };
   Object.keys(D.vendor_goals || {}).forEach(n => { if (isAllowed(n)) addName(n); });
-  Object.keys(lbuMonth).forEach(n => { if (isAllowed(n)) addName(n); });
-  if (hasWkLbu) Object.keys(wkLbu).forEach(n => { if (isAllowed(n)) addName(n); });
-  (D.executives || []).forEach(e => { if (isAllowed(e.name)) addName(e.name); });
-  const vendorNames = Object.values(nameMap);
+  Object.keys(lbuMonth).forEach(n => { if (isAllowed(n) || isFreelancer(n) || isCS(n)) addName(n); });
+  (D.executives || []).forEach(e => addName(e.name));
+  const allNames = Object.values(nameMap);
 
-  // Build exec lookup
   const execMap = {};
   (D.executives || []).forEach(e => { execMap[canonicalNorm(e.name)] = e; });
 
-  // Use weekly litros for semanal ranking, monthly for % meta
-  const rows = vendorNames.map(n => {
-    const ltWeek = hasWkLbu ? findInByUser(wkLbu, n) : 0;
+  const rows = allNames.map(n => {
     const ltMonth = findInByUser(lbuMonth, n);
     const g = getGoal(n);
     const gL = g.litros_mes || 0;
     const pM = gL > 0 ? gL * pf : 1;
-    const ltP = gL > 0 ? Math.round((ltMonth / pM) * 100) : (ltMonth > 0 ? 1 : 0);
+    const ltP = gL > 0 ? Math.round((ltMonth / pM) * 100) : 0;
     const ex = execMap[canonicalNorm(n)] || {};
-    return { name: n, ltWeek, ltMonth, ltP, m7: ex.moved || 0, m30: ex.moved_30d || 0 };
-  }).sort((a, b) => b.ltMonth - a.ltMonth);
+    return { name: n, pipeline: ex.total || 0, m7: ex.moved || 0, m30: ex.moved_30d || 0, stale: ex.stale || 0, litros: ltMonth, ltP };
+  }).sort((a, b) => b.m30 - a.m30);
 
   rows.forEach((r, i) => {
+    const m7c = r.m7 > 0 ? 'color:var(--green);font-weight:700' : 'color:var(--red);font-weight:700';
+    const stC = r.stale > r.pipeline * 0.5 ? 'color:var(--red);font-weight:700' : r.stale > 0 ? 'color:var(--yellow);font-weight:700' : '';
     const lc = r.ltP >= 100 ? 'tag-g' : r.ltP >= 60 ? 'tag-y' : 'tag-r';
     const tr = document.createElement('tr');
-    tr.innerHTML = '<td><strong>' + (i+1) + '</strong></td><td>' + H(r.name) + '</td><td><span class="tag ' + lc + '">' + r.ltP + '%</span></td><td><strong>' + r.m7 + '</strong></td><td><strong>' + r.m30 + '</strong></td>';
+    tr.innerHTML = '<td><strong>' + (i+1) + '</strong></td>'
+      + '<td><strong>' + H(r.name) + '</strong></td>'
+      + '<td>' + r.pipeline + '</td>'
+      + '<td style="' + m7c + '">' + r.m7 + '</td>'
+      + '<td><strong>' + r.m30 + '</strong></td>'
+      + '<td style="' + stC + '">' + r.stale + '</td>'
+      + '<td>' + fL(r.litros) + '</td>'
+      + '<td><span class="tag ' + lc + '">' + r.ltP + '%</span></td>';
     tbody.appendChild(tr);
   });
 }
-
-// — Ranking Table (Acumulado Mes) —
-function renderRankingAccum() {
-  const tbody = document.getElementById('rankingBodyAccum'); tbody.innerHTML = '';
-  const T = (D.ventas || {}).totals || {};
-  const lbu = T.litros_by_user || {};
-  const pf = getProratedFactor(D.ventas?.month_start || new Date());
-
-  // Build unified set of allowed vendor names
-  const nameMap = {};
-  const addName = n => { const nn = canonicalNorm(n); if (!nameMap[nn]) nameMap[nn] = n; };
-  Object.keys(D.vendor_goals || {}).forEach(n => { if (isAllowed(n)) addName(n); });
-  Object.keys(lbu).forEach(n => { if (isAllowed(n)) addName(n); });
-  (D.executives || []).forEach(e => { if (isAllowed(e.name)) addName(e.name); });
-  const vendorNames = Object.values(nameMap);
-
-  // Build exec lookup
-  const execMap = {};
-  (D.executives || []).forEach(e => { execMap[canonicalNorm(e.name)] = e; });
-
-  const rows = vendorNames.map(n => {
-    const lt = findInByUser(lbu, n);
-    const g = getGoal(n);
-    const gL = g.litros_mes || 0;
-    const pM = gL > 0 ? gL * pf : 1;
-    const ltP = gL > 0 ? Math.round((lt / pM) * 100) : 0;
-    const ex = execMap[canonicalNorm(n)] || {};
-    return { name: n, ltP, m7: ex.moved || 0, m30: ex.moved_30d || 0 };
-  }).sort((a, b) => b.ltP - a.ltP);
-
-  rows.forEach((r, i) => {
-    const lc = r.ltP >= 100 ? 'tag-g' : r.ltP >= 60 ? 'tag-y' : 'tag-r';
-    const tr = document.createElement('tr');
-    tr.innerHTML = `<td><strong>${i + 1}</strong></td><td>${H(r.name)}</td><td><span class="tag ${lc}">${r.ltP}%</span></td><td><strong>${r.m7}</strong></td><td><strong>${r.m30}</strong></td>`;
-    tbody.appendChild(tr);
-  });
-}
+function renderRanking() { _renderRankingTable('rankingBody'); }
+function renderRankingAccum() { _renderRankingTable('rankingBodyAccum'); }
 
 // — Margen Charts (Semanal) —
 let chartMargenZonaAccum = null, chartMargenExecAccum = null;
@@ -1399,8 +1507,9 @@ function renderFidelizacion() {
         : l >= 1000 ? '<span style="color:var(--yellow);font-weight:700">' + fL(l) + '</span>'
         : '<span style="color:var(--dim)">' + fL(l) + '</span>';
       const priority = l >= 5000 ? '🔴' : l >= 1000 ? '🟡' : '⚪';
+      const note = c.last_note ? `<div style="font-size:11px;color:var(--dim);max-width:300px;white-space:normal">${H(c.last_note)}</div>` : '';
       const tr = document.createElement('tr');
-      tr.innerHTML = `<td>${priority}</td><td class="bold">${H(c.name)}</td><td>${lTag}</td><td>${H(c.user || '—')}</td><td>${c.last_update || '—'}</td>`;
+      tr.innerHTML = `<td>${priority}</td><td class="bold">${H(c.name)}</td><td>${lTag}</td><td>${H(c.user || '—')}</td><td>${c.last_update || '—'}${note}</td>`;
       ndb.appendChild(tr);
     });
   }
@@ -1462,12 +1571,8 @@ function renderFidelizacion() {
       const lTag = l >= 5000 ? '<span style="color:var(--red);font-weight:700">' + fL(l) + '</span>'
         : l >= 1000 ? '<span style="color:var(--yellow);font-weight:700">' + fL(l) + '</span>'
         : '<span style="color:var(--dim)">' + fL(l) + '</span>';
-      const notes = c.notes || '';
-      const linea = c.linea || '';
-      const notesFull = [linea, notes].filter(Boolean).join(' · ');
-      const lineaTag = linea ? '<span class="tag tag-r" style="font-size:10px">' + H(linea) + '</span> ' : '';
       const tr = document.createElement('tr');
-      tr.innerHTML = `<td class="bold">${H(c.name)}</td><td>${lTag}</td><td>${H(c.user || '—')}</td><td>${c.last_update || '—'}</td><td>${lineaTag}${H(notes)}</td>`;
+      tr.innerHTML = `<td class="bold">${H(c.name)}</td><td>${lTag}</td><td>${H(c.user || '—')}</td><td>${c.last_update || '—'}</td>`;
       adb.appendChild(tr);
     });
   }
@@ -1493,10 +1598,15 @@ function renderCS() {
   const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
   const monthStartStr = monthStart.toISOString().split('T')[0];
 
-  // Calculate CS team KPIs
-  const lbu = (D.ventas && D.ventas.totals && D.ventas.totals.litros_by_user) || {};
+  // Calculate CS team KPIs — use weekly data when in semanal mode
+  const V_cs = D.ventas || {};
+  const hist_cs = (V_cs.weekly_history || []).slice().reverse();
+  const wkData_cs = hist_cs[selectedWeek] || {};
+  const lbu_cs_src = (csSubTab === 'semanal' && Object.keys(wkData_cs.litros_by_user || {}).length > 0)
+    ? wkData_cs.litros_by_user
+    : (V_cs.totals?.litros_by_user || {});
   let litrosCS = 0;
-  for (const [u, v] of Object.entries(lbu)) { if (isCS(u)) litrosCS += v; }
+  for (const [u, v] of Object.entries(lbu_cs_src)) { if (isCS(u)) litrosCS += v; }
 
   const wonAll = D.won_deals || [];
   let clientesGanados = 0;
@@ -1511,22 +1621,21 @@ function renderCS() {
     }
   }
 
-  // Rescued counts from frecuencia-based rescued data
-  const rescued = D.rescued || {};
-  const rescDorm = rescued.rescued_durmientes || [];
-  const rescLost = rescued.rescued_perdidos || [];
-  const totalRescatados = rescDorm.length + rescLost.length;
-
-  // Durmientes from churn
-  const churnSummary = churn.summary || {};
-  const totalDurmientes = churnSummary.dormant || 0;
+  const byUser = churn.by_user || {};
+  let durmientes = 0, rescatados = 0;
+  for (const [u, v] of Object.entries(byUser)) {
+    if (isCS(u)) {
+      durmientes += (v.dormant || 0);
+      rescatados += (v.rescued_dormant || 0) + (v.rescued_lost || 0);
+    }
+  }
 
   // KPI Row
   let kh = '';
   kh += mkKpi('c-blue', '💧 Litros CS', fL(litrosCS), 'volumen mensual', null, null);
   kh += mkKpi('c-green', '👥 Clientes Ganados', clientesGanados, csSubTab === 'semanal' ? 'esta semana' : 'este mes', null, null);
-  kh += mkKpi('c-yellow', '😴 Durmientes', totalDurmientes, 'en pausa (CRM)', totalDurmientes, 1);
-  kh += mkKpi('c-green', '🏆 Rescatados', totalRescatados, rescDorm.length + ' durm + ' + rescLost.length + ' perd', totalRescatados, 1);
+  kh += mkKpi('c-yellow', '😴 Durmientes', durmientes, 'clientes en pausa', null, null);
+  kh += mkKpi('c-green', '🏆 Rescatados', rescatados, 'durmientes reactivados', null, null);
   document.getElementById('csKpiRow').innerHTML = kh;
 
   // Populate Clientes Ganados tables
@@ -1599,9 +1708,10 @@ function renderCS() {
     }
   }
 
-  // Rescued clients (frecuencia-based) — reuse 'rescued' from above
-  renderRescuedTable(rescDorm, 'rescDormBody', 'noRescDorm', 'rescDormCount');
-  renderRescuedTable(rescLost, 'rescLostBody', 'noRescLost', 'rescLostCount');
+  // Rescued clients (frecuencia-based)
+  const rescued = D.rescued || {};
+  renderRescuedTable(rescued.rescued_durmientes || [], 'rescDormBody', 'noRescDorm', 'rescDormCount');
+  renderRescuedTable(rescued.rescued_perdidos || [], 'rescLostBody', 'noRescLost', 'rescLostCount');
 }
 
 // ═══════════════════════════════════════
@@ -1645,40 +1755,47 @@ function renderMesVencido(){
   // Churn del mes
   var C=D.churn||{},S=C.summary||{};
   h+='<div class="sec"><div class="sec-h"><h2>Churn '+(VP.month_label||'Mes Anterior')+'</h2></div><div class="sec-b">';
-  // Count perdidos for this specific month (consistent with list below)
-  var llMv=C.lost_list||[];
-  var perdCountMv=llMv.filter(function(c){var lu=c.last_update||'';return lu>=(VP.month_start||'')&&(!VP.month_end||lu<=(VP.month_end||''))}).length;
   h+='<div class="kpi-row" style="margin-bottom:0">';
-  h+=mkKpi('c-red','Nuevos Perdidos',perdCountMv,perdCountMv+' / '+(S.prev_month_clients||'?')+' clientes mes ant.');
+  h+=mkKpi('c-red','Nuevos Perdidos',(S.newly_lost||0),(S.newly_lost||0)+' / '+(S.prev_month_clients||'?')+' clientes mes ant.');
   h+=mkKpi('c-red','Churn %',(S.churn_pct||0)+'%','meta: <3%',S.churn_pct||0,3);
   h+=mkKpi('c-green','Rescatados Durmientes',(S.rescued_dormant||0),'volvieron a facturar');
   h+=mkKpi('c-blue','Rescatados Perdidos',(S.rescued_lost||0),'cuentan como cliente nuevo');
   h+='</div></div></div>';
 
-  // Perdidos del mes (filter by prev month range, not current month)
+  // Perdidos del mes
   var ll=C.lost_list||[];
-  var mvStart=VP.month_start||'';
-  var mvEnd=VP.month_end||'';
-  var perdidosMes=ll.filter(function(c){var lu=c.last_update||'';return lu>=mvStart&&(!mvEnd||lu<=mvEnd)});
-  h+='<div class="sec"><div class="sec-h"><h2>Clientes Perdidos — '+(VP.month_label||'Mes Anterior')+'</h2><span style="font-size:12px;color:var(--dim)">'+perdidosMes.length+' perdidos</span></div>';
+  var monthStart=VP.month_start||'';
+  var perdidosMes=ll.filter(function(c){return c.last_update>=monthStart});
+  h+='<div class="sec"><div class="sec-h"><h2>Clientes Perdidos — '+(VP.month_label||'Mes Anterior')+'</h2><span style="font-size:12px;color:var(--dim)">'+perdidosMes.length+' este mes</span></div>';
   h+='<div class="sec-b" style="padding:0;overflow-x:auto"><table><thead><tr><th>Cliente</th><th>Último vendedor</th><th>Fecha</th></tr></thead><tbody>';
   if(perdidosMes.length) perdidosMes.forEach(function(c){
     h+='<tr><td class="bold">'+H(c.name)+'</td><td>'+H(c.user)+'</td><td style="color:var(--dim)">'+(c.last_update||'—')+'</td></tr>';
   }); else h+='<tr><td colspan="3" class="nodata">Sin perdidos</td></tr>';
   h+='</tbody></table></div></div>';
 
-  // Resumen por vendedor (deduplicated via canonicalNorm)
-  var _uMap={};
-  [].concat(Object.keys(TP.litros_by_user||{}),Object.keys(VG)).forEach(function(u){
-    if(u!=='Sin asignar'&&isAllowed(u)){var cn=canonicalNorm(u);if(!_uMap[cn])_uMap[cn]=u;}
-  });
-  var users=Object.values(_uMap);
+  // Resumen por vendedor (merge duplicates like "Ron Yenire" / "Yeniré Ron")
+  function mergeByNorm(obj){
+    var m={},km={};
+    for(var k in obj){
+      var nk=norm(k);
+      m[nk]=(m[nk]||0)+obj[k];
+      if(!km[nk]||k.length>km[nk].length) km[nk]=k;
+    }
+    var r={};for(var nk in m) r[km[nk]]=m[nk];return r;
+  }
+  var mLbu=mergeByNorm(TP.litros_by_user||{});
+  var mNcBu=mergeByNorm(ncP.by_user||{});
+  // Deduplicate user list by canonicalNorm (fixes "RON ROJAS YENIRE DEL VALLE" vs "ron yenire")
+  var _allNames=[].concat(Object.keys(mLbu),Object.keys(VG));
+  var _seenCN={},_dedupNames=[];
+  _allNames.forEach(function(n){var cn=canonicalNorm(n);if(!_seenCN[cn]){_seenCN[cn]=true;_dedupNames.push(n);}});
+  var users=_dedupNames.filter(function(u){return u!=='Sin asignar'&&isAllowed(u)});
   if(users.length){
     h+='<div class="sec"><div class="sec-h"><h2>Resumen '+(VP.month_label||'Mes')+'</h2></div>';
     h+='<div class="sec-b" style="padding:0;overflow-x:auto"><table><thead><tr><th>Vendedor</th><th>Litros</th><th>Clientes Nuevos</th></tr></thead><tbody>';
     users.forEach(function(u){
-      var lt=findInByUser(TP.litros_by_user||{},u);
-      var nc2=findInByUser(ncP.by_user||{},u);
+      var lt=findInByUser(mLbu,u);
+      var nc2=findInByUser(mNcBu,u);
       h+='<tr><td class="bold">'+H(u)+'</td><td>'+fL(lt)+'</td><td>'+nc2+'</td></tr>';
     });
     h+='</tbody></table></div></div>';
