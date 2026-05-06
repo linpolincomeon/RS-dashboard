@@ -1159,43 +1159,57 @@ def extract_churn_data(models, uid):
         avg_litros_map = {pid: round(max(total, 0) / 8) for pid, total in avg_litros_map.items()}
         print(f"  Avg monthly litros computed for {len(avg_litros_map)} partners")
 
-    # ── Last vendor note for dormant clients (from crm.lead messages) ──
-    dormant_lead_ids = []
-    dormant_pid_to_idx = {}
-    for idx, c in enumerate(dormant_list):
-        pid = c.get("partner_id")
-        if pid:
-            dormant_pid_to_idx.setdefault(pid, idx)
+    # ── Last vendor note for dormant clients ──
+    # Search in BOTH res.partner AND crm.lead messages
+    last_note_by_pid = {}
     if dormant_pids:
-        # Find CRM leads for these partners
-        dorm_leads = sr(models, uid, "crm.lead", [
-            ["partner_id", "in", dormant_pids],
-            ["active", "in", [True, False]],
-        ], ["id", "partner_id"], limit=2000)
-        dorm_lead_ids = [l["id"] for l in dorm_leads]
-        dorm_lead_pid = {l["id"]: safe_id(l.get("partner_id")) for l in dorm_leads}
-        if dorm_lead_ids:
-            try:
-                dorm_msgs = sr(models, uid, "mail.message", [
-                    ["model", "=", "crm.lead"],
-                    ["res_id", "in", dorm_lead_ids],
-                    ["message_type", "in", ["comment"]],
-                ], ["res_id", "body", "date"], limit=2000, order="date desc")
-                last_note_by_pid = {}
-                for m in dorm_msgs:
-                    pid = dorm_lead_pid.get(m.get("res_id"))
+        try:
+            # 1. Try res.partner messages (most direct)
+            for i in range(0, len(dormant_pids), batch_size):
+                batch = dormant_pids[i:i+batch_size]
+                msgs = sr(models, uid, "mail.message", [
+                    ["model", "=", "res.partner"],
+                    ["res_id", "in", batch],
+                    ["message_type", "in", ["comment", "email"]],
+                ], ["res_id", "body", "date"], limit=500, order="date desc")
+                for m in msgs:
+                    pid = m.get("res_id")
                     if pid and pid not in last_note_by_pid:
                         body = strip_html(m.get("body") or "")
                         if len(body) > 3 and not any(n in body.lower()[:60] for n in _noise):
                             last_note_by_pid[pid] = body[:150]
-                for c in dormant_list:
-                    pid = c.get("partner_id")
-                    c["last_note"] = last_note_by_pid.get(pid, "")
-                print(f"  Last notes found for {len(last_note_by_pid)} dormant clients")
-            except Exception as e:
-                print(f"  Dormant notes skipped: {e}")
-                for c in dormant_list:
-                    c["last_note"] = ""
+
+            # 2. Also try crm.lead messages for partners without notes yet
+            missing_pids = [p for p in dormant_pids if p not in last_note_by_pid]
+            if missing_pids:
+                for i in range(0, len(missing_pids), batch_size):
+                    batch = missing_pids[i:i+batch_size]
+                    leads = sr(models, uid, "crm.lead", [
+                        ["partner_id", "in", batch],
+                        ["active", "in", [True, False]],
+                    ], ["id", "partner_id"], limit=1000)
+                    lead_ids = [l["id"] for l in leads]
+                    lead_pid = {l["id"]: safe_id(l.get("partner_id")) for l in leads}
+                    if lead_ids:
+                        msgs = sr(models, uid, "mail.message", [
+                            ["model", "=", "crm.lead"],
+                            ["res_id", "in", lead_ids],
+                            ["message_type", "in", ["comment", "email"]],
+                        ], ["res_id", "body", "date"], limit=500, order="date desc")
+                        for m in msgs:
+                            pid = lead_pid.get(m.get("res_id"))
+                            if pid and pid not in last_note_by_pid:
+                                body = strip_html(m.get("body") or "")
+                                if len(body) > 3 and not any(n in body.lower()[:60] for n in _noise):
+                                    last_note_by_pid[pid] = body[:150]
+
+            print(f"  Last notes found for {len(last_note_by_pid)}/{len(dormant_pids)} dormant clients")
+        except Exception as e:
+            print(f"  Dormant notes skipped: {e}")
+
+    for c in dormant_list:
+        pid = c.get("partner_id")
+        c["last_note"] = last_note_by_pid.get(pid, "")
 
     # Attach avg_monthly_litros and remove internal partner_id
     for c in dormant_list:
