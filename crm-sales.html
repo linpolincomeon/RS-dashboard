@@ -362,7 +362,10 @@ const _fN = FREELANCERS.map(n => norm(n).split(' '));
 function _partialMatch(testName, refWordsList) {
   if (!testName) return false;
   const tw = norm(testName).split(' ');
-  return refWordsList.some(rw => rw.length >= 2 && rw.every(w => tw.includes(w)));
+  return refWordsList.some(rw => {
+    if (rw.length === 1) return tw.includes(rw[0]); // single word: exact match (e.g. "tomenergy")
+    return rw.every(w => tw.includes(w)); // multi word: all ref words must be in test
+  });
 }
 const isAllowed = n => _partialMatch(n, _aN);
 const isCS = n => _partialMatch(n, _csN);
