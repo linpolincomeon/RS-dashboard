@@ -1730,21 +1730,26 @@ function renderCS() {
     }
   }
 
-  const byUser = churn.by_user || {};
+  // Durmientes y rescatados filtrados por semana
+  const csDormAll = (churn.dormant_list || []);
+  const csRescDorm = (churn.rescued_dormant_list || []);
+  const csRescLost = (churn.rescued_lost_list || []);
   let durmientes = 0, rescatados = 0;
-  for (const [u, v] of Object.entries(byUser)) {
-    if (isCS(u)) {
-      durmientes += (v.dormant || 0);
-      rescatados += (v.rescued_dormant || 0) + (v.rescued_lost || 0);
-    }
+  if (csSubTab === 'semanal') {
+    durmientes = csDormAll.filter(c => weekStart && weekEnd && (c.last_update||'') >= weekStart && (c.last_update||'') <= weekEnd).length;
+    rescatados = csRescDorm.filter(c => weekStart && weekEnd && (c.last_update||'') >= weekStart && (c.last_update||'') <= weekEnd).length
+               + csRescLost.filter(c => weekStart && weekEnd && (c.last_update||'') >= weekStart && (c.last_update||'') <= weekEnd).length;
+  } else {
+    durmientes = csDormAll.length;
+    rescatados = csRescDorm.length + csRescLost.length;
   }
 
   // KPI Row
   let kh = '';
-  kh += mkKpi('c-blue', '💧 Litros CS', fL(litrosCS), 'volumen mensual', null, null);
+  kh += mkKpi('c-blue', '💧 Litros CS', fL(litrosCS), csSubTab === 'semanal' ? 'esta semana' : 'volumen mensual', null, null);
   kh += mkKpi('c-green', '👥 Clientes Ganados', clientesGanados, csSubTab === 'semanal' ? 'esta semana' : 'este mes', null, null);
-  kh += mkKpi('c-yellow', '😴 Durmientes', durmientes, 'clientes en pausa', null, null);
-  kh += mkKpi('c-green', '🏆 Rescatados', rescatados, 'durmientes reactivados', null, null);
+  kh += mkKpi('c-yellow', '😴 Durmientes', durmientes, csSubTab === 'semanal' ? 'esta semana' : 'total', null, null);
+  kh += mkKpi('c-green', '🏆 Rescatados', rescatados, csSubTab === 'semanal' ? 'esta semana' : 'total', null, null);
   document.getElementById('csKpiRow').innerHTML = kh;
 
   // Populate Clientes Ganados tables
@@ -1822,8 +1827,8 @@ function renderCS() {
   renderRescuedTable(rescued.rescued_durmientes || [], 'rescDormBody', 'noRescDorm', 'rescDormCount');
   renderRescuedTable(rescued.rescued_perdidos || [], 'rescLostBody', 'noRescLost', 'rescLostCount');
 
-  // ── Actividades CS de la Semana ──
-  const csMsgs = (D.messages || []).filter(m => isCS(m.who));
+  // ── Actividades CS de la Semana (filtradas por semana seleccionada) ──
+  const csMsgs = (D.messages || []).filter(m => isCS(m.who) && (!weekStart || !weekEnd || ((m.date||'') >= weekStart && (m.date||'') <= weekEnd + 'Z')));
   const csActs = (D.activities || []).filter(a => isCS(a.who));
   const csCombined = [];
   csMsgs.forEach(m => csCombined.push({date: m.date || '', type: '💬 Nota', client: '', desc: m.desc || ''}));
@@ -1894,10 +1899,13 @@ function renderMesVencido(){
   h+=mkKpi('c-blue','Rescatados Perdidos',(S.rescued_lost||0),'cuentan como cliente nuevo');
   h+='</div></div></div>';
 
-  // Perdidos del mes
+  // Perdidos del mes — usar month_start y month_end para filtrar correctamente
   var ll=C.lost_list||[];
-  var monthStart=VP.month_start||'';
-  var perdidosMes=ll.filter(function(c){return c.last_update>=monthStart});
+  var mvStart=VP.month_start||'';
+  var mvEnd=VP.month_end||'';
+  var perdidosMes=ll.filter(function(c){return c.last_update>=mvStart && (!mvEnd || c.last_update<=mvEnd)});
+  // Update the box to match the list count
+  h=h.replace(new RegExp('(Nuevos Perdidos</div><div class="kpi-val">)\\d+'), '$1'+perdidosMes.length);
   h+='<div class="sec"><div class="sec-h"><h2>Clientes Perdidos — '+(VP.month_label||'Mes Anterior')+'</h2><span style="font-size:12px;color:var(--dim)">'+perdidosMes.length+' este mes</span></div>';
   h+='<div class="sec-b" style="padding:0;overflow-x:auto"><table><thead><tr><th>Cliente</th><th>Último vendedor</th><th>Fecha</th></tr></thead><tbody>';
   if(perdidosMes.length) perdidosMes.forEach(function(c){
@@ -1917,10 +1925,15 @@ function renderMesVencido(){
   }
   var mLbu=mergeByNorm(TP.litros_by_user||{});
   var mNcBu=mergeByNorm(ncP.by_user||{});
-  // Deduplicate user list by normalized name (fixes VG having "Yeniré Ron" vs mLbu "Ron Yenire")
+  // Deduplicate user list — use partial match to catch "Yeniré Ron" vs "RON ROJAS YENIRE DEL VALLE"
   var _allNames=[].concat(Object.keys(mLbu),Object.keys(VG));
-  var _seenNorm={},_dedupNames=[];
-  _allNames.forEach(function(n){var nn=norm(n);if(!_seenNorm[nn]){_seenNorm[nn]=true;_dedupNames.push(n);}});
+  var _dedupNames=[];
+  _allNames.forEach(function(n){
+    var dominated=_dedupNames.some(function(existing){
+      return _partialMatch(n,[norm(existing).split(' ')]) || _partialMatch(existing,[norm(n).split(' ')]);
+    });
+    if(!dominated) _dedupNames.push(n);
+  });
   var _uSet=new Set(_dedupNames);
   var users=Array.from(_uSet).filter(function(u){return u!=='Sin asignar'&&isAllowed(u)});
   if(users.length){
