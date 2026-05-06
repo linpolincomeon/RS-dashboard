@@ -993,57 +993,54 @@ function renderEjecutivos() {
   }
   h += '</tbody></table></div></div>';
 
-  // Oportunidades table — filtered to this exec + selected week
-  const isCurrentWeek = selectedWeek === 0;
-  const thisExecOpportunities = pipeline.filter(p => {
-    if (!matchesExec(p.exec)) return false;
-    if (isExecAccum) return true; // month: show all active
-    if (isCurrentWeek) {
-      // Current week: show opportunities with recent activity (≤7 days)
-      const days = p.days_since_activity ?? p.days_in_stage ?? 999;
-      return days <= 7;
+  // ── Oportunidades + Actividades — todo junto, filtrado por semana ──
+  // Build a map: lead name → last note/activity from messages + activities
+  const allMsgs = D.messages || [];
+  const allActs = D.activities || [];
+  const notesByLead = {};  // lead name → {date, desc}
+  // Messages from this exec
+  allMsgs.filter(m => matchesExec(m.who)).forEach(m => {
+    // messages don't have lead name directly, skip for now
+  });
+  // Activities from this exec — these have lead name
+  allActs.filter(a => matchesExec(a.who)).forEach(a => {
+    const key = (a.lead || '').trim().toUpperCase();
+    if (key && (!notesByLead[key] || (a.date || '') > (notesByLead[key].date || ''))) {
+      notesByLead[key] = {date: a.date || '', desc: a.summary || '', type: a.type || 'To-Do'};
     }
-    // Past weeks: show if last_update falls within or after the selected week
-    // (best approximation — we only have current snapshot, not historical)
-    if (ws && we && p.last_update) return p.last_update >= ws;
-    return false;
   });
 
-  h += '<div class="sec"><div class="sec-h"><h2>🎯 Oportunidades</h2></div><div class="sec-b" style="max-height:400px;overflow-y:auto"><table>';
-  h += '<thead><tr><th>Cliente</th><th>Etapa</th><th>Prob.</th><th>Litros Est.</th><th>Última Actividad</th></tr></thead><tbody>';
+  // Filter pipeline by exec
+  const thisExecOpportunities = pipeline.filter(p => matchesExec(p.exec));
+
+  // Enrich with activity notes
+  thisExecOpportunities.forEach(p => {
+    const key = (p.name || '').trim().toUpperCase();
+    const act = notesByLead[key];
+    if (act && act.desc) p._activity = act;
+    // Also use last_note from pipeline if available
+    if (!p._activity && p.last_note) p._activity = {date: p.last_update, desc: p.last_note, type: 'Nota'};
+  });
+
+  // Sort: those with activity first, then by litros
+  thisExecOpportunities.sort((a, b) => {
+    const aHas = a._activity ? 1 : 0, bHas = b._activity ? 1 : 0;
+    if (aHas !== bHas) return bHas - aHas;
+    return (b.value || 0) - (a.value || 0);
+  });
+
+  h += '<div class="sec"><div class="sec-h"><h2>🎯 Oportunidades & Actividades</h2></div><div class="sec-b" style="max-height:600px;overflow-y:auto"><table>';
+  h += '<thead><tr><th>Cliente</th><th>Etapa</th><th>Prob.</th><th>Litros Est.</th><th>Detalle Actividad</th></tr></thead><tbody>';
   if (thisExecOpportunities.length === 0) {
     h += '<tr><td colspan="5" style="text-align:center;color:var(--dim);padding:20px">Sin oportunidades</td></tr>';
   } else {
-    thisExecOpportunities.sort((a, b) => (b.value || 0) - (a.value || 0)).slice(0, 20).forEach(p => {
+    thisExecOpportunities.slice(0, 30).forEach(p => {
       const prob = p.probability != null ? Math.round(p.probability) + '%' : '—';
-      const note = p.last_note ? `<div style="font-size:11px;color:var(--dim);max-width:250px;white-space:normal">${H(p.last_note)}</div>` : '';
-      h += `<tr><td class="bold">${H(p.name)}</td><td>${stageTag(p.stage, p.stage_class)}</td><td>${prob}</td><td>${fL(p.value)}</td><td>${p.last_update || '—'}${note}</td></tr>`;
-    });
-  }
-  h += '</tbody></table></div></div>';
-
-  // ── Actividades de la Semana — notas y to-dos del ejecutivo ──
-  const allMsgs = D.messages || [];
-  const allActs = D.activities || [];
-
-  // Messages (comments) filtered to this exec
-  const execMsgs = allMsgs.filter(m => matchesExec(m.who));
-  // Activities (to-dos) filtered to this exec
-  const execActs = allActs.filter(a => matchesExec(a.who));
-
-  // Combine and sort by date desc
-  const combined = [];
-  execMsgs.forEach(m => combined.push({date: m.date || '', type: '💬 Nota', client: '', desc: m.desc || ''}));
-  execActs.forEach(a => combined.push({date: a.date || '', type: '📋 ' + (a.type || 'To-Do'), client: a.lead || '', desc: a.summary || ''}));
-  combined.sort((a, b) => (b.date || '').localeCompare(a.date || ''));
-
-  h += '<div class="sec"><div class="sec-h"><h2>📝 Actividades de la Semana</h2></div><div class="sec-b" style="max-height:500px;overflow-y:auto"><table>';
-  h += '<thead><tr><th>Fecha</th><th>Tipo</th><th>Cliente</th><th>Detalle</th></tr></thead><tbody>';
-  if (combined.length === 0) {
-    h += '<tr><td colspan="4" style="text-align:center;color:var(--dim);padding:20px">Sin actividades registradas</td></tr>';
-  } else {
-    combined.slice(0, 30).forEach(a => {
-      h += `<tr><td style="white-space:nowrap">${a.date}</td><td>${a.type}</td><td class="bold">${H(a.client)}</td><td style="max-width:400px;white-space:normal;font-size:12px">${H(a.desc)}</td></tr>`;
+      let detail = '';
+      if (p._activity) {
+        detail = `<div style="font-size:12px"><strong>${p._activity.type}:</strong> ${H(p._activity.desc)}</div>`;
+      }
+      h += `<tr><td class="bold">${H(p.name)}</td><td>${stageTag(p.stage, p.stage_class)}</td><td>${prob}</td><td>${fL(p.value)}</td><td style="max-width:350px;white-space:normal">${detail || '<span style="color:var(--dim)">—</span>'}</td></tr>`;
     });
   }
   h += '</tbody></table></div></div>';
