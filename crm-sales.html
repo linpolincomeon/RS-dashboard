@@ -826,18 +826,30 @@ function renderEjecutivos() {
     const detailByUser = VP.detail_by_user || {};
 
     let execDetail = [];
-    let execLitros = 0, execVenta = 0;
+    let execLitros = 0, execVenta = 0, execMargen = 0;
     for (const [user, rows] of Object.entries(detailByUser)) {
       if (matchesExec(user)) { execDetail = rows; break; }
     }
     for (const [user, val] of Object.entries(prevLbu)) { if (matchesExec(user)) { execLitros = val; break; } }
     for (const [user, val] of Object.entries(prevVbu)) { if (matchesExec(user)) { execVenta = val; break; } }
+    for (const [user, val] of Object.entries(prevTotals.margin_by_user || {})) { if (matchesExec(user)) { execMargen = val; break; } }
+
+    // KPIs del mes vencido
+    const mvNcDetail = VP.new_clients?.detail || [];
+    const mvNewClients = mvNcDetail.filter(c => matchesExec(c.vendedor));
+    const prevWon = (D.won_deals || []).filter(w => {
+      const ms = VP.month_start || '', me = VP.month_end || '';
+      return matchesExec(w.exec) && (w.last_update || '') >= ms && (w.last_update || '') <= me;
+    });
 
     h += `<div class="sec"><div class="sec-h"><h2>💰 Detalle ${H(prevLabel)} — ${EJECUTIVOS[selectedExec]?.name || ''}</h2></div>`;
-    h += '<div style="display:flex;gap:16px;margin:12px 0">';
-    h += `<div class="kpi c-red" style="flex:1"><div class="kpi-label">Total Litros</div><div class="kpi-val">${fL(execLitros)}</div></div>`;
-    h += `<div class="kpi c-yellow" style="flex:1"><div class="kpi-label">Venta Neta</div><div class="kpi-val">$${fL(execVenta)}</div></div>`;
-    h += `<div class="kpi c-green" style="flex:1"><div class="kpi-label">Líneas</div><div class="kpi-val">${execDetail.length}</div></div>`;
+    h += '<div class="kpi-row">';
+    h += mkKpi('c-red', 'Litros', fL(execLitros), prevLabel, null, null);
+    h += mkKpi('c-green', 'Nuevos Clientes', mvNewClients.length, 'Primera factura', null, null);
+    h += mkKpi('c-blue', 'Margen', execMargen > 0 ? execMargen + '%' : '—', 'Porcentaje neto', null, null);
+    h += mkKpi('c-yellow', 'Venta Neta', '$' + fL(execVenta), prevLabel, null, null);
+    h += mkKpi('c-green', 'Ganados', prevWon.length, 'En el mes', null, null);
+    h += mkKpi('c-red', 'Líneas', execDetail.length, 'Facturas diesel', null, null);
     h += '</div>';
     h += '<div class="sec-b" style="max-height:600px;overflow:auto"><table>';
     h += '<thead><tr><th>Fecha</th><th>Cliente</th><th>RUT</th><th style="text-align:right">Litros</th><th style="text-align:right">PV</th><th style="text-align:right">Venta Neta</th><th>Zona</th><th>Plazo Pago</th></tr></thead><tbody>';
