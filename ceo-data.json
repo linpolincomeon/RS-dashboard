@@ -1,23 +1,23 @@
 {
-  "updated": "2026-05-06T16:56:10.188692",
+  "updated": "2026-05-06T18:18:14.079791",
   "weeks": [
     {
       "label": "30apr-06may",
       "start": "2026-04-30",
       "end": "2026-05-06",
-      "ventas": 237414611,
-      "neto": 179646263,
-      "litros": 152623,
-      "litros_retail": 117545,
+      "ventas": 243734609,
+      "neto": 184431128,
+      "litros": 156623,
+      "litros_retail": 121545,
       "litros_volumen": 39378,
-      "precio_neto": 1177,
+      "precio_neto": 1178,
       "precio_bruto": 1554,
-      "margin": 0.07238,
-      "margin_retail": 0.0774,
+      "margin": 0.07271,
+      "margin_retail": 0.07767,
       "margin_volumen": 0.05704,
-      "facturas": 91,
+      "facturas": 94,
       "nc": 4,
-      "clientes": 77,
+      "clientes": 80,
       "recaud": 243854768,
       "cheques": 38534472,
       "transf": 143092961,
@@ -26,7 +26,7 @@
       "cheq_cartera_saldo": 0,
       "cheq_recibidos": 5369800,
       "facturas_contado": 15,
-      "facturas_credito": 76,
+      "facturas_credito": 79,
       "margin_by_term": {
         "Prepago": {
           "margin": 0.09518,
@@ -53,9 +53,9 @@
           "days": 15
         },
         "30 Días": {
-          "margin": 0.07575,
-          "normalizado": 0.07575,
-          "count": 62,
+          "margin": 0.076,
+          "normalizado": 0.076,
+          "count": 64,
           "days": 30
         },
         "45 Días": {
@@ -65,9 +65,9 @@
           "days": 45
         },
         "60 Días": {
-          "margin": 0.07208,
-          "normalizado": 0.06208,
-          "count": 5,
+          "margin": 0.0732,
+          "normalizado": 0.0632,
+          "count": 6,
           "days": 60
         }
       },
@@ -1290,8 +1290,8 @@
     {
       "date": "06may",
       "day": "Mié",
-      "litros": 15050,
-      "neto": 17814907
+      "litros": 19050,
+      "neto": 22599772
     },
     {
       "date": "05may",
@@ -1411,16 +1411,16 @@
     },
     {
       "name": "DE CREDITO",
-      "balance": -838790
+      "balance": -1727275
     }
   ],
-  "total_cash": 38487298,
+  "total_cash": 37598813,
   "receivables": {
-    "open_invoices": 267,
-    "total_due": 613898409,
-    "current": 542192957,
+    "open_invoices": 270,
+    "total_due": 620218407,
+    "current": 548512955,
     "overdue": 71705452,
-    "pct_overdue": 11.7,
+    "pct_overdue": 11.6,
     "aging": {
       "0-30": 54526567,
       "31-60": 7413322,
@@ -1618,15 +1618,15 @@
   "riesgo": {
     "cubierto": 0,
     "cubierto_count": 0,
-    "no_cubierto": 613898409,
-    "no_cubierto_count": 267,
+    "no_cubierto": 620218407,
+    "no_cubierto_count": 270,
     "pct_monto": 100.0,
     "pct_count": 100.0
   },
   "churn": {
     "eligible_clients": 165,
-    "churned_count": 54,
-    "pct": 32.7,
+    "churned_count": 53,
+    "pct": 32.1,
     "churned": [
       {
         "name": "ERIKA DEL PILAR GUZMAN MANRIQUEZ",
@@ -1957,9 +1957,9 @@
       },
       {
         "month": "Apr 2026",
-        "pct": 70.3,
-        "new_churn": 26,
-        "active_start": 37
+        "pct": 69.4,
+        "new_churn": 25,
+        "active_start": 36
       },
       {
         "month": "May 2026",
