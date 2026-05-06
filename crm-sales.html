@@ -1189,8 +1189,9 @@ function renderVentas() {
     : ncAllForKpi.filter(c => ws && we && c.fecha >= ws && c.fecha <= we).length;
   kh += mkKpi('c-green', 'Nuevos Clientes', wNuevos, 'Meta: 6 · ' + fL(litrosNuevos), null, null);
   // At-risk clients
-  const atRisk = D.at_risk || {};
-  kh += mkKpi('c-amber', 'En Riesgo', (atRisk.count || 0) + ' clientes', fL(atRisk.total_litros_at_risk || 0) + '/mes en juego', atRisk.count || 0, 1);
+  const crSummary = (D.credit_risk || {}).summary || {};
+  const enRiesgoCount = (crSummary.criticos || 0) + (crSummary.altos || 0);
+  kh += mkKpi('c-amber', 'En Riesgo', enRiesgoCount + ' clientes', 'Críticos: ' + (crSummary.criticos || 0) + ' | Altos: ' + (crSummary.altos || 0), null, null);
   kh += mkKpi('c-blue', 'Margen Retail', mRetail + '%', 'Meta: ' + (CG.margen_retail || 8.5) + '%', mRetail, CG.margen_retail || 8.5);
   kh += mkKpi('c-red', 'Margen Volumen', mVol + '%', 'Meta: ' + (CG.margen_volumen || 6) + '%', mVol, CG.margen_volumen || 6);
   kh += mkKpi('c-yellow', 'Ganados', wGanados.length, isAccum ? 'Mes' : 'Esta semana', null, null);
