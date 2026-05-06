@@ -1599,10 +1599,9 @@ function renderCS() {
     }
   }
 
-  // Rescued clients (frecuencia-based)
-  const rescued = D.rescued || {};
-  renderRescuedTable(rescued.rescued_durmientes || [], 'rescDormBody', 'noRescDorm', 'rescDormCount');
-  renderRescuedTable(rescued.rescued_perdidos || [], 'rescLostBody', 'noRescLost', 'rescLostCount');
+  // Rescued clients (frecuencia-based) — reuse 'rescued' from above
+  renderRescuedTable(rescDorm, 'rescDormBody', 'noRescDorm', 'rescDormCount');
+  renderRescuedTable(rescLost, 'rescLostBody', 'noRescLost', 'rescLostCount');
 }
 
 // ═══════════════════════════════════════
