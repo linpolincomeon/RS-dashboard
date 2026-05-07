@@ -366,11 +366,27 @@ def extract_crm_data(models, uid):
         if rid and rid not in last_msg_by_lead:
             last_msg_by_lead[rid] = body[:120]
 
-    # Enrich pipeline entries with last weekly message
+    # Build activity map by lead ID (from mail.activity — To-Do's, calls, etc.)
+    last_activity_by_lead = {}
+    for a in activities:
+        rid = a.get("res_id")
+        if rid and rid not in last_activity_by_lead:
+            summary = a.get("summary") or ""
+            atype = a["activity_type_id"][1] if a.get("activity_type_id") else "Actividad"
+            if summary and not any(n in summary.lower()[:60] for n in _noise):
+                last_activity_by_lead[rid] = f"{atype}: {summary[:120]}"
+
+    # Enrich pipeline entries with last note (prefer message, fallback to activity)
     for p in pipeline:
-        p["last_note"] = last_msg_by_lead.get(p["id"], "")
+        note = last_msg_by_lead.get(p["id"], "")
+        if not note:
+            note = last_activity_by_lead.get(p["id"], "")
+        p["last_note"] = note
     for w in won_deals:
-        w["last_note"] = last_msg_by_lead.get(w["id"], "")
+        note = last_msg_by_lead.get(w["id"], "")
+        if not note:
+            note = last_activity_by_lead.get(w["id"], "")
+        w["last_note"] = note
 
     return {
         "has_litros": cf["x_litros_estimados"],
