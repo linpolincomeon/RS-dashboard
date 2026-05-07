@@ -1,23 +1,23 @@
 {
-  "updated": "2026-05-07T13:06:03.669997",
+  "updated": "2026-05-07T17:05:48.557098",
   "weeks": [
     {
       "label": "07may-13may",
       "start": "2026-05-07",
       "end": "2026-05-13",
-      "ventas": 0,
-      "neto": 0,
-      "litros": 0,
-      "litros_retail": 0,
+      "ventas": 22853972,
+      "neto": 17604877,
+      "litros": 15076,
+      "litros_retail": 15076,
       "litros_volumen": 0,
-      "precio_neto": 0,
-      "precio_bruto": 0,
-      "margin": 0,
-      "margin_retail": 0,
+      "precio_neto": 1168,
+      "precio_bruto": 1516,
+      "margin": 0.08153,
+      "margin_retail": 0.08153,
       "margin_volumen": 0,
-      "facturas": 0,
+      "facturas": 12,
       "nc": 0,
-      "clientes": 0,
+      "clientes": 12,
       "recaud": 29504854,
       "cheques": 0,
       "transf": 16972320,
@@ -25,12 +25,31 @@
       "compras_odoo": 0,
       "cheq_cartera_saldo": 0,
       "cheq_recibidos": 0,
-      "facturas_contado": 0,
-      "facturas_credito": 0,
-      "margin_by_term": {},
-      "cotiz_canceladas": 0,
+      "facturas_contado": 1,
+      "facturas_credito": 11,
+      "margin_by_term": {
+        "Prepago": {
+          "margin": 0.12913,
+          "normalizado": 0.13913,
+          "count": 1,
+          "days": 0
+        },
+        "30 Días": {
+          "margin": 0.07665,
+          "normalizado": 0.07665,
+          "count": 9,
+          "days": 30
+        },
+        "60 Días": {
+          "margin": 0.08284,
+          "normalizado": 0.07284,
+          "count": 2,
+          "days": 60
+        }
+      },
+      "cotiz_canceladas": 2,
       "visitas": 0,
-      "clientes_nuevos": 0,
+      "clientes_nuevos": 3,
       "ppto": 213480,
       "ppto_retail": 153706,
       "ppto_volumen": 59774,
@@ -57,7 +76,7 @@
       "cheques": 38534472,
       "transf": 156979253,
       "factoring": 62227335,
-      "compras_odoo": 187521168,
+      "compras_odoo": 223891365,
       "cheq_cartera_saldo": 0,
       "cheq_recibidos": 5369800,
       "facturas_contado": 15,
@@ -1235,8 +1254,8 @@
     {
       "date": "07may",
       "day": "Jue",
-      "litros": 0,
-      "neto": 0
+      "litros": 15076,
+      "neto": 17604877
     },
     {
       "date": "06may",
@@ -1336,7 +1355,7 @@
     },
     {
       "name": "SANTANDER",
-      "balance": 9775019
+      "balance": 8005019
     },
     {
       "name": "ESTADO",
@@ -1348,7 +1367,7 @@
     },
     {
       "name": "BCI",
-      "balance": 4704799
+      "balance": 4647393
     },
     {
       "name": "CAJA",
@@ -1359,15 +1378,15 @@
       "balance": -1727275
     }
   ],
-  "total_cash": 43069496,
+  "total_cash": 41242090,
   "receivables": {
-    "open_invoices": 264,
-    "total_due": 609028720,
-    "current": 523274559,
-    "overdue": 85754161,
-    "pct_overdue": 14.1,
+    "open_invoices": 266,
+    "total_due": 607216693,
+    "current": 523288532,
+    "overdue": 83928161,
+    "pct_overdue": 13.8,
     "aging": {
-      "0-30": 68575276,
+      "0-30": 66749276,
       "31-60": 7413322,
       "61-90": 0,
       "90+": 9765563
@@ -1375,11 +1394,15 @@
     "top_debtors": [
       {
         "name": "JOSE RODRIGO ORMAZABAL VIDAL",
-        "amount": 32217200
+        "amount": 36702200
       },
       {
         "name": "SOC AGRICOLA GRANJA SAN RAFAEL LIMITADA",
         "amount": 22390681
+      },
+      {
+        "name": "TRANSPORTE SANTA ELENITA SPA",
+        "amount": 21848670
       },
       {
         "name": "AGROINDUSTRIAL SIRACUSA S A",
@@ -1388,10 +1411,6 @@
       {
         "name": "PATRICIO VISCAY ALBORNOZ",
         "amount": 21178792
-      },
-      {
-        "name": "TRANSPORTE SANTA ELENITA SPA",
-        "amount": 20268671
       },
       {
         "name": "ALFREDO ALFONSO OPAZO MUÑOZ",
@@ -1422,16 +1441,16 @@
         "amount": 11424000
       },
       {
-        "name": "INGENERIA Y CONSTRUCCIONES FEBLANCA SPA",
-        "amount": 11215200
-      },
-      {
         "name": "EMPRESAS TUCAPEL S A",
         "amount": 10922410
       },
       {
         "name": "SOC AGRICOLA SANTA TERESA SPA",
         "amount": 10037272
+      },
+      {
+        "name": "INGENERIA Y CONSTRUCCIONES FEBLANCA SPA",
+        "amount": 10000000
       },
       {
         "name": "AGROSERVICIOS JR SPA",
@@ -1464,15 +1483,15 @@
   "riesgo": {
     "cubierto": 0,
     "cubierto_count": 0,
-    "no_cubierto": 609028720,
-    "no_cubierto_count": 264,
+    "no_cubierto": 607216693,
+    "no_cubierto_count": 266,
     "pct_monto": 100.0,
     "pct_count": 100.0
   },
   "churn": {
     "eligible_clients": 165,
-    "churned_count": 55,
-    "pct": 33.3,
+    "churned_count": 53,
+    "pct": 32.1,
     "churned": [
       {
         "name": "ERIKA DEL PILAR GUZMAN MANRIQUEZ",
@@ -1735,16 +1754,6 @@
         "new_this_week": false
       },
       {
-        "name": "SOCIEDAD DE EXPLOTACION AGRICOLA LTDA",
-        "freq": "Irregular (Promedio: 20 días)",
-        "freq_days": 20,
-        "last_invoice": "2026-03-17",
-        "days_since": 51,
-        "threshold": 40,
-        "invoices_8m": 8,
-        "new_this_week": false
-      },
-      {
         "name": "DOMINGO SEGUNDO GALAZ QUEZADA",
         "freq": "Irregular (Promedio: 13 días)",
         "freq_days": 13,
@@ -1772,6 +1781,16 @@
         "days_since": 50,
         "threshold": 14,
         "invoices_8m": 16,
+        "new_this_week": false
+      },
+      {
+        "name": "AGRICOLA EL COLORADO LTDA",
+        "freq": "Irregular (Promedio: 12 días)",
+        "freq_days": 12,
+        "last_invoice": "2026-03-19",
+        "days_since": 49,
+        "threshold": 24,
+        "invoices_8m": 10,
         "new_this_week": false
       }
     ],
@@ -1803,15 +1822,15 @@
       },
       {
         "month": "Apr 2026",
-        "pct": 69.4,
-        "new_churn": 25,
-        "active_start": 36
+        "pct": 68.6,
+        "new_churn": 24,
+        "active_start": 35
       },
       {
         "month": "May 2026",
-        "pct": 82.3,
-        "new_churn": 65,
-        "active_start": 79
+        "pct": 84.0,
+        "new_churn": 63,
+        "active_start": 75
       }
     ]
   },
@@ -1825,10 +1844,10 @@
           "5667"
         ],
         "target_total": 502563,
-        "mtd_litros": 25080,
-        "compliance_pct": 5.0,
-        "projected": 111069,
-        "projected_pct": 22.1,
+        "mtd_litros": 50160,
+        "compliance_pct": 10.0,
+        "projected": 222137,
+        "projected_pct": 44.2,
         "plants": {
           "Maipu": {
             "target": 183025
@@ -1862,10 +1881,10 @@
       }
     },
     "total_target": 876932,
-    "total_mtd": 70080,
-    "total_compliance_pct": 8.0,
-    "total_projected": 310354,
-    "total_projected_pct": 35.4
+    "total_mtd": 95160,
+    "total_compliance_pct": 10.9,
+    "total_projected": 421423,
+    "total_projected_pct": 48.1
   },
   "operaciones": {
     "months": [
@@ -1958,14 +1977,14 @@
         "month": "2026-05",
         "label": "May 2026",
         "budget": 10055583,
-        "actual": 5124746,
-        "compliance_pct": 51.0,
+        "actual": 6497013,
+        "compliance_pct": 64.6,
         "categories": {
           "Petróleo": 4724746,
-          "Mantención y Reparación": 0,
-          "Gastos Traslados (TAG)": 0,
-          "Seguros": 0,
-          "Gastos Vehículos": 0,
+          "Mantención y Reparación": 31133,
+          "Gastos Traslados (TAG)": 1127116,
+          "Seguros": 39990,
+          "Gastos Vehículos": 174028,
           "Arriendo": 400000,
           "EPP": 0,
           "Mantenciones Varias": 0
