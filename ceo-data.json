@@ -1,6 +1,41 @@
 {
-  "updated": "2026-05-07T00:04:18.765160",
+  "updated": "2026-05-07T12:59:35.963643",
   "weeks": [
+    {
+      "label": "07may-13may",
+      "start": "2026-05-07",
+      "end": "2026-05-13",
+      "ventas": 0,
+      "neto": 0,
+      "litros": 0,
+      "litros_retail": 0,
+      "litros_volumen": 0,
+      "precio_neto": 0,
+      "precio_bruto": 0,
+      "margin": 0,
+      "margin_retail": 0,
+      "margin_volumen": 0,
+      "facturas": 0,
+      "nc": 0,
+      "clientes": 0,
+      "recaud": 29504854,
+      "cheques": 0,
+      "transf": 16972320,
+      "factoring": 12532534,
+      "compras_odoo": 0,
+      "cheq_cartera_saldo": 0,
+      "cheq_recibidos": 0,
+      "facturas_contado": 0,
+      "facturas_credito": 0,
+      "margin_by_term": {},
+      "cotiz_canceladas": 0,
+      "visitas": 0,
+      "clientes_nuevos": 0,
+      "ppto": 213480,
+      "ppto_retail": 153706,
+      "ppto_volumen": 59774,
+      "parcial": true
+    },
     {
       "label": "30apr-06may",
       "start": "2026-04-30",
@@ -77,7 +112,7 @@
       "ppto": 269236,
       "ppto_retail": 199235,
       "ppto_volumen": 70001,
-      "parcial": true
+      "parcial": false
     },
     {
       "label": "23apr-29apr",
@@ -1194,96 +1229,6 @@
       "ppto_retail": 171414,
       "ppto_volumen": 48347,
       "parcial": false
-    },
-    {
-      "label": "15jan-21jan",
-      "start": "2026-01-15",
-      "end": "2026-01-21",
-      "ventas": 214320385,
-      "neto": 142777461,
-      "litros": 225382,
-      "litros_retail": 180202,
-      "litros_volumen": 45180,
-      "precio_neto": 633,
-      "precio_bruto": 951,
-      "margin": 0.10889,
-      "margin_retail": 0.10995,
-      "margin_volumen": 0.10457,
-      "facturas": 145,
-      "nc": 0,
-      "clientes": 115,
-      "recaud": 211439321,
-      "cheques": 17040706,
-      "transf": 157156095,
-      "factoring": 37242520,
-      "compras_odoo": 176101844,
-      "cheq_cartera_saldo": 0,
-      "cheq_recibidos": 4530560,
-      "facturas_contado": 22,
-      "facturas_credito": 123,
-      "margin_by_term": {
-        "Prepago": {
-          "margin": 0.10733,
-          "normalizado": 0.11733,
-          "count": 9,
-          "days": 0
-        },
-        "1 Día": {
-          "margin": 0.09613,
-          "normalizado": 0.10579,
-          "count": 13,
-          "days": 1
-        },
-        "7 Días": {
-          "margin": 0.09501,
-          "normalizado": 0.10267,
-          "count": 7,
-          "days": 7
-        },
-        "15 Días": {
-          "margin": 0.09276,
-          "normalizado": 0.09776,
-          "count": 5,
-          "days": 15
-        },
-        "30 Días": {
-          "margin": 0.10993,
-          "normalizado": 0.10993,
-          "count": 95,
-          "days": 30
-        },
-        "Sin plazo": {
-          "margin": 0.15239,
-          "normalizado": 0.15239,
-          "count": 1,
-          "days": 30
-        },
-        "45 Días": {
-          "margin": 0.12429,
-          "normalizado": 0.11929,
-          "count": 6,
-          "days": 45
-        },
-        "60 Días": {
-          "margin": 0.11525,
-          "normalizado": 0.10525,
-          "count": 7,
-          "days": 60
-        },
-        "90 Días": {
-          "margin": 0.1498,
-          "normalizado": 0.1298,
-          "count": 2,
-          "days": 90
-        }
-      },
-      "cotiz_canceladas": 63,
-      "visitas": 0,
-      "clientes_nuevos": 3,
-      "ppto": 219761,
-      "ppto_retail": 171414,
-      "ppto_volumen": 48347,
-      "parcial": false
     }
   ],
   "daily": [
@@ -1390,16 +1335,16 @@
       "balance": 15016391
     },
     {
-      "name": "DE CHILE",
-      "balance": 12136164
-    },
-    {
       "name": "SANTANDER",
       "balance": 9775019
     },
     {
       "name": "ESTADO",
       "balance": 6228576
+    },
+    {
+      "name": "DE CHILE",
+      "balance": 5780809
     },
     {
       "name": "BCI",
@@ -1414,13 +1359,13 @@
       "balance": -1727275
     }
   ],
-  "total_cash": 49424851,
+  "total_cash": 43069496,
   "receivables": {
-    "open_invoices": 267,
-    "total_due": 618519920,
-    "current": 524906209,
+    "open_invoices": 265,
+    "total_due": 616888270,
+    "current": 523274559,
     "overdue": 93613711,
-    "pct_overdue": 15.1,
+    "pct_overdue": 15.2,
     "aging": {
       "0-30": 76434826,
       "31-60": 7413322,
@@ -1519,8 +1464,8 @@
   "riesgo": {
     "cubierto": 0,
     "cubierto_count": 0,
-    "no_cubierto": 618519920,
-    "no_cubierto_count": 267,
+    "no_cubierto": 616888270,
+    "no_cubierto_count": 265,
     "pct_monto": 100.0,
     "pct_count": 100.0
   },
