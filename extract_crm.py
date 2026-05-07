@@ -2272,20 +2272,16 @@ def main():
     if "Toro González Sebastian Enrique" in vendor_goals:
         vendor_goals["Toro González Sebastian Enrique"]["litros_mes"] = 200000
 
-    # ── Graduating: clients whose first diesel invoice was 3+ months ago, still buying, assigned to ejecutivo ──
+    # ── Graduating: clients assigned to ejecutivo/freelancer, approaching or past 3 months ──
     graduating = []
     try:
-        three_months_ago = (m_start.replace(day=1) - timedelta(days=1)).replace(day=1)
-        three_months_ago = (three_months_ago - timedelta(days=1)).replace(day=1)
-        three_months_ago = (three_months_ago - timedelta(days=1)).replace(day=1)
+        # Two thresholds: 60 days (approaching) and 90 days (overdue)
+        two_months_ago = today - timedelta(days=60)
+        _exec_names = [
+            "toro gonzález sebastian enrique", "muñoz encalada joaquin", "ron yenire",
+            "carolina avilés", "fernando jullian", "marcela márquez", "raúl bisquertt",
+        ]
 
-        # Get all partners with diesel invoices in current month
-        curr_inv_pids = set()
-        for inv in ventas.get("detail_by_user", {}).values() if isinstance(ventas.get("detail_by_user"), dict) else []:
-            for row in inv:
-                pass  # detail_by_user doesn't have partner_id
-
-        # Simpler: get partners who bought this month AND have first invoice 3+ months ago
         curr_month_invs = sr(models, uid, "account.move", [
             ["move_type", "=", "out_invoice"],
             ["state", "=", "posted"],
@@ -2299,7 +2295,7 @@ def main():
             pid = safe_id(inv.get("partner_id"))
             if pid:
                 curr_pids.add(pid)
-                curr_pid_user[pid] = safe_name(inv.get("invoice_user_id"))
+                curr_pid_user[pid] = canonical_vendedor(safe_name(inv.get("invoice_user_id")))
         # Override with partner.user_id
         for ci in range(0, len(list(curr_pids)), 200):
             chunk = list(curr_pids)[ci:ci+200]
@@ -2309,10 +2305,11 @@ def main():
                 if _pu:
                     curr_pid_user[_p["id"]] = _pu
 
-        # For each, find their FIRST ever diesel invoice
+        # For each, find their FIRST ever invoice (batch: get all first invoices)
         grad_candidates = []
-        for i in range(0, len(list(curr_pids)), 200):
-            batch = list(curr_pids)[i:i+200]
+        pid_list = list(curr_pids)
+        for i in range(0, len(pid_list), 200):
+            batch = pid_list[i:i+200]
             for pid in batch:
                 first_inv = sr(models, uid, "account.move", [
                     ["move_type", "=", "out_invoice"],
@@ -2321,20 +2318,25 @@ def main():
                 ], ["invoice_date", "partner_id"], limit=1, order="invoice_date asc")
                 if first_inv:
                     first_date = first_inv[0].get("invoice_date", "")
-                    if first_date and first_date <= fmt(three_months_ago):
+                    if not first_date:
+                        continue
+                    days = (today - datetime.strptime(first_date, "%Y-%m-%d").date()).days
+                    if days < 60:
+                        continue  # Too new, skip
+                    vendedor = curr_pid_user.get(pid, "")
+                    vn = norm_name(vendedor)
+                    is_exec = any(all(w in vn.split() for w in norm_name(av).split()) for av in _exec_names)
+                    if is_exec:
                         pname = safe_name(first_inv[0].get("partner_id"))
-                        vendedor = curr_pid_user.get(pid, "")
-                        # Only include if assigned to an ejecutivo (not CS)
-                        vn = norm_name(vendedor)
-                        is_exec = any(all(w in vn.split() for w in norm_name(av).split()) for av in
-                            ["toro gonzález sebastian enrique", "muñoz encalada joaquin", "ron yenire"])
-                        if is_exec:
-                            grad_candidates.append({
-                                "name": pname,
-                                "vendedor": vendedor,
-                                "first_invoice": first_date,
-                                "days_since": (today - datetime.strptime(first_date, "%Y-%m-%d").date()).days,
-                            })
+                        status = "pendiente" if days >= 90 else "proximo"
+                        grad_candidates.append({
+                            "name": pname,
+                            "vendedor": vendedor,
+                            "first_invoice": first_date,
+                            "days_since": days,
+                            "status": status,
+                        })
+
         # Count invoices for grad candidates
         for g in grad_candidates:
             cnt = s_count(models, uid, "account.move", [
@@ -2344,8 +2346,10 @@ def main():
             ])
             g["total_invoices"] = cnt
 
-        graduating = sorted(grad_candidates, key=lambda x: -x["days_since"])[:30]
-        print(f"  Graduating clients (3+ months, exec-assigned): {len(graduating)}")
+        graduating = sorted(grad_candidates, key=lambda x: -x["days_since"])[:50]
+        prox = sum(1 for g in graduating if g["status"] == "proximo")
+        pend = sum(1 for g in graduating if g["status"] == "pendiente")
+        print(f"  Graduating: {prox} próximos (60-89d) + {pend} pendientes (90+d)")
     except Exception as e:
         print(f"  Graduating skipped: {e}")
 
@@ -2406,4 +2410,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-    
