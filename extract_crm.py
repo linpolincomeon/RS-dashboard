@@ -68,6 +68,30 @@ def norm_name(s):
     s = ''.join(c for c in s if unicodedata.category(c) != 'Mn')
     return ' '.join(sorted(s.split()))
 
+# Canonical vendedor names — short reference forms that _partialMatch uses in the frontend.
+# Key = set of required words (norm_name'd); Value = canonical display name.
+_CANONICAL_VENDORS = [
+    ({"toro", "gonzalez", "sebastian", "enrique"}, "Toro González Sebastian Enrique"),
+    ({"munoz", "encalada", "joaquin"}, "MUÑOZ ENCALADA JOAQUIN"),
+    ({"ron", "yenire"}, "Yeniré Ron"),
+    ({"comber", "sigall", "pauline"}, "Comber Sigall Pauline"),
+    ({"aviles", "carolina"}, "Carolina Avilés"),
+    ({"jullian", "fernando"}, "Fernando Jullian"),
+    ({"marquez", "marcela"}, "Marcela Márquez"),
+    ({"bisquertt", "raul"}, "Raúl Bisquertt"),
+    ({"boccardo", "mauro"}, "Mauro Boccardo"),
+]
+
+def canonical_vendedor(name):
+    """Resolve vendor name to canonical form via partial word matching."""
+    if not name:
+        return name
+    nw = set(norm_name(name).split())
+    for required_words, canonical in _CANONICAL_VENDORS:
+        if required_words.issubset(nw):
+            return canonical
+    return name  # no match → keep original
+
 def merge_by_user(d):
     """Merge dict entries whose keys normalize to the same name. Keeps the longest original key."""
     merged = {}
@@ -651,7 +675,7 @@ def extract_sales_data(models, uid, custom_start=None, custom_end=None, label_ov
         "invoice_payment_term_id"], limit=2000)
 
     inv_ids = [i["id"] for i in invoices]
-    inv_user_map = {i["id"]: safe_name(i.get("invoice_user_id")) for i in invoices}
+    inv_user_map = {i["id"]: canonical_vendedor(safe_name(i.get("invoice_user_id"))) for i in invoices}
     inv_margin_map = {i["id"]: i.get("margin_zone", 0) or 0 for i in invoices}
     inv_date_map = {i["id"]: i.get("invoice_date", "") for i in invoices}
     inv_term_map = {i["id"]: safe_name(i.get("invoice_payment_term_id")) for i in invoices}
@@ -661,12 +685,13 @@ def extract_sales_data(models, uid, custom_start=None, custom_end=None, label_ov
     partner_zone = {}
     partner_name_map = {}
     partner_vat_map = {}
+    partner_user_map = {}  # pid → vendedor from res.partner.user_id
     if partner_ids:
         for i in range(0, len(partner_ids), 200):
             chunk = partner_ids[i:i+200]
             partners = sr(models, uid, "res.partner", [
                 ["id", "in", chunk],
-            ], ["id", "name", "vat", "is_volume_client", "delivery_zone_id"], limit=200)
+            ], ["id", "name", "vat", "is_volume_client", "delivery_zone_id", "user_id"], limit=200)
             for p in partners:
                 if p.get("is_volume_client"):
                     volume_partners.add(p["id"])
@@ -675,7 +700,17 @@ def extract_sales_data(models, uid, custom_start=None, custom_end=None, label_ov
                     partner_zone[p["id"]] = zn
                 partner_name_map[p["id"]] = p.get("name", "")
                 partner_vat_map[p["id"]] = p.get("vat", "") or ""
+                # Vendedor from partner (source of truth), canonicalized
+                pu = canonical_vendedor(safe_name(p.get("user_id")))
+                if pu:
+                    partner_user_map[p["id"]] = pu
     inv_partner_map = {i["id"]: safe_id(i.get("partner_id")) for i in invoices}
+
+    # Override inv_user_map: use partner.user_id (assigned vendedor) instead of invoice_user_id
+    for inv_id, pid in inv_partner_map.items():
+        pu = partner_user_map.get(pid)
+        if pu:
+            inv_user_map[inv_id] = pu
 
     litros_by_user = defaultdict(float)
     venta_by_user = defaultdict(float)
@@ -745,8 +780,13 @@ def extract_sales_data(models, uid, custom_start=None, custom_end=None, label_ov
         "reversed_entry_id"], limit=500)
 
     nc_ids = [n["id"] for n in ncs]
-    nc_user_map = {n["id"]: safe_name(n.get("invoice_user_id")) for n in ncs}
+    nc_user_map = {n["id"]: canonical_vendedor(safe_name(n.get("invoice_user_id"))) for n in ncs}
     nc_partner_map = {n["id"]: safe_id(n.get("partner_id")) for n in ncs}
+    # Override NC user map with partner.user_id
+    for nc_id, pid in nc_partner_map.items():
+        pu = partner_user_map.get(pid)
+        if pu:
+            nc_user_map[nc_id] = pu
     nc_margin_map = {n["id"]: n.get("margin_zone", 0) or 0 for n in ncs}
 
     # ── Descontar NC ──
@@ -883,7 +923,7 @@ def extract_sales_data(models, uid, custom_start=None, custom_end=None, label_ov
                 partner_litros = max(litros_by_partner.get(pid, 0), 0)
                 if partner_litros <= 0:
                     continue  # Skip clients with 0 net litros (NC reversed all sales)
-                u = safe_name(inv_match.get("invoice_user_id"))
+                u = partner_user_map.get(pid) or safe_name(inv_match.get("invoice_user_id"))
                 pname = safe_name(inv_match.get("partner_id"))
                 first_date = inv_match.get("invoice_date", "")
                 new_cl_by_user[u] += 1
@@ -934,9 +974,24 @@ def extract_sales_data(models, uid, custom_start=None, custom_end=None, label_ov
             ["state", "=", "posted"],
             ["invoice_date", ">=", fmt(ws_d)],
             ["invoice_date", "<=", fmt(we_d)],
-        ], ["id", "invoice_user_id", "margin_zone"], limit=5000)
+        ], ["id", "partner_id", "invoice_user_id", "margin_zone"], limit=5000)
         wk_ids = [i["id"] for i in wk_inv]
-        wk_user_map = {i["id"]: safe_name(i.get("invoice_user_id")) for i in wk_inv}
+        wk_user_map = {i["id"]: canonical_vendedor(safe_name(i.get("invoice_user_id"))) for i in wk_inv}
+        # Fetch missing partner user_ids and override
+        wk_pids = set(safe_id(wi.get("partner_id")) for wi in wk_inv if safe_id(wi.get("partner_id")))
+        missing_pids = [p for p in wk_pids if p not in partner_user_map]
+        if missing_pids:
+            for ci in range(0, len(missing_pids), 200):
+                chunk = missing_pids[ci:ci+200]
+                _ps = sr(models, uid, "res.partner", [["id", "in", chunk]], ["id", "user_id"], limit=200)
+                for _p in _ps:
+                    _pu = canonical_vendedor(safe_name(_p.get("user_id")))
+                    if _pu:
+                        partner_user_map[_p["id"]] = _pu
+        for wi in wk_inv:
+            wp = safe_id(wi.get("partner_id"))
+            if wp and wp in partner_user_map:
+                wk_user_map[wi["id"]] = partner_user_map[wp]
         wk_margin_map = {i["id"]: i.get("margin_zone", 0) or 0 for i in wk_inv}
         wk_l = 0
         wk_lbu = defaultdict(float)
@@ -1088,6 +1143,22 @@ def extract_churn_data(models, uid):
     prev_month_partners = set(safe_id(i.get("partner_id")) for i in prev_inv if safe_id(i.get("partner_id")))
     prev_month_clients = len(prev_month_partners)
 
+    # Fetch partner.user_id for all leads (source of truth for vendedor)
+    _all_lead_pids = set()
+    for _l in durmiente_leads + perdido_leads:
+        _p = safe_id(_l.get("partner_id"))
+        if _p:
+            _all_lead_pids.add(_p)
+    _churn_partner_user = {}
+    batch_size = 200
+    for i in range(0, len(list(_all_lead_pids)), batch_size):
+        batch = list(_all_lead_pids)[i:i+batch_size]
+        _ps = sr(models, uid, "res.partner", [["id", "in", batch]], ["id", "user_id"], limit=batch_size)
+        for _p in _ps:
+            _pu = canonical_vendedor(safe_name(_p.get("user_id")))
+            if _pu:
+                _churn_partner_user[_p["id"]] = _pu
+
     dormant_list = []
     dormant_by_user = Counter()
     rescued_dormant_list = []
@@ -1096,7 +1167,7 @@ def extract_churn_data(models, uid):
 
     for lead in durmiente_leads:
         pid = safe_id(lead.get("partner_id"))
-        user = safe_name(lead.get("user_id"))
+        user = _churn_partner_user.get(pid) or canonical_vendedor(safe_name(lead.get("user_id")))
         name = safe_name(lead.get("partner_id")) or lead.get("partner_name", "?")
         name_key = name.strip().upper()
         if name_key in seen_dormant:
@@ -1246,7 +1317,7 @@ def extract_churn_data(models, uid):
 
     for lead in perdido_leads:
         pid = safe_id(lead.get("partner_id"))
-        user = safe_name(lead.get("user_id"))
+        user = _churn_partner_user.get(pid) or canonical_vendedor(safe_name(lead.get("user_id")))
         name = safe_name(lead.get("partner_id")) or lead.get("partner_name", "?")
         name_key = name.strip().upper()
         if name_key in seen_lost:
@@ -1431,7 +1502,7 @@ def extract_rescued_clients(models, uid):
     for inv in curr_invoices:
         pid = safe_id(inv.get("partner_id"))
         if pid and pid not in partner_vendedor:
-            partner_vendedor[pid] = safe_name(inv.get("invoice_user_id"))
+            partner_vendedor[pid] = canonical_vendedor(safe_name(inv.get("invoice_user_id")))
 
     # 2. Read frecuencia_facturacion from res.partner (batch)
     partner_freq = {}
@@ -1441,12 +1512,16 @@ def extract_rescued_clients(models, uid):
         batch = curr_partner_ids[i:i+batch_size]
         partners = sr(models, uid, "res.partner", [
             ["id", "in", batch],
-        ], ["id", "name", "frecuencia_facturacion"], limit=batch_size)
+        ], ["id", "name", "user_id", "frecuencia_facturacion"], limit=batch_size)
         for p in partners:
             freq_days = parse_frecuencia_days(p.get("frecuencia_facturacion"))
             if freq_days is not None:
                 partner_freq[p["id"]] = freq_days
             partner_names[p["id"]] = p.get("name", "?")
+            # Override vendedor with partner.user_id (source of truth)
+            pu = canonical_vendedor(safe_name(p.get("user_id")))
+            if pu:
+                partner_vendedor[p["id"]] = pu
 
     print(f"  Partners with parseable frecuencia: {len(partner_freq)} / {len(curr_partner_ids)}")
 
@@ -1749,7 +1824,7 @@ def extract_credit_risk(models, uid):
         ar_balance = p.get("credit", 0) or 0
         payment_term = safe_name(p.get("property_payment_term_id"))
         pricelist = safe_name(p.get("property_product_pricelist"))
-        vendedor_partner = safe_name(p.get("user_id"))  # vendedor asignado al cliente
+        vendedor_partner = canonical_vendedor(safe_name(p.get("user_id")))  # vendedor asignado al cliente
         name = p.get("name", "?")
 
         # Parse payment term days (e.g., "30 Days", "Plazo 30 días")
@@ -2204,6 +2279,14 @@ def main():
             if pid:
                 curr_pids.add(pid)
                 curr_pid_user[pid] = safe_name(inv.get("invoice_user_id"))
+        # Override with partner.user_id
+        for ci in range(0, len(list(curr_pids)), 200):
+            chunk = list(curr_pids)[ci:ci+200]
+            _ps = sr(models, uid, "res.partner", [["id", "in", chunk]], ["id", "user_id"], limit=200)
+            for _p in _ps:
+                _pu = canonical_vendedor(safe_name(_p.get("user_id")))
+                if _pu:
+                    curr_pid_user[_p["id"]] = _pu
 
         # For each, find their FIRST ever diesel invoice
         grad_candidates = []
