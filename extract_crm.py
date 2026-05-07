@@ -859,16 +859,21 @@ def extract_sales_data(models, uid, custom_start=None, custom_end=None, label_ov
                     had_diesel_before = True
                     break
         if not had_diesel_before:
-            # Find the first invoice for this partner in this month
-            inv_match = next((i for i in invoices if safe_id(i.get("partner_id")) == pid), None)
+            # Find the EARLIEST invoice for this partner in this month (first purchase date)
+            partner_invs = [i for i in invoices if safe_id(i.get("partner_id")) == pid]
+            partner_invs.sort(key=lambda x: x.get("invoice_date", "9999"))
+            inv_match = partner_invs[0] if partner_invs else None
             if inv_match:
+                partner_litros = max(litros_by_partner.get(pid, 0), 0)
+                if partner_litros <= 0:
+                    continue  # Skip clients with 0 net litros (NC reversed all sales)
                 u = safe_name(inv_match.get("invoice_user_id"))
                 pname = safe_name(inv_match.get("partner_id"))
+                first_date = inv_match.get("invoice_date", "")
                 new_cl_by_user[u] += 1
                 new_cl_count += 1
-                partner_litros = max(litros_by_partner.get(pid, 0), 0)
                 new_cl_litros_by_user[u] += partner_litros
-                new_cl_detail.append({"cliente": pname, "vendedor": u, "fecha": inv_match.get("invoice_date", ""), "litros": round(partner_litros)})
+                new_cl_detail.append({"cliente": pname, "vendedor": u, "fecha": first_date, "litros": round(partner_litros)})
 
     weekly_sales = []
     for offset in range(4):
