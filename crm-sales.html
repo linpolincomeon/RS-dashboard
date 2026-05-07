@@ -250,16 +250,6 @@ tr:hover td{background:#fafaf8}
       <div class="sec"><div class="sec-h"><h2>🔄 Transición a Fidelización</h2><span style="font-size:12px;color:var(--dim)">Clientes con 3+ meses desde primera compra</span></div>
         <div class="sec-b" style="padding:0;overflow-x:auto" id="csGraduatingContainer"></div></div>
 
-      <!-- Rescued clients (frecuencia-based) -->
-      <div class="grid-2">
-        <div class="sec"><div class="sec-h"><h2>🏆 Rescatados Durmientes</h2><span class="badge" id="rescDormCount">0</span></div>
-          <div class="sec-b" style="max-height:450px;overflow-y:auto"><table><thead><tr><th>Cliente</th><th>Vendedor</th><th>Litros</th><th>Gap</th><th>Freq</th></tr></thead><tbody id="rescDormBody"></tbody></table>
-          <div class="nodata" id="noRescDorm" style="display:none">Sin rescatados durmientes</div></div></div>
-        <div class="sec"><div class="sec-h"><h2>💀 Rescatados Perdidos</h2><span class="badge" id="rescLostCount">0</span></div>
-          <div class="sec-b" style="max-height:450px;overflow-y:auto"><table><thead><tr><th>Cliente</th><th>Vendedor</th><th>Litros</th><th>Gap</th><th>Freq</th></tr></thead><tbody id="rescLostBody"></tbody></table>
-          <div class="nodata" id="noRescLost" style="display:none">Sin rescatados perdidos</div></div></div>
-      </div>
-
       <!-- Actividades CS -->
       <div id="csActivitiesSection"></div>
     </div>
@@ -1824,8 +1814,7 @@ function renderCS() {
 
   // Rescued clients (frecuencia-based)
   const rescued = D.rescued || {};
-  renderRescuedTable(rescued.rescued_durmientes || [], 'rescDormBody', 'noRescDorm', 'rescDormCount');
-  renderRescuedTable(rescued.rescued_perdidos || [], 'rescLostBody', 'noRescLost', 'rescLostCount');
+  // Rescatados removed from Fidelización — now in Churn tab
 
   // ── Actividades CS de la Semana (filtradas por semana seleccionada) ──
   const csMsgs = (D.messages || []).filter(m => isCS(m.who) && (!weekStart || !weekEnd || ((m.date||'') >= weekStart && (m.date||'') <= weekEnd + 'Z')));
