@@ -341,6 +341,18 @@ function _partialMatch(testName, refWordsList) {
   });
 }
 const isAllowed = n => _partialMatch(n, _aN);
+
+// Canonical vendor name: resolve any variant to the reference name from ALLOWED_VENDORS/FREELANCERS/CS_TEAM
+const _ALL_REF = [...ALLOWED_VENDORS, ...FREELANCERS, ...CS_TEAM];
+const _allRefWords = _ALL_REF.map(n => ({words: norm(n).split(' '), name: n}));
+function canonicalName(testName) {
+  if (!testName) return testName;
+  const tw = norm(testName).split(' ');
+  for (const ref of _allRefWords) {
+    if (ref.words.length === 1 ? tw.includes(ref.words[0]) : ref.words.every(w => tw.includes(w))) return ref.name;
+  }
+  return testName;
+}
 const isCS = n => _partialMatch(n, _csN);
 const isFreelancer = n => _partialMatch(n, _fN);
 
@@ -368,17 +380,18 @@ const pct = (v, g) => g ? Math.min(Math.round((v / g) * 100), 999) : 0;
 // Global helper to lookup values in byUser maps by normalized name
 const findInByUser = (byUser, name) => {
   if (!byUser) return 0;
+  // Sum ALL entries whose canonical name matches (handles name variants)
+  const cn = canonicalName(name);
+  let total = 0;
+  for (const [k, v] of Object.entries(byUser)) {
+    if (canonicalName(k) === cn) total += (typeof v === 'number' ? v : 0);
+  }
+  if (total !== 0) return total;
+  // Fallback: exact or norm match
   if (byUser[name] !== undefined) return byUser[name];
   const nn = norm(name);
-  const nWords = nn.split(' ');
   for (const [k, v] of Object.entries(byUser)) {
-    const kn = norm(k);
-    if (kn === nn) return v;
-    // Partial match: shorter name's words all in longer
-    const kWords = kn.split(' ');
-    const shorter = nWords.length <= kWords.length ? nWords : kWords;
-    const longer = nWords.length <= kWords.length ? kWords : nWords;
-    if (shorter.length >= 2 && shorter.every(w => longer.includes(w))) return v;
+    if (norm(k) === nn) return v;
   }
   return 0;
 };
@@ -572,13 +585,7 @@ function renderVendedores() {
   (D.executives || []).forEach(e => { if (isAllowed(e.name)) addN(e.name); });
   const vendors = Object.values(nameMap);
 
-  const findIn = (byUser, name) => {
-    if (!byUser) return 0;
-    if (byUser[name] !== undefined) return byUser[name];
-    const nn = norm(name);
-    for (const [k, v] of Object.entries(byUser)) { if (norm(k) === nn) return v; }
-    return 0;
-  };
+  const findIn = (byUser, name) => findInByUser(byUser, name);
 
   // Prorated factor
   const mStart = V.month_start ? new Date(V.month_start + 'T00:00:00') : null;
@@ -993,18 +1000,18 @@ function renderEjecutivos() {
     return (b.value || 0) - (a.value || 0);
   });
 
-  h += '<div class="sec"><div class="sec-h"><h2>🎯 Oportunidades & Actividades</h2></div><div class="sec-b" style="max-height:600px;overflow-y:auto"><table>';
-  h += '<thead><tr><th>Cliente</th><th>Etapa</th><th>Prob.</th><th>Litros Est.</th><th>Detalle Actividad</th></tr></thead><tbody>';
-  if (thisExecOpportunities.length === 0) {
-    h += '<tr><td colspan="5" style="text-align:center;color:var(--dim);padding:20px">Sin oportunidades</td></tr>';
+  // Only show opportunities with activity in the selected week
+  const weekFilteredOps = thisExecOpportunities.filter(p => p._activity);
+
+  h += '<div class="sec"><div class="sec-h"><h2>🎯 Oportunidades & Actividades — ' + (ws ? ws.slice(5) + ' a ' + we.slice(5) : 'Semana') + '</h2></div><div class="sec-b" style="max-height:600px;overflow-y:auto"><table>';
+  h += '<thead><tr><th>Cliente</th><th>Etapa</th><th>Fecha</th><th>Tipo</th><th>Detalle</th></tr></thead><tbody>';
+  if (weekFilteredOps.length === 0) {
+    h += '<tr><td colspan="5" style="text-align:center;color:var(--dim);padding:20px">Sin actividades esta semana</td></tr>';
   } else {
-    thisExecOpportunities.slice(0, 30).forEach(p => {
-      const prob = p.probability != null ? Math.round(p.probability) + '%' : '—';
-      let detail = '';
-      if (p._activity) {
-        detail = `<div style="font-size:12px"><strong>${p._activity.type}:</strong> ${H(p._activity.desc)}</div>`;
-      }
-      h += `<tr><td class="bold">${H(p.name)}</td><td>${stageTag(p.stage, p.stage_class)}</td><td>${prob}</td><td>${fL(p.value)}</td><td style="max-width:350px;white-space:normal">${detail || '<span style="color:var(--dim)">—</span>'}</td></tr>`;
+    weekFilteredOps.slice(0, 30).forEach(p => {
+      const a = p._activity;
+      const dateStr = a.date ? `<span style="white-space:nowrap">${a.date.slice(0,10)}</span>` : '—';
+      h += `<tr><td class="bold">${H(p.name)}</td><td>${stageTag(p.stage, p.stage_class)}</td><td>${dateStr}</td><td style="font-size:12px">${H(a.type || '')}</td><td style="max-width:350px;white-space:normal;font-size:12px">${H(a.desc || '')}</td></tr>`;
     });
   }
   h += '</tbody></table></div></div>';
@@ -1246,9 +1253,9 @@ function renderRanking() {
   const wkLbu = (hist[selectedWeek] || {}).litros_by_user || {};
   const hasWkLbu = Object.keys(wkLbu).length > 0;
 
-  // Build unified set of allowed vendor names, deduplicated by norm()
+  // Build unified set of allowed vendor names, deduplicated by canonical name
   const nameMap = {};
-  const addName = n => { const nn = norm(n); if (!nameMap[nn]) nameMap[nn] = n; };
+  const addName = n => { const cn = canonicalName(n); if (!nameMap[cn]) nameMap[cn] = cn; };
   Object.keys(D.vendor_goals || {}).forEach(n => { if (isAllowed(n)) addName(n); });
   Object.keys(lbuMonth).forEach(n => { if (isAllowed(n)) addName(n); });
   if (hasWkLbu) Object.keys(wkLbu).forEach(n => { if (isAllowed(n)) addName(n); });
@@ -1290,9 +1297,9 @@ function renderRankingAccum() {
   const lbu = T.litros_by_user || {};
   const pf = getProratedFactor(D.ventas?.month_start || new Date());
 
-  // Build unified set of allowed vendor names
+  // Build unified set of allowed vendor names, deduplicated by canonical name
   const nameMap = {};
-  const addName = n => { const nn = norm(n); if (!nameMap[nn]) nameMap[nn] = n; };
+  const addName = n => { const cn = canonicalName(n); if (!nameMap[cn]) nameMap[cn] = cn; };
   Object.keys(D.vendor_goals || {}).forEach(n => { if (isAllowed(n)) addName(n); });
   Object.keys(lbu).forEach(n => { if (isAllowed(n)) addName(n); });
   (D.executives || []).forEach(e => { if (isAllowed(e.name)) addName(e.name); });
@@ -1609,7 +1616,43 @@ function renderFidelizacion() {
 
   // ── Todos los Durmientes (con última actividad y observaciones) ──
   const allDormantDedup = _dedup(dormantListAll);
-  allDormantDedup.sort((a, b) => (b.avg_monthly_litros || 0) - (a.avg_monthly_litros || 0));
+
+  // Cross-reference with CRM activities (mail.activity) by client name
+  const allActs = D.activities || [];
+  const allMsgsD = D.messages || [];
+  const actByClient = {};  // uppercase client name → [{date, type, desc}]
+  allActs.forEach(a => {
+    // a.lead is like "Oportunidad de CLIENT NAME" or just "CLIENT NAME"
+    const lead = (a.lead || '').trim().toUpperCase();
+    if (!lead) return;
+    const entry = {date: a.date || '', type: a.type || 'To-Do', desc: a.summary || ''};
+    // Try matching: exact or partial (client name appears in lead name)
+    allDormantDedup.forEach(c => {
+      const cn = (c.name || '').trim().toUpperCase();
+      if (cn && (lead.includes(cn) || cn.includes(lead))) {
+        if (!actByClient[cn]) actByClient[cn] = [];
+        actByClient[cn].push(entry);
+      }
+    });
+  });
+
+  // Enrich dormant clients with CRM activity
+  allDormantDedup.forEach(c => {
+    const cn = (c.name || '').trim().toUpperCase();
+    const acts = actByClient[cn] || [];
+    acts.sort((a, b) => (b.date || '').localeCompare(a.date || ''));
+    c._crmAct = acts[0] || null;  // most recent activity
+  });
+
+  // Sort: those with CRM activity first (by date desc), then by avg_monthly_litros desc
+  allDormantDedup.sort((a, b) => {
+    const aAct = a._crmAct ? a._crmAct.date : '';
+    const bAct = b._crmAct ? b._crmAct.date : '';
+    if (aAct && !bAct) return -1;
+    if (!aAct && bAct) return 1;
+    if (aAct && bAct) return bAct.localeCompare(aAct);
+    return (b.avg_monthly_litros || 0) - (a.avg_monthly_litros || 0);
+  });
 
   const dormBadge = document.getElementById('allDormantCount');
   if (dormBadge) dormBadge.textContent = allDormantDedup.length;
@@ -1627,9 +1670,16 @@ function renderFidelizacion() {
       const lTag = l >= 5000 ? '<span style="color:var(--red);font-weight:700">' + fL(l) + '</span>'
         : l >= 1000 ? '<span style="color:var(--yellow);font-weight:700">' + fL(l) + '</span>'
         : '<span style="color:var(--dim)">' + fL(l) + '</span>';
-      const note = c.last_note
-        ? `<div style="font-size:11px">${c.last_update || ''}</div><div style="font-size:11px;color:var(--dim);max-width:250px;white-space:normal">${H(c.last_note)}</div>`
-        : (c.last_update || '—');
+      // Activity from CRM (mail.activity)
+      let actHtml = '';
+      if (c._crmAct) {
+        actHtml = `<div style="font-size:11px"><strong>${c._crmAct.date.slice(0,10)}</strong> · ${H(c._crmAct.type)}</div><div style="font-size:11px;color:var(--dim);max-width:250px;white-space:normal">${H(c._crmAct.desc)}</div>`;
+      }
+      // Last note from mail.message (partner)
+      const noteHtml = c.last_note
+        ? `<div style="font-size:11px;color:var(--dim);max-width:250px;white-space:normal">${H(c.last_note)}</div>`
+        : '';
+      const activityCol = actHtml || noteHtml || (c.last_update || '—');
       // Observations from credit_risk
       const crMatch = crByName[(c.name || '').trim().toUpperCase()];
       let obs = '';
@@ -1639,7 +1689,7 @@ function renderFidelizacion() {
         if (crMatch.overdue_amount > 0) obs += '<span style="font-size:11px;color:var(--red)">Mora: $' + fL(crMatch.overdue_amount) + '</span>';
       }
       const tr = document.createElement('tr');
-      tr.innerHTML = `<td class="bold">${H(c.name)}</td><td style="text-align:right">${lTag}</td><td>${H(c.user || '—')}</td><td>${note}</td><td>${obs || '—'}</td>`;
+      tr.innerHTML = `<td class="bold">${H(c.name)}</td><td style="text-align:right">${lTag}</td><td>${H(c.user || '—')}</td><td>${activityCol}</td><td>${obs || '—'}</td>`;
       adb.appendChild(tr);
     });
   }
