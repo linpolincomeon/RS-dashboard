@@ -1,32 +1,32 @@
 {
-  "updated": "2026-05-07T17:05:48.557098",
+  "updated": "2026-05-07T20:27:29.153893",
   "weeks": [
     {
       "label": "07may-13may",
       "start": "2026-05-07",
       "end": "2026-05-13",
-      "ventas": 22853972,
-      "neto": 17604877,
-      "litros": 15076,
-      "litros_retail": 15076,
-      "litros_volumen": 0,
-      "precio_neto": 1168,
-      "precio_bruto": 1516,
-      "margin": 0.08153,
-      "margin_retail": 0.08153,
-      "margin_volumen": 0,
-      "facturas": 12,
+      "ventas": 42687670,
+      "neto": 32977540,
+      "litros": 28326,
+      "litros_retail": 23326,
+      "litros_volumen": 5000,
+      "precio_neto": 1164,
+      "precio_bruto": 1507,
+      "margin": 0.07619,
+      "margin_retail": 0.08376,
+      "margin_volumen": 0.03942,
+      "facturas": 20,
       "nc": 0,
-      "clientes": 12,
-      "recaud": 29504854,
+      "clientes": 20,
+      "recaud": 42549582,
       "cheques": 0,
-      "transf": 16972320,
+      "transf": 30017048,
       "factoring": 12532534,
       "compras_odoo": 0,
       "cheq_cartera_saldo": 0,
       "cheq_recibidos": 0,
-      "facturas_contado": 1,
-      "facturas_credito": 11,
+      "facturas_contado": 2,
+      "facturas_credito": 18,
       "margin_by_term": {
         "Prepago": {
           "margin": 0.12913,
@@ -34,10 +34,16 @@
           "count": 1,
           "days": 0
         },
+        "1 Día": {
+          "margin": 0.03942,
+          "normalizado": 0.04909,
+          "count": 1,
+          "days": 1
+        },
         "30 Días": {
-          "margin": 0.07665,
-          "normalizado": 0.07665,
-          "count": 9,
+          "margin": 0.08146,
+          "normalizado": 0.08146,
+          "count": 16,
           "days": 30
         },
         "60 Días": {
@@ -47,9 +53,9 @@
           "days": 60
         }
       },
-      "cotiz_canceladas": 2,
+      "cotiz_canceladas": 3,
       "visitas": 0,
-      "clientes_nuevos": 3,
+      "clientes_nuevos": 7,
       "ppto": 213480,
       "ppto_retail": 153706,
       "ppto_volumen": 59774,
@@ -1254,8 +1260,8 @@
     {
       "date": "07may",
       "day": "Jue",
-      "litros": 15076,
-      "neto": 17604877
+      "litros": 28326,
+      "neto": 32977540
     },
     {
       "date": "06may",
@@ -1354,16 +1360,16 @@
       "balance": 15016391
     },
     {
+      "name": "DE CHILE",
+      "balance": 11628139
+    },
+    {
       "name": "SANTANDER",
       "balance": 8005019
     },
     {
       "name": "ESTADO",
       "balance": 6228576
-    },
-    {
-      "name": "DE CHILE",
-      "balance": 5780809
     },
     {
       "name": "BCI",
@@ -1378,15 +1384,15 @@
       "balance": -1727275
     }
   ],
-  "total_cash": 41242090,
+  "total_cash": 47089420,
   "receivables": {
-    "open_invoices": 266,
-    "total_due": 607216693,
-    "current": 523288532,
-    "overdue": 83928161,
-    "pct_overdue": 13.8,
+    "open_invoices": 269,
+    "total_due": 620872773,
+    "current": 543122230,
+    "overdue": 77750543,
+    "pct_overdue": 12.5,
     "aging": {
-      "0-30": 66749276,
+      "0-30": 60571658,
       "31-60": 7413322,
       "61-90": 0,
       "90+": 9765563
@@ -1483,15 +1489,15 @@
   "riesgo": {
     "cubierto": 0,
     "cubierto_count": 0,
-    "no_cubierto": 607216693,
-    "no_cubierto_count": 266,
+    "no_cubierto": 620872773,
+    "no_cubierto_count": 269,
     "pct_monto": 100.0,
     "pct_count": 100.0
   },
   "churn": {
-    "eligible_clients": 165,
+    "eligible_clients": 166,
     "churned_count": 53,
-    "pct": 32.1,
+    "pct": 31.9,
     "churned": [
       {
         "name": "ERIKA DEL PILAR GUZMAN MANRIQUEZ",
@@ -1828,9 +1834,9 @@
       },
       {
         "month": "May 2026",
-        "pct": 84.0,
-        "new_churn": 63,
-        "active_start": 75
+        "pct": 83.8,
+        "new_churn": 62,
+        "active_start": 74
       }
     ]
   },
