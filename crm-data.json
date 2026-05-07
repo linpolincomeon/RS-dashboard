@@ -1,5 +1,5 @@
 {
-  "updated": "2026-05-07T16:24:15.209633",
+  "updated": "2026-05-07T16:33:13.351299",
   "week": {
     "start": "2026-05-07",
     "end": "2026-05-13",
@@ -1442,7 +1442,7 @@
       "exec_id": 262,
       "value": 8000,
       "days_in_stage": 6,
-      "days_since_activity": 0,
+      "days_since_activity": 1,
       "last_update": "2026-05-06",
       "origin": "—",
       "created": "2025-09-30",
@@ -1618,7 +1618,7 @@
       "exec_id": 262,
       "value": 6000,
       "days_in_stage": 6,
-      "days_since_activity": 0,
+      "days_since_activity": 1,
       "last_update": "2026-05-06",
       "origin": "—",
       "created": "2026-01-08",
@@ -1697,8 +1697,8 @@
       "exec": "MUÑOZ ENCALADA JOAQUIN",
       "exec_id": 262,
       "value": 0,
-      "days_in_stage": 6,
-      "days_since_activity": 6,
+      "days_in_stage": 7,
+      "days_since_activity": 7,
       "last_update": "2026-04-30",
       "origin": "—",
       "created": "2025-08-19",
@@ -1713,8 +1713,8 @@
       "exec": "MUÑOZ ENCALADA JOAQUIN",
       "exec_id": 262,
       "value": 5000,
-      "days_in_stage": 6,
-      "days_since_activity": 6,
+      "days_in_stage": 7,
+      "days_since_activity": 7,
       "last_update": "2026-04-30",
       "origin": "—",
       "created": "2025-10-29",
@@ -3300,7 +3300,7 @@
       "exec_id": 2,
       "value": 0,
       "days_in_stage": 15,
-      "days_since_activity": 2,
+      "days_since_activity": 3,
       "last_update": "2026-05-04",
       "origin": "—",
       "created": "2025-10-03",
@@ -3316,7 +3316,7 @@
       "exec_id": 2,
       "value": 0,
       "days_in_stage": 15,
-      "days_since_activity": 2,
+      "days_since_activity": 3,
       "last_update": "2026-05-04",
       "origin": "—",
       "created": "2025-10-29",
@@ -6960,6 +6960,23 @@
       "last_note": ""
     },
     {
+      "id": 31,
+      "name": "Contacto Ale Feña (Agricola Santa María de graneros)",
+      "stage": "Cotizado",
+      "stage_class": "cotizado",
+      "exec": "Toro González Sebastian Enrique",
+      "exec_id": 56,
+      "value": 0,
+      "days_in_stage": 273,
+      "days_since_activity": 45,
+      "last_update": "2026-03-23",
+      "origin": "—",
+      "created": "2025-07-24",
+      "probability": 93.96,
+      "action": "Seguimiento cotización",
+      "last_note": ""
+    },
+    {
       "id": 61,
       "name": "VIÑEDOS PUERTA",
       "stage": "Contactado",
@@ -6991,23 +7008,6 @@
       "created": "2025-08-07",
       "probability": 4.93,
       "action": "Agendar visita (Ruta)",
-      "last_note": ""
-    },
-    {
-      "id": 31,
-      "name": "Contacto Ale Feña (Agricola Santa María de graneros)",
-      "stage": "Cotizado",
-      "stage_class": "cotizado",
-      "exec": "Toro González Sebastian Enrique",
-      "exec_id": 56,
-      "value": 0,
-      "days_in_stage": 272,
-      "days_since_activity": 45,
-      "last_update": "2026-03-23",
-      "origin": "—",
-      "created": "2025-07-24",
-      "probability": 93.96,
-      "action": "Seguimiento cotización",
       "last_note": ""
     },
     {
@@ -7982,13 +7982,32 @@
           "by_user": {}
         },
         "cotizacion": {
-          "value": 14,
+          "value": 16,
           "goal": 8,
           "by_user": {
+            "TomEnergy": 2,
             "RON ROJAS YENIRE DEL VALLE": 12,
             "Toro González Sebastian Enrique": 2
           },
           "detail": [
+            {
+              "name": "S30704",
+              "cliente": "INVERSIONES FRUTICOLAS S.A.",
+              "vendedor": "TomEnergy",
+              "monto": 0.0,
+              "litros": 0,
+              "estado": "draft",
+              "fecha": "2026-05-07"
+            },
+            {
+              "name": "S30703",
+              "cliente": "JUAN VILLAR ESPINOZA SPA",
+              "vendedor": "TomEnergy",
+              "monto": 0.0,
+              "litros": 0,
+              "estado": "draft",
+              "fecha": "2026-05-07"
+            },
             {
               "name": "S30702",
               "cliente": "Dimension",
@@ -8121,13 +8140,27 @@
           "value": 100,
           "goal": 100,
           "unit": "%",
-          "count": 15,
+          "count": 17,
           "by_user": {
+            "TomEnergy": 3,
             "RON ROJAS YENIRE DEL VALLE": 12,
-            "Toro González Sebastian Enrique": 2,
-            "TomEnergy": 1
+            "Toro González Sebastian Enrique": 2
           },
           "detail": [
+            {
+              "name": "S30704",
+              "cliente": "INVERSIONES FRUTICOLAS S.A.",
+              "vendedor": "TomEnergy",
+              "monto": 0.0,
+              "fecha": "2026-05-07"
+            },
+            {
+              "name": "S30703",
+              "cliente": "JUAN VILLAR ESPINOZA SPA",
+              "vendedor": "TomEnergy",
+              "monto": 0.0,
+              "fecha": "2026-05-07"
+            },
             {
               "name": "S30702",
               "cliente": "Dimension",
@@ -20156,40 +20189,6 @@
         "last_note": ""
       },
       {
-        "name": "CIA CHILENA DE FOSFOROS S A",
-        "vendedor": "Toro González Sebastian Enrique",
-        "monto_credito": 2500000,
-        "saldo_credito": 250000,
-        "utilizacion_pct": 90.0,
-        "avg_monthly_litros": 474,
-        "avg_monthly_venta": 586690,
-        "projected_monthly": 587082,
-        "linea_ratio": 23.5,
-        "avg_payment_days": 0.0,
-        "plazo_pago_dias": 30,
-        "plazo_pago_label": "30 Days",
-        "mora_ratio": 0.0,
-        "overdue_count": 0,
-        "overdue_amount": 0,
-        "siniestro_count": 0,
-        "excepcion_count": 0,
-        "has_dicom": false,
-        "avg_margin_pct": 7.0,
-        "avg_price_rango": -9.0,
-        "pricelist": "BOMBA -9 (CLP)",
-        "ar_balance": 2250000,
-        "risk_score": 27,
-        "risk_level": "Medio",
-        "score_detail": {
-          "morosidad": 0,
-          "utilizacion": 22,
-          "cobranza": 0,
-          "margen": 5,
-          "dicom": 0
-        },
-        "last_note": ""
-      },
-      {
         "name": "EMPRESAS TUCAPEL S A",
         "vendedor": "Toro González Sebastian Enrique",
         "monto_credito": 78400000,
@@ -23630,12 +23629,12 @@
       "total_evaluados": 381,
       "criticos": 3,
       "altos": 61,
-      "medios": 158,
-      "bajos": 159,
-      "linea_insuficiente_count": 45,
+      "medios": 157,
+      "bajos": 160,
+      "linea_insuficiente_count": 44,
       "total_siniestros": 0,
       "total_overdue_amount": 65016377,
-      "avg_utilizacion": 23.9
+      "avg_utilizacion": 23.8
     }
   },
   "graduating": [],
