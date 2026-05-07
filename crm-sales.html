@@ -109,7 +109,7 @@ tr:hover td{background:#fafaf8}
       <button class="tab-btn" onclick="switchTab('fidelizacion')">Churn & Rescate</button>
       <button class="tab-btn" onclick="switchTab('cs')">Fidelización + CS</button>
       <button class="tab-btn" onclick="switchTab('mesvencido')">📋 Mes Vencido</button>
-      <button class="tab-btn" onclick="switchTab('riesgo')">⚠️ Riesgo</button>
+      <!-- Riesgo tab removed — now in CEO dashboard only -->
       <button class="tab-btn" onclick="switchTab('glosario')">📖 Glosario</button>
       <button class="tab-btn" onclick="switchTab('pendientes')" style="color:#c8360e">⚙️ Pendientes</button>
     </div>
@@ -257,29 +257,7 @@ tr:hover td{background:#fafaf8}
     <!-- ═══ TAB: MES VENCIDO ═══ -->
     <div class="tab-panel" id="tab-mesvencido"></div>
 
-    <!-- ═══ TAB: RIESGO CREDITICIO ═══ -->
-    <div class="tab-panel" id="tab-riesgo">
-      <div class="kpi-row" id="riesgoKpiRow"></div>
-      <div class="grid-2">
-        <div class="chart-cont"><h3>Distribución de Riesgo</h3><canvas id="chartRiskDist"></canvas></div>
-        <div class="chart-cont"><h3>Riesgo Vigente AVLA — % No Cubierto</h3><canvas id="chartRiesgoVigente"></canvas></div>
-      </div>
-
-      <div class="sec"><div class="sec-h"><h2>📊 Top 10 — Utilización Línea de Crédito</h2></div>
-        <div class="sec-b"><table><thead><tr><th>Score</th><th>Cliente</th><th>Línea</th><th>Saldo</th><th>Utiliz.</th><th>Mora</th></tr></thead>
-        <tbody id="topUtilBody"></tbody></table></div></div>
-
-      <div class="sec"><div class="sec-h"><h2>⚠️ Líneas de Crédito Insuficientes</h2><span class="badge" id="lineaInsufCount">0</span></div>
-        <div class="sec-b" style="max-height:500px;overflow-y:auto">
-          <table><thead><tr><th>Score</th><th>Cliente</th><th>Línea</th><th>Saldo Disp.</th><th>Utiliz.</th><th>Facturación Proy.</th><th>% Línea</th></tr></thead>
-          <tbody id="lineaInsufBody"></tbody></table>
-          <div class="nodata" id="noLineaInsuf" style="display:none">Sin líneas insuficientes</div></div></div>
-      <div class="sec"><div class="sec-h"><h2>📊 Score Crediticio por Cliente</h2><span class="badge" id="scoreCount">0</span></div>
-        <div class="sec-b" style="max-height:600px;overflow-y:auto">
-          <table><thead><tr><th>Score</th><th>Cliente</th><th>Nivel</th><th>DICOM</th><th>Mora (días)</th><th>Plazo</th><th>Utiliz.</th><th>Vencido</th><th>Siniestro</th><th>Margen</th><th>L/mes</th></tr></thead>
-          <tbody id="scoreBody"></tbody></table>
-          <div class="nodata" id="noScore" style="display:none">Sin datos de riesgo</div></div></div>
-    </div>
+    <!-- Tab Riesgo removed — now in CEO dashboard only -->
 
     <!-- ═══ TAB: PENDIENTES ═══ -->
     <div class="tab-panel" id="tab-pendientes">
@@ -471,7 +449,7 @@ function switchTab(tab) {
   if (tab === 'fidelizacion' && D) renderFidelizacion();
   if (tab === 'cs' && D) renderCS();
   if (tab === 'mesvencido' && D) renderMesVencido();
-  if (tab === 'riesgo' && D) renderRiesgo();
+  // Riesgo tab removed — now in CEO dashboard only
 }
 
 function switchCsSubTab(subTab) {
