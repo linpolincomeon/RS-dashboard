@@ -215,7 +215,7 @@ tr:hover td{background:#fafaf8}
 
       <!-- Todos los Durmientes -->
       <div class="sec"><div class="sec-h"><h2>😴 Todos los Durmientes</h2><span class="badge" id="allDormantCount">0</span></div><div class="sec-b" style="max-height:600px;overflow-y:auto">
-        <table><thead><tr><th>Cliente</th><th style="text-align:right">Litros Prom/Mes</th><th>Responsable</th><th>Última Actividad</th><th>Observaciones</th></tr></thead><tbody id="allDormantBody"></tbody></table>
+        <table><thead><tr><th>Cliente</th><th style="text-align:right">Litros Prom/Mes</th><th>Responsable</th><th>Última Actividad</th><th style="text-align:center">Oport. CRM</th></tr></thead><tbody id="allDormantBody"></tbody></table>
         <div class="nodata" id="noAllDormant" style="display:none">Sin durmientes registrados</div></div></div>
     </div>
 
@@ -1661,9 +1661,10 @@ function renderFidelizacion() {
     document.getElementById('noAllDormant').style.display = 'block';
   } else {
     document.getElementById('noAllDormant').style.display = 'none';
-    // Try to match dormant clients with credit_risk data for observations
-    const crByName = {};
-    scoreTable.forEach(s => { crByName[s.name?.trim().toUpperCase()] = s; });
+    // Build set of client names with CRM opportunity (pipeline + won_deals)
+    const crmOppNames = new Set();
+    (D.pipeline || []).forEach(p => { if (p.name) crmOppNames.add(p.name.trim().toUpperCase()); });
+    (D.won_deals || []).forEach(w => { if (w.name) crmOppNames.add(w.name.trim().toUpperCase()); });
 
     allDormantDedup.forEach(c => {
       const l = c.avg_monthly_litros || 0;
@@ -1680,16 +1681,12 @@ function renderFidelizacion() {
         ? `<div style="font-size:11px;color:var(--dim);max-width:250px;white-space:normal">${H(c.last_note)}</div>`
         : '';
       const activityCol = actHtml || noteHtml || (c.last_update || '—');
-      // Observations from credit_risk
-      const crMatch = crByName[(c.name || '').trim().toUpperCase()];
-      let obs = '';
-      if (crMatch) {
-        if (crMatch.has_dicom) obs += '<span class="tag tag-r">DICOM</span> ';
-        if (crMatch.risk_level) obs += '<span class="tag ' + (crMatch.risk_level === 'Crítico' ? 'tag-r' : crMatch.risk_level === 'Alto' ? 'tag-y' : 'tag-g') + '">' + crMatch.risk_level + '</span> ';
-        if (crMatch.overdue_amount > 0) obs += '<span style="font-size:11px;color:var(--red)">Mora: $' + fL(crMatch.overdue_amount) + '</span>';
-      }
+      // CRM opportunity boolean
+      const cn = (c.name || '').trim().toUpperCase();
+      const hasOpp = crmOppNames.has(cn) || c._crmAct;
+      const oppTag = hasOpp ? '<span class="tag tag-g">Sí</span>' : '<span class="tag tag-r">No</span>';
       const tr = document.createElement('tr');
-      tr.innerHTML = `<td class="bold">${H(c.name)}</td><td style="text-align:right">${lTag}</td><td>${H(c.user || '—')}</td><td>${activityCol}</td><td>${obs || '—'}</td>`;
+      tr.innerHTML = `<td class="bold">${H(c.name)}</td><td style="text-align:right">${lTag}</td><td>${H(c.user || '—')}</td><td>${activityCol}</td><td style="text-align:center">${oppTag}</td>`;
       adb.appendChild(tr);
     });
   }
@@ -1814,18 +1811,33 @@ function renderCS() {
     acumuladoCont.style.display = 'block';
   }
 
-  // Graduating clients table (new → fidelización after 3 months)
+  // Graduating clients table — split into "pendientes" (3+ months) and "próximos" (2-3 months)
   const grad = D.graduating || [];
   const gradContainer = document.getElementById('csGraduatingContainer');
   if (gradContainer) {
     if (grad.length === 0) {
       gradContainer.innerHTML = '<div class="nodata">Sin clientes en transición</div>';
     } else {
-      let gh = '<table><thead><tr><th>Cliente</th><th>Primera Compra</th><th>Días</th><th>Vendedor Actual</th><th>Facturas</th><th>Monto Total</th></tr></thead><tbody>';
-      grad.forEach(function(c) {
-        gh += '<tr><td class="bold">' + H(c.name) + '</td><td>' + c.first_invoice + '</td><td><strong>' + c.days_since + 'd</strong></td><td>' + H(c.vendedor) + '</td><td>' + c.total_invoices + '</td><td>' + fL(c.total_amount) + '</td></tr>';
-      });
-      gh += '</tbody></table>';
+      const pendientes = grad.filter(c => c.status === 'pendiente');
+      const proximos = grad.filter(c => c.status === 'proximo');
+      let gh = '';
+      if (pendientes.length) {
+        gh += '<div style="padding:8px 12px;font-weight:700;color:var(--red);font-size:13px">⚠️ Pendientes de transferir a CS (' + pendientes.length + ') — 3+ meses con ejecutivo</div>';
+        gh += '<table><thead><tr><th>Cliente</th><th>Vendedor</th><th>1ª Factura</th><th>Días</th><th>Facturas</th></tr></thead><tbody>';
+        pendientes.forEach(c => {
+          const dc = c.days_since >= 180 ? 'color:var(--red);font-weight:700' : c.days_since >= 120 ? 'color:var(--orange);font-weight:700' : '';
+          gh += '<tr><td class="bold">' + H(c.name) + '</td><td>' + H(c.vendedor) + '</td><td>' + c.first_invoice + '</td><td style="' + dc + '">' + c.days_since + 'd</td><td>' + (c.total_invoices || '—') + '</td></tr>';
+        });
+        gh += '</tbody></table>';
+      }
+      if (proximos.length) {
+        gh += '<div style="padding:8px 12px;font-weight:700;color:var(--yellow);font-size:13px;margin-top:12px">⏳ Próximos a transición (' + proximos.length + ') — 60-89 días</div>';
+        gh += '<table><thead><tr><th>Cliente</th><th>Vendedor</th><th>1ª Factura</th><th>Días</th><th>Facturas</th></tr></thead><tbody>';
+        proximos.forEach(c => {
+          gh += '<tr><td class="bold">' + H(c.name) + '</td><td>' + H(c.vendedor) + '</td><td>' + c.first_invoice + '</td><td>' + c.days_since + 'd</td><td>' + (c.total_invoices || '—') + '</td></tr>';
+        });
+        gh += '</tbody></table>';
+      }
       gradContainer.innerHTML = gh;
     }
   }
