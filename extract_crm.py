@@ -439,6 +439,11 @@ def extract_funnel_data(models, uid):
     print("\nExtracting funnel comercial...")
     weeks_data = []
 
+    # Pre-fetch ruta stage IDs for visit counting
+    _stages = sr(models, uid, "crm.stage", [], ["id", "name"], limit=50)
+    ruta_stage_ids = [s["id"] for s in _stages if classify_stage(s["name"]) == "ruta"]
+    print(f"  Ruta stage IDs: {ruta_stage_ids}")
+
     for offset in range(4):
         wk = get_enap_week(offset)
         ws, we = wk["start"], wk["end"]
@@ -508,6 +513,21 @@ def extract_funnel_data(models, uid):
                     contacts_by_user[u] += 1
             except:
                 pass
+
+        # 2b. Ruta (visitas) — leads moved to "Ruta" stage this week
+        ruta_count = 0
+        ruta_by_user = defaultdict(int)
+        if ruta_stage_ids:
+            ruta_leads = sr(models, uid, "crm.lead", [
+                ["stage_id", "in", ruta_stage_ids],
+                ["date_last_stage_update", ">=", fdt_s(ws)],
+                ["date_last_stage_update", "<=", fdt_e(we)],
+                ["active", "=", True],
+            ], ["user_id", "partner_id", "name"], limit=500)
+            ruta_count = len(ruta_leads)
+            for rl in ruta_leads:
+                u = canonical_vendedor(safe_name(rl.get("user_id")))
+                ruta_by_user[u] += 1
 
         # 3. Cotizaciones
         quote_domain = [
@@ -604,7 +624,7 @@ def extract_funnel_data(models, uid):
                     "vendedor": u,
                 })
 
-        print(f"    Leads:{lead_count} Contactos:{contact_count} Cotiz:{quote_count} Follow:{followup_pct}% Cierre:{close_count}")
+        print(f"    Leads:{lead_count} Contactos:{contact_count} Ruta:{ruta_count} Cotiz:{quote_count} Follow:{followup_pct}% Cierre:{close_count}")
 
         weeks_data.append({
             "week_start": ws,
@@ -614,6 +634,7 @@ def extract_funnel_data(models, uid):
             "stages": {
                 "leads":       {"value": lead_count, "goal": 15, "by_user": dict(leads_by_user), "detail": lead_rows},
                 "contacto":    {"value": contact_count, "goal": 10, "by_user": dict(contacts_by_user)},
+                "ruta":        {"value": ruta_count, "goal": 5, "by_user": dict(ruta_by_user)},
                 "cotizacion":  {"value": quote_count, "goal": 8, "by_user": dict(quotes_by_user), "detail": quote_rows},
                 "seguimiento": {"value": followup_pct, "goal": 100, "unit": "%", "count": managed_count, "by_user": dict(managed_by_user), "detail": managed_detail},
                 "cierre":      {"value": close_count, "goal": 2, "by_user": dict(close_by_user), "detail": close_detail},
@@ -2385,3 +2406,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+    
