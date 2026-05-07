@@ -162,21 +162,10 @@ tr:hover td{background:#fafaf8}
         <!-- Weekly litros chart -->
         <div class="chart-cont"><h3>📈 Venta Semanal (Litros)</h3><canvas id="chartWeekly"></canvas></div>
 
-        <!-- Ranking -->
-        <div class="sec"><div class="sec-h"><h2>📊 Ranking Equipo</h2></div><div class="sec-b">
-          <table><thead><tr><th>#</th><th>Ejecutivo</th><th>% Meta</th><th>Mov. 7d</th><th>Mov. 30d</th></tr></thead><tbody id="rankingBody"></tbody></table>
-        </div></div>
-
         <!-- Clientes Nuevos de la semana -->
         <div class="sec"><div class="sec-h"><h2>🆕 Clientes Nuevos</h2><span class="badge" id="newClientsCount">0</span></div>
           <div class="sec-b" style="max-height:400px;overflow-y:auto"><table><thead><tr><th>Cliente</th><th>Ejecutivo</th><th>Fecha 1ª Factura</th><th style="text-align:right">Litros</th></tr></thead><tbody id="newClientsBody"></tbody></table>
           <div class="nodata" id="noNewClients" style="display:none">Sin clientes nuevos</div></div></div>
-
-        <!-- Margen grids -->
-        <div class="grid-2">
-          <div class="chart-cont"><h3>💰 Margen % por Zona</h3><canvas id="chartMargenZona"></canvas></div>
-          <div class="chart-cont"><h3>💰 Margen % por Ejecutivo</h3><canvas id="chartMargenExec"></canvas></div>
-        </div>
 
         <!-- Hot Deals -->
         <div class="sec"><div class="sec-h"><h2>🔥 Hot Deals — Cotizados 30d</h2><span class="badge" id="hotCount">0</span></div>
@@ -340,7 +329,7 @@ let selectedWeek = 0;
 let selectedExec = 0; // 0=Toro, 1=Muñoz, 2=Ron, 3=Freelancers
 let execSubTab = 'semanal';
 let csSubTab = 'semanal'; // For CS tab sub-tabs
-let chartWeekly = null, chartMargenZona = null, chartMargenExec = null;
+let chartWeekly = null;
 
 const norm = s => s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').split(/\s+/).filter(Boolean).sort().join(' ');
 
@@ -1011,8 +1000,12 @@ function renderEjecutivos() {
     else if (p.last_note) p._activity = {date: (p.last_update || '').slice(0, 10), desc: p.last_note, type: 'Nota'};
   });
 
-  // Split: recent movements (≤7d) vs needs attention (8-90d)
-  const execRecent = execFresh.filter(p => p.days_in_stage <= 7).sort((a, b) => a.days_in_stage - b.days_in_stage);
+  // Split: movements within selected week vs needs attention (8-90d)
+  const execRecent = execFresh.filter(p => {
+    if (!ws || !we) return p.days_in_stage <= 7;
+    const lu = (p.last_update || '').slice(0, 10);
+    return lu >= ws && lu <= we;
+  }).sort((a, b) => ((b.last_update || '') > (a.last_update || '') ? 1 : -1));
   const execStale = execFresh.filter(p => p.days_in_stage > 7).sort((a, b) => (b.value || 0) - (a.value || 0));
 
   // Summary KPIs for exec pipeline
@@ -1021,19 +1014,21 @@ function renderEjecutivos() {
   h += `<div style="display:flex;gap:12px;margin-bottom:14px;flex-wrap:wrap">
     <span class="tag tag-blue" style="font-size:12px">Pipeline: ${execPipeTotal} opp</span>
     <span class="tag tag-blue" style="font-size:12px">${vL_exec}: ${fV_exec(execPipeValue)}</span>
-    <span class="tag tag-g" style="font-size:12px">Mov. 7d: ${execRecent.length}</span>
+    <span class="tag tag-g" style="font-size:12px">Mov. semana: ${execRecent.length}</span>
     <span class="tag ${execStale.length > 0 ? 'tag-r' : 'tag-g'}" style="font-size:12px">Estancadas: ${execStale.length}</span>
   </div>`;
 
-  // Recent movements
-  h += '<div class="sec"><div class="sec-h"><h2>Movimientos Recientes (últimos 7d)</h2><span style="font-size:12px;color:var(--dim)">' + execRecent.length + '</span></div>';
-  h += '<div class="sec-b" style="padding:0;overflow-x:auto"><table><thead><tr><th>Cliente</th><th>Etapa</th><th>' + vL_exec + '</th><th>Hace</th><th>Actividad</th></tr></thead><tbody>';
+  // Recent movements — filtered to selected week
+  const weekLabel = ws ? ws.slice(5) + ' a ' + we.slice(5) : 'Semana';
+  h += '<div class="sec"><div class="sec-h"><h2>Movimientos — ' + weekLabel + '</h2><span style="font-size:12px;color:var(--dim)">' + execRecent.length + '</span></div>';
+  h += '<div class="sec-b" style="padding:0;overflow-x:auto"><table><thead><tr><th>Cliente</th><th>Etapa</th><th>' + vL_exec + '</th><th>Fecha</th><th>Actividad</th></tr></thead><tbody>';
   if (execRecent.length === 0) {
     h += '<tr><td colspan="5" style="text-align:center;color:var(--dim);padding:20px">Sin movimientos esta semana</td></tr>';
   } else {
     execRecent.forEach(p => {
       const actDesc = p._activity ? H((p._activity.type || '') + ': ' + (p._activity.desc || '')) : (p.last_note ? H(p.last_note) : '<span style="color:var(--dim)">—</span>');
-      h += `<tr><td class="bold">${H(p.name)}</td><td>${stageTag(p.stage, p.stage_class)}</td><td class="bold">${fV_exec(p.value)}</td><td style="color:var(--green)">${p.days_in_stage === 0 ? 'Hoy' : p.days_in_stage + 'd'}</td><td style="max-width:300px;white-space:normal;font-size:12px">${actDesc}</td></tr>`;
+      const fecha = (p.last_update || '').slice(0, 10) || '—';
+      h += `<tr><td class="bold">${H(p.name)}</td><td>${stageTag(p.stage, p.stage_class)}</td><td class="bold">${fV_exec(p.value)}</td><td style="white-space:nowrap">${fecha}</td><td style="max-width:300px;white-space:normal;font-size:12px">${actDesc}</td></tr>`;
     });
   }
   h += '</tbody></table></div></div>';
@@ -1087,9 +1082,7 @@ function renderVentasData() {
     renderHotDealsAccum();
   } else {
     renderWeeklyChart();
-    renderRanking();
     renderNewClientsTable();
-    renderMargenCharts();
     renderHotDeals();
   }
 }
@@ -1274,56 +1267,6 @@ function renderWeeklyChart() {
   });
 }
 
-// — Ranking Table (Semanal) —
-function renderRanking() {
-  const tbody = document.getElementById('rankingBody'); tbody.innerHTML = '';
-  const T = (D.ventas || {}).totals || {};
-  const lbuMonth = T.litros_by_user || {};
-  const pf = getProratedFactor(D.ventas?.month_start || new Date());
-  const week = getCurrentWeek();
-
-  // Weekly litros from weekly_history
-  const hist = ((D.ventas || {}).weekly_history || []).slice().reverse();
-  const wkLbu = (hist[selectedWeek] || {}).litros_by_user || {};
-  const hasWkLbu = Object.keys(wkLbu).length > 0;
-
-  // Build unified set of allowed vendor names, deduplicated by canonical name
-  const nameMap = {};
-  const addName = n => { const cn = canonicalName(n); if (!nameMap[cn]) nameMap[cn] = cn; };
-  Object.keys(D.vendor_goals || {}).forEach(n => { if (isAllowed(n)) addName(n); });
-  Object.keys(lbuMonth).forEach(n => { if (isAllowed(n)) addName(n); });
-  if (hasWkLbu) Object.keys(wkLbu).forEach(n => { if (isAllowed(n)) addName(n); });
-  (D.executives || []).forEach(e => { if (isAllowed(e.name)) addName(e.name); });
-  const vendorNames = Object.values(nameMap);
-
-  // Build exec lookup
-  const execMap = {};
-  (D.executives || []).forEach(e => { execMap[norm(e.name)] = e; });
-
-  // Use weekly litros for semanal ranking, monthly for % meta
-  const rows = vendorNames.map(n => {
-    const ltWeek = hasWkLbu ? findInByUser(wkLbu, n) : 0;
-    const ltMonth = findInByUser(lbuMonth, n);
-    const g = getGoal(n);
-    const gL = g.litros_mes || 0;
-    const pM = gL > 0 ? gL * pf : 1;
-    const ltP = gL > 0 ? Math.round((ltMonth / pM) * 100) : (ltMonth > 0 ? 1 : 0);
-    const ex = execMap[norm(n)] || {};
-    return { name: n, ltWeek, ltMonth, ltP, m7: ex.moved || 0, m30: ex.moved_30d || 0 };
-  }).sort((a, b) => b.ltMonth - a.ltMonth);
-
-  // Update header
-  const thead = tbody.closest('table').querySelector('thead tr');
-  if (thead) thead.innerHTML = '<th>#</th><th>Ejecutivo</th><th>Litros Sem.</th><th>% Meta Mes</th><th>Mov. 7d</th><th>Mov. 30d</th>';
-
-  rows.forEach((r, i) => {
-    const lc = r.ltP >= 100 ? 'tag-g' : r.ltP >= 60 ? 'tag-y' : 'tag-r';
-    const tr = document.createElement('tr');
-    tr.innerHTML = '<td><strong>' + (i+1) + '</strong></td><td>' + H(r.name) + '</td><td><strong>' + fL(r.ltWeek) + '</strong></td><td><span class="tag ' + lc + '">' + r.ltP + '%</span></td><td><strong>' + r.m7 + '</strong></td><td><strong>' + r.m30 + '</strong></td>';
-    tbody.appendChild(tr);
-  });
-}
-
 // — Ranking Table (Acumulado Mes) —
 function renderRankingAccum() {
   const tbody = document.getElementById('rankingBodyAccum'); tbody.innerHTML = '';
@@ -1361,41 +1304,8 @@ function renderRankingAccum() {
   });
 }
 
-// — Margen Charts (Semanal) —
-let chartMargenZonaAccum = null, chartMargenExecAccum = null;
-function renderMargenCharts() {
-  const T = (D.ventas || {}).totals || {};
-  const CG = D.company_goals || {};
-
-  // Margen por Zona
-  const mz = T.margin_by_zone || {};
-  const zLabels = Object.keys(mz), zData = Object.values(mz);
-  const ctx1 = document.getElementById('chartMargenZona').getContext('2d');
-  if (chartMargenZona) chartMargenZona.destroy();
-  chartMargenZona = new Chart(ctx1, {
-    type: 'bar', data: { labels: zLabels, datasets: [
-      { label: 'Margen %', data: zData, backgroundColor: zData.map(v => v >= (CG.margen_retail || 8.5) ? 'rgba(22,163,74,.5)' : v >= 6 ? 'rgba(202,138,4,.5)' : 'rgba(200,54,14,.5)'), borderRadius: 4 }
-    ] },
-    options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => c.parsed.x + '%' } } },
-      scales: { x: { beginAtZero: true, max: 15, ticks: { callback: v => v + '%' }, grid: { color: '#f0f0f0' } }, y: { grid: { display: false } } } }
-  });
-
-  // Margen por Ejecutivo
-  const mu = T.margin_by_user || {};
-  const eLabels = [], eData = [];
-  for (const [k, v] of Object.entries(mu)) { if (isAllowed(k) && !isCS(k)) { eLabels.push(k.split(' ').slice(0, 2).join(' ')); eData.push(v); } }
-  const ctx2 = document.getElementById('chartMargenExec').getContext('2d');
-  if (chartMargenExec) chartMargenExec.destroy();
-  chartMargenExec = new Chart(ctx2, {
-    type: 'bar', data: { labels: eLabels, datasets: [
-      { label: 'Margen %', data: eData, backgroundColor: eData.map(v => v >= (CG.margen_retail || 8.5) ? 'rgba(22,163,74,.5)' : v >= 6 ? 'rgba(202,138,4,.5)' : 'rgba(200,54,14,.5)'), borderRadius: 4 }
-    ] },
-    options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => c.parsed.x + '%' } } },
-      scales: { x: { beginAtZero: true, max: 15, ticks: { callback: v => v + '%' }, grid: { color: '#f0f0f0' } }, y: { grid: { display: false } } } }
-  });
-}
-
 // — Margen Charts (Acumulado Mes) —
+let chartMargenZonaAccum = null, chartMargenExecAccum = null;
 function renderMargenChartsAccum() {
   const T = (D.ventas || {}).totals || {};
   const CG = D.company_goals || {};
