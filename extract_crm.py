@@ -1584,9 +1584,9 @@ def extract_credit_risk(models, uid):
     credit_partners = sr(models, uid, "res.partner", [
         ["tiene_credito", "=", True],
         ["customer_rank", ">", 0],
-    ], ["id", "name", "monto_credito", "saldo_credito",
+    ], ["id", "name", "user_id", "monto_credito", "saldo_credito",
         "property_payment_term_id", "property_product_pricelist",
-        "credit", "category_id"],  # credit = AR balance, category_id = tags
+        "credit", "category_id"],  # credit = AR balance, category_id = tags; user_id = vendedor asignado
     limit=2000)
 
     print(f"  Partners with credit line: {len(credit_partners)}")
@@ -1683,7 +1683,7 @@ def extract_credit_risk(models, uid):
                 "price_rango_sum": 0,
                 "price_rango_count": 0,
                 "cobranza_labels": [],
-                "vendedor": safe_name(inv.get("invoice_user_id")),
+                "vendedor": safe_name(inv.get("invoice_user_id")),  # fallback, overridden by partner.user_id
             }
 
         s = partner_stats[pid]
@@ -1749,6 +1749,7 @@ def extract_credit_risk(models, uid):
         ar_balance = p.get("credit", 0) or 0
         payment_term = safe_name(p.get("property_payment_term_id"))
         pricelist = safe_name(p.get("property_product_pricelist"))
+        vendedor_partner = safe_name(p.get("user_id"))  # vendedor asignado al cliente
         name = p.get("name", "?")
 
         # Parse payment term days (e.g., "30 Days", "Plazo 30 días")
@@ -1816,8 +1817,9 @@ def extract_credit_risk(models, uid):
             risk_level = "Bajo"
 
         entry = {
+            "_pid": pid,
             "name": name,
-            "vendedor": stats["vendedor"],
+            "vendedor": vendedor_partner or stats["vendedor"],  # partner.user_id > invoice_user_id
             "monto_credito": monto,
             "saldo_credito": saldo,
             "utilizacion_pct": utilizacion,
@@ -1872,6 +1874,36 @@ def extract_credit_risk(models, uid):
     print(f"  Score: {criticos} Críticos, {altos} Altos, {medios} Medios, {bajos} Bajos")
     print(f"  Líneas insuficientes: {total_linea_insuf}")
     print(f"  Siniestros: {total_siniestros} | Monto vencido: ${total_overdue:,.0f}")
+
+    # ── Last vendor note for credit risk clients (same pattern as dormants) ──
+    _noise_cr = ["lead enrichment", "nuevo lead para el equipo", "new lead for", "stage changed",
+                 "enrichment could", "no company data", "meeting scheduled"]
+    cr_pids = [e["_pid"] for e in score_table if e.get("_pid")]
+    cr_note_by_pid = {}
+    if cr_pids:
+        try:
+            for i in range(0, len(cr_pids), batch_size):
+                batch = cr_pids[i:i+batch_size]
+                msgs = sr(models, uid, "mail.message", [
+                    ["model", "=", "res.partner"],
+                    ["res_id", "in", batch],
+                    ["message_type", "in", ["comment", "email"]],
+                ], ["res_id", "body", "date"], limit=500, order="date desc")
+                for m in msgs:
+                    pid_m = m.get("res_id")
+                    if pid_m and pid_m not in cr_note_by_pid:
+                        body = strip_html(m.get("body") or "")
+                        if len(body) > 3 and not any(n in body.lower()[:60] for n in _noise_cr):
+                            cr_note_by_pid[pid_m] = body[:150]
+            print(f"  Credit risk notes found: {len(cr_note_by_pid)}/{len(cr_pids)}")
+        except Exception as e:
+            print(f"  Credit risk notes skipped: {e}")
+
+    for e in score_table:
+        e["last_note"] = cr_note_by_pid.get(e.get("_pid"), "")
+        e.pop("_pid", None)
+    for e in linea_insuficiente:
+        e.pop("_pid", None)
 
     return {
         "linea_insuficiente": linea_insuficiente[:50],
