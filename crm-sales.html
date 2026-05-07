@@ -962,12 +962,12 @@ function renderEjecutivos() {
   const allMsgs = D.messages || [];
   const allActs = D.activities || [];
   const notesByLead = {};  // lead name → {date, desc}
-  // Messages from this exec
-  allMsgs.filter(m => matchesExec(m.who)).forEach(m => {
+  // Messages from this exec — filtered by selected week
+  allMsgs.filter(m => matchesExec(m.who) && (!ws || !we || ((m.date||'') >= ws && (m.date||'') <= we + 'Z'))).forEach(m => {
     // messages don't have lead name directly, skip for now
   });
-  // Activities from this exec — these have lead name
-  allActs.filter(a => matchesExec(a.who)).forEach(a => {
+  // Activities from this exec — filtered by selected week
+  allActs.filter(a => matchesExec(a.who) && (!ws || !we || ((a.date||'') >= ws && (a.date||'') <= we))).forEach(a => {
     const key = (a.lead || '').trim().toUpperCase();
     if (key && (!notesByLead[key] || (a.date || '') > (notesByLead[key].date || ''))) {
       notesByLead[key] = {date: a.date || '', desc: a.summary || '', type: a.type || 'To-Do'};
@@ -1157,9 +1157,10 @@ function renderVentas() {
   const retPct = retWeek.value || 0;
 
   // 11. Ruta (visitas)
+  const stVentas = week?.stages || {};
   const wRuta = isAccum
     ? fw.reduce((s, w) => s + (w.stages?.ruta?.value || 0), 0)
-    : (st.ruta?.value || 0);
+    : (stVentas.ruta?.value || 0);
 
   // Budget for acumulado: monthly litros goal from company_goals
   const ltGoalMes = CG.litros_mes || 0;
@@ -1785,7 +1786,7 @@ function renderCS() {
 
   // ── Actividades CS de la Semana (filtradas por semana seleccionada) ──
   const csMsgs = (D.messages || []).filter(m => isCS(m.who) && (!weekStart || !weekEnd || ((m.date||'') >= weekStart && (m.date||'') <= weekEnd + 'Z')));
-  const csActs = (D.activities || []).filter(a => isCS(a.who));
+  const csActs = (D.activities || []).filter(a => isCS(a.who) && (!weekStart || !weekEnd || ((a.date||'') >= weekStart && (a.date||'') <= weekEnd)));
   const csCombined = [];
   csMsgs.forEach(m => csCombined.push({date: m.date || '', type: '💬 Nota', client: '', desc: m.desc || ''}));
   csActs.forEach(a => csCombined.push({date: a.date || '', type: '📋 ' + (a.type || 'To-Do'), client: a.lead || '', desc: a.summary || ''}));
