@@ -2272,70 +2272,75 @@ def main():
     if "Toro González Sebastian Enrique" in vendor_goals:
         vendor_goals["Toro González Sebastian Enrique"]["litros_mes"] = 200000
 
-    # ── Graduating: clients assigned to ejecutivo/freelancer, approaching or past 3 months ──
+    # ── Graduating: clients whose FIRST invoice was 60-120 days ago, assigned to ejecutivo/freelancer ──
     graduating = []
     try:
-        # Two thresholds: 60 days (approaching) and 90 days (overdue)
-        two_months_ago = today - timedelta(days=60)
+        # Search directly for first invoices in the 60-120 day window
+        window_start = today - timedelta(days=120)
+        window_end = today - timedelta(days=60)
         _exec_names = [
             "toro gonzález sebastian enrique", "muñoz encalada joaquin", "ron yenire",
             "carolina avilés", "fernando jullian", "marcela márquez", "raúl bisquertt",
         ]
 
-        curr_month_invs = sr(models, uid, "account.move", [
+        # Get all invoices in the window (candidates for first invoice)
+        window_invs = sr(models, uid, "account.move", [
             ["move_type", "=", "out_invoice"],
             ["state", "=", "posted"],
-            ["invoice_date", ">=", fmt(m_start)],
-            ["invoice_date", "<=", fmt(m_end)],
-        ], ["partner_id", "invoice_user_id"], limit=2000)
+            ["invoice_date", ">=", fmt(window_start)],
+            ["invoice_date", "<=", fmt(window_end)],
+        ], ["partner_id", "invoice_date"], limit=3000)
 
-        curr_pids = set()
-        curr_pid_user = {}
-        for inv in curr_month_invs:
+        # Unique partner IDs in window
+        window_pids = set()
+        for inv in window_invs:
             pid = safe_id(inv.get("partner_id"))
             if pid:
-                curr_pids.add(pid)
-                curr_pid_user[pid] = canonical_vendedor(safe_name(inv.get("invoice_user_id")))
-        # Override with partner.user_id
-        for ci in range(0, len(list(curr_pids)), 200):
-            chunk = list(curr_pids)[ci:ci+200]
-            _ps = sr(models, uid, "res.partner", [["id", "in", chunk]], ["id", "user_id"], limit=200)
-            for _p in _ps:
-                _pu = canonical_vendedor(safe_name(_p.get("user_id")))
-                if _pu:
-                    curr_pid_user[_p["id"]] = _pu
+                window_pids.add(pid)
 
-        # For each, find their FIRST ever invoice (batch: get all first invoices)
+        print(f"  Graduating window ({fmt(window_start)} to {fmt(window_end)}): {len(window_pids)} partners with invoices")
+
         grad_candidates = []
-        pid_list = list(curr_pids)
+        pid_list = list(window_pids)
         for i in range(0, len(pid_list), 200):
             batch = pid_list[i:i+200]
             for pid in batch:
+                # Find FIRST ever invoice for this partner
                 first_inv = sr(models, uid, "account.move", [
                     ["move_type", "=", "out_invoice"],
                     ["state", "=", "posted"],
                     ["partner_id", "=", pid],
                 ], ["invoice_date", "partner_id"], limit=1, order="invoice_date asc")
-                if first_inv:
-                    first_date = first_inv[0].get("invoice_date", "")
-                    if not first_date:
-                        continue
-                    days = (today - datetime.strptime(first_date, "%Y-%m-%d").date()).days
-                    if days < 60:
-                        continue  # Too new, skip
-                    vendedor = curr_pid_user.get(pid, "")
-                    vn = norm_name(vendedor)
-                    is_exec = any(all(w in vn.split() for w in norm_name(av).split()) for av in _exec_names)
-                    if is_exec:
-                        pname = safe_name(first_inv[0].get("partner_id"))
-                        status = "pendiente" if days >= 90 else "proximo"
-                        grad_candidates.append({
-                            "name": pname,
-                            "vendedor": vendedor,
-                            "first_invoice": first_date,
-                            "days_since": days,
-                            "status": status,
-                        })
+                if not first_inv:
+                    continue
+                first_date = first_inv[0].get("invoice_date", "")
+                if not first_date:
+                    continue
+                try:
+                    first_dt = datetime.strptime(first_date, "%Y-%m-%d").date()
+                except Exception:
+                    continue
+                days = (today - first_dt).days
+                # Only include if their FIRST invoice is within the 60-120d window
+                if days < 60 or days > 120:
+                    continue
+                pname = safe_name(first_inv[0].get("partner_id"))
+                # Get vendedor from res.partner.user_id (canonical rule)
+                partner_rec = sr(models, uid, "res.partner", [["id", "=", pid]], ["user_id"], limit=1)
+                vendedor = ""
+                if partner_rec:
+                    vendedor = canonical_vendedor(safe_name(partner_rec[0].get("user_id")))
+                vn = norm_name(vendedor)
+                is_exec = any(all(w in vn.split() for w in norm_name(av).split()) for av in _exec_names)
+                if is_exec:
+                    status = "pendiente" if days >= 90 else "proximo"
+                    grad_candidates.append({
+                        "name": pname,
+                        "vendedor": vendedor,
+                        "first_invoice": first_date,
+                        "days_since": days,
+                        "status": status,
+                    })
 
         # Count invoices for grad candidates
         for g in grad_candidates:
