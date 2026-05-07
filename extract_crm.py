@@ -2144,6 +2144,75 @@ def main():
     if "Toro González Sebastian Enrique" in vendor_goals:
         vendor_goals["Toro González Sebastian Enrique"]["litros_mes"] = 200000
 
+    # ── Graduating: clients whose first diesel invoice was 3+ months ago, still buying, assigned to ejecutivo ──
+    graduating = []
+    try:
+        three_months_ago = (m_start.replace(day=1) - timedelta(days=1)).replace(day=1)
+        three_months_ago = (three_months_ago - timedelta(days=1)).replace(day=1)
+        three_months_ago = (three_months_ago - timedelta(days=1)).replace(day=1)
+
+        # Get all partners with diesel invoices in current month
+        curr_inv_pids = set()
+        for inv in ventas.get("detail_by_user", {}).values() if isinstance(ventas.get("detail_by_user"), dict) else []:
+            for row in inv:
+                pass  # detail_by_user doesn't have partner_id
+
+        # Simpler: get partners who bought this month AND have first invoice 3+ months ago
+        curr_month_invs = sr(models, uid, "account.move", [
+            ["move_type", "=", "out_invoice"],
+            ["state", "=", "posted"],
+            ["invoice_date", ">=", fmt(m_start)],
+            ["invoice_date", "<=", fmt(m_end)],
+        ], ["partner_id", "invoice_user_id"], limit=2000)
+
+        curr_pids = set()
+        curr_pid_user = {}
+        for inv in curr_month_invs:
+            pid = safe_id(inv.get("partner_id"))
+            if pid:
+                curr_pids.add(pid)
+                curr_pid_user[pid] = safe_name(inv.get("invoice_user_id"))
+
+        # For each, find their FIRST ever diesel invoice
+        grad_candidates = []
+        for i in range(0, len(list(curr_pids)), 200):
+            batch = list(curr_pids)[i:i+200]
+            for pid in batch:
+                first_inv = sr(models, uid, "account.move", [
+                    ["move_type", "=", "out_invoice"],
+                    ["state", "=", "posted"],
+                    ["partner_id", "=", pid],
+                ], ["invoice_date", "partner_id"], limit=1, order="invoice_date asc")
+                if first_inv:
+                    first_date = first_inv[0].get("invoice_date", "")
+                    if first_date and first_date <= fmt(three_months_ago):
+                        pname = safe_name(first_inv[0].get("partner_id"))
+                        vendedor = curr_pid_user.get(pid, "")
+                        # Only include if assigned to an ejecutivo (not CS)
+                        vn = norm_name(vendedor)
+                        is_exec = any(all(w in vn.split() for w in norm_name(av).split()) for av in
+                            ["toro gonzález sebastian enrique", "muñoz encalada joaquin", "ron yenire"])
+                        if is_exec:
+                            grad_candidates.append({
+                                "name": pname,
+                                "vendedor": vendedor,
+                                "first_invoice": first_date,
+                                "days_since": (today - datetime.strptime(first_date, "%Y-%m-%d").date()).days,
+                            })
+        # Count invoices for grad candidates
+        for g in grad_candidates:
+            cnt = s_count(models, uid, "account.move", [
+                ["move_type", "=", "out_invoice"],
+                ["state", "=", "posted"],
+                ["partner_id.name", "=", g["name"]],
+            ])
+            g["total_invoices"] = cnt
+
+        graduating = sorted(grad_candidates, key=lambda x: -x["days_since"])[:30]
+        print(f"  Graduating clients (3+ months, exec-assigned): {len(graduating)}")
+    except Exception as e:
+        print(f"  Graduating skipped: {e}")
+
     # Merge everything into one JSON
     data = {
         "updated": datetime.now().isoformat(),
@@ -2165,6 +2234,7 @@ def main():
         "churn": churn,
         "rescued": rescued,
         "credit_risk": credit_risk,
+        "graduating": graduating,
         "vendor_goals": vendor_goals,
         "company_goals": {
             "litros_mes": 1305689,
