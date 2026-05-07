@@ -82,6 +82,26 @@ tr:hover td{background:#fafaf8}
 @media(max-width:900px){.grid-2{grid-template-columns:1fr}.vgrid{grid-template-columns:1fr}}
 @media(max-width:800px){.kpi-row{grid-template-columns:repeat(2,1fr)}.chart-cont{padding:12px}}
 @media(max-width:500px){.kpi-row{grid-template-columns:1fr}.topbar{flex-direction:column;gap:10px;text-align:center}.topbar-right{width:100%;justify-content:center;flex-wrap:wrap}}
+/* Pipeline tab styles */
+.funnel-flow{display:flex;align-items:center;gap:0;margin-bottom:24px;overflow-x:auto;padding:8px 0}
+.funnel-stage{text-align:center;padding:18px 16px;border-radius:12px;min-width:120px;flex:1;position:relative}
+.funnel-stage .fs-cnt{font-size:28px;font-weight:700;display:block}
+.funnel-stage .fs-lbl{font-size:11px;text-transform:uppercase;letter-spacing:.4px;margin-top:2px;display:block;font-weight:600}
+.funnel-stage .fs-val{font-size:11px;margin-top:4px;opacity:.8;display:block}
+.funnel-arrow{color:var(--dim);font-size:12px;text-align:center;padding:0 4px;flex-shrink:0;display:flex;flex-direction:column;align-items:center;gap:1px}
+.funnel-arrow .fa-pct{font-weight:700;font-size:11px;white-space:nowrap}
+.exec-rank{width:100%;border-collapse:collapse;font-size:13px}
+.exec-rank th{text-align:left;padding:10px 12px;color:var(--dim);font-size:11px;font-weight:600;text-transform:uppercase;border-bottom:2px solid #f0f0f0}
+.exec-rank td{padding:10px 12px;border-bottom:1px solid #f5f5f5;vertical-align:middle}
+.exec-rank tr:hover td{background:#fafaf8}
+.collapsible-trigger{cursor:pointer;user-select:none}
+.collapsible-trigger:hover{opacity:.8}
+.collapsible-body{transition:max-height .3s ease}
+.hot-badge{background:linear-gradient(135deg,#ff6b35,#f7c948);color:#fff;font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px;display:inline-block;margin-left:6px}
+.act-pip{display:flex;gap:10px;padding:8px 0;border-bottom:1px solid #f5f5f5;font-size:12px}
+.act-pip:last-child{border-bottom:none}
+.act-pip .act-d{color:var(--dim);white-space:nowrap;min-width:70px}
+.act-pip .act-w{color:var(--red);font-weight:600;white-space:nowrap}
 </style>
 </head>
 <body>
@@ -110,6 +130,7 @@ tr:hover td{background:#fafaf8}
       <button class="tab-btn" onclick="switchTab('fidelizacion')">Churn & Rescate</button>
       <button class="tab-btn" onclick="switchTab('cs')">Fidelización + CS</button>
       <button class="tab-btn" onclick="switchTab('mesvencido')">📋 Mes Vencido</button>
+      <button class="tab-btn" onclick="switchTab('pipeline')">📊 Pipeline</button>
       <!-- Riesgo tab removed — now in CEO dashboard only -->
       <button class="tab-btn" onclick="switchTab('glosario')">📖 Glosario</button>
       <button class="tab-btn" onclick="switchTab('pendientes')" style="color:#c8360e">⚙️ Pendientes</button>
@@ -260,6 +281,9 @@ tr:hover td{background:#fafaf8}
 
     <!-- Tab Riesgo removed — now in CEO dashboard only -->
 
+    <!-- ═══ TAB: PIPELINE ═══ -->
+    <div class="tab-panel" id="tab-pipeline"></div>
+
     <!-- ═══ TAB: PENDIENTES ═══ -->
     <div class="tab-panel" id="tab-pendientes">
       <div class="sec"><div class="sec-h"><h2>⚙️ Issues Pendientes</h2></div>
@@ -374,6 +398,8 @@ function getGoal(name) {
 
 const H = s => { if (!s) return ''; const d = document.createElement('div'); d.textContent = s; return d.innerHTML; };
 const fL = n => n ? Math.round(n).toLocaleString('es-CL') + ' L' : '0 L';
+const fLs = n => { if(!n) return '0'; if(n>=1e6) return (n/1e6).toFixed(1)+'M'; if(n>=1e3) return Math.round(n/1e3)+'k'; return ''+Math.round(n); };
+const fCs = n => { if(!n) return '$0'; if(n>=1e6) return '$'+(n/1e6).toFixed(1)+'M'; if(n>=1e3) return '$'+Math.round(n/1e3)+'k'; return '$'+Math.round(n); };
 const pct = (v, g) => g ? Math.min(Math.round((v / g) * 100), 999) : 0;
 
 // Global helper to lookup values in byUser maps by normalized name
@@ -461,6 +487,7 @@ function switchTab(tab) {
   if (tab === 'fidelizacion' && D) renderFidelizacion();
   if (tab === 'cs' && D) renderCS();
   if (tab === 'mesvencido' && D) renderMesVencido();
+  if (tab === 'pipeline' && D) renderPipeline();
   // Riesgo tab removed — now in CEO dashboard only
 }
 
@@ -955,12 +982,21 @@ function renderEjecutivos() {
   }
   h += '</tbody></table></div></div>';
 
-  // ── Oportunidades + Actividades — filtrado por semana ──
-  // Strategy: show pipeline leads whose write_date (last_update) falls in the selected week
-  // = leads that were TOUCHED this week. Enrich with D.activities detail if available.
-  const allActs = D.activities || [];
+  // ── Pipeline del Ejecutivo — como el weekly: muestra TODO el pipeline activo ──
+  const isL = D.has_litros;
+  const fV_exec = isL ? fL : fC;
+  const vL_exec = isL ? 'Litros' : 'Valor';
+  const ACTIVE_STAGES_EXEC = new Set(['Oportunidad de Negocio','Contactado','Ruta','Cotizado']);
 
-  // Build activity detail map from D.activities (pending CRM activities)
+  // All active pipeline for this exec (≤90 days)
+  const execPipeline = pipeline.filter(p => {
+    if (!matchesExec(p.exec)) return false;
+    return p && ACTIVE_STAGES_EXEC.has(p.stage);
+  });
+  const execFresh = execPipeline.filter(p => p.days_in_stage <= 90);
+
+  // Enrich with activities when available
+  const allActs = D.activities || [];
   const actDetailByLead = {};
   allActs.filter(a => matchesExec(a.who)).forEach(a => {
     const key = (a.lead || '').trim().toUpperCase();
@@ -968,48 +1004,51 @@ function renderEjecutivos() {
       actDetailByLead[key] = {date: a.date || '', desc: a.summary || '', type: a.type || 'To-Do'};
     }
   });
-
-  // Filter pipeline by exec AND by last_update within selected week
-  const thisExecOpportunities = pipeline.filter(p => {
-    if (!matchesExec(p.exec)) return false;
-    if (!ws || !we) return true;
-    const lu = (p.last_update || '').slice(0, 10);
-    return lu >= ws && lu <= we;
-  });
-
-  // Enrich: prefer D.activities detail, fallback to pipeline last_note
-  thisExecOpportunities.forEach(p => {
+  execFresh.forEach(p => {
     const key = (p.name || '').trim().toUpperCase();
     const act = actDetailByLead[key];
-    if (act && act.desc) {
-      p._activity = act;
-    } else if (p.last_note) {
-      p._activity = {date: (p.last_update || '').slice(0, 10), desc: p.last_note, type: 'Nota'};
-    }
+    if (act && act.desc) p._activity = act;
+    else if (p.last_note) p._activity = {date: (p.last_update || '').slice(0, 10), desc: p.last_note, type: 'Nota'};
   });
 
-  // Sort: those with activity first, then by litros
-  thisExecOpportunities.sort((a, b) => {
-    const aHas = a._activity ? 1 : 0, bHas = b._activity ? 1 : 0;
-    if (aHas !== bHas) return bHas - aHas;
-    return (b.value || 0) - (a.value || 0);
-  });
+  // Split: recent movements (≤7d) vs needs attention (8-90d)
+  const execRecent = execFresh.filter(p => p.days_in_stage <= 7).sort((a, b) => a.days_in_stage - b.days_in_stage);
+  const execStale = execFresh.filter(p => p.days_in_stage > 7).sort((a, b) => (b.value || 0) - (a.value || 0));
 
-  // Only show opportunities with activity in the selected week
-  const weekFilteredOps = thisExecOpportunities.filter(p => p._activity);
+  // Summary KPIs for exec pipeline
+  const execPipeTotal = execFresh.length;
+  const execPipeValue = execFresh.reduce((s, p) => s + (p.value || 0), 0);
+  h += `<div style="display:flex;gap:12px;margin-bottom:14px;flex-wrap:wrap">
+    <span class="tag tag-blue" style="font-size:12px">Pipeline: ${execPipeTotal} opp</span>
+    <span class="tag tag-blue" style="font-size:12px">${vL_exec}: ${fV_exec(execPipeValue)}</span>
+    <span class="tag tag-g" style="font-size:12px">Mov. 7d: ${execRecent.length}</span>
+    <span class="tag ${execStale.length > 0 ? 'tag-r' : 'tag-g'}" style="font-size:12px">Estancadas: ${execStale.length}</span>
+  </div>`;
 
-  h += '<div class="sec"><div class="sec-h"><h2>🎯 Oportunidades & Actividades — ' + (ws ? ws.slice(5) + ' a ' + we.slice(5) : 'Semana') + '</h2></div><div class="sec-b" style="max-height:600px;overflow-y:auto"><table>';
-  h += '<thead><tr><th>Cliente</th><th>Etapa</th><th>Fecha</th><th>Tipo</th><th>Detalle</th></tr></thead><tbody>';
-  if (weekFilteredOps.length === 0) {
-    h += '<tr><td colspan="5" style="text-align:center;color:var(--dim);padding:20px">Sin actividades esta semana</td></tr>';
+  // Recent movements
+  h += '<div class="sec"><div class="sec-h"><h2>Movimientos Recientes (últimos 7d)</h2><span style="font-size:12px;color:var(--dim)">' + execRecent.length + '</span></div>';
+  h += '<div class="sec-b" style="padding:0;overflow-x:auto"><table><thead><tr><th>Cliente</th><th>Etapa</th><th>' + vL_exec + '</th><th>Hace</th><th>Actividad</th></tr></thead><tbody>';
+  if (execRecent.length === 0) {
+    h += '<tr><td colspan="5" style="text-align:center;color:var(--dim);padding:20px">Sin movimientos esta semana</td></tr>';
   } else {
-    weekFilteredOps.slice(0, 30).forEach(p => {
-      const a = p._activity;
-      const dateStr = a.date ? `<span style="white-space:nowrap">${a.date.slice(0,10)}</span>` : '—';
-      h += `<tr><td class="bold">${H(p.name)}</td><td>${stageTag(p.stage, p.stage_class)}</td><td>${dateStr}</td><td style="font-size:12px">${H(a.type || '')}</td><td style="max-width:350px;white-space:normal;font-size:12px">${H(a.desc || '')}</td></tr>`;
+    execRecent.forEach(p => {
+      const actDesc = p._activity ? H((p._activity.type || '') + ': ' + (p._activity.desc || '')) : (p.last_note ? H(p.last_note) : '<span style="color:var(--dim)">—</span>');
+      h += `<tr><td class="bold">${H(p.name)}</td><td>${stageTag(p.stage, p.stage_class)}</td><td class="bold">${fV_exec(p.value)}</td><td style="color:var(--green)">${p.days_in_stage === 0 ? 'Hoy' : p.days_in_stage + 'd'}</td><td style="max-width:300px;white-space:normal;font-size:12px">${actDesc}</td></tr>`;
     });
   }
   h += '</tbody></table></div></div>';
+
+  // Stale / needs attention
+  if (execStale.length) {
+    h += '<div class="sec"><div class="sec-h collapsible-trigger" onclick="this.parentElement.parentElement.querySelector(\'.collapsible-body\').style.display=this.parentElement.parentElement.querySelector(\'.collapsible-body\').style.display===\'none\'?\'block\':\'none\';this.querySelector(\'.chevron\').textContent=this.parentElement.parentElement.querySelector(\'.collapsible-body\').style.display===\'none\'?\'▸\':\'▾\'">';
+    h += '<h2><span class="chevron">▾</span> Necesitan Atención (8–90d)</h2><span style="font-size:12px;color:var(--dim)">' + execStale.length + ' opp</span></div>';
+    h += '<div class="sec-b collapsible-body" style="padding:0;overflow-x:auto"><table><thead><tr><th>Cliente</th><th>Etapa</th><th>' + vL_exec + '</th><th>Días</th><th>Acción</th></tr></thead><tbody>';
+    execStale.forEach(p => {
+      const dc = p.days_in_stage > 30 ? 'color:var(--red);font-weight:700' : p.days_in_stage > 14 ? 'color:var(--red);font-weight:600' : 'color:var(--yellow)';
+      h += `<tr><td class="bold">${H(p.name)}</td><td>${stageTag(p.stage, p.stage_class)}</td><td class="bold">${fV_exec(p.value)}</td><td style="${dc}">${p.days_in_stage}d</td><td style="color:var(--yellow)">${p.action || 'Contactar'}</td></tr>`;
+    });
+    h += '</tbody></table></div></div>';
+  }
 
   document.getElementById('tab-ejecutivos').innerHTML = h;
   renderWeekSelector();
@@ -2087,6 +2126,180 @@ function renderRiesgo() {
       sb.appendChild(tr);
     });
   }
+}
+
+// ═══════════════════════════════════════
+// PIPELINE TAB
+// ═══════════════════════════════════════
+const PIPELINE_ACTIVE_DAYS = 90;
+function renderPipeline() {
+  if (!D) return;
+  const s = D.summary || {}, isL = D.has_litros;
+  const fV = isL ? fL : fC, fS = isL ? fLs : fCs, vL = isL ? 'Litros' : 'Valor';
+  const pl = D.pipeline || [], fn = D.funnel || [];
+
+  // Stage counts from funnel
+  const ACTIVE_STAGES = new Set(['Oportunidad de Negocio','Contactado','Ruta','Cotizado']);
+  const stageMap = {};
+  fn.forEach(f => { stageMap[f.stage] = f.count; });
+  const stOpp = stageMap['Oportunidad de Negocio'] || 0;
+  const stCont = stageMap['Contactado'] || 0;
+  const stRuta = stageMap['Ruta'] || 0;
+  const stCot = stageMap['Cotizado'] || 0;
+  const stDurm = stageMap['Durmiente'] || 0;
+  const stNoCerr = stageMap['No Cerrados'] || 0;
+  const realActive = stOpp + stCont + stRuta + stCot;
+
+  // Pipeline detail: fresh vs legacy
+  const allActive = pl.filter(p => p && ACTIVE_STAGES.has(p.stage));
+  const freshPl = allActive.filter(p => p.days_in_stage <= PIPELINE_ACTIVE_DAYS);
+  const legacyPl = allActive.filter(p => p.days_in_stage > PIPELINE_ACTIVE_DAYS);
+  const freshValue = freshPl.reduce((s, p) => s + (p.value || 0), 0);
+  const freshMoved = freshPl.filter(p => p.days_in_stage <= 7).length;
+  const freshStale = freshPl.filter(p => p.days_in_stage > 7).length;
+  const avgDays = freshPl.length ? Math.round(freshPl.reduce((s, p) => s + p.days_in_stage, 0) / freshPl.length) : 0;
+
+  // Hot deals: Cotizado with activity in last 30d
+  const HOT_DAYS = 30;
+  const _act = p => p.days_since_activity !== undefined ? p.days_since_activity : p.days_in_stage;
+  const hotDeals = freshPl.filter(p => p.stage === 'Cotizado' && _act(p) <= HOT_DAYS).sort((a, b) => (b.value || 0) - (a.value || 0));
+
+  let h = '';
+
+  // Period badge
+  h += `<div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;flex-wrap:wrap">
+    <span style="font-size:13px;color:var(--dim)">Pipeline activo de los últimos <strong style="color:var(--text)">${PIPELINE_ACTIVE_DAYS} días</strong></span>`;
+  if (legacyPl.length) h += `<span style="font-size:12px;color:var(--yellow);font-weight:600">${legacyPl.length} opp legacy (>${PIPELINE_ACTIVE_DAYS}d) ocultas</span>`;
+  h += `</div>`;
+
+  // KPI Row 1
+  h += `<div class="kpi-row">
+    ${mkKpi('c-blue','Pipeline Activo', realActive, stOpp+' oportunidad · '+stCont+' contactado · '+stRuta+' ruta · '+stCot+' cotizado')}
+    ${mkKpi('c-green','Movimientos Semana', (s.moved_this_week||0), (s.new_this_week||0)+' nuevas + '+((s.moved_this_week||0)-(s.new_this_week||0)>0?(s.moved_this_week||0)-(s.new_this_week||0):0)+' avances de etapa')}
+    ${mkKpi('c-red','Necesitan Acción', freshStale, 'opp activas 8–90d sin movimiento', freshStale, realActive||1)}
+    ${mkKpi('c-blue', isL?'Litros en Pipeline':'Valor Pipeline', fV(freshValue), 'últimos '+PIPELINE_ACTIVE_DAYS+'d')}
+    ${mkKpi('c-green','Ganadas', (s.won||0), 'cerradas (total histórico)')}
+  </div>`;
+
+  // KPI Row 2
+  h += `<div class="kpi-row" style="margin-bottom:8px">
+    ${mkKpi('c-yellow','Velocidad Promedio', avgDays+'d', 'días promedio en etapa actual')}
+    ${mkKpi('c-yellow','Durmientes CRM', stDurm, 'fuera de ciclo de compra')}
+    ${mkKpi('c-red','No Cerrados', stNoCerr, 'oportunidades perdidas/archivadas')}
+  </div>`;
+
+  // Visual funnel
+  const stages = [
+    {lbl:'Oportunidad',cnt:stOpp,bg:'#fef2f2',color:'var(--red)'},
+    {lbl:'Contactado',cnt:stCont,bg:'#fefce8',color:'var(--yellow)'},
+    {lbl:'Ruta',cnt:stRuta,bg:'#eff6ff',color:'var(--blue)'},
+    {lbl:'Cotizado',cnt:stCot,bg:'#f0fdf4',color:'var(--green)'},
+    {lbl:'Ganadas',cnt:(s.won||0),bg:'#f0fdf4',color:'var(--green)'}
+  ];
+  const valByStage = {};
+  pl.filter(p => p).forEach(p => { valByStage[p.stage] = (valByStage[p.stage] || 0) + (p.value || 0); });
+
+  h += `<div class="sec"><div class="sec-h"><h2>Flujo del Pipeline</h2><span style="font-size:12px;color:var(--dim)">últimos ${PIPELINE_ACTIVE_DAYS}d</span></div><div class="sec-b"><div class="funnel-flow">`;
+  stages.forEach((st, i) => {
+    const stKey = st.lbl === 'Oportunidad' ? 'Oportunidad de Negocio' : st.lbl;
+    const val = st.lbl === 'Ganadas' ? '' : '<span class="fs-val">' + fV(valByStage[stKey] || 0) + '</span>';
+    h += `<div class="funnel-stage" style="background:${st.bg};color:${st.color}">
+      <span class="fs-cnt">${st.cnt}</span>
+      <span class="fs-lbl">${st.lbl}</span>${val}</div>`;
+    if (i < stages.length - 1) {
+      const next = stages[i + 1];
+      const convPct = st.cnt > 0 ? Math.round((next.cnt / st.cnt) * 100) : '—';
+      h += `<div class="funnel-arrow"><span style="font-size:16px">→</span><span class="fa-pct" style="color:${typeof convPct==='number'?(convPct>=50?'var(--green)':convPct>=25?'var(--yellow)':'var(--red)'):'var(--dim)'}">${convPct}%</span></div>`;
+    }
+  });
+  h += `</div></div></div>`;
+
+  // Executive ranking
+  const execs = (D.executives || []).filter(e => e && isAllowed(e.name)).sort((a, b) => {
+    return (b.moved_30d || 0) - (a.moved_30d || 0) || (b.moved || 0) - (a.moved || 0) || (b.value || 0) - (a.value || 0);
+  });
+  h += `<div class="sec"><div class="sec-h"><h2>Ranking Ejecutivos</h2><span style="font-size:12px;color:var(--dim)">por movimientos últimos 30d</span></div>
+  <div class="sec-b" style="padding:0;overflow-x:auto"><table class="exec-rank"><thead><tr>
+    <th></th><th>Ejecutivo</th><th style="text-align:center">Pipeline</th><th style="text-align:center">Mov. 7d</th><th style="text-align:center">Mov. 30d</th><th style="text-align:center">Estancadas</th><th>${vL}</th>
+  </tr></thead><tbody>`;
+  execs.forEach((e, i) => {
+    const m7 = e.moved || 0, m30 = e.moved_30d || 0;
+    const c7 = m7 >= 3 ? 'color:var(--green);font-weight:700' : m7 >= 1 ? 'color:var(--yellow);font-weight:600' : 'color:var(--red);font-weight:600';
+    const c30 = m30 >= 10 ? 'color:var(--green);font-weight:700' : m30 >= 3 ? 'color:var(--yellow);font-weight:600' : 'color:var(--red);font-weight:600';
+    const staleStyle = e.stale > 0 ? 'color:var(--red);font-weight:600' : 'color:var(--dim)';
+    h += `<tr>
+      <td style="text-align:center;font-weight:700;color:var(--dim)">${i + 1}</td>
+      <td><span class="bold">${H(e.name)}</span></td>
+      <td style="text-align:center">${e.total}</td>
+      <td style="text-align:center;${c7}">${m7}</td>
+      <td style="text-align:center;${c30}">${m30}</td>
+      <td style="text-align:center;${staleStyle}">${e.stale}</td>
+      <td class="bold">${fS(e.value)}</td>
+    </tr>`;
+  });
+  h += `</tbody></table></div></div>`;
+
+  // Hot Deals
+  const hotWithValue = hotDeals.filter(p => p.value > 0);
+  if (hotWithValue.length) {
+    h += `<div class="sec"><div class="sec-h"><h2>Hot Deals — Cotizado con movimiento últimos ${HOT_DAYS}d</h2><span class="hot-badge">${hotWithValue.length} deals</span></div>
+    <div class="sec-b" style="padding:0;overflow-x:auto"><table><thead><tr><th>Cliente</th><th>Ejecutivo</th><th>${vL}</th><th>Días</th><th>Último mov.</th></tr></thead><tbody>`;
+    hotWithValue.forEach(l => {
+      const d = l.days_in_stage, dc = d > 14 ? 'color:var(--red);font-weight:600' : d > 7 ? 'color:var(--yellow);font-weight:600' : 'color:var(--green)';
+      h += `<tr><td class="bold">${H(l.name)}</td><td>${H(l.exec)}</td><td class="bold" style="color:var(--blue)">${fV(l.value)}</td><td style="${dc}">${d}d</td><td style="color:var(--dim)">${l.last_update || '—'}</td></tr>`;
+    });
+    h += `</tbody></table></div></div>`;
+  }
+
+  // Recent movements (<=7d)
+  const recent = freshPl.filter(p => p.days_in_stage <= 7).sort((a, b) => a.days_in_stage - b.days_in_stage);
+  if (recent.length) {
+    h += `<div class="sec"><div class="sec-h"><h2>Movimientos Recientes (últimos 7d)</h2><span style="font-size:12px;color:var(--dim)">${recent.length}</span></div>
+    <div class="sec-b" style="padding:0;overflow-x:auto"><table><thead><tr><th>Cliente</th><th>Etapa</th><th>Ejecutivo</th><th>${vL}</th><th>Hace</th></tr></thead><tbody>`;
+    recent.forEach(l => {
+      h += `<tr><td class="bold">${H(l.name)}</td><td><span class="tag tag-${l.stage_class==='cotizado'?'g':l.stage_class==='contactado'?'y':'r'}">${H(l.stage)}</span></td><td>${H(l.exec)}</td><td class="bold">${fV(l.value)}</td><td style="color:var(--green)">${l.days_in_stage===0?'Hoy':l.days_in_stage+'d'}</td></tr>`;
+    });
+    h += `</tbody></table></div></div>`;
+  }
+
+  // Stale (8-90d) — collapsible
+  const freshStaleList = freshPl.filter(p => p.days_in_stage > 7).sort((a, b) => (b.value || 0) - (a.value || 0));
+  h += `<div class="sec"><div class="sec-h collapsible-trigger" onclick="this.parentElement.parentElement.querySelector('.collapsible-body').style.display=this.parentElement.parentElement.querySelector('.collapsible-body').style.display==='none'?'block':'none';this.querySelector('.chevron').textContent=this.parentElement.parentElement.querySelector('.collapsible-body').style.display==='none'?'▸':'▾'">
+    <h2><span class="chevron">▾</span> Necesitan Atención (8–90d)</h2><span style="font-size:12px;color:var(--dim)">${freshStaleList.length} opp</span></div>
+  <div class="sec-b collapsible-body" style="padding:0;overflow-x:auto"><table><thead><tr><th>Cliente</th><th>Etapa</th><th>Ejecutivo</th><th>${vL}</th><th>Días</th><th>Acción</th></tr></thead><tbody>`;
+  if (freshStaleList.length) freshStaleList.forEach(l => {
+    const dc = l.days_in_stage > 30 ? 'color:var(--red);font-weight:700' : l.days_in_stage > 14 ? 'color:var(--red);font-weight:600' : 'color:var(--yellow)';
+    h += `<tr><td class="bold">${H(l.name)}</td><td><span class="tag tag-r">${H(l.stage)}</span></td><td>${H(l.exec)}</td><td class="bold">${fV(l.value)}</td><td style="${dc}">${l.days_in_stage}d</td><td style="color:var(--yellow)">${l.action || 'Contactar'}</td></tr>`;
+  });
+  else h += `<tr><td colspan="6" class="nodata">Todo con movimiento reciente</td></tr>`;
+  h += `</tbody></table></div></div>`;
+
+  // Legacy backlog — collapsed by default
+  if (legacyPl.length) {
+    const legSorted = legacyPl.sort((a, b) => (b.value || 0) - (a.value || 0));
+    h += `<div class="sec" style="opacity:.7"><div class="sec-h collapsible-trigger" onclick="this.parentElement.parentElement.querySelector('.collapsible-body').style.display=this.parentElement.parentElement.querySelector('.collapsible-body').style.display==='none'?'block':'none';this.querySelector('.chevron').textContent=this.parentElement.parentElement.querySelector('.collapsible-body').style.display==='none'?'▸':'▾'">
+      <h2><span class="chevron">▸</span> Backlog Legacy (>${PIPELINE_ACTIVE_DAYS}d sin movimiento)</h2><span style="font-size:12px;color:var(--dim)">${legSorted.length} opp — requieren limpieza</span></div>
+    <div class="sec-b collapsible-body" style="padding:0;overflow-x:auto;display:none"><table><thead><tr><th>Cliente</th><th>Etapa</th><th>Ejecutivo</th><th>${vL}</th><th>Días</th><th>Sugerencia</th></tr></thead><tbody>`;
+    legSorted.forEach(l => {
+      const sug = l.value > 0 ? 'Revisar o cerrar' : 'Cerrar o archivar';
+      h += `<tr><td class="bold">${H(l.name)}</td><td><span class="tag tag-r">${H(l.stage)}</span></td><td>${H(l.exec)}</td><td class="bold">${fV(l.value)}</td><td style="color:var(--red);font-weight:700">${l.days_in_stage}d</td><td style="color:var(--dim);font-style:italic">${sug}</td></tr>`;
+    });
+    h += `</tbody></table></div></div>`;
+  }
+
+  // Activities & Messages
+  const acts = D.activities || [], msgs = D.messages || [];
+  if (acts.length || msgs.length) {
+    h += `<div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">`;
+    h += `<div class="sec"><div class="sec-h"><h2>Actividades Pendientes</h2></div><div class="sec-b" style="max-height:250px;overflow-y:auto">`;
+    h += acts.length ? acts.map(a => `<div class="act-pip"><span class="act-d">${a.date||'—'}</span><span class="act-w">${H(a.who)}</span><span>${H(a.type)}: ${H(a.summary)} — <em>${H(a.lead)}</em></span></div>`).join('') : '<div class="nodata">Sin actividades</div>';
+    h += `</div></div>`;
+    h += `<div class="sec"><div class="sec-h"><h2>Notas Recientes</h2></div><div class="sec-b" style="max-height:250px;overflow-y:auto">`;
+    h += msgs.length ? msgs.map(m => `<div class="act-pip"><span class="act-d">${m.date||'—'}</span><span class="act-w">${H(m.who)}</span><span>${H(m.desc)}</span></div>`).join('') : '<div class="nodata">Sin mensajes</div>';
+    h += `</div></div></div>`;
+  }
+
+  document.getElementById('tab-pipeline').innerHTML = h;
 }
 
 // ═══════════════════════════════════════
