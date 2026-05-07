@@ -607,20 +607,16 @@ function renderVendedores() {
     const fContacto = findIn((st.contacto || {}).by_user, u);
     const fQuotes = findIn((st.cotizacion || {}).by_user, u);
     const fClose = findIn((st.cierre || {}).by_user, u);
+    const fRuta = findIn((st.ruta || {}).by_user, u);
     const fNewCl = findIn(nc.by_user || {}, u);
     const ltGoal = g.litros_mes || 0;
     const ltGoalPro = Math.round(ltGoal * pf);
 
-    // Ganados CRM = won_deals whose last_update falls in selected week, for this vendor
-    const wonAll = D.won_deals || [];
-    const nn = norm(u);
-    const vGanados = wonAll.filter(w => ws && we && (w.last_update || '') >= ws && (w.last_update || '') <= we && norm(w.exec || '') === nn).length;
-
     const metrics = [
       { lbl: 'Oportunidades', val: fLeads, goal: g.leads_semana || 15, type: 'sem' },
       { lbl: 'Contactos efectivos', val: fContacto, goal: g.contactos_semana || 10, type: 'sem' },
+      { lbl: 'Ruta (visitas)', val: fRuta, goal: g.ruta_semana || 5, type: 'sem' },
       { lbl: 'Cotizaciones', val: fQuotes, goal: g.cotizaciones_semana || 8, type: 'sem' },
-      { lbl: 'Ganados CRM', val: vGanados, goal: 0, type: 'sem' },
       { lbl: 'Clientes nuevos', val: fNewCl, goal: g.clientes_nuevos_mes || 2, type: 'mes' },
       { lbl: 'Litros', val: lt, goal: ltGoalPro, type: 'mes', fmt: fL, fullGoal: ltGoal },
     ];
@@ -657,8 +653,7 @@ function renderVendedores() {
     const vCierres = allCierreDetail.filter(c => norm(c.vendedor || '') === nn);
     const vNewCl = allNewClDetail.filter(c => norm(c.vendedor || '') === nn);
 
-    const vGanadosList = wonAll.filter(w => ws && we && (w.last_update || '') >= ws && (w.last_update || '') <= we && norm(w.exec || '') === nn);
-    const hasDetail = vLeads.length || vQuotes.length || vCierres.length || vNewCl.length || vGanadosList.length;
+    const hasDetail = vLeads.length || vQuotes.length || vCierres.length || vNewCl.length;
     if (hasDetail) {
       h += '<div class="vdetail"><details><summary>Ver detalle semanal</summary>';
       if (vLeads.length) {
@@ -669,11 +664,6 @@ function renderVendedores() {
       if (vQuotes.length) {
         h += '<div style="margin-top:6px"><strong style="font-size:11px">Cotizaciones:</strong><table>';
         vQuotes.forEach(q => { h += `<tr><td class="bold">${H(q.cliente || q.name)}</td><td>${fC(q.monto)}</td><td>${fL(q.litros)}</td></tr>`; });
-        h += '</table></div>';
-      }
-      if (vGanadosList.length) {
-        h += '<div style="margin-top:6px"><strong style="font-size:11px">Ganados CRM (etapa Ganado):</strong><table>';
-        vGanadosList.forEach(w => { h += `<tr><td class="bold">${H(w.name)}</td><td style="color:var(--dim)">${w.last_update || ''}</td></tr>`; });
         h += '</table></div>';
       }
       if (vCierres.length) {
@@ -833,7 +823,6 @@ function renderEjecutivos() {
     h += mkKpi('c-green', 'Nuevos Clientes', mvNewClients.length, 'Primera factura', null, null);
     h += mkKpi('c-blue', 'Margen', execMargen > 0 ? execMargen + '%' : '—', 'Porcentaje neto', null, null);
     h += mkKpi('c-yellow', 'Venta Neta', '$' + fL(execVenta), prevLabel, null, null);
-    h += mkKpi('c-green', 'Ganados', prevWon.length, 'En el mes', null, null);
     h += mkKpi('c-red', 'Líneas', execDetail.length, 'Facturas diesel', null, null);
     h += '</div>';
     h += '<div class="sec-b" style="max-height:600px;overflow:auto"><table>';
@@ -874,7 +863,7 @@ function renderEjecutivos() {
   const freelancerNames = []; // no longer used as aggregate
 
   const isExecAccum = execSubTab === 'acumulado';
-  let litros = 0, leads = 0, cotizaciones = 0, nuevoClientes = 0, margen = 0, ganados = 0;
+  let litros = 0, leads = 0, cotizaciones = 0, nuevoClientes = 0, margen = 0, rutaVisitas = 0;
 
   // Litros
   const hist = (V.weekly_history || []).slice().reverse();
@@ -923,12 +912,11 @@ function renderEjecutivos() {
     }
   }
 
-  // Ganados
-  const monthStart = V.month_start || '';
+  // Ruta (visitas)
   if (isExecAccum) {
-    for (const w of wonAll) { if ((w.last_update || '') >= monthStart && matchesExec(w.exec)) ganados += 1; }
+    fwE.forEach(w => { for (const [user, val] of Object.entries(w.stages?.ruta?.by_user || {})) { if (matchesExec(user)) rutaVisitas += val; } });
   } else {
-    for (const w of wonAll) { if (ws && we && (w.last_update || '') >= ws && (w.last_update || '') <= we && matchesExec(w.exec)) ganados += 1; }
+    for (const [user, val] of Object.entries(st.ruta?.by_user || {})) { if (matchesExec(user)) rutaVisitas += val; }
   }
 
   // Individual lead meta for single exec: 45 / num_freelancers for freelancers, else individual goal
@@ -945,7 +933,7 @@ function renderEjecutivos() {
   h += mkKpi('c-yellow', 'Cotizaciones', cotizaciones, 'Semana actual', null, null);
   h += mkKpi('c-green', 'Nuevos Clientes', nuevoClientes, 'Primera factura', null, null);
   h += mkKpi('c-blue', 'Margen', margen > 0 ? margen + '%' : '—', 'Porcentaje neto', null, null);
-  h += mkKpi('c-green', 'Ganados', ganados, 'En semana actual', null, null);
+  h += mkKpi('c-blue', 'Ruta', rutaVisitas, isExecAccum ? 'Visitas mes' : 'Visitas semana', null, null);
   h += '</div>';
 
   // Clientes Nuevos table — filtered to week or month (also check ventas_prev for past weeks)
@@ -1168,11 +1156,10 @@ function renderVentas() {
   const retWeek = (fw[selectedWeek] || fw[0] || {}).stages?.retencion || {};
   const retPct = retWeek.value || 0;
 
-  // 11. Ganados
-  const wonAll = D.won_deals || [];
-  const wGanados = isAccum
-    ? wonAll.filter(w => (w.last_update || '') >= (V.month_start || ''))
-    : wonAll.filter(w => ws && we && (w.last_update || '') >= ws && (w.last_update || '') <= we);
+  // 11. Ruta (visitas)
+  const wRuta = isAccum
+    ? fw.reduce((s, w) => s + (w.stages?.ruta?.value || 0), 0)
+    : (st.ruta?.value || 0);
 
   // Budget for acumulado: monthly litros goal from company_goals
   const ltGoalMes = CG.litros_mes || 0;
@@ -1202,7 +1189,7 @@ function renderVentas() {
   kh += mkKpi('c-amber', 'En Riesgo', enRiesgoCount + ' clientes', 'Críticos: ' + (crSummary.criticos || 0) + ' | Altos: ' + (crSummary.altos || 0), null, null);
   kh += mkKpi('c-blue', 'Margen Retail', mRetail + '%', 'Meta: ' + (CG.margen_retail || 8.5) + '%', mRetail, CG.margen_retail || 8.5);
   kh += mkKpi('c-red', 'Margen Volumen', mVol + '%', 'Meta: ' + (CG.margen_volumen || 6) + '%', mVol, CG.margen_volumen || 6);
-  kh += mkKpi('c-yellow', 'Ganados', wGanados.length, isAccum ? 'Mes' : 'Esta semana', null, null);
+  kh += mkKpi('c-yellow', 'Ruta (visitas)', wRuta, isAccum ? 'Mes' : 'Esta semana', null, null);
   document.getElementById('kpiRow').innerHTML = kh;
 
   // Render sub-tab specific content
