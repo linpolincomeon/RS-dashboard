@@ -1713,7 +1713,9 @@ function renderCS() {
 
   // KPI Row
   const CG_cs = D.company_goals || {};
-  const csGoal = CG_cs.litros_cs_mes || 493505;
+  const csGoalMes = CG_cs.litros_cs_mes || 493505;
+  const csGoalSem = Math.round(csGoalMes / 4.33);
+  const csGoal = csSubTab === 'semanal' ? csGoalSem : csGoalMes;
   const csPct = csGoal > 0 ? Math.round((litrosCS / csGoal) * 100) : 0;
   let kh = '';
   if (csSubTab === 'mesvencido') {
@@ -1731,7 +1733,7 @@ function renderCS() {
     kh += mkKpi('c-blue', 'Margen', margenPrevCS > 0 ? margenPrevCS + '%' : '—', 'Porcentaje neto', null, null);
     kh += mkKpi('c-green', 'Nuevos Clientes', ncPrevCS, 'Primera factura', null, null);
   } else {
-    kh += mkKpi('c-blue', '💧 Litros CS', fL(litrosCS), 'Meta: ' + fL(csGoal) + ' (' + csPct + '%)', litrosCS, csGoal);
+    kh += mkKpi('c-blue', '💧 Litros CS', fL(litrosCS), 'Meta ' + (csSubTab === 'semanal' ? 'sem' : 'mes') + ': ' + fL(csGoal) + ' (' + csPct + '%)', litrosCS, csGoal);
     kh += mkKpi('c-green', '👥 Clientes Ganados', clientesGanados, csSubTab === 'semanal' ? 'esta semana' : 'este mes', null, null);
     kh += mkKpi('c-yellow', '😴 Durmientes', durmientes, csSubTab === 'semanal' ? 'esta semana' : 'total', null, null);
     kh += mkKpi('c-green', '🏆 Rescatados', rescatados, csSubTab === 'semanal' ? 'esta semana' : 'total', null, null);
