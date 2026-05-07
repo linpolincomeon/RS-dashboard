@@ -984,13 +984,15 @@ function renderEjecutivos() {
   // Filter pipeline by exec
   const thisExecOpportunities = pipeline.filter(p => matchesExec(p.exec));
 
-  // Enrich with activity notes
+  // Enrich with activity notes — only if date falls within selected week
   thisExecOpportunities.forEach(p => {
     const key = (p.name || '').trim().toUpperCase();
     const act = notesByLead[key];
     if (act && act.desc) p._activity = act;
-    // Also use last_note from pipeline if available
-    if (!p._activity && p.last_note) p._activity = {date: p.last_update, desc: p.last_note, type: 'Nota'};
+    // Fallback: last_note from pipeline, but ONLY if its date falls in the selected week
+    if (!p._activity && p.last_note && p.last_update && ws && we && p.last_update >= ws && p.last_update <= we) {
+      p._activity = {date: p.last_update, desc: p.last_note, type: 'Nota'};
+    }
   });
 
   // Sort: those with activity first, then by litros
