@@ -782,11 +782,12 @@ function renderRiesgo(){
     const top10=[...scoreData].sort((a,b)=>b.utilizacion_pct-a.utilizacion_pct).slice(0,10);
     if(top10.length>0){
         h+='<div class="section-label">Top 10 — Utilización Línea de Crédito</div>';
-        h+='<div class="table-scroll"><table><thead><tr><th>Cliente</th><th>Score</th><th class="r">Línea</th><th class="r">Saldo</th><th class="r">Utiliz.</th><th class="r">Mora</th></tr></thead><tbody>';
+        h+='<div class="table-scroll"><table><thead><tr><th>Cliente</th><th>Score</th><th>Excepción</th><th class="r">Línea</th><th class="r">Saldo</th><th class="r">Utiliz.</th><th class="r">Mora</th></tr></thead><tbody>';
         top10.forEach(c=>{
             const lv=riskLevel(c.risk_score);
             const uc=c.utilizacion_pct>=90?'bad':c.utilizacion_pct>=70?'':'ok';
-            h+=`<tr><td class="hi">${c.name}</td><td>${scoreBadge(c.risk_score,lv)}</td><td class="r">${fMon(c.monto_credito)}</td><td class="r">${fMon(c.saldo_credito)}</td><td class="r ${uc}">${c.utilizacion_pct}%</td><td class="r">${c.avg_payment_days}d</td></tr>`;
+            const exc=c.excepcion_line&&c.excepcion_line!=='—'?`<span style="font-size:10px;padding:2px 6px;border-radius:4px;background:var(--accent-light);color:var(--accent);font-weight:600">${c.excepcion_line}</span>`:'—';
+            h+=`<tr><td class="hi">${c.name}</td><td>${scoreBadge(c.risk_score,lv)}</td><td>${exc}</td><td class="r">${fMon(c.monto_credito)}</td><td class="r">${fMon(c.saldo_credito)}</td><td class="r ${uc}">${c.utilizacion_pct}%</td><td class="r">${c.avg_payment_days}d</td></tr>`;
         });
         h+='</tbody></table></div>';
     }
