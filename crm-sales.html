@@ -191,7 +191,6 @@ tr:hover td{background:#fafaf8}
       <div id="churnNotes" style="background:var(--card);border-radius:12px;padding:16px;margin-bottom:24px;border-left:3px solid var(--yellow);font-size:12px;color:var(--dim);line-height:1.6"></div>
 
       <!-- At-Risk Clients Section -->
-      <div id="atRiskSection"></div>
 
       <!-- Nuevos Durmientes de la Semana -->
       <div class="sec"><div class="sec-h"><h2>😴 Nuevos Durmientes de la Semana</h2></div><div class="sec-b" style="max-height:400px;overflow-y:auto">
@@ -267,10 +266,8 @@ tr:hover td{background:#fafaf8}
         <table style="width:100%">
           <thead><tr><th style="width:200px">Issue</th><th>Detalle</th><th style="width:100px">Estado</th></tr></thead>
           <tbody>
-            <tr><td class="bold" style="color:#c8360e">Litros Toro — NC</td><td>Las notas de crédito "por monto" (sin línea diesel B1) no restan litros. El campo <code>reversed_entry_id</code> no vincula NC a factura original en Odoo 18. Se agregó <code>nc_debug</code> al JSON para diagnosticar. Pendiente: identificar cómo matchear NC con factura original para restar litros correctos.</td><td><span class="tag tag-r">Bloqueado</span></td></tr>
-            <tr><td class="bold" style="color:#c8360e">Churn %</td><td>El cálculo de churn muestra valores incorrectos (ej: 100%). La lógica en <code>extract_crm.py</code> necesita revisión del threshold de días y la base de clientes activos. Definición correcta: clientes que compraron mes anterior pero no este mes, dividido por total clientes mes anterior.</td><td><span class="tag tag-r">Por revisar</span></td></tr>
-            <tr><td class="bold" style="color:#e65100">Oportunidades históricas</td><td>En semanas pasadas, las oportunidades muestran datos aproximados. Solo tenemos snapshot actual del pipeline, no histórico semanal. Para datos exactos por semana se necesitaría guardar snapshots semanales del pipeline.</td><td><span class="tag tag-y">Limitación</span></td></tr>
-            <tr><td class="bold" style="color:#e65100">Score Crediticio</td><td>Componentes definidos: Morosidad (40pts), Utilización (25pts), Cobranza (20pts), DICOM (20pts), Margen (15pts). Campos Odoo identificados. Pendiente implementación.</td><td><span class="tag tag-y">Diseñado</span></td></tr>
+            <tr><td class="bold" style="color:#c8360e">Clientes en Riesgo — Actuar Ahora</td><td>Alerta temprana basada en <code>frecuencia_facturacion</code> del partner: clientes cuyo días sin compra supera 1.5× su frecuencia normal. Requiere que el campo esté poblado en Odoo para la mayoría de clientes. Cuando esté listo, se muestra en Churn & Rescate.</td><td><span class="tag tag-r">Requiere data Odoo</span></td></tr>
+            <tr><td class="bold" style="color:#c8360e">Litros Toro — NC</td><td>Las notas de crédito "por monto" (sin línea diesel B1) no restan litros. El campo <code>reversed_entry_id</code> no vincula NC a factura original en Odoo 18.</td><td><span class="tag tag-r">Bloqueado</span></td></tr>
             <tr><td class="bold" style="color:#e65100">AVLA cruce</td><td>Pendiente subir planilla mensual AVLA para cruzar contra monto_credito/saldo_credito en Odoo. Histórico en <code>riesgo-historico.json</code>.</td><td><span class="tag tag-y">Pendiente</span></td></tr>
             <tr><td class="bold" style="color:#e65100">Crons Odoo</td><td>Scripts de alerta temprana y mover a "En Riesgo" entregados. Verificar si están instalados como Acciones Planificadas.</td><td><span class="tag tag-y">Por verificar</span></td></tr>
           </tbody>
@@ -1478,38 +1475,6 @@ function renderFidelizacion() {
   notes += '<strong>Churn:</strong> Clientes nuevos perdidos este mes / clientes activos mes anterior<br>';
   notes += '<strong>Rescate:</strong> Rescatados = durmientes que volvieron a facturar / (durmientes + rescatados)';
   document.getElementById('churnNotes').innerHTML = notes;
-
-  // ⚠️ Clientes en Riesgo — Actuar Ahora
-  const atRiskData = D.at_risk || {};
-  const atRiskClients = atRiskData.clients || [];
-
-  let arh = '<div class="sec"><div class="sec-h"><h3 style="margin:0;color:var(--orange);font-size:16px">⚠️ Clientes en Riesgo — Actuar Ahora</h3>';
-  arh += '<p style="margin:4px 0 0 0;font-size:12px;color:var(--dim)">' + (atRiskData.count || 0) + ' clientes | ' + fL(atRiskData.total_litros_at_risk || 0) + ' litros/mes en juego</p></div>';
-  arh += '<div class="sec-b" style="padding:0;overflow-x:auto"><table style="width:100%"><thead><tr><th>Prioridad</th><th>Cliente</th><th>Frecuencia</th><th>Días Sin Compra</th><th>Umbral</th><th>Litros Prom/Mes</th><th>Vendedor</th></tr></thead><tbody>';
-
-  if (atRiskClients.length === 0) {
-    arh += '<tr><td colspan="7" style="text-align:center;color:var(--dim)">Sin clientes en riesgo</td></tr>';
-  } else {
-    atRiskClients.forEach(c => {
-      const urgency = c.urgency || 'media';
-      const urgencyIcon = urgency === 'alta' ? '🔴' : '🟡';
-      const urgencyColor = urgency === 'alta' ? 'var(--red)' : 'var(--orange)';
-      const litrosColor = c.avg_monthly_litros >= 5000 ? 'var(--red)' : c.avg_monthly_litros >= 1000 ? 'var(--orange)' : 'var(--dim)';
-      arh += '<tr style="' + (urgency === 'alta' ? 'background:rgba(200,0,0,0.05)' : 'background:rgba(255,165,0,0.05)') + '">';
-      arh += '<td style="color:' + urgencyColor + ';font-weight:700">' + urgencyIcon + '</td>';
-      arh += '<td class="bold">' + H(c.name) + '</td>';
-      arh += '<td>' + H(c.freq) + '</td>';
-      arh += '<td>' + (c.dias_sin_compra || '—') + '</td>';
-      arh += '<td>' + (c.threshold ? Math.round(c.threshold * 10) / 10 : '—') + '</td>';
-      arh += '<td style="color:' + litrosColor + ';font-weight:700">' + fL(c.avg_monthly_litros || 0) + '</td>';
-      arh += '<td>' + H(c.user || '—') + '</td>';
-      arh += '</tr>';
-    });
-  }
-  arh += '</tbody></table></div></div>';
-
-  const arContainer = document.getElementById('atRiskSection');
-  if (arContainer) arContainer.innerHTML = arh;
 
   // Nuevos Durmientes de la Semana
   const dormantListAll = churn.dormant_list || [];
