@@ -1,32 +1,32 @@
 {
-  "updated": "2026-05-08T17:57:29.901099",
+  "updated": "2026-05-08T20:18:36.406263",
   "weeks": [
     {
       "label": "07may-13may",
       "start": "2026-05-07",
       "end": "2026-05-13",
-      "ventas": 67496020,
-      "neto": 52384646,
-      "litros": 44616,
-      "litros_retail": 33816,
-      "litros_volumen": 10800,
-      "precio_neto": 1174,
+      "ventas": 78093009,
+      "neto": 60562377,
+      "litros": 51621,
+      "litros_retail": 38316,
+      "litros_volumen": 13305,
+      "precio_neto": 1173,
       "precio_bruto": 1513,
-      "margin": 0.07989,
-      "margin_retail": 0.08809,
-      "margin_volumen": 0.05335,
-      "facturas": 28,
+      "margin": 0.07959,
+      "margin_retail": 0.08716,
+      "margin_volumen": 0.05696,
+      "facturas": 31,
       "nc": 0,
-      "clientes": 28,
-      "recaud": 50668731,
-      "cheques": 0,
-      "transf": 38136197,
+      "clientes": 30,
+      "recaud": 89090936,
+      "cheques": 10464951,
+      "transf": 66093451,
       "factoring": 12532534,
       "compras_odoo": 0,
       "cheq_cartera_saldo": 0,
       "cheq_recibidos": 0,
-      "facturas_contado": 3,
-      "facturas_credito": 25,
+      "facturas_contado": 4,
+      "facturas_credito": 27,
       "margin_by_term": {
         "Prepago": {
           "margin": 0.12913,
@@ -35,9 +35,9 @@
           "days": 0
         },
         "1 Día": {
-          "margin": 0.04355,
-          "normalizado": 0.05321,
-          "count": 2,
+          "margin": 0.05955,
+          "normalizado": 0.06921,
+          "count": 3,
           "days": 1
         },
         "7 Días": {
@@ -47,9 +47,9 @@
           "days": 7
         },
         "30 Días": {
-          "margin": 0.08614,
-          "normalizado": 0.08614,
-          "count": 20,
+          "margin": 0.085,
+          "normalizado": 0.085,
+          "count": 22,
           "days": 30
         },
         "45 Días": {
@@ -155,15 +155,15 @@
       "label": "23apr-29apr",
       "start": "2026-04-23",
       "end": "2026-04-29",
-      "ventas": 224100619,
-      "neto": 169280595,
+      "ventas": 226940319,
+      "neto": 171666897,
       "litros": 144768,
       "litros_retail": 106828,
       "litros_volumen": 37941,
-      "precio_neto": 1169,
-      "precio_bruto": 1548,
-      "margin": 0.08186,
-      "margin_retail": 0.09006,
+      "precio_neto": 1186,
+      "precio_bruto": 1568,
+      "margin": 0.08181,
+      "margin_retail": 0.08985,
       "margin_volumen": 0.05825,
       "facturas": 98,
       "nc": 1,
@@ -203,8 +203,8 @@
           "days": 15
         },
         "30 Días": {
-          "margin": 0.09012,
-          "normalizado": 0.09012,
+          "margin": 0.08987,
+          "normalizado": 0.08987,
           "count": 71,
           "days": 30
         },
@@ -1272,8 +1272,8 @@
     {
       "date": "08may",
       "day": "Vie",
-      "litros": 16290,
-      "neto": 19407106
+      "litros": 23295,
+      "neto": 27584837
     },
     {
       "date": "07may",
@@ -1315,7 +1315,7 @@
       "date": "29apr",
       "day": "Mié",
       "litros": 41845,
-      "neto": 46690252
+      "neto": 49076554
     },
     {
       "date": "28apr",
@@ -1368,6 +1368,10 @@
   ],
   "banks": [
     {
+      "name": "DE CHILE",
+      "balance": 19534682
+    },
+    {
       "name": "ITAU",
       "balance": 15016391
     },
@@ -1388,23 +1392,19 @@
       "balance": 3291177
     },
     {
-      "name": "DE CHILE",
-      "balance": 247288
-    },
-    {
       "name": "DE CREDITO",
       "balance": -1727275
     }
   ],
-  "total_cash": 35708569,
+  "total_cash": 54995963,
   "receivables": {
-    "open_invoices": 271,
-    "total_due": 637771124,
-    "current": 554515080,
-    "overdue": 83256044,
-    "pct_overdue": 13.1,
+    "open_invoices": 268,
+    "total_due": 636787062,
+    "current": 556457520,
+    "overdue": 80329542,
+    "pct_overdue": 12.6,
     "aging": {
-      "0-30": 66077159,
+      "0-30": 63150657,
       "31-60": 7413322,
       "61-90": 0,
       "90+": 9765563
@@ -1416,7 +1416,7 @@
       },
       {
         "name": "SOC AGRICOLA GRANJA SAN RAFAEL LIMITADA",
-        "amount": 25471081
+        "amount": 28310781
       },
       {
         "name": "TRANSPORTE SANTA ELENITA SPA",
@@ -1447,6 +1447,10 @@
         "amount": 15411835
       },
       {
+        "name": "EMPRESAS TUCAPEL S A",
+        "amount": 14674900
+      },
+      {
         "name": "FORESTAL PUIHUA SPA",
         "amount": 13390401
       },
@@ -1463,18 +1467,6 @@
         "amount": 11424000
       },
       {
-        "name": "ARIDOS LO VALDIVIA LIMITADA",
-        "amount": 11081500
-      },
-      {
-        "name": "EMPRESAS TUCAPEL S A",
-        "amount": 10922410
-      },
-      {
-        "name": "SOC AGRICOLA SANTA TERESA SPA",
-        "amount": 10037272
-      },
-      {
         "name": "INGENERIA Y CONSTRUCCIONES FEBLANCA SPA",
         "amount": 10000000
       },
@@ -1487,8 +1479,16 @@
         "amount": 8824001
       },
       {
+        "name": "SOC AGRICOLA SANTA TERESA SPA",
+        "amount": 8483271
+      },
+      {
         "name": "ANDES SOLAR SA",
         "amount": 7938896
+      },
+      {
+        "name": "VALENZUELA LEIVA MAX",
+        "amount": 7895000
       }
     ]
   },
@@ -1548,8 +1548,8 @@
   "riesgo": {
     "cubierto": 0,
     "cubierto_count": 0,
-    "no_cubierto": 637771124,
-    "no_cubierto_count": 271,
+    "no_cubierto": 636787062,
+    "no_cubierto_count": 268,
     "pct_monto": 100.0,
     "pct_count": 100.0
   },
@@ -1893,9 +1893,9 @@
       },
       {
         "month": "May 2026",
-        "pct": 82.6,
-        "new_churn": 57,
-        "active_start": 69
+        "pct": 82.4,
+        "new_churn": 56,
+        "active_start": 68
       }
     ]
   },
