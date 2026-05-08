@@ -315,6 +315,20 @@
             .chart-row.two { grid-template-columns: 1fr; }
             .kpi-grid { grid-template-columns: 1fr; }
         }
+        /* ── Cash Flow ── */
+        .cf-params{display:flex;gap:16px;flex-wrap:wrap;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:14px 16px;margin-bottom:8px}
+        .cf-param{display:flex;flex-direction:column;gap:4px;min-width:180px}
+        .cf-param label{font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:0.5px}
+        .cf-param input{font-family:inherit;font-size:14px;padding:6px 10px;border:1px solid var(--border);border-radius:6px;background:var(--surface2);color:var(--text);width:100%;box-sizing:border-box}
+        .cf-param input:focus{outline:none;border-color:var(--accent);background:var(--surface)}
+        .cf-hint{font-size:10px;color:var(--text3);font-style:italic}
+        .cf-diag{margin-top:8px}
+        .cf-ok,.cf-warn,.cf-bad{padding:14px 18px;border-radius:8px;border-left:4px solid;font-size:13px;line-height:1.5}
+        .cf-ok{background:rgba(15,110,86,0.06);border-left-color:var(--green);color:var(--text)}
+        .cf-warn{background:rgba(133,79,11,0.07);border-left-color:var(--amber);color:var(--text)}
+        .cf-bad{background:rgba(163,45,45,0.07);border-left-color:var(--red);color:var(--text)}
+        .cf-row-proj{background:rgba(255,200,100,0.10)!important;font-weight:600}
+        .cf-row-next{background:rgba(100,180,255,0.08)!important;font-weight:600}
     </style>
 </head>
 <body>
@@ -333,6 +347,7 @@
         <div id="p-resumen" class="panel"></div>
         <div id="p-operaciones" class="panel"></div>
         <div id="p-riesgo" class="panel"></div>
+        <div id="p-cashflow" class="panel"></div>
     </main>
     <div id="loading" style="text-align: center; padding: 3rem;">
         <div style="color: var(--text3);">Cargando datos...</div>
@@ -350,7 +365,7 @@ const fP=n=>!n&&n!==0?'—':(n*100).toFixed(1)+'%';
 const pD=(c,p)=>(!c||!p)?null:((c-p)/Math.abs(p))*100;
 const dH=d=>{if(d==null)return'';const u=d>=0;return`<div class="kpi-delta ${u?'up':'dn'}">${u?'▲':'▼'} ${Math.abs(d).toFixed(1)}%</div>`};
 function setupTabs(){
-    const tabDefs=[['ventas','RS'],['gerencia','Gerencia'],['resumen','Resumen'],['operaciones','Operaciones'],['riesgo','⚠️ Riesgo']];
+    const tabDefs=[['ventas','RS'],['gerencia','Gerencia'],['resumen','Resumen'],['operaciones','Operaciones'],['riesgo','⚠️ Riesgo'],['cashflow','💰 Cash Flow']];
     document.getElementById('tabs').innerHTML=tabDefs.map(([k,l])=>
         `<button class="tab ${k===curTab?'active':''}" onclick="switchTab('${k}')">${l}</button>`
     ).join('');
@@ -382,6 +397,7 @@ function render(){
     else if(curTab==='resumen') renderResumen();
     else if(curTab==='operaciones') renderOperaciones();
     else if(curTab==='riesgo') renderRiesgo();
+    else if(curTab==='cashflow') renderCashflow();
     setupTabs();
 }
 // ── RS (was Ventas) ──
@@ -1002,6 +1018,161 @@ function renderOperaciones(){
             {label:'Presupuesto',data:months.map(m=>m.budget),backgroundColor:C.amber+'44',borderRadius:5},
             {label:'Real',data:months.map(m=>m.actual),backgroundColor:months.map(m=>m.compliance_pct<=100?C.green+'77':m.compliance_pct<=110?C.amber+'77':C.red+'77'),borderRadius:5}
         ]},options:co(tC3,gC3,v=>fM(v))});
+}
+// ── CASH FLOW (proyección capital de trabajo) ──
+function getCFParams(){
+    const buf=parseFloat(localStorage.getItem('cf_buffer')||'10');
+    const pES=parseFloat(localStorage.getItem('cf_precio_enap')||'0');
+    return {buffer:isNaN(buf)?10:buf, precioEnap:isNaN(pES)?0:pES};
+}
+function setCFParam(k,v){
+    const n=parseFloat(v);
+    if(!isNaN(n)) localStorage.setItem('cf_'+k,n);
+    renderCashflow();
+}
+function resetCFPrecio(){
+    localStorage.removeItem('cf_precio_enap');
+    renderCashflow();
+}
+function renderCashflow(){
+    const el=document.getElementById('p-cashflow');
+    const W=D.weeks||[];
+    if(W.length<5){el.innerHTML='<div class="note" style="text-align:center;padding:40px;color:var(--text3)">No hay suficientes semanas para proyectar (se requieren ≥5).</div>';return}
+
+    // weeks[0] = current (parcial), weeks[1..4] = last 4 closed weeks for trend
+    const cur=W[0], prev4=W.slice(1,5);
+
+    // Trend averages from last 4 closed weeks
+    const avgL=prev4.reduce((s,w)=>s+(w.litros||0),0)/4;
+    const avgV=prev4.reduce((s,w)=>s+(w.ventas||0),0)/4;
+    const avgR=prev4.reduce((s,w)=>s+(w.recaud||0),0)/4;
+    const avgC=prev4.reduce((s,w)=>s+(w.compras_odoo||0),0)/4;
+
+    // Implicit ENAP price per liter from last 4 weeks (compras_odoo / litros)
+    const totalL4=prev4.reduce((s,w)=>s+(w.litros||0),0);
+    const totalC4=prev4.reduce((s,w)=>s+(w.compras_odoo||0),0);
+    const precioImpl=totalL4>0?totalC4/totalL4:0;
+
+    // User-overridable ENAP price (default = implicit)
+    const P=getCFParams();
+    const precioCompra=P.precioEnap>0?P.precioEnap:precioImpl;
+
+    // Projection: 4-week trend (no YoY yet — only 16 weeks of history)
+    const projL=avgL, projV=avgV, projR=avgR;
+    const projC=avgL*precioCompra;  // compras = litros × precio compra ENAP
+
+    // Gap = compras a pagar − recaudación esperada
+    const gap=projC-projR;
+    const bufFactor=1+(P.buffer/100);
+    const saldoReq=Math.max(0,gap)*bufFactor;
+
+    // Current cash on hand
+    const cajaActual=D.total_cash||0;
+    const cobertura=saldoReq>0?(cajaActual/saldoReq):0;
+
+    // Status helper
+    const cls=(req)=>{
+        if(req<=0)return'c-green';
+        const c=cajaActual/req;
+        return c>=1.2?'c-green':c>=0.9?'c-amber':'c-red';
+    };
+
+    // Helper: format M without leading $ (since we add $ ourselves)
+    const fNoSign=n=>!n&&n!==0?'—':(n/1e6).toFixed(1)+'M';
+
+    let h='<div class="section-label">💰 Cash Flow — Proyección Capital de Trabajo</div>';
+    h+='<div class="note" style="margin-bottom:16px">Tendencia 4 semanas cerradas. Los lunes este tablero te dice cuánta caja necesitas para cubrir compras a proveedores antes de que entren los cobros de la semana. Modelo: proyección = promedio últimas 4 semanas. Próxima fase: ajuste estacional YoY.</div>';
+
+    // ── Parameters bar ──
+    h+='<div class="cf-params">';
+    h+='<div class="cf-param"><label>Precio compra ENAP $/L</label>';
+    h+=`<input type="number" value="${Math.round(precioCompra)}" onchange="setCFParam('precio_enap',this.value)" step="10" min="0"/>`;
+    h+=`<span class="cf-hint">Implícito ${Math.round(precioImpl)} $/L · `;
+    h+=`<a href="javascript:void(0)" onclick="resetCFPrecio()" style="color:var(--blue);text-decoration:underline">usar implícito</a></span></div>`;
+    h+='<div class="cf-param"><label>Colchón seguridad %</label>';
+    h+=`<input type="number" value="${P.buffer}" onchange="setCFParam('buffer',this.value)" step="1" min="0" max="50"/>`;
+    h+='<span class="cf-hint">Sobre el gap proyectado</span></div>';
+    h+='</div>';
+
+    // ── KPIs Esta Semana ──
+    h+='<div class="section-label" style="margin-top:18px">Esta Semana ('+(cur.label||'')+')</div>';
+    h+='<div class="kpis">';
+    h+=kpi('Venta Proyectada','$'+fNoSign(projV),null,'c-blue',Math.round(projL).toLocaleString()+' L');
+    h+=kpi('Recaudación Esperada','$'+fNoSign(projR),null,'c-green','Promedio 4 sem');
+    h+=kpi('Compras ENAP Proy.','$'+fNoSign(projC),null,'c-amber',Math.round(projL).toLocaleString()+' L × $'+Math.round(precioCompra));
+    h+=kpi('Gap (Compras − Recaud)',(gap>=0?'+$':'-$')+fNoSign(Math.abs(gap)),null,gap>0?'c-red':'c-green',gap>0?'Necesitas caja':'Cubierto por recaudación');
+    h+=kpi('Saldo Requerido Lunes','$'+fNoSign(saldoReq),null,cls(saldoReq),'Gap × +'+P.buffer+'% colchón');
+    h+=kpi('Caja Actual','$'+fNoSign(cajaActual),null,saldoReq<=0?'c-green':(cobertura>=1.2?'c-green':cobertura>=0.9?'c-amber':'c-red'),saldoReq>0?(cobertura*100).toFixed(0)+'% del requerido':'Sin gap que cubrir');
+    h+='</div>';
+
+    // ── Próxima semana (mismo modelo) ──
+    h+='<div class="section-label" style="margin-top:18px">Próxima Semana (proyección)</div>';
+    h+='<div class="note" style="margin-bottom:12px">Sin estacionalidad por ahora — usa el mismo promedio 4-sem. La próxima fase incorporará comparativo año anterior.</div>';
+    h+='<div class="kpis">';
+    h+=kpi('Venta Proyectada','$'+fNoSign(projV),null,'c-blue',Math.round(projL).toLocaleString()+' L');
+    h+=kpi('Recaudación Esperada','$'+fNoSign(projR),null,'c-green','Promedio 4 sem');
+    h+=kpi('Compras ENAP Proy.','$'+fNoSign(projC),null,'c-amber',Math.round(projL).toLocaleString()+' L × $'+Math.round(precioCompra));
+    h+=kpi('Gap',(gap>=0?'+$':'-$')+fNoSign(Math.abs(gap)),null,gap>0?'c-red':'c-green',null);
+    h+=kpi('Saldo Requerido Lunes','$'+fNoSign(saldoReq),null,cls(saldoReq),'Mismo modelo 4-sem');
+    h+='</div>';
+
+    // ── Tabla histórica + proyección ──
+    h+='<div class="section-label" style="margin-top:18px">Histórico 4 Semanas + Proyección</div>';
+    h+='<div class="table-card" style="overflow-x:auto"><table><thead><tr>';
+    h+='<th>Semana</th><th class="r">Litros</th><th class="r">Venta</th><th class="r">Recaudación</th><th class="r">Compras Odoo</th><th class="r">Gap (C−R)</th><th class="r">Cobertura</th>';
+    h+='</tr></thead><tbody>';
+    [...prev4].reverse().forEach(w=>{
+        const g=(w.compras_odoo||0)-(w.recaud||0);
+        const cov=(w.compras_odoo||0)>0?(w.recaud||0)/(w.compras_odoo||0):0;
+        h+='<tr>';
+        h+='<td>'+w.label+'</td>';
+        h+='<td class="r">'+(w.litros||0).toLocaleString()+'</td>';
+        h+='<td class="r">$'+fNoSign(w.ventas||0)+'</td>';
+        h+='<td class="r">$'+fNoSign(w.recaud||0)+'</td>';
+        h+='<td class="r">$'+fNoSign(w.compras_odoo||0)+'</td>';
+        h+='<td class="r" style="color:'+(g>0?'var(--red)':'var(--green)')+'">'+(g>=0?'+$':'-$')+fNoSign(Math.abs(g))+'</td>';
+        h+='<td class="r">'+(cov*100).toFixed(0)+'%</td>';
+        h+='</tr>';
+    });
+    // Esta semana proyectada
+    h+='<tr class="cf-row-proj">';
+    h+='<td>📍 '+cur.label+' (proy)</td>';
+    h+='<td class="r">'+Math.round(projL).toLocaleString()+'</td>';
+    h+='<td class="r">$'+fNoSign(projV)+'</td>';
+    h+='<td class="r">$'+fNoSign(projR)+'</td>';
+    h+='<td class="r">$'+fNoSign(projC)+'</td>';
+    h+='<td class="r" style="color:'+(gap>0?'var(--red)':'var(--green)')+'">'+(gap>=0?'+$':'-$')+fNoSign(Math.abs(gap))+'</td>';
+    h+='<td class="r">'+(projC>0?(projR/projC*100).toFixed(0):'—')+'%</td>';
+    h+='</tr>';
+    // Próxima semana proyectada
+    h+='<tr class="cf-row-next">';
+    h+='<td>🔮 Próx. semana (proy)</td>';
+    h+='<td class="r">'+Math.round(projL).toLocaleString()+'</td>';
+    h+='<td class="r">$'+fNoSign(projV)+'</td>';
+    h+='<td class="r">$'+fNoSign(projR)+'</td>';
+    h+='<td class="r">$'+fNoSign(projC)+'</td>';
+    h+='<td class="r" style="color:'+(gap>0?'var(--red)':'var(--green)')+'">'+(gap>=0?'+$':'-$')+fNoSign(Math.abs(gap))+'</td>';
+    h+='<td class="r">'+(projC>0?(projR/projC*100).toFixed(0):'—')+'%</td>';
+    h+='</tr>';
+    h+='</tbody></table>';
+    h+='<div class="note">Proyección = promedio últimas 4 semanas cerradas. Gap > 0 = compras superan recaudación → necesitas caja para cubrir el desfase. Cobertura = % de compras cubierto por recaudación de la semana.</div></div>';
+
+    // ── Diagnóstico ──
+    h+='<div class="section-label" style="margin-top:18px">Diagnóstico Lunes</div>';
+    h+='<div class="cf-diag">';
+    if(saldoReq<=0){
+        h+='<div class="cf-ok"><strong>✅ Cubierto sin gap</strong> — La recaudación esperada ($'+fNoSign(projR)+') supera las compras proyectadas ($'+fNoSign(projC)+'). No requiere caja adicional para la semana.</div>';
+    } else if(cobertura>=1.2){
+        h+='<div class="cf-ok"><strong>✅ Holgado</strong> — Caja actual ($'+fNoSign(cajaActual)+') cubre '+(cobertura*100).toFixed(0)+'% del saldo requerido ($'+fNoSign(saldoReq)+'). Margen amplio para la semana.</div>';
+    } else if(cobertura>=0.9){
+        h+='<div class="cf-warn"><strong>⚠️ Ajustado</strong> — Caja actual ($'+fNoSign(cajaActual)+') cubre '+(cobertura*100).toFixed(0)+'% del requerido ($'+fNoSign(saldoReq)+'). Monitorear cobranza durante la semana, especialmente martes y miércoles.</div>';
+    } else {
+        const falta=saldoReq-cajaActual;
+        h+='<div class="cf-bad"><strong>🚨 Riesgo</strong> — Faltan <strong>$'+fNoSign(falta)+'</strong> para cubrir la semana. Caja actual: $'+fNoSign(cajaActual)+' · Requerido: $'+fNoSign(saldoReq)+'. Acciones: acelerar cobranza Itaú, revisar descuento de cheques en cartera, o postergar compras a ENAP.</div>';
+    }
+    h+='</div>';
+
+    el.innerHTML=h;
 }
 // ── HELPERS ──
 function kpi(label,val,delta,cls,sub){
