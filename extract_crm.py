@@ -1682,7 +1682,8 @@ def extract_credit_risk(models, uid):
         ["customer_rank", ">", 0],
     ], ["id", "name", "user_id", "monto_credito", "saldo_credito",
         "property_payment_term_id", "property_product_pricelist",
-        "credit", "category_id"],  # credit = AR balance, category_id = tags; user_id = vendedor asignado
+        "credit", "category_id",
+        "delivery_zone_id", "is_volume_client"],  # zona + flag volumen para calc excepción
     limit=2000)
 
     print(f"  Partners with credit line: {len(credit_partners)}")
@@ -1848,12 +1849,25 @@ def extract_credit_risk(models, uid):
         vendedor_partner = canonical_vendedor(safe_name(p.get("user_id")))  # vendedor asignado al cliente
         name = p.get("name", "?")
 
+        # ── Zona y tipo de venta (para calculadora de excepción) ──
+        zona = safe_name(p.get("delivery_zone_id")) or "Sin zona"
+        is_volume = bool(p.get("is_volume_client"))
+
         # Parse payment term days (e.g., "30 Days", "Plazo 30 días")
         pt_days = 30  # default
         if payment_term:
             pt_match = re.search(r'(\d+)', payment_term)
             if pt_match:
                 pt_days = int(pt_match.group(1))
+
+        # Tipo de venta (para calculadora excepción): Volumen si is_volume,
+        # Contado si plazo ≤1d o término menciona "prepago", Crédito en otro caso
+        if is_volume:
+            tipo_venta = "Volumen"
+        elif pt_days <= 1 or (payment_term and "prepago" in payment_term.lower()):
+            tipo_venta = "Contado"
+        else:
+            tipo_venta = "Crédito"
 
         # Averages
         avg_monthly_litros = round(stats["litros_total"] / months_in_window)
@@ -1935,6 +1949,8 @@ def extract_credit_risk(models, uid):
             "avg_margin_pct": avg_margin,
             "avg_price_rango": avg_price_rango,
             "pricelist": pricelist or "—",
+            "zona": zona,
+            "tipo_venta": tipo_venta,
             "ar_balance": round(ar_balance),
             "risk_score": risk_score,
             "risk_level": risk_level,
