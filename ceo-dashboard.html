@@ -824,6 +824,34 @@ function renderRiesgo(){
         const m=plist.match(/BOMBA\s*([+-]?\d+)/i);
         return m?parseInt(m[1]):null;
     }
+    // ── Calculadora excepción (replica hoja Mantenedor) ──
+    // Tabla precios bomba/ENAP por zona. Actualizar cuando ENAP cambie.
+    const ZONAS_PRECIOS={
+        'Rancagua':            {bomba:1561,enap:1399},
+        'San Fernando':        {bomba:1551,enap:1399},  // nombre Odoo
+        'San Fdo':             {bomba:1551,enap:1399},  // alias calculadora
+        'VI Costa':            {bomba:1526,enap:1399},
+        'Talca':               {bomba:1503,enap:1389},
+        'Curico':              {bomba:1503,enap:1389},
+        'Curicó':              {bomba:1503,enap:1389},  // alias con tilde
+        'Chillan':             {bomba:1503,enap:1389},
+        'Chillán':             {bomba:1503,enap:1389},
+        'Región Metropolitana':{bomba:1561,enap:1399},  // = Rancagua
+    };
+    const MARGEN_MIN={'Crédito':0.07,'Volumen':0.08,'Contado':0.045};
+    const COSTO_FIN_30=16;  // $/L base por 30 días extra de financiamiento
+    function calcExcepcion(zona,tipo,dias){
+        const z=ZONAS_PRECIOS[zona];
+        if(!z) return null;
+        const margenMin=MARGEN_MIN[tipo];
+        if(margenMin==null) return null;
+        const minimo30d=z.enap/(1-margenMin);
+        const ajuste=(dias-30)*COSTO_FIN_30/30;
+        const excepcion=Math.round(minimo30d+ajuste-10);
+        // Excepción expresada como diferencial bomba (B+/-N respecto bomba zona)
+        const bombaDiff=Math.round(excepcion-z.bomba);
+        return {excepcion, bombaZona:z.bomba, bombaDiff};
+    }
     // ── Margin bands definition ──
     const BANDS=[
         {label:'Margen < 4%',  id:'lt4',  min:-999, max:4,   targetBomba:'+40 a +60', color:'#a32d2d', bg:'#fcebeb'},
@@ -905,11 +933,34 @@ function renderRiesgo(){
         h+=`<span>${band.label} — ${clients.length} clientes</span>`;
         h+=`<span style="font-weight:500;font-size:11px">Bomba esperada: ${band.targetBomba}${avgB!=null?' · Promedio actual: B'+(avgB>=0?'+':'')+avgB:''} · ${needCount} requieren ajuste</span>`;
         h+='</div>';
-        h+='<div class="table-scroll" style="max-height:350px;border-radius:0 0 8px 8px;margin-bottom:0"><table><thead><tr><th>Cliente</th><th>Score</th><th>Actual</th><th class="r">Plazo</th><th class="r">Paga en</th><th class="r">Atraso</th><th class="r">+Mora</th><th class="r">+Margen</th><th class="r">+Flag</th><th class="r">L/mes</th><th style="text-align:center">Sugerencia</th></tr></thead><tbody>';
+        h+='<div class="table-scroll" style="max-height:350px;border-radius:0 0 8px 8px;margin-bottom:0"><table><thead><tr><th>Cliente</th><th>Zona</th><th>Score</th><th>Actual</th><th style="text-align:center">Excep. mín</th><th class="r">Plazo</th><th class="r">Paga en</th><th class="r">Atraso</th><th class="r">+Mora</th><th class="r">+Margen</th><th class="r">+Flag</th><th class="r">L/mes</th><th style="text-align:center">Sugerencia</th></tr></thead><tbody>';
         clients.forEach(c=>{
             const lv=c.risk_level||riskLevel(c.risk_score);
             const diffCls=c._diff>15?'bad':c._diff>0?'':'ok';
             const actLabel=c._bombaAct!=null?'B'+(c._bombaAct>=0?'+':'')+c._bombaAct:(c.pricelist||'—');
+            // ── Cálculo excepción ──
+            const zonaCli=c.zona||'—';
+            const tipoCli=c.tipo_venta||(c.plazo_pago_dias<=1?'Contado':'Crédito');
+            const diasReal=c.avg_payment_days||c.plazo_pago_dias||30;
+            const calc=calcExcepcion(zonaCli,tipoCli,diasReal);
+            let excepHtml='<span style="color:var(--text3);font-size:11px">—</span>';
+            if(calc){
+                // Semáforo: bombaActual vs bombaDiff de excepción
+                // OK si bomba_cliente > excepcion_diff por ≥10
+                // Cerca límite si diferencia entre -10 y +10
+                // Bajo mínimo si bomba_cliente ≤ excepcion_diff
+                const bombaCli=c._bombaAct;
+                const excepDiff=calc.bombaDiff;  // ej -29
+                const excepLabel='B'+(excepDiff>=0?'+':'')+excepDiff;
+                let dot='🟢',clr='var(--green)',bg='#e1f5ee';
+                if(bombaCli!=null){
+                    const margen=bombaCli-excepDiff;  // cuánto sobre excepción
+                    if(margen<=0){dot='🔴';clr='#a32d2d';bg='#fcebeb';}
+                    else if(margen<10){dot='🟡';clr='#854f0b';bg='#faeeda';}
+                }
+                excepHtml=`<span title="Zona ${zonaCli} · ${tipoCli} · ${diasReal}d → excep $${calc.excepcion}/L (bomba zona $${calc.bombaZona})" style="display:inline-block;background:${bg};color:${clr};font-weight:700;padding:3px 8px;border-radius:6px;font-size:11px;white-space:nowrap">${dot} ${excepLabel}</span>`;
+            }
+            const zonaShort=zonaCli==='Región Metropolitana'?'RM':zonaCli==='San Fernando'?'San Fdo':zonaCli;
             let sugHtml='<span style="color:var(--green);font-weight:600">OK</span>';
             if(c._adj>0){
                 if(c._bombaNueva!=null){
@@ -920,7 +971,7 @@ function renderRiesgo(){
                     sugHtml=`<span style="color:var(--red);font-weight:700">+${c._adj}</span>`;
                 }
             }
-            h+=`<tr><td class="hi">${c.name}</td><td>${scoreBadge(c.risk_score,lv)}</td><td style="font-size:11px;white-space:nowrap">${actLabel}</td><td class="r">${c.plazo_pago_dias}d</td><td class="r ${diffCls}">${c.avg_payment_days}d</td><td class="r ${diffCls}">${c._diff>0?'+':''}${c._diff}d</td>`;
+            h+=`<tr><td class="hi">${c.name}</td><td style="font-size:11px;color:var(--text2)">${zonaShort}</td><td>${scoreBadge(c.risk_score,lv)}</td><td style="font-size:11px;white-space:nowrap">${actLabel}</td><td style="text-align:center">${excepHtml}</td><td class="r">${c.plazo_pago_dias}d</td><td class="r ${diffCls}">${c.avg_payment_days}d</td><td class="r ${diffCls}">${c._diff>0?'+':''}${c._diff}d</td>`;
             h+=`<td class="r" style="color:${c._adjMora?'var(--red)':'var(--text3)'}">${c._adjMora||'—'}</td>`;
             h+=`<td class="r" style="color:${c._adjMargen?'var(--amber)':'var(--text3)'}">${c._adjMargen||'—'}</td>`;
             h+=`<td class="r" style="color:${c._adjFlag?'var(--red)':'var(--text3)'}">${c._adjFlag||'—'}</td>`;
