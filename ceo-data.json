@@ -1,32 +1,32 @@
 {
-  "updated": "2026-05-08T12:21:16.471468",
+  "updated": "2026-05-08T16:29:29.853136",
   "weeks": [
     {
       "label": "07may-13may",
       "start": "2026-05-07",
       "end": "2026-05-13",
-      "ventas": 42687670,
-      "neto": 32977540,
-      "litros": 28326,
-      "litros_retail": 23326,
-      "litros_volumen": 5000,
-      "precio_neto": 1164,
-      "precio_bruto": 1507,
-      "margin": 0.07619,
-      "margin_retail": 0.08376,
-      "margin_volumen": 0.03942,
-      "facturas": 20,
+      "ventas": 63804169,
+      "neto": 49490021,
+      "litros": 42266,
+      "litros_retail": 31466,
+      "litros_volumen": 10800,
+      "precio_neto": 1171,
+      "precio_bruto": 1510,
+      "margin": 0.07816,
+      "margin_retail": 0.08642,
+      "margin_volumen": 0.05335,
+      "facturas": 27,
       "nc": 0,
-      "clientes": 20,
-      "recaud": 42549582,
+      "clientes": 27,
+      "recaud": 50668731,
       "cheques": 0,
-      "transf": 30017048,
+      "transf": 38136197,
       "factoring": 12532534,
       "compras_odoo": 0,
       "cheq_cartera_saldo": 0,
       "cheq_recibidos": 0,
-      "facturas_contado": 2,
-      "facturas_credito": 18,
+      "facturas_contado": 3,
+      "facturas_credito": 24,
       "margin_by_term": {
         "Prepago": {
           "margin": 0.12913,
@@ -35,26 +35,38 @@
           "days": 0
         },
         "1 Día": {
-          "margin": 0.03942,
-          "normalizado": 0.04909,
-          "count": 1,
+          "margin": 0.04355,
+          "normalizado": 0.05321,
+          "count": 2,
           "days": 1
         },
+        "7 Días": {
+          "margin": 0.04405,
+          "normalizado": 0.05172,
+          "count": 1,
+          "days": 7
+        },
         "30 Días": {
-          "margin": 0.08146,
-          "normalizado": 0.08146,
-          "count": 16,
+          "margin": 0.08368,
+          "normalizado": 0.08368,
+          "count": 19,
           "days": 30
         },
+        "45 Días": {
+          "margin": 0.09511,
+          "normalizado": 0.09011,
+          "count": 1,
+          "days": 45
+        },
         "60 Días": {
-          "margin": 0.08284,
-          "normalizado": 0.07284,
-          "count": 2,
+          "margin": 0.09405,
+          "normalizado": 0.08405,
+          "count": 3,
           "days": 60
         }
       },
       "cotiz_canceladas": 3,
-      "visitas": 11,
+      "visitas": 13,
       "clientes_nuevos": 7,
       "ppto": 213480,
       "ppto_retail": 153706,
@@ -1260,8 +1272,8 @@
     {
       "date": "08may",
       "day": "Vie",
-      "litros": 0,
-      "neto": 0
+      "litros": 13940,
+      "neto": 16512481
     },
     {
       "date": "07may",
@@ -1360,10 +1372,6 @@
       "balance": 15016391
     },
     {
-      "name": "DE CHILE",
-      "balance": 11628139
-    },
-    {
       "name": "SANTANDER",
       "balance": 8005019
     },
@@ -1380,19 +1388,23 @@
       "balance": 3291177
     },
     {
+      "name": "DE CHILE",
+      "balance": 247288
+    },
+    {
       "name": "DE CREDITO",
       "balance": -1727275
     }
   ],
-  "total_cash": 47089420,
+  "total_cash": 35708569,
   "receivables": {
-    "open_invoices": 269,
-    "total_due": 620872773,
-    "current": 534437730,
-    "overdue": 86435043,
-    "pct_overdue": 13.9,
+    "open_invoices": 270,
+    "total_due": 634079273,
+    "current": 550823229,
+    "overdue": 83256044,
+    "pct_overdue": 13.1,
     "aging": {
-      "0-30": 69256158,
+      "0-30": 66077159,
       "31-60": 7413322,
       "61-90": 0,
       "90+": 9765563
@@ -1404,7 +1416,7 @@
       },
       {
         "name": "SOC AGRICOLA GRANJA SAN RAFAEL LIMITADA",
-        "amount": 22390681
+        "amount": 25471081
       },
       {
         "name": "TRANSPORTE SANTA ELENITA SPA",
@@ -1439,12 +1451,20 @@
         "amount": 13390401
       },
       {
+        "name": "MAQUINARIAS Y ARIDOS SAN PEDRO SPA.",
+        "amount": 12557479
+      },
+      {
         "name": "EL PARRON SPA",
         "amount": 12000000
       },
       {
         "name": "URAN ANTONIO LUNA DOMÍNGUEZ",
         "amount": 11424000
+      },
+      {
+        "name": "ARIDOS LO VALDIVIA LIMITADA",
+        "amount": 11081500
       },
       {
         "name": "EMPRESAS TUCAPEL S A",
@@ -1463,16 +1483,8 @@
         "amount": 9522000
       },
       {
-        "name": "MAQUINARIAS Y ARIDOS SAN PEDRO SPA.",
-        "amount": 9026979
-      },
-      {
         "name": "VICTOR FAVIO VILCHES MARDONES",
         "amount": 8824001
-      },
-      {
-        "name": "AGROMORANDE S A",
-        "amount": 7945602
       },
       {
         "name": "ANDES SOLAR SA",
@@ -1536,15 +1548,15 @@
   "riesgo": {
     "cubierto": 0,
     "cubierto_count": 0,
-    "no_cubierto": 620872773,
-    "no_cubierto_count": 269,
+    "no_cubierto": 634079273,
+    "no_cubierto_count": 270,
     "pct_monto": 100.0,
     "pct_count": 100.0
   },
   "churn": {
     "eligible_clients": 166,
-    "churned_count": 57,
-    "pct": 34.3,
+    "churned_count": 55,
+    "pct": 33.1,
     "churned": [
       {
         "name": "ERIKA DEL PILAR GUZMAN MANRIQUEZ",
@@ -1881,9 +1893,9 @@
       },
       {
         "month": "May 2026",
-        "pct": 83.8,
-        "new_churn": 62,
-        "active_start": 74
+        "pct": 82.6,
+        "new_churn": 57,
+        "active_start": 69
       }
     ]
   },
@@ -2030,14 +2042,14 @@
         "month": "2026-05",
         "label": "May 2026",
         "budget": 10055583,
-        "actual": 6497013,
-        "compliance_pct": 64.6,
+        "actual": 6803950,
+        "compliance_pct": 67.7,
         "categories": {
           "Petróleo": 4724746,
-          "Mantención y Reparación": 31133,
-          "Gastos Traslados (TAG)": 1127116,
+          "Mantención y Reparación": 66906,
+          "Gastos Traslados (TAG)": 1243860,
           "Seguros": 39990,
-          "Gastos Vehículos": 174028,
+          "Gastos Vehículos": 328448,
           "Arriendo": 400000,
           "EPP": 0,
           "Mantenciones Varias": 0
