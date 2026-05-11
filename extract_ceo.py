@@ -1124,30 +1124,33 @@ def extract_riesgo(models, uid):
 
 
 # ── DSO (Days Sales Outstanding) ──
-# Cuenta 1.1.04.05 = CLIENTES NACIONALES (excluye factoring, cheques, anticipos)
-CLIENTES_NACIONALES_CODE = "1.1.04.05"
+# CxC = Clientes Nacionales + Factoring no liquidado (plata en la calle)
+CXC_ACCOUNT_CODES = ["1.1.04.05", "1.1.04.11"]
 
 
 def extract_dso(models, uid, n_months=6):
-    """DSO mensual usando saldo de cuenta 1.1.04.05 (Clientes Nacionales).
+    """DSO mensual usando saldo de cuentas 1.1.04.05 + 1.1.04.11.
 
-    Metodo: read_group sobre account.move.line filtrado a la cuenta
-    1.1.04.05 unicamente. Esto excluye factoring ($452M), cheques en
-    cartera ($79M), anticipos y otros que inflaban el calculo anterior.
+    1.1.04.05 = CLIENTES NACIONALES (facturas directas)
+    1.1.04.11 = DOCUMENTOS EN FACTORING (cedidas al factor, no liquidadas)
+
+    Ambas representan plata en la calle. Se excluyen cheques en cartera,
+    anticipos y otros que inflaban el calculo anterior ($79M+$7M).
 
     Validado contra reporte Odoo 'Cuentas por cobrar vencidas' al
-    30/04/2026: $598,251,830 (solo 1.1.04.05).
+    30/04/2026: 1.1.04.05=$598M + 1.1.04.11=$452M = $1,050M.
     """
     print(f"Extracting DSO ({n_months} months)...")
 
-    # 1. Obtener ID de la cuenta 1.1.04.05
+    # 1. Obtener IDs de las cuentas de CxC
     acc_ids = models.execute_kw(
         ODOO_DB, uid, ODOO_KEY, "account.account", "search",
-        [[["code", "=", CLIENTES_NACIONALES_CODE]]]
+        [[["code", "in", CXC_ACCOUNT_CODES]]]
     )
     if not acc_ids:
-        print("  WARNING: cuenta 1.1.04.05 no encontrada, DSO omitido")
+        print("  WARNING: cuentas CxC no encontradas, DSO omitido")
         return []
+    print(f"  Cuentas CxC: {len(acc_ids)} encontradas (codes: {CXC_ACCOUNT_CODES})")
 
     # 2. Generar ultimos N meses cerrados
     today = datetime.now()
