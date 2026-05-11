@@ -1231,6 +1231,135 @@ def extract_dso(models, uid, n_months=6):
     return result
 
 
+def extract_cxc_detail(models, uid, cutoff_date):
+    """
+    Lista detallada de facturas con saldo > 0 al cutoff_date.
+    Para cada factura: cliente, fecha emisión, fecha pago real (si se pagó después
+    del corte), monto al cierre, días desde emisión, estado.
+    cutoff_date: 'YYYY-MM-DD' (último día del mes a auditar)
+    """
+    print(f"Extracting CxC detail al {cutoff_date}...")
+    # 1) Cuentas receivable
+    recv_accounts = sr(models, uid, "account.account",
+        [["account_type", "=", "asset_receivable"]],
+        ["id", "code"], 100)
+    recv_ids = [a["id"] for a in recv_accounts]
+    if not recv_ids:
+        print("  ⚠️  No receivable accounts found")
+        return {"cutoff": cutoff_date, "rows": [], "total": 0}
+
+    # 2) Facturas out_invoice posteadas con invoice_date <= cutoff
+    invs = fetch_all(models, uid, "account.move",
+        [["move_type", "=", "out_invoice"],
+         ["state", "=", "posted"],
+         ["invoice_date", "<=", cutoff_date]],
+        ["id", "name", "partner_id", "invoice_date", "payment_state"])
+    print(f"  {len(invs)} facturas con invoice_date <= {cutoff_date}")
+
+    # 3) Saldo histórico al cutoff por factura: read_group de account.move.line
+    inv_ids = [i["id"] for i in invs]
+    saldo_at_cutoff = {}
+    BATCH = 500
+    for bs in range(0, len(inv_ids), BATCH):
+        batch = inv_ids[bs:bs + BATCH]
+        groups = models.execute_kw(
+            ODOO_DB, uid, ODOO_KEY,
+            "account.move.line", "read_group",
+            [[["move_id", "in", batch],
+              ["account_id", "in", recv_ids],
+              ["parent_state", "=", "posted"],
+              ["date", "<=", cutoff_date]]],
+            {"fields": ["debit:sum", "credit:sum"],
+             "groupby": ["move_id"], "lazy": True}
+        )
+        for g in groups:
+            mid = g["move_id"][0] if isinstance(g["move_id"], list) else g["move_id"]
+            s = (g.get("debit", 0) or 0) - (g.get("credit", 0) or 0)
+            saldo_at_cutoff[mid] = round(s)
+    # 4) Filtrar facturas con saldo > 0 al cutoff
+    con_saldo = [i for i in invs if saldo_at_cutoff.get(i["id"], 0) > 0]
+    print(f"  {len(con_saldo)} facturas con saldo > 0 al cierre")
+
+    # 5) Fechas de pago real (para las que hoy ya están paid/partial)
+    # Buscar matched_credit_ids → account.partial.reconcile.max_date
+    movieron = [i for i in con_saldo if i.get("payment_state") in ("paid", "in_payment", "partial")]
+    fechas_pago = {}
+    if movieron:
+        movieron_ids = [i["id"] for i in movieron]
+        for bs in range(0, len(movieron_ids), BATCH):
+            batch = movieron_ids[bs:bs + BATCH]
+            lines = sr(models, uid, "account.move.line",
+                [["move_id", "in", batch],
+                 ["account_id", "in", recv_ids]],
+                ["id", "move_id", "matched_credit_ids"])
+            all_match_ids = set()
+            partial_to_moves = {}
+            for ln in lines:
+                mid = ln["move_id"][0] if isinstance(ln["move_id"], list) else ln["move_id"]
+                for m in ln.get("matched_credit_ids", []) or []:
+                    all_match_ids.add(m)
+                    partial_to_moves.setdefault(m, []).append(mid)
+            if not all_match_ids:
+                continue
+            try:
+                partials = sr(models, uid, "account.partial.reconcile",
+                    [["id", "in", list(all_match_ids)]],
+                    ["id", "max_date"])
+                for p in partials:
+                    d = p.get("max_date")
+                    if not d or d <= cutoff_date:
+                        continue
+                    for mid in partial_to_moves.get(p["id"], []):
+                        prev = fechas_pago.get(mid)
+                        if prev is None or d > prev:
+                            fechas_pago[mid] = d
+            except Exception as e:
+                print(f"  ⚠️ error en partial.reconcile batch: {e}")
+                continue
+
+    # 6) Construir filas finales
+    today = datetime.now().date()
+    rows = []
+    for inv in con_saldo:
+        name = inv["partner_id"][1] if inv["partner_id"] else "—"
+        fecha_emi = inv.get("invoice_date") or ""
+        fecha_pago = fechas_pago.get(inv["id"])
+        monto = saldo_at_cutoff.get(inv["id"], 0)
+        dias = None
+        try:
+            emi_d = datetime.strptime(fecha_emi, "%Y-%m-%d").date() if fecha_emi else None
+            if fecha_pago and emi_d:
+                pago_d = datetime.strptime(fecha_pago, "%Y-%m-%d").date()
+                dias = (pago_d - emi_d).days
+                estado = "Pagada"
+            elif emi_d:
+                dias = (today - emi_d).days
+                estado = "Sin pagar"
+            else:
+                estado = "Sin pagar"
+        except Exception:
+            estado = "Sin pagar"
+        rows.append({
+            "cliente": name,
+            "fecha_emision": fecha_emi,
+            "fecha_pago": fecha_pago or "",
+            "monto": monto,
+            "dias": dias,
+            "estado": estado,
+        })
+    rows.sort(key=lambda r: -r["monto"])
+    total = sum(r["monto"] for r in rows)
+    print(f"  Total CxC al {cutoff_date}: ${total/1e6:.1f}M")
+    return {
+        "cutoff": cutoff_date,
+        "total": round(total),
+        "rows_count": len(rows),
+        "pagadas_count": sum(1 for r in rows if r["estado"] == "Pagada"),
+        "sin_pagar_count": sum(1 for r in rows if r["estado"] == "Sin pagar"),
+        "rows": rows,
+    }
+
+
 def main():
     print("=== CEO Dashboard · Odoo Extraction ===")
     models, uid = connect()
@@ -1255,6 +1384,11 @@ def main():
     enap = extract_enap_compliance(models, uid)
     operaciones = extract_operaciones(models, uid)
     dso = extract_dso(models, uid, n_months=6)
+    # CxC detalle del último cierre de mes (usa el cutoff del último DSO disponible)
+    cxc_detail = {"cutoff": None, "rows": [], "total": 0}
+    if dso:
+        last_cutoff = dso[-1]["end"]
+        cxc_detail = extract_cxc_detail(models, uid, last_cutoff)
 
     data = {
         "updated": datetime.now().isoformat(),
@@ -1269,6 +1403,7 @@ def main():
         "enap": enap,
         "operaciones": operaciones,
         "dso": dso,
+        "cxc_detail": cxc_detail,
         "gerencia_goals": {
             "margen_contado_meta": 0.085,
             "margen_credito_meta": 0.06,
