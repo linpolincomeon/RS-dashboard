@@ -1,32 +1,32 @@
 {
-  "updated": "2026-05-11T13:54:36.097400",
+  "updated": "2026-05-11T14:36:51.999414",
   "weeks": [
     {
       "label": "07may-13may",
       "start": "2026-05-07",
       "end": "2026-05-13",
-      "ventas": 85972041,
-      "neto": 66733921,
-      "litros": 56705,
-      "litros_retail": 43400,
+      "ventas": 87289541,
+      "neto": 67765913,
+      "litros": 57555,
+      "litros_retail": 44250,
       "litros_volumen": 13305,
       "precio_neto": 1177,
-      "precio_bruto": 1516,
-      "margin": 0.08152,
-      "margin_retail": 0.08875,
+      "precio_bruto": 1517,
+      "margin": 0.08176,
+      "margin_retail": 0.08892,
       "margin_volumen": 0.05696,
-      "facturas": 35,
+      "facturas": 36,
       "nc": 0,
-      "clientes": 34,
+      "clientes": 35,
       "recaud": 160750502,
       "cheques": 10464951,
       "transf": 83634401,
       "factoring": 66651150,
-      "compras_odoo": 118667431,
+      "compras_odoo": 118867431,
       "cheq_cartera_saldo": 0,
       "cheq_recibidos": 0,
       "facturas_contado": 4,
-      "facturas_credito": 31,
+      "facturas_credito": 32,
       "margin_by_term": {
         "Prepago": {
           "margin": 0.12913,
@@ -47,9 +47,9 @@
           "days": 7
         },
         "30 Días": {
-          "margin": 0.08655,
-          "normalizado": 0.08655,
-          "count": 24,
+          "margin": 0.08686,
+          "normalizado": 0.08686,
+          "count": 25,
           "days": 30
         },
         "45 Días": {
@@ -1272,8 +1272,8 @@
     {
       "date": "11may",
       "day": "Lun",
-      "litros": 0,
-      "neto": 0
+      "litros": 850,
+      "neto": 1031992
     },
     {
       "date": "08may",
@@ -1368,20 +1368,16 @@
   ],
   "banks": [
     {
-      "name": "ITAU",
-      "balance": 15016391
-    },
-    {
       "name": "DE CHILE",
       "balance": 9428899
     },
     {
-      "name": "SANTANDER",
-      "balance": 8005019
+      "name": "ITAU",
+      "balance": 6852272
     },
     {
       "name": "ESTADO",
-      "balance": 6228576
+      "balance": 4811543
     },
     {
       "name": "BCI",
@@ -1392,19 +1388,23 @@
       "balance": 3291177
     },
     {
+      "name": "SANTANDER",
+      "balance": 105019
+    },
+    {
       "name": "DE CREDITO",
       "balance": -1727275
     }
   ],
-  "total_cash": 44890180,
+  "total_cash": 27409028,
   "receivables": {
-    "open_invoices": 265,
-    "total_due": 629179944,
-    "current": 531060367,
-    "overdue": 98119577,
-    "pct_overdue": 15.6,
+    "open_invoices": 259,
+    "total_due": 623170493,
+    "current": 528735266,
+    "overdue": 94435227,
+    "pct_overdue": 15.2,
     "aging": {
-      "0-30": 82012693,
+      "0-30": 78328343,
       "31-60": 6341321,
       "61-90": 0,
       "90+": 9765563
@@ -1421,10 +1421,6 @@
       {
         "name": "PATRICIO VISCAY ALBORNOZ",
         "amount": 24961924
-      },
-      {
-        "name": "TRANSPORTE SANTA ELENITA SPA",
-        "amount": 21848670
       },
       {
         "name": "AGROINDUSTRIAL SIRACUSA S A",
@@ -1445,6 +1441,10 @@
       {
         "name": "EMPRESAS TUCAPEL S A",
         "amount": 14674900
+      },
+      {
+        "name": "TRANSPORTE SANTA ELENITA SPA",
+        "amount": 14521719
       },
       {
         "name": "SOC. DE TRANSPORTES TRACMAVI LTDA.",
@@ -1557,15 +1557,15 @@
   "riesgo": {
     "cubierto": 0,
     "cubierto_count": 0,
-    "no_cubierto": 629179944,
-    "no_cubierto_count": 265,
+    "no_cubierto": 623170493,
+    "no_cubierto_count": 259,
     "pct_monto": 100.0,
     "pct_count": 100.0
   },
   "churn": {
-    "eligible_clients": 166,
+    "eligible_clients": 167,
     "churned_count": 59,
-    "pct": 35.5,
+    "pct": 35.3,
     "churned": [
       {
         "name": "ERIKA DEL PILAR GUZMAN MANRIQUEZ",
@@ -2055,12 +2055,12 @@
         "compliance_pct": 67.7,
         "categories": {
           "Petróleo": 4724746,
-          "Mantención y Reparación": 66906,
+          "Mantención y Reparación": 63898,
           "Gastos Traslados (TAG)": 1243860,
           "Seguros": 39990,
           "Gastos Vehículos": 328448,
           "Arriendo": 400000,
-          "EPP": 0,
+          "EPP": 3008,
           "Mantenciones Varias": 0
         }
       }
