@@ -1,0 +1,429 @@
+🔥 TomEnergy — Briefing Técnico Unificado
+Documento maestro para sesiones de Claude · v3 — Mayo 2026
+Consolida: agente_v1, agente_v2, Q&A del equipo (Excel automatización), y trabajo de sesiones Abril–Mayo 2026.
+Instrucción para nuevas sesiones de Claude: Lee este archivo al inicio de cada sesión antes de responder cualquier pregunta técnica sobre los dashboards de TomEnergy. Al terminar, actualiza la sección 13 (Estado actual).
+1. Quién soy
+Pauline Vial Comber — CEO de TomEnergy (tomenergy.cl)
+Distribuidor de combustible diésel en Chile (RM, VI y VII Región)
+Suministro directo ENAP, clientes B2B: agricultura, transporte, construcción, industria
+Trabajo directamente en el código — no delego a un developer
+Zonas operativas: Rancagua, San Fernando, VI Costa, Talca, Curicó, Chillán
+2. Stack técnico
+Componente
+Detalle
+ERP
+Odoo 18 Enterprise — base de datos: PRODUCCION
+Conexión
+XML-RPC (xmlrpc.client en Python)
+Scripts
+extract_odoo.py (RS), extract_ceo.py (CEO), extract_crm.py (CRM), extract_route.py (Route)
+Output
+Archivos JSON estáticos en el repo
+Frontend
+HTML + Chart.js, sin framework, fuente DM Sans
+Colores
+#f7f6f3 fondo, #ffffff cards, #c8360e acento rojo
+Hosting
+GitHub Pages
+CI/CD
+GitHub Actions (cron diario + trigger manual)
+Bot
+Telegram (Render.com worker, Fase 1: lectura)
+Repo
+linpolincomeon/RS-dashboard
+URL live
+linpolincomeon.github.io/RS-dashboard/
+
+3. Arquitectura de los scripts Python
+Flujo de datos:
+Script Python → XML-RPC → Odoo PRODUCCION → JSON → GitHub Actions → GitHub Pages → HTML dashboard
+3.1 Credenciales — patrón real de los workflows
+IMPORTANTE: Los bloques env: a nivel de job a veces sobreescriben variables con strings vacíos. Patrón verificado en update-crm-data.yml:
+ODOO_URL = https://tomenergy.cl    (literal en el YAML, no es secret)
+ODOO_DB  = PRODUCCION                (literal en el YAML, no es secret)
+ODOO_USER = p@tomenergy.cl           (literal)
+ODOO_KEY  = ${{ secrets.ODOO_KEY }}  (único por GitHub Secret)
+Ejemplo de step:
+env:
+  ODOO_URL: https://tomenergy.cl
+  ODOO_DB: PRODUCCION
+  ODOO_USER: p@tomenergy.cl
+  ODOO_KEY: ${{ secrets.ODOO_KEY }}
+Regla: Siempre pasar env al step, no al nivel de job.
+4. Modelos Odoo relevantes
+Modelo
+Uso
+sale.order
+Pedidos de venta. Campos: state, invoice_status, date_order, shipping_date, commitment_date, invoice_ids, invoice_origin
+stock.warehouse
+Almacenes. Campo: code (SH, HH). Usado por extract_route.py
+account.move
+Facturas (move_type=out_invoice) y NC (out_refund). Campos: invoice_date, amount_untaxed, margin_zone, invoice_origin, payment_state, amount_residual
+account.move.line
+Líneas de factura. Campos: product_id, quantity, price_subtotal, account_id, debit, credit, parent_state, date
+account.account
+Plan contable. Campos: account_type (asset_receivable identifica CxC), code, name
+account.bank.statement.line
+Extractos bancarios. Usado para recaudación real desde Banco de Chile
+res.partner
+Clientes. Campos: is_volume_client, delivery_zone_id, partner_latitude, partner_longitude, property_payment_term_id, property_product_pricelist, tiene_credito, monto_credito, saldo_credito, credit
+partner.delivery.zone
+Zonas. Campos: name, cost_price (precio compra ENAP), lst_price (precio bomba referencia)
+crm.lead
+Oportunidades CRM. Campos: stage_id, user_id, partner_id, expected_revenue, x_litros_estimados, date_last_stage_update, write_date
+crm.stage
+Etapas pipeline. Por nombre: oportunidad, contactado, ruta, cotizado, won, perdido, durmiente
+mail.message
+Mensajes y contactos en leads. Campos: model, res_id, message_type, date
+mail.activity
+Actividades pendientes. Campos: res_model, user_id, date_deadline, summary
+
+4.1 IDs y constantes importantes
+Diésel B1: product_id = 14
+ENAP (proveedor): partner_id = 5667
+Adquim (proveedor): partner_id = 15299
+Cheques en Cartera (journal): id = 114
+4.2 Campos clave
+Venta sin IVA sin IEC: amount_untaxed en account.move
+Margen por factura: margin_zone en account.move (campo custom, valor 0–1)
+Segmentación retail/volumen: is_volume_client en res.partner
+Zona de entrega: delivery_zone_id en res.partner
+SLA prometido: shipping_date en sale.order
+Factura ligada a orden: invoice_origin en account.move = order.name
+Órdenes a facturar: sale.order con invoice_status='to invoice' y state in ('sale','done')
+Las NC (out_refund) deben restarse manualmente de facturas — no se netean automáticamente en Odoo.
+5. Lógica comercial
+5.1 Semana comercial
+Semana: JUEVES a MIÉRCOLES (no lunes a domingo) — calendario ENAP
+Todas las tablas y gráficos semanales respetan este corte
+5.2 Segmentación clientes
+Retail: is_volume_client = False
+Volumen: is_volume_client = True
+Clientes "Predeterminado" se excluyen de todos los análisis
+5.3 Fórmulas de margen
+Margen %: (Venta_neta − Costo_neto) / Venta_neta × 100
+Costo_neto: Venta_neta × (1 − margin_zone)
+Meta retail: 12% mínimo
+Meta volumen: 9% mínimo
+5.4 Precio neto desde bruto
+precio_neto = (precio_bruto − IEC) / (1 + IVA)
+IEC = $104.5749/lt
+IVA = 19%
+5.5 Churn y cartera
+Activos: facturaron en el mes actual o el mes anterior
+Durmientes: leads en etapa 'Durmiente' en CRM — fuera de ciclo
+Perdidos: leads en etapa 'Perdidos' o 'No Cerrados' en CRM
+Churn %: nuevos_perdidos_mes / clientes_mes_anterior × 100
+Rescate Durmiente: durmiente que volvió a facturar = fidelización
+Rescate Perdido: perdido que volvió a facturar = cuenta como cliente nuevo
+5.6 SLA de entrega
+Campo origen: shipping_date en sale.order
+Campo comparación: invoice_date de la primera factura donde invoice_origin = order.name
+Cálculo: diff = fecha_primera_factura − shipping_date
+SLA cumplido: diff ≤ 1 día · Incumplido: diff > 1 día · Meta: ≥ 80%
+5.7 DSO (Days Sales Outstanding) — Mayo 2026
+Implementado en extract_ceo.py para los últimos 6 meses, usando read_group para sumar en el servidor Odoo (rápido y exacto):
+DSO_mes = CxC_fin_mes / Ventas_netas_mes × días_del_mes
+
+CxC_fin_mes = suma(debit − credit) de account.move.line
+              donde account.account_type = "asset_receivable"
+              y parent_state = "posted"
+              y date <= fin_mes
+
+Ventas_netas_mes = sum(amount_untaxed out_invoice posted)
+                 − sum(amount_untaxed out_refund posted)
+                 dentro del mes
+
+Valor de referencia validado: Marzo 2026 = 25.8 días
+Umbrales del KPI: ≤25d verde · 26–35d ámbar · >35d rojo
+6. Estructura de precios y calculadora de excepción
+6.1 Campos base en Odoo
+Zona del cliente: delivery_zone_id en res.partner
+Campos en zona: cost_price (precio compra ENAP), lst_price (precio bomba referencia)
+Lista de precios cliente: property_product_pricelist (texto tipo "BOMBA +7", "BOMBA −10", etc.)
+Parser bomba en el dashboard: parseBomba() busca patrón BOMBA [+/−]N
+6.2 Calculadora de excepción (replica hoja Mantenedor)
+Fórmula EXACTA de la calculadora oficial (validada contra hoja Mantenedor):
+Mínimo = base_min_zona + (−días_real + 30) × C10 / 30
+Excepción = Mínimo − 10
+Dif Bomba = Excepción − bomba_zona
+
+donde:
+  C10 = −16 (CRITICAL: negativo, costo financiero base)
+  base_min_zona viene de tabla Mantenedor según tipo:
+    Crédito (margen mín 7%): VLOOKUP col I
+    Volumen (margen mín 8%): VLOOKUP col K
+    Contado (margen mín 4.5%): VLOOKUP col M
+Tabla zonas (hardcoded en ceo-dashboard.html — actualizar cuando ENAP cambie):
+Zona
+Bomba
+Cred Mín
+Vol Mín
+Cont Mín
+Rancagua
+1561
+1504
+1465
+1488
+San Fernando (Odoo)
+1551
+1504
+1465
+1488
+VI Costa
+1526
+1504
+1465
+1488
+Talca
+1503
+1494
+1454
+1478
+Curico
+1503
+1494
+1454
+1478
+Chillan
+1503
+1494
+1454
+1478
+Región Metropolitana
+1561
+1504
+1465
+1488
+
+Regla de inferencia de tipo_venta (acordada con Pauline, May 2026):
+is_volume_client = true → Volumen (flag explícita gana)
+avg_payment_days ≤ 7 → Contado
+avg_payment_days 8–60 → Crédito
+Los días que se usan en la fórmula son los REALES (avg_payment_days), no los pactados. El semáforo es estricto por diseño: refleja comportamiento real vs. cotización nominal del ejecutivo.
+Sanity checks de la calculadora:
+VI Costa / Crédito / 60 días → Excepción $1.510 / B−16  (idéntico calc oficial ✓)
+Curico / Volumen / 7 días → Excepción $1.432 / B−71  (idéntico calc oficial ✓)
+7. Dashboards existentes
+7.1 RS Dashboard (equipo comercial)
+Script: extract_odoo.py
+Audiencia: equipo de ventas
+Foco: pedidos, clientes, actividad comercial
+7.2 CEO Dashboard
+Script: extract_ceo.py · JSON: ceo-data.json
+URL: linpolincomeon.github.io/RS-dashboard/ceo-dashboard.html
+Audiencia: Pauline — uso interno
+Tabs: RS · Gerencia · Resumen · Operaciones · Riesgo · 💰 Cash Flow (NUEVO May 2026)
+Tab Riesgo — funcionalidades nuevas Mayo 2026:
+Columna Zona por cliente (desde delivery_zone_id)
+Columna Excep. mín con semáforo 🟢🟡🔴: calcExcepcion() arroja diff bomba; OK si bomba_cliente > excep+10, ámbar entre ±10, rojo si bomba_cliente ≤ excep
+KPI Líneas Insuficientes con delta vs semana anterior (lee riesgo-snapshots.json)
+Section label Clientes por Banda de Margen con delta vs semana anterior
+Snapshot semanal automático: extract_crm.py escribe riesgo-snapshots.json (last 52 weeks) con linea_insuficiente_count, need_adj_count, score_table_total
+Tab Cash Flow (NUEVO Mayo 2026):
+Proyección capital de trabajo: lunes de cada semana, cuánta caja se necesita para cubrir compras a proveedores antes de que entren los cobros
+Inputs editables (localStorage): precio compra ENAP $/L (default = implícito de últimas 4 sem), colchón de seguridad % (default 10%)
+Modelo: proyección = promedio 4 semanas cerradas. Sin estacionalidad YoY aún (Fase 2: requiere expandir extract_ceo.py a 60 semanas)
+KPIs: Venta proy, Recaudación esperada, Compras ENAP proy, Gap (C−R), Saldo Requerido Lunes, Caja Actual
+Diagnóstico semáforo: ✅ Cubierto sin gap / ✅ Holgado (cob ≥120%) / ⚠️ Ajustado (90–120%) / 🚨 Riesgo (<90%)
+KPI DSO (NUEVO Mayo 2026, tab RS):
+Lee D.dso del JSON (generado por extract_ceo.py, últimos 6 meses)
+Muestra el último mes + delta vs mes anterior
+Fallback hardcoded a "Mar 2026: 25.8d" si el JSON aún no tiene el campo
+7.3 CRM Dashboard — PRINCIPAL
+Script: extract_crm.py · JSON: crm-data.json
+URL: linpolincomeon.github.io/RS-dashboard/crm-weekly.html
+Audiencia: Pauline + equipo comercial
+Tabs: 📊 Pipeline · 🎯 Funnel · 💰 Ventas · 🔄 Churn & Rescate · 👤 Vendedores · 📋 Mes Vencido
+Vendedores permitidos (ALLOWED_VENDORS):
+Toro González Sebastian Enrique
+Comber Sigall Pauline
+De Trenqualye Merino Andre Jean
+Vial Comber Pauline
+Fernando Jullian
+TomEnergy
+Metas empresa (company_goals en crm-data.json):
+Litros mes: 1.305.689 L (abril 2026)
+Margen retail: 12% · Margen volumen: 9%
+Metas vendedor (vendor-goals.json, editable manualmente):
+leads_semana: 15 · cotizaciones_semana: 8 · contactos_semana: 10
+clientes_nuevos_mes: 2 · retencion_90d: 90%
+litros_mes y presupuesto_venta: por vendedor
+7.4 Route Dashboard
+Script: extract_route.py · JSON: route-data.json · HTML: route.html
+Workflow: .github/workflows/update-route.yml (cron 1×/día + trigger manual)
+Audiencia: Ops guy — ruta diaria de las órdenes a facturar
+Lógica:
+Query sale.order con invoice_status='to invoice' y state in ('sale','done')
+Agrupa por stock.warehouse.code (SH → ENAP San Fernando, HH → ENAP Linares)
+Geocoding: usa partner_latitude/longitude si existen; fallback a Nominatim (1 req/s)
+Optimización: nearest-neighbor desde ENAP de origen, round-trip
+Output: link Google Maps /dir/?api=1 con origen y destino = ENAP, hasta 9 waypoints por link (tramos 1/N, 2/N…)
+8. Telegram Bot (NUEVO Mayo 2026)
+Estado: Fase 1 implementada (solo lectura sobre los JSON del dashboard)
+Repositorio sugerido separado: 
+tomenergy-bot/
+├── bot.py            # python-telegram-bot + Anthropic + Claude tools
+├── requirements.txt
+├── render.yaml       # Background Worker en Render.com (plan free)
+└── README.md
+8.1 Tools disponibles para Claude
+get_dashboard_summary — resumen general (venta semana, caja, riesgo)
+list_clients_by_margin_band — clientes por banda (lt4, b4_6, b6_8, b8_10, gte10)
+search_client — buscar cliente por nombre
+get_weekly_breakdown — tendencia semanal últimas N semanas
+get_credit_risk_detail — detalle líneas insuficientes
+get_executives_performance — performance por ejecutivo
+8.2 Variables de entorno (Render Environment)
+TELEGRAM_TOKEN — de @BotFather
+ANTHROPIC_API_KEY — Anthropic console
+ALLOWED_USERS — comma-separated Telegram User IDs autorizados
+DASHBOARD_BASE_URL — https://linpolincomeon.github.io/RS-dashboard
+8.3 Modelo y costos
+Modelo: claude-sonnet-4-20250514
+Latencia: 2–5 segundos por mensaje. Free tier Render se duerme tras 15 min, despierta en ~30s
+Costo Claude: ~$0.01–0.05 por pregunta (5 personas × 10 preguntas/día ≈ $20–50/mes)
+8.4 Roadmap Fases 2 y 3
+Fase 2: Acceso vivo a Odoo (XML-RPC) para queries fuera del JSON
+Fase 3: Acciones (crear oportunidad CRM, mandar mail) + alertas proactivas (cron que avisa cambios)
+9. Origen de cada campo del Excel RS (Q&A del equipo)
+Esta matriz documenta el origen real de cada dato del Excel original de Pauline, según el equipo de Contabilidad/Comercial. Es la referencia para implementar/mantener los extractores.
+9.1 Recaudación
+Recaudación Total (fila 17): solo se calcula de extracto Banco de Chile. Se descarga el rango de fechas y se filtra por "depósitos".
+Transferencias/depósitos Chile (fila 18): Recaudación total − cheques depositados − factoring.
+Transferencias/depósitos Itaú (fila 19): Casi sin uso, solo cuando se solicita crédito/factoring que cae ahí. Se puede eliminar del dashboard.
+Cheques depositados (fila 20): filtro en "etiqueta" por dep.cheq, dep. docto o relacionado a cheque. No incluye depósitos de efectivo.
+Factoring (fila 21): Todo lo que viene de Fingo SPA. Hay otro proveedor (Security) que llega como "Transferencia De Otro Banco Via Spav" — solo contar montos grandes, NO pagos normales con esa etiqueta.
+Rescate/crédito (fila 22): Manual. No automatizable.
+9.2 Cheques en cartera
+Total cheques antes de subir (fila 24): = "Total cheques después de subir" de la semana anterior.
+Total cheques después de subir (fila 25): "Subir cheques" = registrar como pagada una factura con "cheque en cartera". Es la suma total de cheques en cartera (no depositados). Se encuentra en Contabilidad → Apuntes contables → filtro compartido "cheques en cartera" (journal id 114).
+Cheques recibidos durante la semana (fila 26): Suma de cheques en journal "cheques en cartera" cuya fecha de ingreso a Odoo cayó en la semana.
+9.3 Caja
+Caja Disponible (fila 15): Suma de: saldo contable Banco Chile al domingo + cuenta corriente ENAP (portal ENAP, manual) + saldo Santander al domingo + cuenta corriente Adquim (interno, manual). Probablemente debe completarse manualmente.
+9.4 Compras
+Compras ENAP (fila 29): = amount_total_in_currency_signed de los proveedores: ENAP, ADQUIM, ADGREEN.
+COMPRA Odoo (fila 30): Es el mismo dato obtenido directamente de Odoo. La diferencia: "Compras ENAP" suele llenarse manualmente porque es una cuenta corriente que se lleva offline.
+9.5 Gerencia
+Margen Contado vs Crédito: Contado = término "1 día" o "prepago". Crédito = términos 15, 21, 30, 45, 60, 90, 150 días.
+Visitas reales: Hoy manual. Pendiente: calcularlas desde CRM etapa "ruta" (todos los que se actualizaron o agregaron en la semana).
+Cotizaciones canceladas: En Ventas → Cotizaciones → Canceladas → filtrar por fecha de la orden.
+Precio venta promedio (fila 13): Campo invoice_price (con IVA + IEC). Solo tomar ventas cuyo producto es Diésel B1.
+9.6 Resumen — estado de automatización
+✅ Litros vendidos: Match con Odoo (account.move.line.quantity)
+✅ Ventas en $: Match (account.move, amount_total − NC)
+✅ Margen bruto: margin_zone ponderado
+✅ Presupuesto litros: Hardcoded en script
+✅ Recaudación TOTAL: account.bank.statement.line (Banco de Chile)
+⚠️ Subcategorías recaudación: Funciona por ref pattern, ~5% error
+⚠️ Compras ENAP: Usa todas in_invoice, verificar si debe filtrar solo ENAP+ADQUIM+ADGREEN
+❌ Rescate/crédito: Manual, NO automatizable
+❌ Cheques en cartera: Requiere journal id 114
+❌ Campos Gerencia: Visitas, cotizaciones canceladas, margen contado/crédito — pendientes
+10. Bugs conocidos / resueltos
+Bug
+Solución
+Archivo corrompido en repo
+git checkout <commit-hash> -- <archivo>
+const dy declarado dos veces en JS
+Renombrar una de las variables
+Workflow env: sobreescribe secrets con string vacío
+Mover env al step, no al nivel de job
+Autenticación XML-RPC falla silenciosamente
+Verificar que uid retornado no sea False antes de continuar
+Canvas null en renderMesVencido
+getElementById ejecutado antes de innerHTML en DOM. Verificar null antes de instanciar Chart.js
+Route: "unsupported XML-RPC protocol"
+ODOO_URL vacío (secret no existe). Fix: usar literales en YAML
+Cash Flow: doble $ en formato moneda
+fM() ya devuelve $X.XM; usar fNoSign() para concatenar
+Cash Flow: función kpi() borrada al insertar Cash Flow
+Restaurar firma function kpi(label,val,delta,cls,sub){...}
+Excepción: signo de C10 invertido
+C10 = −16 (negativo). Fórmula real: minimo = base + (−días + 30) × C10 / 30
+Excepción: JS `||` falla con avg_payment_days=0
+Usar c.avg_payment_days != null ? ... : ... para que 0 no caiga al fallback
+Excepción: precio implícito vs valores oficiales
+NO calcular enap/(1−margen). Usar valores pre-calculados Mantenedor!I/K/M directos
+DSO: query account.move.line muy grande
+Usar read_group para sumar en el servidor Odoo (1 query, 1 número)
+ALLOWED_USERS vacío en bot Telegram
+WARN log + acepta a todos (inseguro). Configurar siempre antes de productivo
+
+11. Diseño / Estética del dashboard
+Elemento
+Valor
+Background
+#f7f6f3
+Cards
+#ffffff
+Acento / rojo
+#c8360e
+Fuente
+DM Sans (Google Fonts)
+Librería gráficos
+Chart.js 4.4.1 (cdnjs.cloudflare.com)
+Semáforo verde
+≥ 100% meta
+Semáforo amarillo
+60–99% meta
+Semáforo rojo
+< 60% meta
+Brand TomEnergy
+Orange #E8451A · Green #C8D9A0 · Yellow #F5C842
+
+12. Consulta Odoo vía browser (pruebas rápidas)
+Desde la consola del browser estando logueado en Odoo (Chrome requiere escribir "allow pasting" una vez por sesión de DevTools):
+fetch('/web/dataset/call_kw', {
+  method: 'POST',
+  headers: {'Content-Type': 'application/json'},
+  credentials: 'include',
+  body: JSON.stringify({
+    jsonrpc: '2.0', method: 'call', id: 1,
+    params: {
+      model: 'sale.order',
+      method: 'search_read',
+      args: [[['invoice_status','=','to invoice']]],
+      kwargs: { fields: ['name','partner_shipping_id','warehouse_id'], limit: 5 }
+    }
+  })
+}).then(r=>r.json()).then(out => { copy(out); console.log(out); })
+copy(out) guarda la respuesta JSON al portapapeles.
+13. Estado actual — Mayo 2026
+Campo
+Estado
+✅ Funcionando
+Pipeline, Funnel, Ventas, Churn & Rescate, Vendedores — JSON carga OK
+✅ CEO Dashboard
+Tabs RS, Gerencia, Resumen, Operaciones, Riesgo, Cash Flow operativos
+✅ Tab Riesgo — Zona y Excepción
+extract_crm.py extrae delivery_zone_id e is_volume_client. Cálculo validado contra Mantenedor.
+✅ Tab Riesgo — Snapshots semanales
+riesgo-snapshots.json se genera. Delta vs semana anterior visible.
+✅ Tab RS — KPI DSO
+Lee D.dso (últimos 6 meses) extraído desde account.move.line con read_group
+✅ Tab Cash Flow
+Modelo 4-sem implementado. Parámetros editables persisten en localStorage.
+🚧 Bot Telegram Fase 1
+Código entregado. Pendiente deploy en Render por Pauline.
+🔴 Tab Mes Vencido (CRM)
+Bug canvas null en HTML nuevo — pendiente corrección
+📌 Próximo paso Route
+Verificar warehouse codes no mapeados en update-route.yml
+📌 Próximo paso CRM
+Activar extract_sla_data (shipping_date) en extract_crm.py
+📌 Pendiente Cash Flow
+Fase 2: estacionalidad YoY (requiere ~60 semanas de histórico en ceo-data.json)
+📌 Pendiente Bot
+Fase 2: queries vivos a Odoo · Fase 3: acciones + alertas proactivas
+📌 Pendiente Q&A equipo
+Implementar margen contado/crédito, cotizaciones canceladas, visitas desde CRM
+vendor-goals.json
+Toro: litros_mes=200.000. Resto sin metas definidas aún
+
+14. Cómo usar este archivo
+Al iniciar sesión nueva con Claude, pega: "Lee este contexto antes de empezar: [link al raw del archivo]"
+Al terminar sesión, actualiza la sección 13 (Estado actual)
+Guarda en el repo como CONTEXT.md (o .docx en Drive)
+Link raw recomendado: https://raw.githubusercontent.com/linpolincomeon/RS-dashboard/main/CONTEXT.md
+Con este archivo Claude tiene todo el contexto necesario para retomar sin re-explicar nada. Si Claude pide info ya escrita acá, indícale que la sección X está cubierta.
