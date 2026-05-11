@@ -16,7 +16,8 @@ Data sources confirmed with TomEnergy accounting team (April 2026):
 import xmlrpc.client
 import json
 import os
-from datetime import datetime, timedelta, date
+from datetime import datetime, timedelta
+from calendar import monthrange
 
 ODOO_URL = os.environ.get("ODOO_URL", "https://tomenergy.cl")
 ODOO_DB = os.environ.get("ODOO_DB", "PRODUCCION")
@@ -1122,282 +1123,97 @@ def extract_riesgo(models, uid):
     }
 
 
-# ── MAIN ──
+# ── DSO (Days Sales Outstanding) ──
+# Cuenta 1.1.04.05 = CLIENTES NACIONALES (excluye factoring, cheques, anticipos)
+CLIENTES_NACIONALES_CODE = "1.1.04.05"
+
+
 def extract_dso(models, uid, n_months=6):
+    """DSO mensual usando saldo de cuenta 1.1.04.05 (Clientes Nacionales).
+
+    Metodo: read_group sobre account.move.line filtrado a la cuenta
+    1.1.04.05 unicamente. Esto excluye factoring ($452M), cheques en
+    cartera ($79M), anticipos y otros que inflaban el calculo anterior.
+
+    Validado contra reporte Odoo 'Cuentas por cobrar vencidas' al
+    30/04/2026: $598,251,830 (solo 1.1.04.05).
     """
-    Calcula DSO mensual histórico para los últimos n meses.
-    DSO_mes = CxC_fin_mes / Ventas_mes × días_del_mes
-    
-    CxC_fin_mes (lógica correcta, método B):
-      Para CADA factura con invoice_date <= fin_mes, su saldo al cierre =
-        amount_residual_hoy + sum(pagos aplicados DESPUÉS de fin_mes)
-      Luego se suma a través de todas las facturas.
-      Esto descarta correctamente las facturas pagadas antes del cierre.
-    Ventas_mes: account.move out_invoice - out_refund (amount_untaxed) con invoice_date en el mes
-    """
-    print(f"Extracting DSO histórico ({n_months} meses)...")
-    
-    # 1. Discover all receivable accounts
-    receivable_accounts = sr(models, uid, "account.account",
-        [["account_type", "=", "asset_receivable"]],
-        ["id", "name", "code"], 100)
-    if not receivable_accounts:
-        print("  ⚠️  No receivable accounts found")
+    print(f"Extracting DSO ({n_months} months)...")
+
+    # 1. Obtener ID de la cuenta 1.1.04.05
+    acc_ids = models.execute_kw(
+        ODOO_DB, uid, ODOO_KEY, "account.account", "search",
+        [[["code", "=", CLIENTES_NACIONALES_CODE]]]
+    )
+    if not acc_ids:
+        print("  WARNING: cuenta 1.1.04.05 no encontrada, DSO omitido")
         return []
-    acc_ids = [a["id"] for a in receivable_accounts]
-    print(f"  Found {len(receivable_accounts)} receivable accounts: {[a['code'] for a in receivable_accounts[:5]]}")
-    
-    # 2. Compute month windows
-    today = datetime.now().date()
+
+    # 2. Generar ultimos N meses cerrados
+    today = datetime.now()
     months = []
-    y, m = today.year, today.month
+    d = today.replace(day=1) - timedelta(days=1)  # ultimo dia del mes anterior
     for _ in range(n_months):
-        m -= 1
-        if m == 0:
-            m = 12
-            y -= 1
-        start = date(y, m, 1)
-        if m == 12:
-            end = date(y, 12, 31)
-        else:
-            end = date(y, m + 1, 1) - timedelta(days=1)
-        months.append({"year": y, "month": m, "start": start, "end": end})
-    months.reverse()
-    
-    # 3. For each month: ventas + CxC al cierre + DSO
-    result = []
-    month_names_es = ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"]
-    BATCH = 500
-    for mw in months:
-        start_str = mw["start"].strftime("%Y-%m-%d")
-        end_str = mw["end"].strftime("%Y-%m-%d")
-        days_in_month = (mw["end"] - mw["start"]).days + 1
-        label = f"{month_names_es[mw['month']-1]} {mw['year']}"
-        
-        # Ventas: out_invoice - out_refund, amount_untaxed
-        invs_mes = fetch_all(models, uid, "account.move",
-            [["move_type", "=", "out_invoice"],
-             ["state", "=", "posted"],
-             ["invoice_date", ">=", start_str],
-             ["invoice_date", "<=", end_str]],
-            ["amount_untaxed"])
-        ventas_facturas = sum(i.get("amount_untaxed", 0) for i in invs_mes)
-        ncs = fetch_all(models, uid, "account.move",
-            [["move_type", "=", "out_refund"],
-             ["state", "=", "posted"],
-             ["invoice_date", ">=", start_str],
-             ["invoice_date", "<=", end_str]],
-            ["amount_untaxed"])
-        ventas_nc = sum(n.get("amount_untaxed", 0) for n in ncs)
-        ventas_netas = ventas_facturas - ventas_nc
-        
-        # CxC al cierre (método B): residual hoy + pagos post cutoff
-        # Traer TODAS las facturas con invoice_date <= end_str
-        invs_all = fetch_all(models, uid, "account.move",
-            [["move_type", "=", "out_invoice"],
-             ["state", "=", "posted"],
-             ["invoice_date", "<=", end_str]],
-            ["id", "amount_residual"])
-        residual_total = sum(i.get("amount_residual", 0) or 0 for i in invs_all)
-        
-        # Pagos aplicados DESPUÉS del cutoff (via account.partial.reconcile)
-        inv_ids = [i["id"] for i in invs_all]
-        pagos_post_total = 0
-        for bs in range(0, len(inv_ids), BATCH):
-            batch = inv_ids[bs:bs + BATCH]
-            lines = sr(models, uid, "account.move.line",
-                [["move_id", "in", batch],
-                 ["account_id", "in", acc_ids]],
-                ["matched_credit_ids"])
-            all_match_ids = set()
-            for ln in lines:
-                for m_id in ln.get("matched_credit_ids", []) or []:
-                    all_match_ids.add(m_id)
-            if not all_match_ids:
-                continue
-            try:
-                # Procesar partials en sub-lotes (puede ser 1000s)
-                match_list = list(all_match_ids)
-                for ms in range(0, len(match_list), 1000):
-                    sub = match_list[ms:ms + 1000]
-                    partials = sr(models, uid, "account.partial.reconcile",
-                        [["id", "in", sub]],
-                        ["max_date", "amount"])
-                    for p in partials:
-                        d = p.get("max_date")
-                        amt = p.get("amount", 0) or 0
-                        if d and d > end_str:
-                            pagos_post_total += amt
-            except Exception as e:
-                print(f"  ⚠️ {label}: error partials: {e}")
-                continue
-        
-        cxc_saldo = residual_total + pagos_post_total
-        dso = (cxc_saldo / ventas_netas) * days_in_month if ventas_netas > 0 else 0
-        entry = {
-            "year": mw["year"],
-            "month": mw["month"],
-            "label": label,
-            "start": start_str,
-            "end": end_str,
-            "days_in_month": days_in_month,
-            "ventas_netas": round(ventas_netas),
-            "cxc_fin_mes": round(cxc_saldo),
-            "residual_hoy": round(residual_total),
-            "pagos_post": round(pagos_post_total),
-            "dso": round(dso, 1),
-            "invoice_count": len(invs_mes),
-            "nc_count": len(ncs),
-        }
-        result.append(entry)
-        print(f"  {label}: ventas=${ventas_netas/1e6:.1f}M · residual_hoy=${residual_total/1e6:.1f}M · pagos_post=${pagos_post_total/1e6:.1f}M · CxC fin mes=${cxc_saldo/1e6:.1f}M · DSO={dso:.1f}d")
-    
-    return result
-
-
-def extract_cxc_detail(models, uid, cutoff_date):
-    """
-    Lista detallada de facturas con saldo > 0 al cutoff_date.
-    LÓGICA (opción B — robusta y rápida):
-      saldo_al_cutoff = amount_residual_hoy + sum(pagos aplicados después del cutoff)
-    Si la factura ya estaba pagada antes del cutoff → saldo_al_cutoff = 0 → se filtra.
-    Si fue pagada después del cutoff → saldo_al_cutoff > 0 → aparece con fecha pago real.
-    Si sigue impaga hoy → saldo_al_cutoff = amount_residual_hoy → aparece como 'Sin pagar'.
-    cutoff_date: 'YYYY-MM-DD' (último día del mes a auditar)
-    """
-    print(f"Extracting CxC detail al {cutoff_date} (método B: residual+pagos_post)...")
-    # 1) Cuentas receivable
-    recv_accounts = sr(models, uid, "account.account",
-        [["account_type", "=", "asset_receivable"]],
-        ["id", "code"], 100)
-    recv_ids = [a["id"] for a in recv_accounts]
-    if not recv_ids:
-        print("  ⚠️  No receivable accounts found")
-        return {"cutoff": cutoff_date, "rows": [], "total": 0}
-
-    # 2) Facturas out_invoice posteadas con invoice_date <= cutoff
-    invs = fetch_all(models, uid, "account.move",
-        [["move_type", "=", "out_invoice"],
-         ["state", "=", "posted"],
-         ["invoice_date", "<=", cutoff_date]],
-        ["id", "name", "partner_id", "invoice_date", "amount_total",
-         "amount_residual", "payment_state"])
-    print(f"  {len(invs)} facturas con invoice_date <= {cutoff_date}")
-
-    # 3) Para cada factura, obtener pagos aplicados DESPUÉS del cutoff
-    #    via account.partial.reconcile (max_date > cutoff)
-    inv_ids = [i["id"] for i in invs]
-    pagos_post = {}  # move_id -> {amount: $, last_date: 'YYYY-MM-DD'}
-    BATCH = 500
-    for bs in range(0, len(inv_ids), BATCH):
-        batch = inv_ids[bs:bs + BATCH]
-        # Líneas de factura en cuentas receivable
-        lines = sr(models, uid, "account.move.line",
-            [["move_id", "in", batch],
-             ["account_id", "in", recv_ids]],
-            ["id", "move_id", "matched_credit_ids"])
-        all_match_ids = set()
-        partial_to_moves = {}
-        for ln in lines:
-            mid = ln["move_id"][0] if isinstance(ln["move_id"], list) else ln["move_id"]
-            for m in ln.get("matched_credit_ids", []) or []:
-                all_match_ids.add(m)
-                partial_to_moves.setdefault(m, []).append(mid)
-        if not all_match_ids:
-            continue
-        # account.partial.reconcile: max_date, amount
-        try:
-            partials = sr(models, uid, "account.partial.reconcile",
-                [["id", "in", list(all_match_ids)]],
-                ["id", "max_date", "amount"])
-            for p in partials:
-                d = p.get("max_date")
-                amt = p.get("amount", 0) or 0
-                if not d or d <= cutoff_date:
-                    continue  # pago aplicado ANTES del cierre — no contar
-                for mid in partial_to_moves.get(p["id"], []):
-                    entry = pagos_post.setdefault(mid, {"amount": 0, "last_date": None})
-                    entry["amount"] += amt
-                    if not entry["last_date"] or d > entry["last_date"]:
-                        entry["last_date"] = d
-        except Exception as e:
-            print(f"  ⚠️ error en partial.reconcile batch {bs}: {e}")
-            continue
-        print(f"    procesado batch {min(bs+BATCH, len(inv_ids))}/{len(inv_ids)}")
-
-    print(f"  {len(pagos_post)} facturas tuvieron pagos aplicados DESPUÉS del cierre")
-
-    # 4) Construir filas: saldo_at_cutoff = amount_residual_hoy + pagos_post
-    con_saldo = []
-    for inv in invs:
-        residual_hoy = inv.get("amount_residual", 0) or 0
-        pago_info = pagos_post.get(inv["id"])
-        pago_post = pago_info["amount"] if pago_info else 0
-        saldo_at_cutoff = residual_hoy + pago_post
-        # Tolerar pequeños redondeos
-        if saldo_at_cutoff > 1:  # > $1 CLP
-            inv["_saldo_at_cutoff"] = round(saldo_at_cutoff)
-            inv["_fecha_pago"] = pago_info["last_date"] if pago_info else None
-            inv["_residual_hoy"] = round(residual_hoy)
-            con_saldo.append(inv)
-    print(f"  {len(con_saldo)} facturas con saldo > $1 al cierre")
-
-    # 5) Construir filas finales
-    today = datetime.now().date()
-    rows = []
-    for inv in con_saldo:
-        name = inv["partner_id"][1] if inv["partner_id"] else "—"
-        fecha_emi = inv.get("invoice_date") or ""
-        fecha_pago = inv["_fecha_pago"]
-        residual_hoy = inv["_residual_hoy"]
-        monto = inv["_saldo_at_cutoff"]
-        dias = None
-        estado = "Sin pagar"
-        try:
-            emi_d = datetime.strptime(fecha_emi, "%Y-%m-%d").date() if fecha_emi else None
-            # Estado: 'Pagada' si residual hoy < $1 (totalmente cobrada)
-            #         'Parcial' si tuvo pago post pero todavía debe algo
-            #         'Sin pagar' si no hubo pagos post cutoff
-            if residual_hoy < 1 and fecha_pago:
-                estado = "Pagada"
-                if emi_d:
-                    pago_d = datetime.strptime(fecha_pago, "%Y-%m-%d").date()
-                    dias = (pago_d - emi_d).days
-            elif fecha_pago:
-                estado = "Parcial"
-                if emi_d:
-                    pago_d = datetime.strptime(fecha_pago, "%Y-%m-%d").date()
-                    dias = (pago_d - emi_d).days
-            else:
-                estado = "Sin pagar"
-                if emi_d:
-                    dias = (today - emi_d).days
-        except Exception:
-            pass
-        rows.append({
-            "cliente": name,
-            "fecha_emision": fecha_emi,
-            "fecha_pago": fecha_pago or "",
-            "monto": monto,
-            "residual_hoy": residual_hoy,
-            "dias": dias,
-            "estado": estado,
+        y, m = d.year, d.month
+        _, last = monthrange(y, m)
+        months.append({
+            "y": y, "m": m, "days": last,
+            "first": f"{y}-{m:02d}-01",
+            "last": f"{y}-{m:02d}-{last:02d}",
+            "label": f"{y}-{m:02d}",
         })
-    rows.sort(key=lambda r: -r["monto"])
-    total = sum(r["monto"] for r in rows)
-    print(f"  Total CxC al {cutoff_date}: ${total/1e6:.1f}M")
-    print(f"  Sanity check: CxC HOY (suma residual_hoy) = ${sum(r['residual_hoy'] for r in rows)/1e6:.1f}M")
-    return {
-        "cutoff": cutoff_date,
-        "total": round(total),
-        "rows_count": len(rows),
-        "pagadas_count": sum(1 for r in rows if r["estado"] == "Pagada"),
-        "parcial_count": sum(1 for r in rows if r["estado"] == "Parcial"),
-        "sin_pagar_count": sum(1 for r in rows if r["estado"] == "Sin pagar"),
-        "rows": rows,
-    }
+        d = d.replace(day=1) - timedelta(days=1)
+    months.reverse()  # mas antiguo primero
+
+    results = []
+    for mo in months:
+        # 3. CxC al cierre del mes = sum(debit - credit) en 1.1.04.05, posted, date <= cutoff
+        rg = models.execute_kw(
+            ODOO_DB, uid, ODOO_KEY, "account.move.line", "read_group",
+            [[["account_id", "in", acc_ids],
+              ["parent_state", "=", "posted"],
+              ["date", "<=", mo["last"]]]],
+            {"fields": ["debit", "credit"], "groupby": [], "lazy": False}
+        )
+        debit = rg[0].get("debit", 0) if rg else 0
+        credit = rg[0].get("credit", 0) if rg else 0
+        cxc = debit - credit
+
+        # 4. Ventas netas del mes = out_invoice - out_refund (amount_untaxed, posted)
+        base_domain = [["state", "=", "posted"],
+                       ["invoice_date", ">=", mo["first"]],
+                       ["invoice_date", "<=", mo["last"]]]
+
+        inv_rg = models.execute_kw(
+            ODOO_DB, uid, ODOO_KEY, "account.move", "read_group",
+            [[["move_type", "=", "out_invoice"]] + base_domain],
+            {"fields": ["amount_untaxed"], "groupby": [], "lazy": False}
+        )
+        ref_rg = models.execute_kw(
+            ODOO_DB, uid, ODOO_KEY, "account.move", "read_group",
+            [[["move_type", "=", "out_refund"]] + base_domain],
+            {"fields": ["amount_untaxed"], "groupby": [], "lazy": False}
+        )
+        ventas_inv = inv_rg[0].get("amount_untaxed", 0) if inv_rg else 0
+        ventas_ref = ref_rg[0].get("amount_untaxed", 0) if ref_rg else 0
+        net_sales = ventas_inv - ventas_ref
+
+        # 5. DSO
+        dso = round(cxc / net_sales * mo["days"], 1) if net_sales > 0 else 0
+
+        print(f"  {mo['label']}: CxC=${cxc:,.0f} | Ventas=${net_sales:,.0f} | DSO={dso}d")
+        results.append({
+            "month": mo["label"],
+            "cxc": round(cxc),
+            "net_sales": round(net_sales),
+            "days": mo["days"],
+            "dso": dso,
+        })
+
+    return results
 
 
+# ── MAIN ──
 def main():
     print("=== CEO Dashboard · Odoo Extraction ===")
     models, uid = connect()
@@ -1421,12 +1237,7 @@ def main():
     churn = extract_churn(models, uid)
     enap = extract_enap_compliance(models, uid)
     operaciones = extract_operaciones(models, uid)
-    dso = extract_dso(models, uid, n_months=6)
-    # CxC detalle del último cierre de mes (usa el cutoff del último DSO disponible)
-    cxc_detail = {"cutoff": None, "rows": [], "total": 0}
-    if dso:
-        last_cutoff = dso[-1]["end"]
-        cxc_detail = extract_cxc_detail(models, uid, last_cutoff)
+    dso = extract_dso(models, uid)
 
     data = {
         "updated": datetime.now().isoformat(),
@@ -1441,7 +1252,6 @@ def main():
         "enap": enap,
         "operaciones": operaciones,
         "dso": dso,
-        "cxc_detail": cxc_detail,
         "gerencia_goals": {
             "margen_contado_meta": 0.085,
             "margen_credito_meta": 0.06,
