@@ -423,6 +423,20 @@ function renderVentas(){
         h+=kpi('Margen Bruto',fP(last.margin),pD(last.margin,prev.margin),last.margin>=.085?'c-green':'c-red','margin_zone ponderado');
     }
     h+=kpi('Recaudación',fM(last.recaud),pD(last.recaud,prev.recaud||1),'c-purple',`Transf: ${fM(last.transf||0)} · Cheq: ${fM(last.cheques||0)} · Fact: ${fM(last.factoring||0)}`);
+    // ── KPI DSO mensual (Cuentas por Cobrar / Ventas × días). Por ahora hardcoded; migrar a extract_ceo.py ──
+    // Fórmula: CxC_fin_mes / Ventas_mes × días_mes. Cargar acá el último valor calculado manualmente.
+    const DSO_HIST=[
+        {mes:'Mar 2026', dias:25.8},
+        // {mes:'Abr 2026', dias:XX.X},  // pendiente Pauline
+    ];
+    const dsoCur=DSO_HIST[DSO_HIST.length-1];
+    const dsoPrev=DSO_HIST.length>1?DSO_HIST[DSO_HIST.length-2]:null;
+    const dsoDelta=dsoPrev?dsoCur.dias-dsoPrev.dias:null;
+    const dsoCls=dsoCur.dias<=25?'c-green':dsoCur.dias<=35?'c-amber':'c-red';
+    const dsoSub=dsoPrev
+        ? `${dsoCur.mes} · vs ${dsoPrev.mes}: ${dsoDelta>0?'+':''}${dsoDelta.toFixed(1)}d`
+        : `${dsoCur.mes} · pendiente mes siguiente`;
+    h+=kpi('DSO Mensual',dsoCur.dias.toFixed(1)+'d',null,dsoCls,dsoSub);
     h+='</div>';
     // Charts: Litros Retail vs Ppto, Litros Volumen vs Ppto
     h+='<div class="chart-row two">';
