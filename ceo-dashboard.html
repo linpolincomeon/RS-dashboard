@@ -824,33 +824,46 @@ function renderRiesgo(){
         const m=plist.match(/BOMBA\s*([+-]?\d+)/i);
         return m?parseInt(m[1]):null;
     }
-    // ── Calculadora excepción (replica hoja Mantenedor) ──
-    // Tabla precios bomba/ENAP por zona. Actualizar cuando ENAP cambie.
+    // ── Calculadora excepción (replica hoja Mantenedor con fórmula exacta) ──
+    // Valores pre-calculados (Mantenedor!I/K/M) por zona y tipo de venta. Actualizar cuando ENAP cambie.
+    // Fórmula real: D17 = VLOOKUP(zona, base_min, col_tipo) + (-días_real + 30) × C10/30
+    //   donde C10 = -16 (costo financiero base por 30 días)
+    //   col_tipo: 5=Crédito (CredMin 7%), 7=Volumen (VolMin 8%), 9=Contado (ContMin 4.5%)
     const ZONAS_PRECIOS={
-        'Rancagua':            {bomba:1561,enap:1399},
-        'San Fernando':        {bomba:1551,enap:1399},  // nombre Odoo
-        'San Fdo':             {bomba:1551,enap:1399},  // alias calculadora
-        'VI Costa':            {bomba:1526,enap:1399},
-        'Talca':               {bomba:1503,enap:1389},
-        'Curico':              {bomba:1503,enap:1389},
-        'Curicó':              {bomba:1503,enap:1389},  // alias con tilde
-        'Chillan':             {bomba:1503,enap:1389},
-        'Chillán':             {bomba:1503,enap:1389},
-        'Región Metropolitana':{bomba:1561,enap:1399},  // = Rancagua
+        // bomba: precio bomba referencia · cred/vol/cont: mínimos pre-calculados
+        'Rancagua':            {bomba:1561, cred:1504, vol:1465, cont:1488},
+        'San Fernando':        {bomba:1551, cred:1504, vol:1465, cont:1488},
+        'San Fdo':             {bomba:1551, cred:1504, vol:1465, cont:1488},
+        'VI Costa':            {bomba:1526, cred:1504, vol:1465, cont:1488},
+        'Talca':               {bomba:1503, cred:1494, vol:1454, cont:1478},
+        'Curico':              {bomba:1503, cred:1494, vol:1454, cont:1478},
+        'Curicó':              {bomba:1503, cred:1494, vol:1454, cont:1478},
+        'Chillan':             {bomba:1503, cred:1494, vol:1454, cont:1478},
+        'Chillán':             {bomba:1503, cred:1494, vol:1454, cont:1478},
+        'Región Metropolitana':{bomba:1561, cred:1504, vol:1465, cont:1488},
     };
-    const MARGEN_MIN={'Crédito':0.07,'Volumen':0.08,'Contado':0.045};
-    const COSTO_FIN_30=16;  // $/L base por 30 días extra de financiamiento
+    const COSTO_FIN_30=-16;  // $/L NEGATIVO: cada día más allá de 30 sube el costo
     function calcExcepcion(zona,tipo,dias){
         const z=ZONAS_PRECIOS[zona];
         if(!z) return null;
-        const margenMin=MARGEN_MIN[tipo];
-        if(margenMin==null) return null;
-        const minimo30d=z.enap/(1-margenMin);
-        const ajuste=(dias-30)*COSTO_FIN_30/30;
-        const excepcion=Math.round(minimo30d+ajuste-10);
-        // Excepción expresada como diferencial bomba (B+/-N respecto bomba zona)
+        const colKey=tipo==='Crédito'?'cred':tipo==='Volumen'?'vol':tipo==='Contado'?'cont':null;
+        if(!colKey) return null;
+        const base=z[colKey];
+        // Replica exacta: minimo = base + (-dias + 30) × C10 / 30
+        const minimo=base+(-dias+30)*COSTO_FIN_30/30;
+        const excepcion=Math.round(minimo-10);
         const bombaDiff=Math.round(excepcion-z.bomba);
         return {excepcion, bombaZona:z.bomba, bombaDiff};
+    }
+    // ── Inferir tipo_venta desde días reales (criterio Pauline 8-may-2026) ──
+    //   is_volume_client=true → Volumen (flag explícita gana)
+    //   avg_payment_days ≤ 7 → Contado
+    //   avg_payment_days 8-60 → Crédito
+    function inferTipoVenta(c){
+        if(c.is_volume_client||c.tipo_venta==='Volumen') return 'Volumen';
+        const d=c.avg_payment_days;
+        if(d==null) return 'Crédito';  // fallback seguro
+        return d<=7?'Contado':'Crédito';
     }
     // ── Margin bands definition ──
     const BANDS=[
@@ -940,8 +953,9 @@ function renderRiesgo(){
             const actLabel=c._bombaAct!=null?'B'+(c._bombaAct>=0?'+':'')+c._bombaAct:(c.pricelist||'—');
             // ── Cálculo excepción ──
             const zonaCli=c.zona||'—';
-            const tipoCli=c.tipo_venta||(c.plazo_pago_dias<=1?'Contado':'Crédito');
-            const diasReal=c.avg_payment_days||c.plazo_pago_dias||30;
+            const tipoCli=inferTipoVenta(c);
+            // Días reales: usar avg_payment_days exactamente (incluso si es 0). Solo fallback si null/undefined.
+            const diasReal=(c.avg_payment_days!=null)?c.avg_payment_days:(c.plazo_pago_dias||30);
             const calc=calcExcepcion(zonaCli,tipoCli,diasReal);
             let excepHtml='<span style="color:var(--text3);font-size:11px">—</span>';
             if(calc){
