@@ -1,23 +1,23 @@
 {
-  "updated": "2026-05-11T15:11:52.554422",
+  "updated": "2026-05-11T16:04:52.935360",
   "weeks": [
     {
       "label": "07may-13may",
       "start": "2026-05-07",
       "end": "2026-05-13",
-      "ventas": 87289541,
-      "neto": 67765913,
-      "litros": 57555,
-      "litros_retail": 44250,
+      "ventas": 90348541,
+      "neto": 70159676,
+      "litros": 59555,
+      "litros_retail": 46250,
       "litros_volumen": 13305,
-      "precio_neto": 1177,
+      "precio_neto": 1178,
       "precio_bruto": 1517,
-      "margin": 0.08176,
-      "margin_retail": 0.08892,
+      "margin": 0.08199,
+      "margin_retail": 0.08891,
       "margin_volumen": 0.05696,
-      "facturas": 36,
+      "facturas": 38,
       "nc": 0,
-      "clientes": 35,
+      "clientes": 37,
       "recaud": 160750502,
       "cheques": 10464951,
       "transf": 83634401,
@@ -26,7 +26,7 @@
       "cheq_cartera_saldo": 0,
       "cheq_recibidos": 0,
       "facturas_contado": 4,
-      "facturas_credito": 32,
+      "facturas_credito": 34,
       "margin_by_term": {
         "Prepago": {
           "margin": 0.12913,
@@ -47,9 +47,9 @@
           "days": 7
         },
         "30 Días": {
-          "margin": 0.08686,
-          "normalizado": 0.08686,
-          "count": 25,
+          "margin": 0.08697,
+          "normalizado": 0.08697,
+          "count": 27,
           "days": 30
         },
         "45 Días": {
@@ -65,7 +65,7 @@
           "days": 60
         }
       },
-      "cotiz_canceladas": 2,
+      "cotiz_canceladas": 3,
       "visitas": 13,
       "clientes_nuevos": 7,
       "ppto": 213480,
@@ -1272,8 +1272,8 @@
     {
       "date": "11may",
       "day": "Lun",
-      "litros": 1850,
-      "neto": 2230134
+      "litros": 2850,
+      "neto": 3425755
     },
     {
       "date": "08may",
@@ -1398,11 +1398,11 @@
   ],
   "total_cash": 27409028,
   "receivables": {
-    "open_invoices": 260,
-    "total_due": 624701493,
-    "current": 530266266,
+    "open_invoices": 232,
+    "total_due": 570252205,
+    "current": 475816978,
     "overdue": 94435227,
-    "pct_overdue": 15.1,
+    "pct_overdue": 16.6,
     "aging": {
       "0-30": 78328343,
       "31-60": 6341321,
@@ -1437,10 +1437,6 @@
       {
         "name": "SAMUEL BUDINICH SPA",
         "amount": 15411835
-      },
-      {
-        "name": "EMPRESAS TUCAPEL S A",
-        "amount": 14674900
       },
       {
         "name": "TRANSPORTE SANTA ELENITA SPA",
@@ -1489,6 +1485,10 @@
       {
         "name": "AGRÍCOLA LA RIGADA SPA",
         "amount": 7852000
+      },
+      {
+        "name": "Servicios de construcción y maquinarias Talmaqq Ltda.",
+        "amount": 7850000
       }
     ]
   },
@@ -1557,8 +1557,8 @@
   "riesgo": {
     "cubierto": 0,
     "cubierto_count": 0,
-    "no_cubierto": 624701493,
-    "no_cubierto_count": 260,
+    "no_cubierto": 570252205,
+    "no_cubierto_count": 232,
     "pct_monto": 100.0,
     "pct_count": 100.0
   },
@@ -1902,9 +1902,9 @@
       },
       {
         "month": "May 2026",
-        "pct": 81.5,
-        "new_churn": 53,
-        "active_start": 65
+        "pct": 81.2,
+        "new_churn": 52,
+        "active_start": 64
       }
     ]
   },
@@ -2066,6 +2066,86 @@
       }
     ]
   },
+  "dso": [
+    {
+      "year": 2025,
+      "month": 11,
+      "label": "Nov 2025",
+      "start": "2025-11-01",
+      "end": "2025-11-30",
+      "days_in_month": 30,
+      "ventas_netas": 553307068,
+      "cxc_fin_mes": 650906493,
+      "dso": 35.3,
+      "invoice_count": 535,
+      "nc_count": 13
+    },
+    {
+      "year": 2025,
+      "month": 12,
+      "label": "Dic 2025",
+      "start": "2025-12-01",
+      "end": "2025-12-31",
+      "days_in_month": 31,
+      "ventas_netas": 726348601,
+      "cxc_fin_mes": 885914134,
+      "dso": 37.8,
+      "invoice_count": 600,
+      "nc_count": 2
+    },
+    {
+      "year": 2026,
+      "month": 1,
+      "label": "Ene 2026",
+      "start": "2026-01-01",
+      "end": "2026-01-31",
+      "days_in_month": 31,
+      "ventas_netas": 557617933,
+      "cxc_fin_mes": 746590775,
+      "dso": 41.5,
+      "invoice_count": 551,
+      "nc_count": 14
+    },
+    {
+      "year": 2026,
+      "month": 2,
+      "label": "Feb 2026",
+      "start": "2026-02-01",
+      "end": "2026-02-28",
+      "days_in_month": 28,
+      "ventas_netas": 613987215,
+      "cxc_fin_mes": 789369984,
+      "dso": 36.0,
+      "invoice_count": 566,
+      "nc_count": 6
+    },
+    {
+      "year": 2026,
+      "month": 3,
+      "label": "Mar 2026",
+      "start": "2026-03-01",
+      "end": "2026-03-31",
+      "days_in_month": 31,
+      "ventas_netas": 935545540,
+      "cxc_fin_mes": 888852520,
+      "dso": 29.5,
+      "invoice_count": 649,
+      "nc_count": 12
+    },
+    {
+      "year": 2026,
+      "month": 4,
+      "label": "Abr 2026",
+      "start": "2026-04-01",
+      "end": "2026-04-30",
+      "days_in_month": 30,
+      "ventas_netas": 954233879,
+      "cxc_fin_mes": 1137559264,
+      "dso": 35.8,
+      "invoice_count": 473,
+      "nc_count": 18
+    }
+  ],
   "gerencia_goals": {
     "margen_contado_meta": 0.085,
     "margen_credito_meta": 0.06,
