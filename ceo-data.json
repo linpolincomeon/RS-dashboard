@@ -1,5 +1,5 @@
 {
-  "updated": "2026-05-11T00:07:03.765895",
+  "updated": "2026-05-11T13:54:36.097400",
   "weeks": [
     {
       "label": "07may-13may",
@@ -18,11 +18,11 @@
       "facturas": 35,
       "nc": 0,
       "clientes": 34,
-      "recaud": 89090936,
+      "recaud": 160750502,
       "cheques": 10464951,
-      "transf": 66093451,
-      "factoring": 12532534,
-      "compras_odoo": 0,
+      "transf": 83634401,
+      "factoring": 66651150,
+      "compras_odoo": 118667431,
       "cheq_cartera_saldo": 0,
       "cheq_recibidos": 0,
       "facturas_contado": 4,
@@ -65,7 +65,7 @@
           "days": 60
         }
       },
-      "cotiz_canceladas": 3,
+      "cotiz_canceladas": 2,
       "visitas": 13,
       "clientes_nuevos": 7,
       "ppto": 213480,
@@ -1368,12 +1368,12 @@
   ],
   "banks": [
     {
-      "name": "DE CHILE",
-      "balance": 19534682
-    },
-    {
       "name": "ITAU",
       "balance": 15016391
+    },
+    {
+      "name": "DE CHILE",
+      "balance": 9428899
     },
     {
       "name": "SANTANDER",
@@ -1396,16 +1396,16 @@
       "balance": -1727275
     }
   ],
-  "total_cash": 54995963,
+  "total_cash": 44890180,
   "receivables": {
-    "open_invoices": 272,
-    "total_due": 643725894,
-    "current": 535874716,
-    "overdue": 107851178,
-    "pct_overdue": 16.8,
+    "open_invoices": 265,
+    "total_due": 629179944,
+    "current": 531060367,
+    "overdue": 98119577,
+    "pct_overdue": 15.6,
     "aging": {
-      "0-30": 90672293,
-      "31-60": 7413322,
+      "0-30": 82012693,
+      "31-60": 6341321,
       "61-90": 0,
       "90+": 9765563
     },
@@ -1439,16 +1439,16 @@
         "amount": 16598999
       },
       {
-        "name": "SOC. DE TRANSPORTES TRACMAVI LTDA.",
-        "amount": 16135050
-      },
-      {
         "name": "SAMUEL BUDINICH SPA",
         "amount": 15411835
       },
       {
         "name": "EMPRESAS TUCAPEL S A",
         "amount": 14674900
+      },
+      {
+        "name": "SOC. DE TRANSPORTES TRACMAVI LTDA.",
+        "amount": 13772549
       },
       {
         "name": "FORESTAL PUIHUA SPA",
@@ -1475,10 +1475,6 @@
         "amount": 9522000
       },
       {
-        "name": "VICTOR FAVIO VILCHES MARDONES",
-        "amount": 8824001
-      },
-      {
         "name": "SOC AGRICOLA SANTA TERESA SPA",
         "amount": 8483271
       },
@@ -1489,6 +1485,10 @@
       {
         "name": "VALENZUELA LEIVA MAX",
         "amount": 7895000
+      },
+      {
+        "name": "AGRÍCOLA LA RIGADA SPA",
+        "amount": 7852000
       }
     ]
   },
@@ -1557,8 +1557,8 @@
   "riesgo": {
     "cubierto": 0,
     "cubierto_count": 0,
-    "no_cubierto": 643725894,
-    "no_cubierto_count": 272,
+    "no_cubierto": 629179944,
+    "no_cubierto_count": 265,
     "pct_monto": 100.0,
     "pct_count": 100.0
   },
@@ -1918,10 +1918,10 @@
           "5667"
         ],
         "target_total": 502563,
-        "mtd_litros": 50160,
-        "compliance_pct": 10.0,
-        "projected": 141360,
-        "projected_pct": 28.1,
+        "mtd_litros": 90472,
+        "compliance_pct": 18.0,
+        "projected": 254967,
+        "projected_pct": 50.7,
         "plants": {
           "Maipu": {
             "target": 183025
@@ -1940,10 +1940,10 @@
           "15293"
         ],
         "target_total": 374369,
-        "mtd_litros": 45000,
-        "compliance_pct": 12.0,
-        "projected": 126818,
-        "projected_pct": 33.9,
+        "mtd_litros": 75001,
+        "compliance_pct": 20.0,
+        "projected": 211366,
+        "projected_pct": 56.5,
         "plants": {
           "Maipu": {
             "target": 0
@@ -1955,10 +1955,10 @@
       }
     },
     "total_target": 876932,
-    "total_mtd": 95160,
-    "total_compliance_pct": 10.9,
-    "total_projected": 268178,
-    "total_projected_pct": 30.6
+    "total_mtd": 165473,
+    "total_compliance_pct": 18.9,
+    "total_projected": 466333,
+    "total_projected_pct": 53.2
   },
   "operaciones": {
     "months": [
