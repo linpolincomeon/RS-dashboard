@@ -16,7 +16,7 @@ Data sources confirmed with TomEnergy accounting team (April 2026):
 import xmlrpc.client
 import json
 import os
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, date
 
 ODOO_URL = os.environ.get("ODOO_URL", "https://tomenergy.cl")
 ODOO_DB = os.environ.get("ODOO_DB", "PRODUCCION")
@@ -1123,6 +1123,114 @@ def extract_riesgo(models, uid):
 
 
 # ── MAIN ──
+def extract_dso(models, uid, n_months=6):
+    """
+    Calcula DSO mensual histórico para los últimos n meses.
+    DSO_mes = CxC_fin_mes / Ventas_mes × días_del_mes
+    
+    CxC_fin_mes: saldo de cuentas por cobrar al último día del mes, calculado como
+        suma(debit - credit) de account.move.line en cuentas receivable, posted, hasta fin_mes
+    Ventas_mes: account.move out_invoice - out_refund (amount_untaxed) con invoice_date en el mes
+    """
+    print(f"Extracting DSO histórico ({n_months} meses)...")
+    
+    # 1. Discover all receivable accounts
+    receivable_accounts = sr(models, uid, "account.account",
+        [["account_type", "=", "asset_receivable"]],
+        ["id", "name", "code"], 100)
+    if not receivable_accounts:
+        print("  ⚠️  No receivable accounts found")
+        return []
+    acc_ids = [a["id"] for a in receivable_accounts]
+    print(f"  Found {len(receivable_accounts)} receivable accounts: {[a['code'] for a in receivable_accounts[:5]]}")
+    
+    # 2. Compute month windows (last n complete months, excluding current incomplete month)
+    today = datetime.now().date()
+    months = []
+    # Start from previous month and go back n_months
+    y, m = today.year, today.month
+    for _ in range(n_months):
+        m -= 1
+        if m == 0:
+            m = 12
+            y -= 1
+        # First and last day of month
+        start = date(y, m, 1)
+        if m == 12:
+            end = date(y, 12, 31)
+        else:
+            end = date(y, m + 1, 1) - timedelta(days=1)
+        months.append({"year": y, "month": m, "start": start, "end": end})
+    months.reverse()  # oldest first
+    
+    # 3. For each month, compute ventas + CxC + DSO
+    result = []
+    month_names_es = ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"]
+    for mw in months:
+        start_str = mw["start"].strftime("%Y-%m-%d")
+        end_str = mw["end"].strftime("%Y-%m-%d")
+        days_in_month = (mw["end"] - mw["start"]).days + 1
+        
+        # Ventas: out_invoice - out_refund, amount_untaxed, invoice_date in month
+        # ===== A) Facturas =====
+        invs = fetch_all(models, uid, "account.move",
+            [["move_type", "=", "out_invoice"],
+             ["state", "=", "posted"],
+             ["invoice_date", ">=", start_str],
+             ["invoice_date", "<=", end_str]],
+            ["amount_untaxed"])
+        ventas_facturas = sum(i.get("amount_untaxed", 0) for i in invs)
+        # ===== B) NC =====
+        ncs = fetch_all(models, uid, "account.move",
+            [["move_type", "=", "out_refund"],
+             ["state", "=", "posted"],
+             ["invoice_date", ">=", start_str],
+             ["invoice_date", "<=", end_str]],
+            ["amount_untaxed"])
+        ventas_nc = sum(n.get("amount_untaxed", 0) for n in ncs)
+        ventas_netas = ventas_facturas - ventas_nc
+        
+        # CxC al fin de mes: usar read_group para que Odoo sume en el servidor (1 query, 1 número)
+        # En lugar de traer ~200K líneas al cliente, pedimos al server la suma agrupada
+        try:
+            cxc_groups = models.execute_kw(
+                ODOO_DB, uid, ODOO_KEY,
+                "account.move.line", "read_group",
+                [[["account_id", "in", acc_ids],
+                  ["parent_state", "=", "posted"],
+                  ["date", "<=", end_str]]],
+                {"fields": ["debit:sum", "credit:sum"], "groupby": [], "lazy": True}
+            )
+            if cxc_groups and len(cxc_groups) > 0:
+                g = cxc_groups[0]
+                cxc_saldo = (g.get("debit", 0) or 0) - (g.get("credit", 0) or 0)
+            else:
+                cxc_saldo = 0
+        except Exception as e:
+            print(f"  ⚠️ {label}: error en read_group: {e}")
+            cxc_saldo = 0
+        
+        dso = (cxc_saldo / ventas_netas) * days_in_month if ventas_netas > 0 else 0
+        label = f"{month_names_es[mw['month']-1]} {mw['year']}"
+        entry = {
+            "year": mw["year"],
+            "month": mw["month"],
+            "label": label,
+            "start": start_str,
+            "end": end_str,
+            "days_in_month": days_in_month,
+            "ventas_netas": round(ventas_netas),
+            "cxc_fin_mes": round(cxc_saldo),
+            "dso": round(dso, 1),
+            "invoice_count": len(invs),
+            "nc_count": len(ncs),
+        }
+        result.append(entry)
+        print(f"  {label}: ventas=${ventas_netas/1e6:.1f}M · CxC fin mes=${cxc_saldo/1e6:.1f}M · DSO={dso:.1f}d ({len(invs)} fact, {len(ncs)} NC)")
+    
+    return result
+
+
 def main():
     print("=== CEO Dashboard · Odoo Extraction ===")
     models, uid = connect()
@@ -1146,6 +1254,7 @@ def main():
     churn = extract_churn(models, uid)
     enap = extract_enap_compliance(models, uid)
     operaciones = extract_operaciones(models, uid)
+    dso = extract_dso(models, uid, n_months=6)
 
     data = {
         "updated": datetime.now().isoformat(),
@@ -1159,6 +1268,7 @@ def main():
         "churn": churn,
         "enap": enap,
         "operaciones": operaciones,
+        "dso": dso,
         "gerencia_goals": {
             "margen_contado_meta": 0.085,
             "margen_credito_meta": 0.06,
