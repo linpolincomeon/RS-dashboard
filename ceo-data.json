@@ -1,32 +1,32 @@
 {
-  "updated": "2026-05-12T13:14:46.021592",
+  "updated": "2026-05-12T17:24:51.118171",
   "weeks": [
     {
       "label": "07may-13may",
       "start": "2026-05-07",
       "end": "2026-05-13",
-      "ventas": 132692990,
-      "neto": 103263264,
-      "litros": 87605,
-      "litros_retail": 68400,
-      "litros_volumen": 19205,
-      "precio_neto": 1179,
-      "precio_bruto": 1515,
-      "margin": 0.08094,
-      "margin_retail": 0.08566,
-      "margin_volumen": 0.06366,
-      "facturas": 58,
+      "ventas": 153583140,
+      "neto": 119586862,
+      "litros": 101530,
+      "litros_retail": 74000,
+      "litros_volumen": 27530,
+      "precio_neto": 1178,
+      "precio_bruto": 1513,
+      "margin": 0.08001,
+      "margin_retail": 0.08522,
+      "margin_volumen": 0.06567,
+      "facturas": 65,
       "nc": 0,
-      "clientes": 56,
+      "clientes": 58,
       "recaud": 208243551,
       "cheques": 10464951,
       "transf": 128374951,
       "factoring": 69403649,
-      "compras_odoo": 118867431,
+      "compras_odoo": 139688253,
       "cheq_cartera_saldo": 0,
       "cheq_recibidos": 0,
       "facturas_contado": 9,
-      "facturas_credito": 49,
+      "facturas_credito": 56,
       "margin_by_term": {
         "Prepago": {
           "margin": 0.12913,
@@ -41,9 +41,9 @@
           "days": 1
         },
         "7 Días": {
-          "margin": 0.05965,
-          "normalizado": 0.06732,
-          "count": 2,
+          "margin": 0.05357,
+          "normalizado": 0.06123,
+          "count": 3,
           "days": 7
         },
         "15 Días": {
@@ -53,15 +53,15 @@
           "days": 15
         },
         "30 Días": {
-          "margin": 0.08444,
-          "normalizado": 0.08444,
-          "count": 40,
+          "margin": 0.08344,
+          "normalizado": 0.08344,
+          "count": 45,
           "days": 30
         },
         "45 Días": {
           "margin": 0.09511,
           "normalizado": 0.09011,
-          "count": 1,
+          "count": 2,
           "days": 45
         },
         "60 Días": {
@@ -71,8 +71,8 @@
           "days": 60
         }
       },
-      "cotiz_canceladas": 5,
-      "visitas": 14,
+      "cotiz_canceladas": 6,
+      "visitas": 15,
       "clientes_nuevos": 8,
       "ppto": 213480,
       "ppto_retail": 153706,
@@ -305,8 +305,8 @@
           "days": 60
         }
       },
-      "cotiz_canceladas": 10,
-      "visitas": 8,
+      "cotiz_canceladas": 11,
+      "visitas": 7,
       "clientes_nuevos": 7,
       "ppto": 269236,
       "ppto_retail": 199235,
@@ -1278,8 +1278,8 @@
     {
       "date": "12may",
       "day": "Mar",
-      "litros": 0,
-      "neto": 0
+      "litros": 13925,
+      "neto": 16323598
     },
     {
       "date": "11may",
@@ -1404,11 +1404,11 @@
   ],
   "total_cash": 46208490,
   "receivables": {
-    "open_invoices": 242,
-    "total_due": 577520103,
-    "current": 500526628,
+    "open_invoices": 249,
+    "total_due": 598410253,
+    "current": 521416778,
     "overdue": 76993475,
-    "pct_overdue": 13.3,
+    "pct_overdue": 12.9,
     "aging": {
       "0-30": 60886591,
       "31-60": 1341321,
@@ -1418,7 +1418,7 @@
     "top_debtors": [
       {
         "name": "JOSE RODRIGO ORMAZABAL VIDAL",
-        "amount": 36702200
+        "amount": 41196200
       },
       {
         "name": "AGROINDUSTRIAL SIRACUSA S A",
@@ -1441,6 +1441,10 @@
         "amount": 16598999
       },
       {
+        "name": "MAQUINARIAS Y ARIDOS SAN PEDRO SPA.",
+        "amount": 16548479
+      },
+      {
         "name": "SAMUEL BUDINICH SPA",
         "amount": 15411835
       },
@@ -1453,10 +1457,6 @@
         "amount": 13772549
       },
       {
-        "name": "MAQUINARIAS Y ARIDOS SAN PEDRO SPA.",
-        "amount": 12557479
-      },
-      {
         "name": "URAN ANTONIO LUNA DOMÍNGUEZ",
         "amount": 11424000
       },
@@ -1465,8 +1465,16 @@
         "amount": 9912297
       },
       {
+        "name": "EMPRESAS TUCAPEL S A",
+        "amount": 9667649
+      },
+      {
         "name": "AGROSERVICIOS JR SPA",
         "amount": 9522000
+      },
+      {
+        "name": "ARIDOS LO VALDIVIA LIMITADA",
+        "amount": 9299200
       },
       {
         "name": "INGENERIA Y CONSTRUCCIONES FEBLANCA SPA",
@@ -1487,14 +1495,6 @@
       {
         "name": "AGRÍCOLA LA RIGADA SPA",
         "amount": 7852000
-      },
-      {
-        "name": "Servicios de construcción y maquinarias Talmaqq Ltda.",
-        "amount": 7850000
-      },
-      {
-        "name": "VICTOR FAVIO VILCHES MARDONES",
-        "amount": 7752000
       }
     ]
   },
@@ -1578,15 +1578,15 @@
   "riesgo": {
     "cubierto": 0,
     "cubierto_count": 0,
-    "no_cubierto": 577520103,
-    "no_cubierto_count": 242,
+    "no_cubierto": 598410253,
+    "no_cubierto_count": 249,
     "pct_monto": 100.0,
     "pct_count": 100.0
   },
   "churn": {
     "eligible_clients": 168,
-    "churned_count": 57,
-    "pct": 33.9,
+    "churned_count": 56,
+    "pct": 33.3,
     "churned": [
       {
         "name": "ERIKA DEL PILAR GUZMAN MANRIQUEZ",
@@ -1961,10 +1961,10 @@
           "15293"
         ],
         "target_total": 374369,
-        "mtd_litros": 75001,
-        "compliance_pct": 20.0,
-        "projected": 193753,
-        "projected_pct": 51.8,
+        "mtd_litros": 90001,
+        "compliance_pct": 24.0,
+        "projected": 232503,
+        "projected_pct": 62.1,
         "plants": {
           "Maipu": {
             "target": 0
@@ -1976,10 +1976,10 @@
       }
     },
     "total_target": 876932,
-    "total_mtd": 165473,
-    "total_compliance_pct": 18.9,
-    "total_projected": 427472,
-    "total_projected_pct": 48.7
+    "total_mtd": 180473,
+    "total_compliance_pct": 20.6,
+    "total_projected": 466222,
+    "total_projected_pct": 53.2
   },
   "operaciones": {
     "months": [
@@ -2072,12 +2072,12 @@
         "month": "2026-05",
         "label": "May 2026",
         "budget": 10055583,
-        "actual": 6803950,
-        "compliance_pct": 67.7,
+        "actual": 6829653,
+        "compliance_pct": 67.9,
         "categories": {
           "Petróleo": 4724746,
           "Mantención y Reparación": 63898,
-          "Gastos Traslados (TAG)": 1243860,
+          "Gastos Traslados (TAG)": 1269563,
           "Seguros": 39990,
           "Gastos Vehículos": 328448,
           "Arriendo": 400000,
