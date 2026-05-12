@@ -1,32 +1,32 @@
 {
-  "updated": "2026-05-12T17:24:51.118171",
+  "updated": "2026-05-12T20:52:32.351120",
   "weeks": [
     {
       "label": "07may-13may",
       "start": "2026-05-07",
       "end": "2026-05-13",
-      "ventas": 153583140,
-      "neto": 119586862,
-      "litros": 101530,
-      "litros_retail": 74000,
-      "litros_volumen": 27530,
-      "precio_neto": 1178,
-      "precio_bruto": 1513,
-      "margin": 0.08001,
-      "margin_retail": 0.08522,
-      "margin_volumen": 0.06567,
-      "facturas": 65,
+      "ventas": 187096101,
+      "neto": 145731430,
+      "litros": 124350,
+      "litros_retail": 81820,
+      "litros_volumen": 42530,
+      "precio_neto": 1172,
+      "precio_bruto": 1505,
+      "margin": 0.07459,
+      "margin_retail": 0.08452,
+      "margin_volumen": 0.05485,
+      "facturas": 72,
       "nc": 0,
-      "clientes": 58,
-      "recaud": 208243551,
+      "clientes": 64,
+      "recaud": 223877755,
       "cheques": 10464951,
-      "transf": 128374951,
+      "transf": 144009155,
       "factoring": 69403649,
       "compras_odoo": 139688253,
       "cheq_cartera_saldo": 0,
       "cheq_recibidos": 0,
-      "facturas_contado": 9,
-      "facturas_credito": 56,
+      "facturas_contado": 11,
+      "facturas_credito": 61,
       "margin_by_term": {
         "Prepago": {
           "margin": 0.12913,
@@ -35,9 +35,9 @@
           "days": 0
         },
         "1 Día": {
-          "margin": 0.06389,
-          "normalizado": 0.07356,
-          "count": 8,
+          "margin": 0.06245,
+          "normalizado": 0.07211,
+          "count": 10,
           "days": 1
         },
         "7 Días": {
@@ -47,15 +47,15 @@
           "days": 7
         },
         "15 Días": {
-          "margin": 0.11231,
-          "normalizado": 0.11731,
-          "count": 1,
+          "margin": 0.03618,
+          "normalizado": 0.04118,
+          "count": 3,
           "days": 15
         },
         "30 Días": {
-          "margin": 0.08344,
-          "normalizado": 0.08344,
-          "count": 45,
+          "margin": 0.08426,
+          "normalizado": 0.08426,
+          "count": 48,
           "days": 30
         },
         "45 Días": {
@@ -73,7 +73,7 @@
       },
       "cotiz_canceladas": 6,
       "visitas": 15,
-      "clientes_nuevos": 8,
+      "clientes_nuevos": 9,
       "ppto": 213480,
       "ppto_retail": 153706,
       "ppto_volumen": 59774,
@@ -1278,8 +1278,8 @@
     {
       "date": "12may",
       "day": "Mar",
-      "litros": 13925,
-      "neto": 16323598
+      "litros": 36745,
+      "neto": 42468166
     },
     {
       "date": "11may",
@@ -1374,12 +1374,12 @@
   ],
   "banks": [
     {
-      "name": "DE CHILE",
-      "balance": 28228361
-    },
-    {
       "name": "ITAU",
       "balance": 6852272
+    },
+    {
+      "name": "DE CHILE",
+      "balance": 5780048
     },
     {
       "name": "ESTADO",
@@ -1402,15 +1402,15 @@
       "balance": -1727275
     }
   ],
-  "total_cash": 46208490,
+  "total_cash": 23760177,
   "receivables": {
-    "open_invoices": 249,
-    "total_due": 598410253,
-    "current": 521416778,
-    "overdue": 76993475,
-    "pct_overdue": 12.9,
+    "open_invoices": 253,
+    "total_due": 625273213,
+    "current": 551121739,
+    "overdue": 74151474,
+    "pct_overdue": 11.9,
     "aging": {
-      "0-30": 60886591,
+      "0-30": 58044590,
       "31-60": 1341321,
       "61-90": 5000000,
       "90+": 9765563
@@ -1431,6 +1431,10 @@
       {
         "name": "PATRICIO VISCAY ALBORNOZ",
         "amount": 24961924
+      },
+      {
+        "name": "EL PARRON SPA",
+        "amount": 21735000
       },
       {
         "name": "ALFREDO ALFONSO OPAZO MUÑOZ",
@@ -1489,12 +1493,8 @@
         "amount": 8483271
       },
       {
-        "name": "VALENZUELA LEIVA MAX",
-        "amount": 7895000
-      },
-      {
-        "name": "AGRÍCOLA LA RIGADA SPA",
-        "amount": 7852000
+        "name": "AGROMORANDE S A",
+        "amount": 7899602
       }
     ]
   },
@@ -1578,15 +1578,15 @@
   "riesgo": {
     "cubierto": 0,
     "cubierto_count": 0,
-    "no_cubierto": 598410253,
-    "no_cubierto_count": 249,
+    "no_cubierto": 625273213,
+    "no_cubierto_count": 253,
     "pct_monto": 100.0,
     "pct_count": 100.0
   },
   "churn": {
     "eligible_clients": 168,
-    "churned_count": 56,
-    "pct": 33.3,
+    "churned_count": 55,
+    "pct": 32.7,
     "churned": [
       {
         "name": "ERIKA DEL PILAR GUZMAN MANRIQUEZ",
@@ -1654,16 +1654,6 @@
         "freq_days": 15,
         "last_invoice": "2026-02-16",
         "days_since": 85,
-        "threshold": 30,
-        "invoices_8m": 8,
-        "new_this_week": false
-      },
-      {
-        "name": "JUAN VILLAR ESPINOZA SPA",
-        "freq": "Bimensual (Quincenal)",
-        "freq_days": 15,
-        "last_invoice": "2026-02-17",
-        "days_since": 84,
         "threshold": 30,
         "invoices_8m": 8,
         "new_this_week": false
@@ -1887,6 +1877,16 @@
         "threshold": 42,
         "invoices_8m": 8,
         "new_this_week": false
+      },
+      {
+        "name": "MOVIMIENTOS DE TIERRA Y TRANSPORTES C.A.E.Z. SPA",
+        "freq": "Semanal",
+        "freq_days": 7,
+        "last_invoice": "2026-03-18",
+        "days_since": 55,
+        "threshold": 14,
+        "invoices_8m": 16,
+        "new_this_week": false
       }
     ],
     "filters": "≥8 facturas, frecuencia ≤45d, silencio >2x freq",
@@ -1912,8 +1912,8 @@
       {
         "month": "Mar 2026",
         "pct": 100.0,
-        "new_churn": 3,
-        "active_start": 3
+        "new_churn": 2,
+        "active_start": 2
       },
       {
         "month": "Apr 2026",
@@ -1923,9 +1923,9 @@
       },
       {
         "month": "May 2026",
-        "pct": 79.3,
-        "new_churn": 46,
-        "active_start": 58
+        "pct": 78.6,
+        "new_churn": 44,
+        "active_start": 56
       }
     ]
   },
