@@ -1,5 +1,5 @@
 {
-  "updated": "2026-05-12T00:11:37.003472",
+  "updated": "2026-05-12T13:14:46.021592",
   "weeks": [
     {
       "label": "07may-13may",
@@ -18,10 +18,10 @@
       "facturas": 58,
       "nc": 0,
       "clientes": 56,
-      "recaud": 176112702,
+      "recaud": 208243551,
       "cheques": 10464951,
-      "transf": 97202102,
-      "factoring": 68445649,
+      "transf": 128374951,
+      "factoring": 69403649,
       "compras_odoo": 118867431,
       "cheq_cartera_saldo": 0,
       "cheq_recibidos": 0,
@@ -1375,7 +1375,7 @@
   "banks": [
     {
       "name": "DE CHILE",
-      "balance": 21975093
+      "balance": 28228361
     },
     {
       "name": "ITAU",
@@ -1402,15 +1402,15 @@
       "balance": -1727275
     }
   ],
-  "total_cash": 39955222,
+  "total_cash": 46208490,
   "receivables": {
-    "open_invoices": 249,
-    "total_due": 604511353,
-    "current": 517566227,
-    "overdue": 86945126,
-    "pct_overdue": 14.4,
+    "open_invoices": 242,
+    "total_due": 577520103,
+    "current": 500526628,
+    "overdue": 76993475,
+    "pct_overdue": 13.3,
     "aging": {
-      "0-30": 70838242,
+      "0-30": 60886591,
       "31-60": 1341321,
       "61-90": 5000000,
       "90+": 9765563
@@ -1453,24 +1453,12 @@
         "amount": 13772549
       },
       {
-        "name": "FORESTAL PUIHUA SPA",
-        "amount": 13390401
-      },
-      {
         "name": "MAQUINARIAS Y ARIDOS SAN PEDRO SPA.",
         "amount": 12557479
       },
       {
-        "name": "EL PARRON SPA",
-        "amount": 12000000
-      },
-      {
         "name": "URAN ANTONIO LUNA DOMÍNGUEZ",
         "amount": 11424000
-      },
-      {
-        "name": "INGENERIA Y CONSTRUCCIONES FEBLANCA SPA",
-        "amount": 10000000
       },
       {
         "name": "ANDES SOLAR SA",
@@ -1479,6 +1467,14 @@
       {
         "name": "AGROSERVICIOS JR SPA",
         "amount": 9522000
+      },
+      {
+        "name": "INGENERIA Y CONSTRUCCIONES FEBLANCA SPA",
+        "amount": 8750000
+      },
+      {
+        "name": "FORESTAL PUIHUA SPA",
+        "amount": 8725400
       },
       {
         "name": "SOC AGRICOLA SANTA TERESA SPA",
@@ -1495,6 +1491,10 @@
       {
         "name": "Servicios de construcción y maquinarias Talmaqq Ltda.",
         "amount": 7850000
+      },
+      {
+        "name": "VICTOR FAVIO VILCHES MARDONES",
+        "amount": 7752000
       }
     ]
   },
@@ -1503,17 +1503,19 @@
       "label": "07may-13may",
       "zones": {
         "Chillan": {
-          "total": 2,
-          "on_time": 2,
-          "late": 0,
-          "pct": 100.0,
-          "late_clients": []
+          "total": 6,
+          "on_time": 5,
+          "late": 1,
+          "pct": 83.33,
+          "late_clients": [
+            "ARIDOS DON EDUARDO SPA, ANGELICA MOLINA, FEBLANCA SAN CARLOS"
+          ]
         },
         "Curico": {
-          "total": 11,
-          "on_time": 2,
+          "total": 17,
+          "on_time": 8,
           "late": 9,
-          "pct": 18.18,
+          "pct": 47.06,
           "late_clients": [
             "AGRICOLA PALQUIBUDIS SPA, Agricola Palquibudis",
             "CLAUDIA PAZ AGUIAR DESORMEAUX, CLAUDIA PAZ AGUIAR DESORMEAUX",
@@ -1527,34 +1529,47 @@
           ]
         },
         "Rancagua": {
-          "total": 7,
-          "on_time": 6,
-          "late": 1,
-          "pct": 85.71,
+          "total": 13,
+          "on_time": 11,
+          "late": 2,
+          "pct": 84.62,
           "late_clients": [
-            "MAESTRANZA Y SERVICIOS INTEGRALES METALMECANICOS CACHAPOAL S A, CASA FRANCISCO CARTAGENA"
+            "MAESTRANZA Y SERVICIOS INTEGRALES METALMECANICOS CACHAPOAL S A, CASA FRANCISCO CARTAGENA",
+            "AGRICOLA A Y C SPA, A Y C"
           ]
         },
         "San Fernando": {
-          "total": 4,
-          "on_time": 4,
+          "total": 6,
+          "on_time": 6,
           "late": 0,
           "pct": 100.0,
           "late_clients": []
         },
         "Talca": {
-          "total": 10,
-          "on_time": 3,
-          "late": 7,
-          "pct": 30.0,
+          "total": 14,
+          "on_time": 4,
+          "late": 10,
+          "pct": 28.57,
           "late_clients": [
             "SOCIEDAD COMERCIAL AGRICOLA JG LIMITADA, AGRICOLA JG - SAN CLEMENTE Nadja",
             "EMPRESAS TUCAPEL S A, FIDEL CONCHA, TUCPAEL RETIRO",
             "EMPRESAS TUCAPEL S A, FIDEL CONCHA, TUCPAEL RETIRO",
+            "INVERSIONES FRUTICOLAS S.A., HUERTO SAN AGUSTIN",
             "MAQUINARIAS Y ARIDOS SAN PEDRO SPA., MAQUINARIAS Y ARIDOS SAN PEDRO-Alberto",
             "MHM SPA, MHM SPA Campo- Macarena",
             "PATRICIO VISCAY ALBORNOZ, Cristopher",
-            "SOC AGRICOLA GRANJA SAN RAFAEL LIMITADA, Aldea Campesina-Luis Hernan"
+            "SOC AGRICOLA GRANJA SAN RAFAEL LIMITADA, Aldea Campesina-Luis Hernan",
+            "ANDES SOLAR SA, ANDES SOLAR DIRECCION",
+            "BOMBAS DE HORMIGON G&P SPA, JORGE GONZALEZ"
+          ]
+        },
+        "VI Costa": {
+          "total": 1,
+          "on_time": 0,
+          "late": 1,
+          "pct": 0.0,
+          "late_clients": [
+            "AGRICOLA TINGUIRIRICA LIMITADA, FUNDO CUNAQUITO SIN NUMERO - AGRICOLA TINGUIRIRICA"
           ]
         }
       }
@@ -1563,8 +1578,8 @@
   "riesgo": {
     "cubierto": 0,
     "cubierto_count": 0,
-    "no_cubierto": 604511353,
-    "no_cubierto_count": 249,
+    "no_cubierto": 577520103,
+    "no_cubierto_count": 242,
     "pct_monto": 100.0,
     "pct_count": 100.0
   },
