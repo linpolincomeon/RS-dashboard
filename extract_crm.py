@@ -1658,6 +1658,254 @@ def extract_rescued_clients(models, uid):
 
 
 # ==============================================================
+# PART 5b: RECOVERY CLIENTS (Quick Wins)
+# Clientes que compraron en 2025 (≥500 L/mes diesel B1) y no han
+# facturado en 2026, separando los estacionales (cuyos meses de
+# compra histórica aún no han llegado en 2026) del listado de
+# recuperables activos. Top 50 por volumen 2025.
+# ==============================================================
+def extract_recovery_clients(models, uid):
+    print("\nExtracting Recovery (Quick Wins)...")
+    from collections import defaultdict
+    today = datetime.now().date()
+    current_month = today.month  # mes actual en 2026
+
+    # ── 1. Facturas 2025 (sólo posted, sólo venta) ──
+    inv_2025 = sr(models, uid, "account.move", [
+        ["move_type", "=", "out_invoice"],
+        ["state", "=", "posted"],
+        ["invoice_date", ">=", "2025-01-01"],
+        ["invoice_date", "<=", "2025-12-31"],
+    ], ["id", "partner_id", "invoice_date"], limit=20000)
+    print(f"  2025 invoices: {len(inv_2025)}")
+
+    ids_2025 = [i["id"] for i in inv_2025]
+    move_to_partner = {i["id"]: safe_id(i.get("partner_id")) for i in inv_2025}
+    move_to_month = {i["id"]: int((i.get("invoice_date") or "2025-01-01")[5:7]) for i in inv_2025}
+
+    # ── 2. Líneas Diesel B1 2025 → litros por partner Y litros por (partner, mes) ──
+    lines_2025 = []
+    for chunk_start in range(0, len(ids_2025), 200):
+        chunk = ids_2025[chunk_start:chunk_start+200]
+        lines_2025 += sr(models, uid, "account.move.line", [
+            ["move_id", "in", chunk],
+            ["product_id", "=", DIESEL_PRODUCT_ID],
+        ], ["move_id", "quantity"], limit=20000)
+
+    litros_partner_2025 = defaultdict(float)
+    litros_partner_month_2025 = defaultdict(lambda: defaultdict(float))  # pid -> {month: litros}
+    for ln in lines_2025:
+        mid = safe_id(ln.get("move_id"))
+        pid = move_to_partner.get(mid, 0)
+        if not pid:
+            continue
+        qty = ln.get("quantity", 0) or 0
+        litros_partner_2025[pid] += qty
+        m = move_to_month.get(mid, 0)
+        if m:
+            litros_partner_month_2025[pid][m] += qty
+
+    # avg mensual = total 2025 / 12 (sigue el patrón del codebase)
+    avg_lpm_2025 = {pid: l / 12 for pid, l in litros_partner_2025.items()}
+
+    # ── 3. Facturas 2026 (qué partners están activos) y litros diesel 2026 por partner ──
+    inv_2026 = sr(models, uid, "account.move", [
+        ["move_type", "=", "out_invoice"],
+        ["state", "=", "posted"],
+        ["invoice_date", ">=", "2026-01-01"],
+    ], ["id", "partner_id", "invoice_date"], limit=20000)
+    print(f"  2026 invoices: {len(inv_2026)}")
+
+    move_to_partner_26 = {i["id"]: safe_id(i.get("partner_id")) for i in inv_2026}
+    active_2026 = {pid for pid in move_to_partner_26.values() if pid}
+
+    ids_2026 = [i["id"] for i in inv_2026]
+    lines_2026 = []
+    for chunk_start in range(0, len(ids_2026), 200):
+        chunk = ids_2026[chunk_start:chunk_start+200]
+        lines_2026 += sr(models, uid, "account.move.line", [
+            ["move_id", "in", chunk],
+            ["product_id", "=", DIESEL_PRODUCT_ID],
+        ], ["move_id", "quantity"], limit=20000)
+
+    litros_partner_2026 = defaultdict(float)
+    for ln in lines_2026:
+        mid = safe_id(ln.get("move_id"))
+        pid = move_to_partner_26.get(mid, 0)
+        if pid:
+            litros_partner_2026[pid] += ln.get("quantity", 0) or 0
+
+    # ── 4. Candidatos: ≥500 L/mes en 2025 (no exigimos cero en 2026, separamos por caída) ──
+    candidates = [pid for pid, lpm in avg_lpm_2025.items()
+                  if lpm >= 500 and pid != 0]
+    print(f"  Candidates (≥500 L/mes 2025): {len(candidates)}")
+
+    if not candidates:
+        return {"recoverable": [], "seasonal": [], "summary": {
+            "recoverable_count": 0, "seasonal_count": 0,
+            "recoverable_lpm": 0, "seasonal_lpm": 0,
+        }}
+
+    # ── 5. Datos del partner (sin límite restrictivo) ──
+    partners_raw = []
+    for i in range(0, len(candidates), 200):
+        partners_raw += sr(models, uid, "res.partner",
+            [["id", "in", candidates[i:i+200]]],
+            ["id", "name", "delivery_zone_id", "is_volume_client", "phone", "user_id"],
+            limit=5000)
+    pmap = {p["id"]: p for p in partners_raw}
+
+    # ── 6. Último lead CRM por partner (para vendedor = crm.lead.user_id) ──
+    crm_leads = sr(models, uid, "crm.lead", [
+        ["partner_id", "in", candidates],
+    ], ["partner_id", "stage_id", "user_id", "write_date"], limit=10000, order="write_date desc")
+
+    last_lead = {}  # pid -> {stage, exec, last_crm}
+    for l in crm_leads:
+        pid = safe_id(l.get("partner_id"))
+        if not pid or pid in last_lead:
+            continue
+        last_lead[pid] = {
+            "stage": safe_name(l.get("stage_id")) if l.get("stage_id") else "",
+            "exec": canonical_vendedor(safe_name(l.get("user_id"))) if l.get("user_id") else "",
+            "last_crm": (l.get("write_date") or "")[:10],
+        }
+
+    # ── 7. Última nota CRM por partner (de mail.message en res.partner) ──
+    msgs = sr(models, uid, "mail.message", [
+        ["res_id", "in", candidates],
+        ["model", "=", "res.partner"],
+        ["message_type", "in", ["comment", "note"]],
+    ], ["res_id", "body", "date", "author_id"], limit=10000, order="date desc")
+
+    last_note = {}
+    for m in msgs:
+        pid = m.get("res_id")
+        if not pid or pid in last_note:
+            continue
+        last_note[pid] = {
+            "body": strip_html(m.get("body", ""))[:150],
+            "date": (m.get("date") or "")[:10],
+            "author": safe_name(m.get("author_id")) if m.get("author_id") else "",
+        }
+
+    # ── 8. Clasificar cada candidato: recoverable vs seasonal ──
+    SPANISH_MONTHS = ["", "ene", "feb", "mar", "abr", "may", "jun",
+                      "jul", "ago", "sep", "oct", "nov", "dic"]
+
+    recoverable = []
+    seasonal = []
+
+    for pid in candidates:
+        p = pmap.get(pid)
+        if not p:
+            continue
+        pname = p.get("name", "") or ""
+        if not pname or "Predeterminado" in pname:
+            continue
+
+        lpm = avg_lpm_2025[pid]
+        litros_2025_total = litros_partner_2025[pid]
+        litros_2026_total = litros_partner_2026.get(pid, 0)
+
+        # Patrón mensual 2025: meses en que compró
+        months_active_2025 = sorted(litros_partner_month_2025[pid].keys())
+        months_count_2025 = len(months_active_2025)
+
+        # Caída % vs período comparable: 2025 mismos meses transcurridos vs 2026 YTD
+        # period_2025 = litros en meses 1..current_month en 2025
+        period_2025 = sum(litros_partner_month_2025[pid].get(m, 0)
+                          for m in range(1, current_month + 1))
+        period_2026 = litros_2026_total
+        if period_2025 > 0:
+            caida_pct = round((1 - period_2026 / period_2025) * 100, 1)
+        else:
+            caida_pct = 0
+
+        # ── Detectar estacionalidad ──
+        # Estacional si: compró en ≤6 meses durante 2025 Y todos esos meses son > current_month
+        # (es decir, la temporada todavía no empieza en 2026)
+        is_seasonal = False
+        season_start_month = None
+        if months_count_2025 <= 6 and months_count_2025 > 0:
+            # Si TODOS los meses de compra 2025 son posteriores al mes actual de 2026
+            # → estacional esperando temporada
+            if all(m > current_month for m in months_active_2025):
+                is_seasonal = True
+                season_start_month = min(months_active_2025)
+            # Si el cliente tiene un patrón claramente estacional (ej. solo compra dic-mar)
+            # y estamos fuera de temporada (ningún mes activo 2025 coincide con current_month
+            # ni con los próximos 2 meses), también es estacional
+            elif not any(abs(m - current_month) <= 1 for m in months_active_2025):
+                # Patrón estacional pero la temporada está lejos
+                is_seasonal = True
+                # Encontrar el próximo mes de temporada que viene
+                future_months = [m for m in months_active_2025 if m > current_month]
+                if future_months:
+                    season_start_month = min(future_months)
+                else:
+                    season_start_month = min(months_active_2025)  # próximo año
+
+        # ── Filtro de inclusión ──
+        # Sólo incluir si: no activo en 2026, O caída > 70% vs período comparable
+        if pid in active_2026 and caida_pct < 70:
+            continue  # Sigue comprando bien, no es recuperación
+
+        note = last_note.get(pid, {})
+        lead = last_lead.get(pid, {})
+
+        item = {
+            "id": pid,
+            "name": pname,
+            "zone": safe_name(p.get("delivery_zone_id")) if p.get("delivery_zone_id") else "",
+            "is_volume": bool(p.get("is_volume_client", False)),
+            "phone": p.get("phone", "") or "",
+            "litros_2025": round(litros_2025_total),
+            "lpm_2025": round(lpm),
+            "litros_2026": round(litros_2026_total),
+            "caida_pct": caida_pct,
+            "months_active_2025": months_count_2025,
+            "months_pattern": [SPANISH_MONTHS[m] for m in months_active_2025],
+            "last_note": note.get("body", ""),
+            "note_date": note.get("date", ""),
+            "note_author": note.get("author", ""),
+            "crm_stage": lead.get("stage", ""),
+            "crm_exec": lead.get("exec", ""),
+            "crm_last": lead.get("last_crm", ""),
+        }
+
+        if is_seasonal:
+            item["season_start_month"] = season_start_month
+            item["season_start_label"] = SPANISH_MONTHS[season_start_month] if season_start_month else ""
+            seasonal.append(item)
+        else:
+            recoverable.append(item)
+
+    # Ordenar por volumen 2025 descendente (siempre prioriza volumen)
+    recoverable.sort(key=lambda x: -x["litros_2025"])
+    seasonal.sort(key=lambda x: -x["litros_2025"])
+
+    # Top 50 cada uno (decisión Pauline)
+    recoverable_top = recoverable[:50]
+    seasonal_top = seasonal[:50]
+
+    print(f"  Recoverable: {len(recoverable)} (top 50 in output)")
+    print(f"  Seasonal:    {len(seasonal)} (top 50 in output)")
+
+    return {
+        "recoverable": recoverable_top,
+        "seasonal": seasonal_top,
+        "summary": {
+            "recoverable_count": len(recoverable),
+            "seasonal_count": len(seasonal),
+            "recoverable_lpm": round(sum(c["lpm_2025"] for c in recoverable)),
+            "seasonal_lpm": round(sum(c["lpm_2025"] for c in seasonal)),
+            "total_candidates": len(candidates),
+        },
+    }
+
+
+# ==============================================================
 # PART 6: CREDIT RISK DASHBOARD
 # ==============================================================
 def extract_credit_risk(models, uid):
@@ -2159,6 +2407,9 @@ def main():
     # Part 5: Rescued clients (frecuencia-based)
     rescued = extract_rescued_clients(models, uid)
 
+    # Part 5b: Recovery (Quick Wins) — clientes 2025 que cayeron en 2026
+    recovery = extract_recovery_clients(models, uid)
+
     # Part 6: Credit Risk
     credit_risk = extract_credit_risk(models, uid)
 
@@ -2394,6 +2645,7 @@ def main():
         "ventas_prev": ventas_prev,
         "churn": churn,
         "rescued": rescued,
+        "recovery": recovery,
         "credit_risk": credit_risk,
         "graduating": graduating,
         "vendor_goals": vendor_goals,
