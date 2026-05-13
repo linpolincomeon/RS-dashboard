@@ -1,32 +1,32 @@
 {
-  "updated": "2026-05-13T17:26:28.749732",
+  "updated": "2026-05-13T20:57:41.718151",
   "weeks": [
     {
       "label": "07may-13may",
       "start": "2026-05-07",
       "end": "2026-05-13",
-      "ventas": 215550897,
-      "neto": 167948457,
-      "litros": 143029,
-      "litros_retail": 100499,
-      "litros_volumen": 42530,
-      "precio_neto": 1174,
-      "precio_bruto": 1507,
-      "margin": 0.0761,
-      "margin_retail": 0.0848,
-      "margin_volumen": 0.05485,
-      "facturas": 88,
+      "ventas": 247550164,
+      "neto": 192982812,
+      "litros": 164019,
+      "litros_retail": 116489,
+      "litros_volumen": 47530,
+      "precio_neto": 1177,
+      "precio_bruto": 1509,
+      "margin": 0.07735,
+      "margin_retail": 0.08676,
+      "margin_volumen": 0.05339,
+      "facturas": 108,
       "nc": 0,
-      "clientes": 77,
-      "recaud": 292628959,
+      "clientes": 91,
+      "recaud": 295689659,
       "cheques": 10464951,
-      "transf": 181133947,
+      "transf": 184194647,
       "factoring": 101030061,
       "compras_odoo": 223495098,
       "cheq_cartera_saldo": 0,
       "cheq_recibidos": 0,
-      "facturas_contado": 15,
-      "facturas_credito": 73,
+      "facturas_contado": 20,
+      "facturas_credito": 88,
       "margin_by_term": {
         "Prepago": {
           "margin": 0.09154,
@@ -35,9 +35,9 @@
           "days": 0
         },
         "1 Día": {
-          "margin": 0.06344,
-          "normalizado": 0.07311,
-          "count": 13,
+          "margin": 0.06417,
+          "normalizado": 0.07384,
+          "count": 18,
           "days": 1
         },
         "7 Días": {
@@ -47,15 +47,15 @@
           "days": 7
         },
         "15 Días": {
-          "margin": 0.04344,
-          "normalizado": 0.04844,
-          "count": 6,
+          "margin": 0.04832,
+          "normalizado": 0.05332,
+          "count": 7,
           "days": 15
         },
         "30 Días": {
-          "margin": 0.08504,
-          "normalizado": 0.08504,
-          "count": 55,
+          "margin": 0.08636,
+          "normalizado": 0.08636,
+          "count": 69,
           "days": 30
         },
         "45 Días": {
@@ -72,7 +72,7 @@
         }
       },
       "cotiz_canceladas": 6,
-      "visitas": 13,
+      "visitas": 15,
       "clientes_nuevos": 11,
       "ppto": 213480,
       "ppto_retail": 153706,
@@ -1278,8 +1278,8 @@
     {
       "date": "13may",
       "day": "Mié",
-      "litros": 9800,
-      "neto": 11536589
+      "litros": 30790,
+      "neto": 36570944
     },
     {
       "date": "12may",
@@ -1374,16 +1374,20 @@
   ],
   "banks": [
     {
+      "name": "ESTADO",
+      "balance": 9811543
+    },
+    {
       "name": "DE CHILE",
-      "balance": 19427049
+      "balance": 8472729
+    },
+    {
+      "name": "SANTANDER",
+      "balance": 7345019
     },
     {
       "name": "ITAU",
       "balance": 6852272
-    },
-    {
-      "name": "ESTADO",
-      "balance": 4811543
     },
     {
       "name": "BCI",
@@ -1394,21 +1398,17 @@
       "balance": 3291177
     },
     {
-      "name": "SANTANDER",
-      "balance": 105019
-    },
-    {
       "name": "DE CREDITO",
       "balance": -1727275
     }
   ],
-  "total_cash": 37407178,
+  "total_cash": 38692858,
   "receivables": {
-    "open_invoices": 234,
-    "total_due": 585754068,
-    "current": 523090117,
+    "open_invoices": 252,
+    "total_due": 608497835,
+    "current": 545833884,
     "overdue": 62663951,
-    "pct_overdue": 10.7,
+    "pct_overdue": 10.3,
     "aging": {
       "0-30": 47898388,
       "31-60": 0,
@@ -1599,15 +1599,15 @@
   "riesgo": {
     "cubierto": 0,
     "cubierto_count": 0,
-    "no_cubierto": 585754068,
-    "no_cubierto_count": 234,
+    "no_cubierto": 608497835,
+    "no_cubierto_count": 252,
     "pct_monto": 100.0,
     "pct_count": 100.0
   },
   "churn": {
-    "eligible_clients": 168,
-    "churned_count": 55,
-    "pct": 32.7,
+    "eligible_clients": 169,
+    "churned_count": 52,
+    "pct": 30.8,
     "churned": [
       {
         "name": "ERIKA DEL PILAR GUZMAN MANRIQUEZ",
@@ -1747,16 +1747,6 @@
         "days_since": 65,
         "threshold": 30,
         "invoices_8m": 8,
-        "new_this_week": false
-      },
-      {
-        "name": "MARGARITA MARIA ALARCON VERGARA",
-        "freq": "Irregular (Promedio: 13 días)",
-        "freq_days": 13,
-        "last_invoice": "2026-03-10",
-        "days_since": 64,
-        "threshold": 26,
-        "invoices_8m": 11,
         "new_this_week": false
       },
       {
@@ -1908,6 +1898,16 @@
         "threshold": 14,
         "invoices_8m": 16,
         "new_this_week": false
+      },
+      {
+        "name": "AGRICOLA EL COLORADO LTDA",
+        "freq": "Irregular (Promedio: 12 días)",
+        "freq_days": 12,
+        "last_invoice": "2026-03-19",
+        "days_since": 55,
+        "threshold": 24,
+        "invoices_8m": 10,
+        "new_this_week": false
       }
     ],
     "filters": "≥8 facturas, frecuencia ≤45d, silencio >2x freq",
@@ -1938,15 +1938,15 @@
       },
       {
         "month": "Apr 2026",
-        "pct": 67.6,
-        "new_churn": 23,
-        "active_start": 34
+        "pct": 65.6,
+        "new_churn": 21,
+        "active_start": 32
       },
       {
         "month": "May 2026",
-        "pct": 79.2,
-        "new_churn": 42,
-        "active_start": 53
+        "pct": 78.0,
+        "new_churn": 39,
+        "active_start": 50
       }
     ]
   },
