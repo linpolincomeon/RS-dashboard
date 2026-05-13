@@ -1,5 +1,5 @@
 {
-  "updated": "2026-05-13T00:15:26.003863",
+  "updated": "2026-05-13T13:28:33.957810",
   "weeks": [
     {
       "label": "07may-13may",
@@ -18,11 +18,11 @@
       "facturas": 78,
       "nc": 0,
       "clientes": 68,
-      "recaud": 223877755,
+      "recaud": 285407638,
       "cheques": 10464951,
-      "transf": 144009155,
-      "factoring": 69403649,
-      "compras_odoo": 139688253,
+      "transf": 173912626,
+      "factoring": 101030061,
+      "compras_odoo": 181329897,
       "cheq_cartera_saldo": 0,
       "cheq_recibidos": 0,
       "facturas_contado": 11,
@@ -1374,12 +1374,12 @@
   ],
   "banks": [
     {
-      "name": "ITAU",
-      "balance": 6852272
+      "name": "DE CHILE",
+      "balance": 12205728
     },
     {
-      "name": "DE CHILE",
-      "balance": 5780048
+      "name": "ITAU",
+      "balance": 6852272
     },
     {
       "name": "ESTADO",
@@ -1402,15 +1402,15 @@
       "balance": -1727275
     }
   ],
-  "total_cash": 23760177,
+  "total_cash": 30185857,
   "receivables": {
-    "open_invoices": 259,
-    "total_due": 638917106,
-    "current": 557369713,
-    "overdue": 81547393,
-    "pct_overdue": 12.8,
+    "open_invoices": 244,
+    "total_due": 609287485,
+    "current": 540360213,
+    "overdue": 68927272,
+    "pct_overdue": 11.3,
     "aging": {
-      "0-30": 65440509,
+      "0-30": 52820388,
       "31-60": 1341321,
       "61-90": 5000000,
       "90+": 9765563
@@ -1430,7 +1430,7 @@
       },
       {
         "name": "PATRICIO VISCAY ALBORNOZ",
-        "amount": 24961924
+        "amount": 22833004
       },
       {
         "name": "EL PARRON SPA",
@@ -1477,14 +1477,6 @@
         "amount": 9667649
       },
       {
-        "name": "ARIDOS LO VALDIVIA LIMITADA",
-        "amount": 9299200
-      },
-      {
-        "name": "INGENERIA Y CONSTRUCCIONES FEBLANCA SPA",
-        "amount": 8750000
-      },
-      {
         "name": "FORESTAL PUIHUA SPA",
         "amount": 8725400
       },
@@ -1493,8 +1485,16 @@
         "amount": 8483271
       },
       {
-        "name": "AGROMORANDE S A",
-        "amount": 7899602
+        "name": "VALENZUELA LEIVA MAX",
+        "amount": 7895000
+      },
+      {
+        "name": "AGRÍCOLA LA RIGADA SPA",
+        "amount": 7852000
+      },
+      {
+        "name": "Servicios de construcción y maquinarias Talmaqq Ltda.",
+        "amount": 7850000
       }
     ]
   },
@@ -1599,8 +1599,8 @@
   "riesgo": {
     "cubierto": 0,
     "cubierto_count": 0,
-    "no_cubierto": 638917106,
-    "no_cubierto_count": 259,
+    "no_cubierto": 609287485,
+    "no_cubierto_count": 244,
     "pct_monto": 100.0,
     "pct_count": 100.0
   },
@@ -1982,10 +1982,10 @@
           "15293"
         ],
         "target_total": 374369,
-        "mtd_litros": 90001,
-        "compliance_pct": 24.0,
-        "projected": 214618,
-        "projected_pct": 57.3,
+        "mtd_litros": 120001,
+        "compliance_pct": 32.1,
+        "projected": 286156,
+        "projected_pct": 76.4,
         "plants": {
           "Maipu": {
             "target": 0
@@ -1997,10 +1997,10 @@
       }
     },
     "total_target": 876932,
-    "total_mtd": 180473,
-    "total_compliance_pct": 20.6,
-    "total_projected": 430359,
-    "total_projected_pct": 49.1
+    "total_mtd": 210473,
+    "total_compliance_pct": 24.0,
+    "total_projected": 501897,
+    "total_projected_pct": 57.2
   },
   "operaciones": {
     "months": [
