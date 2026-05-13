@@ -131,6 +131,7 @@ tr:hover td{background:#fafaf8}
       <button class="tab-btn" onclick="switchTab('cs')">Fidelización + CS</button>
       <button class="tab-btn" onclick="switchTab('mesvencido')">📋 Mes Vencido</button>
       <button class="tab-btn" onclick="switchTab('pipeline')">📊 Pipeline</button>
+      <button class="tab-btn" onclick="switchTab('recovery')">🔁 Recuperación</button>
       <!-- Riesgo tab removed — now in CEO dashboard only -->
       <button class="tab-btn" onclick="switchTab('glosario')">📖 Glosario</button>
       <button class="tab-btn" onclick="switchTab('pendientes')" style="color:#c8360e">⚙️ Pendientes</button>
@@ -272,6 +273,8 @@ tr:hover td{background:#fafaf8}
 
     <!-- ═══ TAB: PIPELINE ═══ -->
     <div class="tab-panel" id="tab-pipeline"></div>
+
+    <div class="tab-panel" id="tab-recovery"></div>
 
     <!-- ═══ TAB: PENDIENTES ═══ -->
     <div class="tab-panel" id="tab-pendientes">
@@ -478,6 +481,7 @@ function switchTab(tab) {
   if (tab === 'cs' && D) renderCS();
   if (tab === 'mesvencido' && D) renderMesVencido();
   if (tab === 'pipeline' && D) renderPipeline();
+  if (tab === 'recovery' && D) renderRecovery();
   // Riesgo tab removed — now in CEO dashboard only
 }
 
@@ -2211,6 +2215,217 @@ function renderPipeline() {
   }
 
   document.getElementById('tab-pipeline').innerHTML = h;
+}
+
+// ═══════════════════════════════════════
+// RECOVERY TAB — Quick Wins (clientes 2025 caídos en 2026)
+// ═══════════════════════════════════════
+function renderRecovery() {
+  const el = document.getElementById('tab-recovery');
+  if (!el) return;
+  const rec = (D.recovery && D.recovery.recoverable) || [];
+  const sea = (D.recovery && D.recovery.seasonal) || [];
+  const sum = (D.recovery && D.recovery.summary) || {};
+
+  // ── Cruce con mail.activity (mismo patrón que bloque Durmientes) ──
+  // D.activities tiene {date, who, type, summary, lead, state}
+  // Matching por nombre de cliente en el campo "lead" (uppercase, includes ambos lados)
+  const allActs = D.activities || [];
+  const actByClient = {};  // uppercase client name → [{date, type, desc}]
+  const allRecClients = rec.concat(sea);
+  allActs.forEach(a => {
+    const lead = (a.lead || '').trim().toUpperCase();
+    if (!lead) return;
+    const entry = {date: a.date || '', type: a.type || 'To-Do', desc: a.summary || ''};
+    allRecClients.forEach(c => {
+      const cn = (c.name || '').trim().toUpperCase();
+      if (cn && (lead.includes(cn) || cn.includes(lead))) {
+        if (!actByClient[cn]) actByClient[cn] = [];
+        actByClient[cn].push(entry);
+      }
+    });
+  });
+  // Adjuntar la actividad más reciente a cada cliente
+  allRecClients.forEach(c => {
+    const cn = (c.name || '').trim().toUpperCase();
+    const acts = actByClient[cn] || [];
+    acts.sort((a, b) => (b.date || '').localeCompare(a.date || ''));
+    c._crmAct = acts[0] || null;
+  });
+
+  // ── KPIs ──
+  const totalLpmRec = rec.reduce((s, c) => s + c.lpm_2025, 0);
+  const totalLpmSea = sea.reduce((s, c) => s + c.lpm_2025, 0);
+  const withAct = rec.filter(c => c._crmAct).length;
+  const withCrm = rec.filter(c => c.crm_stage).length;
+
+  let h = `
+    <div class="kpi-row" style="margin-bottom:20px">
+      ${mkKpi('c-red',    '⚠ Recuperables', sum.recoverable_count || 0, 'top 50 mostrados', null, null)}
+      ${mkKpi('c-yellow', '📦 L/mes en riesgo', totalLpmRec.toLocaleString('es-CL'), 'top 50 recuperables', null, null)}
+      ${mkKpi('c-blue',   '🗓 Con gestión CRM', withAct, 'tienen actividad reciente', null, null)}
+      ${mkKpi('c-green',  '🔍 En pipeline CRM', withCrm, 'tienen lead activo', null, null)}
+    </div>
+    <div style="background:var(--card);border-radius:12px;padding:16px;margin-bottom:20px;
+                border-left:3px solid #c8360e;font-size:12px;color:var(--dim);line-height:1.7">
+      <strong style="color:var(--text)">¿Qué es esta lista?</strong>
+      Clientes que compraron Diesel B1 en 2025 (≥500 L/mes promedio) y se cayeron en 2026:
+      <strong>cero compra YTD</strong> o <strong>caída &gt;70%</strong> vs período comparable.
+      No son prospectos fríos — te conocen. Cada uno es una llamada, no una venta nueva.
+      Los <strong>estacionales</strong> (compraron solo en ciertos meses todavía no llegados) están separados abajo.
+      Ordenados por volumen 2025 descendente. Top 50 cada tabla.
+    </div>`;
+
+  // ── Tabla principal: Recuperables ──
+  h += `<h3 style="margin:24px 0 12px;color:var(--text);font-size:16px">
+          🔁 Recuperables ahora <span style="font-weight:400;color:var(--dim);font-size:13px">
+          (${rec.length} mostrados de ${sum.recoverable_count || 0})</span>
+        </h3>`;
+
+  if (rec.length === 0) {
+    h += `<div style="padding:24px;color:var(--dim);text-align:center;background:var(--card);border-radius:12px">
+            No hay clientes recuperables que cumplan el criterio (≥500 L/mes 2025 + cero/caída 2026).
+          </div>`;
+  } else {
+    h += `<div style="overflow-x:auto"><table>
+      <thead><tr>
+        <th>#</th><th>Cliente</th><th>Zona</th>
+        <th style="text-align:right">L 2025</th>
+        <th style="text-align:right">L/mes</th>
+        <th style="text-align:right">L 2026</th>
+        <th style="text-align:right">Caída</th>
+        <th>Tipo</th>
+        <th>CRM</th>
+        <th>Ejecutivo</th>
+        <th>Última Actividad</th>
+      </tr></thead><tbody>`;
+
+    rec.forEach((c, i) => {
+      const tipo = c.is_volume
+        ? '<span class="tag tag-blue">Volumen</span>'
+        : '<span class="tag tag-g">Retail</span>';
+      const crmBadge = c.crm_stage
+        ? `<span class="tag ${/durmiente/i.test(c.crm_stage)?'tag-y':'tag-r'}">${H(c.crm_stage)}</span>`
+        : '<span style="color:var(--dim);font-size:11px">Sin lead</span>';
+      const execName = c.crm_exec
+        ? `<span style="font-size:11px">${H(c.crm_exec.split(' ').slice(-1)[0])}</span>`
+        : '<span style="color:var(--dim);font-size:11px">—</span>';
+
+      // Actividad CRM (mail.activity) — patrón idéntico al bloque Durmientes
+      let actCell = '';
+      if (c._crmAct) {
+        actCell = `<div style="font-size:11px;max-width:280px;white-space:normal">
+          <strong>${H(c._crmAct.date.slice(0,10))}</strong> · ${H(c._crmAct.type)}
+          <div style="color:var(--dim);font-size:11px;margin-top:2px;line-height:1.4">${H(c._crmAct.desc)}</div>
+        </div>`;
+      } else if (c.last_note) {
+        actCell = `<div style="font-size:11px;max-width:280px;white-space:normal;line-height:1.4"
+                title="${H(c.last_note)}">
+             ${H(c.last_note.slice(0, 80))}${c.last_note.length > 80 ? '…' : ''}
+             <div style="color:var(--dim);font-size:10px;margin-top:2px">
+               ${H(c.note_date)} · ${H((c.note_author||'').split(' ')[0])}
+             </div>
+           </div>`;
+      } else {
+        actCell = '<span style="color:var(--dim);font-size:11px">Sin gestión</span>';
+      }
+      const caidaCell = (c.caida_pct >= 100)
+        ? '<span class="tag tag-r">100%</span>'
+        : `<span class="tag ${c.caida_pct>=70?'tag-r':'tag-y'}">${c.caida_pct}%</span>`;
+      const highlight = (i < 10) ? 'style="background:#fff8f7"' : '';
+
+      h += `<tr ${highlight}>
+        <td style="color:var(--dim);font-size:11px">${i+1}</td>
+        <td class="bold">${H(c.name)}</td>
+        <td style="font-size:12px">${H(c.zone)}</td>
+        <td style="text-align:right;font-weight:600">${c.litros_2025.toLocaleString('es-CL')}</td>
+        <td style="text-align:right">${c.lpm_2025.toLocaleString('es-CL')}</td>
+        <td style="text-align:right;color:var(--dim)">${c.litros_2026.toLocaleString('es-CL')}</td>
+        <td style="text-align:right">${caidaCell}</td>
+        <td>${tipo}</td>
+        <td>${crmBadge}</td>
+        <td>${execName}</td>
+        <td>${actCell}</td>
+      </tr>`;
+    });
+    h += `</tbody></table></div>`;
+  }
+
+  // ── Tabla secundaria: Estacionales ──
+  h += `<h3 style="margin:32px 0 12px;color:var(--text);font-size:16px">
+          📅 Estacionales — esperar temporada
+          <span style="font-weight:400;color:var(--dim);font-size:13px">
+          (${sea.length} mostrados de ${sum.seasonal_count || 0} · ${totalLpmSea.toLocaleString('es-CL')} L/mes históricos)
+          </span>
+        </h3>
+        <div style="background:var(--card);border-radius:12px;padding:12px 16px;margin-bottom:12px;
+                    border-left:3px solid #d97706;font-size:12px;color:var(--dim);line-height:1.6">
+          Estos clientes <strong>tienen patrón estacional</strong>: en 2025 compraron solo en ciertos meses
+          que aún no han llegado en 2026 (o están lejos). No los persigas todavía — agenda recordatorio
+          para el mes de inicio de temporada.
+        </div>`;
+
+  if (sea.length === 0) {
+    h += `<div style="padding:24px;color:var(--dim);text-align:center;background:var(--card);border-radius:12px">
+            No se detectaron clientes estacionales.
+          </div>`;
+  } else {
+    h += `<div style="overflow-x:auto"><table>
+      <thead><tr>
+        <th>#</th><th>Cliente</th><th>Zona</th>
+        <th style="text-align:right">L 2025</th>
+        <th style="text-align:right">L/mes</th>
+        <th>Patrón mensual 2025</th>
+        <th>Empieza temporada</th>
+        <th>Tipo</th>
+        <th>Ejecutivo</th>
+        <th>Última Actividad</th>
+      </tr></thead><tbody>`;
+
+    sea.forEach((c, i) => {
+      const tipo = c.is_volume
+        ? '<span class="tag tag-blue">Volumen</span>'
+        : '<span class="tag tag-g">Retail</span>';
+      const execName = c.crm_exec
+        ? `<span style="font-size:11px">${H(c.crm_exec.split(' ').slice(-1)[0])}</span>`
+        : '<span style="color:var(--dim);font-size:11px">—</span>';
+      const patron = (c.months_pattern || []).join(' · ');
+      const startLbl = c.season_start_label
+        ? `<span class="tag tag-y">${H(c.season_start_label)}</span>`
+        : '—';
+
+      // Actividad CRM (mismo patrón que recuperables)
+      let actCell = '';
+      if (c._crmAct) {
+        actCell = `<div style="font-size:11px;max-width:260px;white-space:normal">
+          <strong>${H(c._crmAct.date.slice(0,10))}</strong> · ${H(c._crmAct.type)}
+          <div style="color:var(--dim);font-size:11px;margin-top:2px;line-height:1.4">${H(c._crmAct.desc)}</div>
+        </div>`;
+      } else if (c.last_note) {
+        actCell = `<div style="font-size:11px;max-width:260px;white-space:normal;line-height:1.4">
+          ${H(c.last_note.slice(0, 80))}${c.last_note.length > 80 ? '…' : ''}
+        </div>`;
+      } else {
+        actCell = '<span style="color:var(--dim);font-size:11px">—</span>';
+      }
+
+      h += `<tr>
+        <td style="color:var(--dim);font-size:11px">${i+1}</td>
+        <td class="bold">${H(c.name)}</td>
+        <td style="font-size:12px">${H(c.zone)}</td>
+        <td style="text-align:right;font-weight:600">${c.litros_2025.toLocaleString('es-CL')}</td>
+        <td style="text-align:right">${c.lpm_2025.toLocaleString('es-CL')}</td>
+        <td style="font-size:11px;color:var(--dim)">${H(patron)}</td>
+        <td>${startLbl}</td>
+        <td>${tipo}</td>
+        <td>${execName}</td>
+        <td>${actCell}</td>
+      </tr>`;
+    });
+    h += `</tbody></table></div>`;
+  }
+
+  el.innerHTML = h;
 }
 
 // ═══════════════════════════════════════
