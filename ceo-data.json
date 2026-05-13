@@ -1,43 +1,43 @@
 {
-  "updated": "2026-05-13T13:28:33.957810",
+  "updated": "2026-05-13T17:26:28.749732",
   "weeks": [
     {
       "label": "07may-13may",
       "start": "2026-05-07",
       "end": "2026-05-13",
-      "ventas": 200739994,
-      "neto": 156411868,
-      "litros": 133229,
-      "litros_retail": 90699,
+      "ventas": 215550897,
+      "neto": 167948457,
+      "litros": 143029,
+      "litros_retail": 100499,
       "litros_volumen": 42530,
       "precio_neto": 1174,
       "precio_bruto": 1507,
-      "margin": 0.07579,
-      "margin_retail": 0.08528,
+      "margin": 0.0761,
+      "margin_retail": 0.0848,
       "margin_volumen": 0.05485,
-      "facturas": 78,
+      "facturas": 88,
       "nc": 0,
-      "clientes": 68,
-      "recaud": 285407638,
+      "clientes": 77,
+      "recaud": 292628959,
       "cheques": 10464951,
-      "transf": 173912626,
+      "transf": 181133947,
       "factoring": 101030061,
-      "compras_odoo": 181329897,
+      "compras_odoo": 223495098,
       "cheq_cartera_saldo": 0,
       "cheq_recibidos": 0,
-      "facturas_contado": 11,
-      "facturas_credito": 67,
+      "facturas_contado": 15,
+      "facturas_credito": 73,
       "margin_by_term": {
         "Prepago": {
-          "margin": 0.12913,
-          "normalizado": 0.13913,
-          "count": 1,
+          "margin": 0.09154,
+          "normalizado": 0.10154,
+          "count": 2,
           "days": 0
         },
         "1 Día": {
-          "margin": 0.06245,
-          "normalizado": 0.07211,
-          "count": 10,
+          "margin": 0.06344,
+          "normalizado": 0.07311,
+          "count": 13,
           "days": 1
         },
         "7 Días": {
@@ -47,15 +47,15 @@
           "days": 7
         },
         "15 Días": {
-          "margin": 0.03618,
-          "normalizado": 0.04118,
-          "count": 3,
+          "margin": 0.04344,
+          "normalizado": 0.04844,
+          "count": 6,
           "days": 15
         },
         "30 Días": {
-          "margin": 0.08473,
-          "normalizado": 0.08473,
-          "count": 52,
+          "margin": 0.08504,
+          "normalizado": 0.08504,
+          "count": 55,
           "days": 30
         },
         "45 Días": {
@@ -73,7 +73,7 @@
       },
       "cotiz_canceladas": 6,
       "visitas": 13,
-      "clientes_nuevos": 10,
+      "clientes_nuevos": 11,
       "ppto": 213480,
       "ppto_retail": 153706,
       "ppto_volumen": 59774,
@@ -1278,8 +1278,8 @@
     {
       "date": "13may",
       "day": "Mié",
-      "litros": 0,
-      "neto": 0
+      "litros": 9800,
+      "neto": 11536589
     },
     {
       "date": "12may",
@@ -1375,7 +1375,7 @@
   "banks": [
     {
       "name": "DE CHILE",
-      "balance": 12205728
+      "balance": 19427049
     },
     {
       "name": "ITAU",
@@ -1402,23 +1402,23 @@
       "balance": -1727275
     }
   ],
-  "total_cash": 30185857,
+  "total_cash": 37407178,
   "receivables": {
-    "open_invoices": 244,
-    "total_due": 609287485,
-    "current": 540360213,
-    "overdue": 68927272,
-    "pct_overdue": 11.3,
+    "open_invoices": 234,
+    "total_due": 585754068,
+    "current": 523090117,
+    "overdue": 62663951,
+    "pct_overdue": 10.7,
     "aging": {
-      "0-30": 52820388,
-      "31-60": 1341321,
+      "0-30": 47898388,
+      "31-60": 0,
       "61-90": 5000000,
       "90+": 9765563
     },
     "top_debtors": [
       {
         "name": "JOSE RODRIGO ORMAZABAL VIDAL",
-        "amount": 41196200
+        "amount": 37196200
       },
       {
         "name": "SOC AGRICOLA GRANJA SAN RAFAEL LIMITADA",
@@ -1453,10 +1453,6 @@
         "amount": 16104718
       },
       {
-        "name": "SOC. DE TRANSPORTES TRACMAVI LTDA.",
-        "amount": 16057048
-      },
-      {
         "name": "SAMUEL BUDINICH SPA",
         "amount": 15411835
       },
@@ -1465,16 +1461,16 @@
         "amount": 12632000
       },
       {
+        "name": "SOC. DE TRANSPORTES TRACMAVI LTDA.",
+        "amount": 12318348
+      },
+      {
         "name": "URAN ANTONIO LUNA DOMÍNGUEZ",
         "amount": 11424000
       },
       {
         "name": "ANDES SOLAR SA",
         "amount": 9912297
-      },
-      {
-        "name": "EMPRESAS TUCAPEL S A",
-        "amount": 9667649
       },
       {
         "name": "FORESTAL PUIHUA SPA",
@@ -1495,6 +1491,10 @@
       {
         "name": "Servicios de construcción y maquinarias Talmaqq Ltda.",
         "amount": 7850000
+      },
+      {
+        "name": "VICTOR FAVIO VILCHES MARDONES",
+        "amount": 7752000
       }
     ]
   },
@@ -1599,15 +1599,15 @@
   "riesgo": {
     "cubierto": 0,
     "cubierto_count": 0,
-    "no_cubierto": 609287485,
-    "no_cubierto_count": 244,
+    "no_cubierto": 585754068,
+    "no_cubierto_count": 234,
     "pct_monto": 100.0,
     "pct_count": 100.0
   },
   "churn": {
     "eligible_clients": 168,
-    "churned_count": 56,
-    "pct": 33.3,
+    "churned_count": 55,
+    "pct": 32.7,
     "churned": [
       {
         "name": "ERIKA DEL PILAR GUZMAN MANRIQUEZ",
@@ -1938,15 +1938,15 @@
       },
       {
         "month": "Apr 2026",
-        "pct": 68.6,
-        "new_churn": 24,
-        "active_start": 35
+        "pct": 67.6,
+        "new_churn": 23,
+        "active_start": 34
       },
       {
         "month": "May 2026",
-        "pct": 78.2,
-        "new_churn": 43,
-        "active_start": 55
+        "pct": 79.2,
+        "new_churn": 42,
+        "active_start": 53
       }
     ]
   },
@@ -1960,10 +1960,10 @@
           "5667"
         ],
         "target_total": 502563,
-        "mtd_litros": 90472,
-        "compliance_pct": 18.0,
-        "projected": 215741,
-        "projected_pct": 42.9,
+        "mtd_litros": 120607,
+        "compliance_pct": 24.0,
+        "projected": 287601,
+        "projected_pct": 57.2,
         "plants": {
           "Maipu": {
             "target": 183025
@@ -1997,10 +1997,10 @@
       }
     },
     "total_target": 876932,
-    "total_mtd": 210473,
-    "total_compliance_pct": 24.0,
-    "total_projected": 501897,
-    "total_projected_pct": 57.2
+    "total_mtd": 240608,
+    "total_compliance_pct": 27.4,
+    "total_projected": 573758,
+    "total_projected_pct": 65.4
   },
   "operaciones": {
     "months": [
@@ -2093,11 +2093,11 @@
         "month": "2026-05",
         "label": "May 2026",
         "budget": 10055583,
-        "actual": 6829653,
-        "compliance_pct": 67.9,
+        "actual": 7881061,
+        "compliance_pct": 78.4,
         "categories": {
           "Petróleo": 4724746,
-          "Mantención y Reparación": 63898,
+          "Mantención y Reparación": 1115306,
           "Gastos Traslados (TAG)": 1269563,
           "Seguros": 39990,
           "Gastos Vehículos": 328448,
@@ -2146,7 +2146,7 @@
     },
     {
       "month": "2026-04",
-      "cxc": 1050472685,
+      "cxc": 1048593684,
       "net_sales": 954233879,
       "days": 30,
       "dso": 33.0
