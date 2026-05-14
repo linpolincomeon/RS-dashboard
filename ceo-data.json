@@ -1,34 +1,41 @@
 {
-  "updated": "2026-05-14T00:17:10.337850",
+  "updated": "2026-05-14T13:04:55.899075",
   "weeks": [
     {
       "label": "14may-20may",
       "start": "2026-05-14",
       "end": "2026-05-20",
-      "ventas": 0,
-      "neto": 0,
-      "litros": 0,
-      "litros_retail": 0,
+      "ventas": 3902500,
+      "neto": 3058379,
+      "litros": 2500,
+      "litros_retail": 2500,
       "litros_volumen": 0,
-      "precio_neto": 0,
-      "precio_bruto": 0,
-      "margin": 0,
-      "margin_retail": 0,
+      "precio_neto": 1223,
+      "precio_bruto": 1561,
+      "margin": 0.10378,
+      "margin_retail": 0.10378,
       "margin_volumen": 0,
-      "facturas": 0,
+      "facturas": 1,
       "nc": 0,
-      "clientes": 0,
-      "recaud": 0,
+      "clientes": 1,
+      "recaud": 10321200,
       "cheques": 0,
-      "transf": 0,
+      "transf": 10321200,
       "factoring": 0,
       "compras_odoo": 0,
       "cheq_cartera_saldo": 0,
       "cheq_recibidos": 0,
       "facturas_contado": 0,
-      "facturas_credito": 0,
-      "margin_by_term": {},
-      "cotiz_canceladas": 0,
+      "facturas_credito": 1,
+      "margin_by_term": {
+        "30 Días": {
+          "margin": 0.10378,
+          "normalizado": 0.10378,
+          "count": 1,
+          "days": 30
+        }
+      },
+      "cotiz_canceladas": 1,
       "visitas": 0,
       "clientes_nuevos": 0,
       "ppto": 213480,
@@ -53,9 +60,9 @@
       "facturas": 109,
       "nc": 0,
       "clientes": 91,
-      "recaud": 295689659,
+      "recaud": 296982409,
       "cheques": 10464951,
-      "transf": 184194647,
+      "transf": 185487397,
       "factoring": 101030061,
       "compras_odoo": 223495098,
       "cheq_cartera_saldo": 0,
@@ -1229,8 +1236,8 @@
     {
       "date": "14may",
       "day": "Jue",
-      "litros": 0,
-      "neto": 0
+      "litros": 2500,
+      "neto": 3058379
     },
     {
       "date": "13may",
@@ -1325,12 +1332,12 @@
   ],
   "banks": [
     {
-      "name": "ESTADO",
-      "balance": 9811543
+      "name": "DE CHILE",
+      "balance": 10956800
     },
     {
-      "name": "DE CHILE",
-      "balance": 8472729
+      "name": "ESTADO",
+      "balance": 9811543
     },
     {
       "name": "SANTANDER",
@@ -1353,15 +1360,15 @@
       "balance": -1727275
     }
   ],
-  "total_cash": 38692858,
+  "total_cash": 41176929,
   "receivables": {
-    "open_invoices": 253,
-    "total_due": 609026315,
-    "current": 533136434,
-    "overdue": 75889881,
-    "pct_overdue": 12.5,
+    "open_invoices": 248,
+    "total_due": 606128865,
+    "current": 533447734,
+    "overdue": 72681131,
+    "pct_overdue": 12.0,
     "aging": {
-      "0-30": 61124318,
+      "0-30": 57915568,
       "31-60": 0,
       "61-90": 5000000,
       "90+": 9765563
@@ -1452,14 +1459,82 @@
   "sla": [
     {
       "label": "14may-20may",
-      "zones": {}
+      "zones": {
+        "Chillan": {
+          "total": 1,
+          "on_time": 1,
+          "late": 0,
+          "pct": 100.0,
+          "late_clients": []
+        },
+        "Curico": {
+          "total": 10,
+          "on_time": 5,
+          "late": 5,
+          "pct": 50.0,
+          "late_clients": [
+            "AGROSERVICIOS VALVE LIMITADA, JAIME VALDES",
+            "SOCIEDAD DE MAESTRANZA FIGUEROA Y CIA LIMITADA, MAESTRANZA FIGUEROA, RIO CLARO",
+            "PROVEAGRO SERVICIOS SPA, PROVEAGRO-LOS VIDALES",
+            "AGRICOLA SANTA CAROLINA SPA, AGRICOLA SANTA CAROLINA-LOS VIDALES",
+            "TRANSPORTES JORGE MARTINEZ SCHNETTLER E.I.R.L., TRANSPORTES JORGE MARTINEZ- LOS VIDALES"
+          ]
+        },
+        "Rancagua": {
+          "total": 7,
+          "on_time": 2,
+          "late": 5,
+          "pct": 28.57,
+          "late_clients": [
+            "MAESTRANZA Y SERVICIOS INTEGRALES METALMECANICOS CACHAPOAL S A, CASA FRANCISCO CARTAGENA",
+            "INVERSIONES VB SPA, INVERSIONES VB-Patricio",
+            "AGRICOLA LA SPEZIA LTDA, Olivar- Viviana",
+            "ANDRES JESUS VALDIVIESO DAVILA, Andrés Jesús Valdivieso-Jose Luis",
+            "AGRICOLA LA PATAGUILLA LTDA, AGRICOLA LA PATAGUILLA - CODEGUA"
+          ]
+        },
+        "San Fernando": {
+          "total": 5,
+          "on_time": 1,
+          "late": 4,
+          "pct": 20.0,
+          "late_clients": [
+            "AGRÍCOLA CORVAL II SPA, AGRICOLA CORVAL II-Mauricio",
+            "AGRICOLA TRABUN LTDA., AGRICOLA TRABUN- Sergio",
+            "AGRICOLA EL ESFUERZO LIMITADA, AGRICOLA EL ESFUERZO- Verónica Quezada",
+            "SOC. PREST. SERVICIOS SAN MARTIN LTDA, PEDRO SAN MARTIN"
+          ]
+        },
+        "Talca": {
+          "total": 7,
+          "on_time": 2,
+          "late": 5,
+          "pct": 28.57,
+          "late_clients": [
+            "MARIO PATRICIO BARRUETO BRAVO, MARIO BARRUETO-Mario Patricio",
+            "AGRICOLA LOS ALPES LTDA, AGRICOLA LOS ALPES - LAS BRISAS - SAN CLEMENTE",
+            "LEOPOLDO ANTONIO RIVERA RODRIGUEZ, MATIAS RIVERA",
+            "MARGARITA MARIA ALARCON VERGARA, MARGARITA MARIA ALARCON-BRAMADERO ok",
+            "CONSTRUCTORA JAVAG SPA., CONSTRUCTORA JAVAG-SAN GERONIMO PARCELA 21"
+          ]
+        },
+        "VI Costa": {
+          "total": 1,
+          "on_time": 0,
+          "late": 1,
+          "pct": 0.0,
+          "late_clients": [
+            "AGRICOLA TRINIDAD LIMITADA, Delivery Address"
+          ]
+        }
+      }
     }
   ],
   "riesgo": {
     "cubierto": 0,
     "cubierto_count": 0,
-    "no_cubierto": 609026315,
-    "no_cubierto_count": 253,
+    "no_cubierto": 606128865,
+    "no_cubierto_count": 248,
     "pct_monto": 100.0,
     "pct_count": 100.0
   },
