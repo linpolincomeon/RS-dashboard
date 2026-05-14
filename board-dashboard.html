@@ -1,0 +1,1006 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TomEnergy — Dashboard Directorio</title>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style>
+  :root {
+    --orange: #E8451A;
+    --orange-soft: #FAECE7;
+    --green: #C8D9A0;
+    --green-dark: #7A9A3A;
+    --yellow: #F5C842;
+    --yellow-soft: #FDF4D9;
+    --bg: #FAFAF7;
+    --card: #FFFFFF;
+    --text: #2C2C2A;
+    --text-soft: #6B6B68;
+    --text-dim: #9A9A95;
+    --border: #E8E6DC;
+    --good: #3B6D11;
+    --good-bg: #EAF3DE;
+    --bad: #A32D2D;
+    --bad-bg: #FCEBEB;
+    --warn: #854F0B;
+    --warn-bg: #FAEEDA;
+  }
+  * { box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.5;
+  }
+  .container { max-width: 1280px; margin: 0 auto; padding: 24px; }
+  header {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 8px; flex-wrap: wrap; gap: 16px;
+  }
+  .brand { display: flex; align-items: center; gap: 14px; }
+  .logo-mark {
+    width: 42px; height: 42px; border-radius: 10px;
+    background: var(--orange); color: #fff;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 18px; letter-spacing: -0.5px;
+  }
+  .brand h1 { margin: 0; font-size: 18px; font-weight: 600; }
+  .brand .sub { font-size: 12px; color: var(--text-soft); margin-top: 2px; }
+  .file-picker {
+    display: flex; align-items: center; gap: 10px;
+    font-size: 12px; color: var(--text-soft);
+  }
+  .file-picker label {
+    background: var(--card); border: 1px solid var(--border);
+    padding: 7px 12px; border-radius: 8px; cursor: pointer;
+    font-weight: 500; color: var(--text);
+  }
+  .file-picker label:hover { border-color: var(--orange); }
+  .file-picker input { display: none; }
+  .status { font-size: 11px; color: var(--text-dim); }
+  .status.ok { color: var(--good); }
+  .status.err { color: var(--bad); }
+
+  .tabs {
+    display: flex; gap: 4px; border-bottom: 1px solid var(--border);
+    margin: 20px 0 24px; overflow-x: auto; scrollbar-width: thin;
+  }
+  .tab {
+    padding: 10px 16px; cursor: pointer; font-size: 13px;
+    color: var(--text-soft); border-bottom: 2px solid transparent;
+    white-space: nowrap; font-weight: 500;
+    transition: all 0.15s;
+  }
+  .tab:hover { color: var(--text); }
+  .tab.active { color: var(--orange); border-bottom-color: var(--orange); }
+
+  .panel { display: none; }
+  .panel.active { display: block; }
+
+  .section-title {
+    font-size: 11px; letter-spacing: 1px; text-transform: uppercase;
+    color: var(--text-dim); margin: 28px 0 12px;
+  }
+  .section-title:first-child { margin-top: 0; }
+
+  /* KPI cards */
+  .kpi-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 12px; margin-bottom: 24px;
+  }
+  .kpi-card {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 12px; padding: 16px;
+    position: relative; overflow: hidden;
+  }
+  .kpi-card.hero { background: var(--orange-soft); border-color: var(--orange); }
+  .kpi-card.good::before, .kpi-card.bad::before, .kpi-card.warn::before {
+    content: ''; position: absolute; top: 0; left: 0; width: 3px; height: 100%;
+  }
+  .kpi-card.good::before { background: var(--good); }
+  .kpi-card.bad::before { background: var(--bad); }
+  .kpi-card.warn::before { background: var(--warn); }
+  .kpi-label {
+    font-size: 11px; color: var(--text-soft); text-transform: uppercase;
+    letter-spacing: 0.5px; margin-bottom: 6px; font-weight: 500;
+  }
+  .kpi-value {
+    font-size: 24px; font-weight: 600; color: var(--text);
+    line-height: 1.1;
+  }
+  .kpi-card.hero .kpi-value { font-size: 28px; }
+  .kpi-compare {
+    font-size: 11px; margin-top: 6px; color: var(--text-soft);
+  }
+  .kpi-compare.good { color: var(--good); }
+  .kpi-compare.bad { color: var(--bad); }
+  .kpi-compare.warn { color: var(--warn); }
+
+  /* Chart cards */
+  .chart-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 16px;
+    margin-bottom: 20px;
+  }
+  .chart-grid.single { grid-template-columns: 1fr; }
+  .chart-card {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 12px; padding: 18px;
+  }
+  .chart-card h3 {
+    margin: 0 0 4px; font-size: 14px; font-weight: 600;
+  }
+  .chart-card .chart-sub {
+    font-size: 11px; color: var(--text-soft); margin-bottom: 14px;
+  }
+  .chart-wrap { position: relative; width: 100%; height: 280px; }
+  .chart-wrap.tall { height: 360px; }
+
+  /* Tables */
+  .table-card {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 12px; padding: 18px; overflow-x: auto;
+  }
+  .table-card h3 {
+    margin: 0 0 12px; font-size: 14px; font-weight: 600;
+  }
+  table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  th {
+    text-align: left; padding: 8px 10px; font-weight: 500;
+    color: var(--text-soft); border-bottom: 1px solid var(--border);
+    font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px;
+  }
+  td {
+    padding: 8px 10px; border-bottom: 1px solid var(--border);
+  }
+  td.num { text-align: right; font-variant-numeric: tabular-nums; }
+  tr:last-child td { border-bottom: none; }
+  .badge {
+    display: inline-block; padding: 2px 8px; border-radius: 999px;
+    font-size: 10px; font-weight: 500;
+  }
+  .badge.good { background: var(--good-bg); color: var(--good); }
+  .badge.bad { background: var(--bad-bg); color: var(--bad); }
+  .badge.warn { background: var(--warn-bg); color: var(--warn); }
+
+  /* Heatmap */
+  .heatmap-wrap { overflow-x: auto; padding-bottom: 8px; }
+  .heatmap {
+    display: grid; gap: 3px;
+    grid-template-columns: 60px repeat(12, minmax(54px, 1fr));
+    min-width: 720px;
+  }
+  .hm-cell {
+    aspect-ratio: 1.4; border-radius: 6px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 10px; font-weight: 500; color: var(--text);
+  }
+  .hm-cell.header { background: transparent; color: var(--text-soft); font-weight: 500; font-size: 11px; }
+  .hm-cell.year-label { font-weight: 600; color: var(--text); font-size: 11px; }
+  .hm-cell.empty { background: #F0F0EC; color: var(--text-dim); }
+
+  /* Empty state */
+  .empty {
+    text-align: center; padding: 80px 20px; color: var(--text-soft);
+  }
+  .empty .big { font-size: 16px; color: var(--text); margin-bottom: 8px; font-weight: 600; }
+
+  /* Footer */
+  footer {
+    margin-top: 40px; padding-top: 16px; border-top: 1px solid var(--border);
+    font-size: 11px; color: var(--text-dim); display: flex;
+    justify-content: space-between; flex-wrap: wrap; gap: 8px;
+  }
+
+  @media (max-width: 720px) {
+    .container { padding: 14px; }
+    .chart-grid { grid-template-columns: 1fr; }
+    .brand h1 { font-size: 16px; }
+    .kpi-value { font-size: 20px; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <header>
+    <div class="brand">
+      <div class="logo-mark">TE</div>
+      <div>
+        <h1>TomEnergy — Dashboard Directorio</h1>
+        <div class="sub" id="periodSub">Cargando datos…</div>
+      </div>
+    </div>
+    <div class="file-picker">
+      <label for="fileInput">📁 Cargar Excel</label>
+      <input type="file" id="fileInput" accept=".xlsx,.xls">
+      <span class="status" id="status">Esperando archivo…</span>
+    </div>
+  </header>
+
+  <nav class="tabs">
+    <div class="tab active" data-tab="resumen">Resumen Ejecutivo</div>
+    <div class="tab" data-tab="trayectoria">Trayectoria 10 años</div>
+    <div class="tab" data-tab="estacionalidad">Estacionalidad</div>
+    <div class="tab" data-tab="riesgo">Riesgo & Crédito</div>
+    <div class="tab" data-tab="rentabilidad">Rentabilidad</div>
+  </nav>
+
+  <div id="panel-resumen" class="panel active">
+    <div class="empty"><div class="big">Carga el Excel BOARD_DATA</div>
+    <div>El archivo debe tener las hojas: ANUAL, MENSUAL, RIESGO, KPI_MES_ACTUAL.</div></div>
+  </div>
+  <div id="panel-trayectoria" class="panel"></div>
+  <div id="panel-estacionalidad" class="panel"></div>
+  <div id="panel-riesgo" class="panel"></div>
+  <div id="panel-rentabilidad" class="panel"></div>
+
+  <footer>
+    <span>TomEnergy · TOM PETROL S.P.A. · Dashboard generado desde BOARD_DATA.xlsx</span>
+    <span id="loadedAt"></span>
+  </footer>
+</div>
+
+<script>
+'use strict';
+
+const STATE = {
+  anual: [],
+  mensual: [],
+  riesgo: [],
+  kpi: [],
+  charts: {}
+};
+
+const MES_ORDER = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+const MES_FULL = { Ene:'Enero',Feb:'Febrero',Mar:'Marzo',Abr:'Abril',May:'Mayo',Jun:'Junio',Jul:'Julio',Ago:'Agosto',Sep:'Septiembre',Oct:'Octubre',Nov:'Noviembre',Dic:'Diciembre' };
+
+const fmt = {
+  int: n => n == null || isNaN(n) ? '—' : Math.round(n).toLocaleString('es-CL'),
+  dec: (n, d=2) => n == null || isNaN(n) ? '—' : Number(n).toLocaleString('es-CL', {minimumFractionDigits: d, maximumFractionDigits: d}),
+  pct: n => n == null || isNaN(n) ? '—' : (n * 100).toFixed(1) + '%',
+  mm: n => n == null || isNaN(n) ? '—' : (n >= 0 ? '' : '-') + Math.abs(n).toFixed(1) + ' MM$',
+  lit: n => n == null || isNaN(n) ? '—' : Number(n).toFixed(2) + ' M L',
+};
+
+// ============ TABS ============
+document.querySelectorAll('.tab').forEach(t => {
+  t.addEventListener('click', () => {
+    document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
+    document.querySelectorAll('.panel').forEach(x => x.classList.remove('active'));
+    t.classList.add('active');
+    document.getElementById('panel-' + t.dataset.tab).classList.add('active');
+  });
+});
+
+// ============ FILE LOAD ============
+document.getElementById('fileInput').addEventListener('change', e => {
+  const file = e.target.files[0];
+  if (!file) return;
+  setStatus('Leyendo ' + file.name + '…', '');
+  const reader = new FileReader();
+  reader.onload = ev => {
+    try {
+      const wb = XLSX.read(ev.target.result, {type: 'array'});
+      loadWorkbook(wb);
+      setStatus('✓ ' + file.name, 'ok');
+      document.getElementById('loadedAt').textContent = 'Cargado: ' + new Date().toLocaleString('es-CL');
+    } catch (err) {
+      console.error(err);
+      setStatus('Error: ' + err.message, 'err');
+    }
+  };
+  reader.readAsArrayBuffer(file);
+});
+
+function setStatus(msg, cls) {
+  const s = document.getElementById('status');
+  s.textContent = msg;
+  s.className = 'status ' + cls;
+}
+
+// ============ DATA LOAD ============
+function loadWorkbook(wb) {
+  const sheets = wb.SheetNames;
+  if (!sheets.includes('ANUAL')) throw new Error('Falta hoja ANUAL');
+
+  STATE.anual = parseSheet(wb, 'ANUAL');
+  STATE.mensual = parseSheet(wb, 'MENSUAL');
+  STATE.riesgo = parseSheet(wb, 'RIESGO');
+  STATE.kpi = parseSheet(wb, 'KPI_MES_ACTUAL', 4); // header at row 4
+
+  // Update period subtitle
+  const ref = STATE.kpi.find(r => r['KPI'] === 'Mes referencia');
+  document.getElementById('periodSub').textContent = ref ? 'Período: ' + ref['Valor'] : 'Datos cargados';
+
+  renderResumen();
+  renderTrayectoria();
+  renderEstacionalidad();
+  renderRiesgo();
+  renderRentabilidad();
+}
+
+function parseSheet(wb, name, headerRow) {
+  if (!wb.SheetNames.includes(name)) return [];
+  const ws = wb.Sheets[name];
+  if (headerRow != null) {
+    // Custom: header at specific row (1-indexed)
+    const opts = { range: headerRow - 1, defval: null };
+    return XLSX.utils.sheet_to_json(ws, opts).filter(r => Object.values(r).some(v => v != null && v !== ''));
+  }
+  return XLSX.utils.sheet_to_json(ws, { defval: null }).filter(r => Object.values(r).some(v => v != null && v !== ''));
+}
+
+function num(v) {
+  if (v == null || v === '') return null;
+  const n = Number(v);
+  return isNaN(n) ? null : n;
+}
+
+// ============ RESUMEN ============
+function renderResumen() {
+  const panel = document.getElementById('panel-resumen');
+  const kpi = STATE.kpi;
+  const lastAnual = STATE.anual[STATE.anual.length - 1] || {};
+  const prevAnual = STATE.anual[STATE.anual.length - 2] || {};
+
+  // Helper to get KPI value
+  const k = name => kpi.find(r => r['KPI'] === name) || {};
+
+  panel.innerHTML = `
+    <div class="section-title">Mes en curso</div>
+    <div class="kpi-grid">
+      ${kpiCard('Litros mes', k('Litros mes').Valor, k('Litros mes').Comparativo, k('Litros mes').Estado, 'int', true)}
+      ${kpiCard('EBITDA mes', k('EBITDA mes (MM$)').Valor, k('EBITDA mes (MM$)').Comparativo, k('EBITDA mes (MM$)').Estado, 'mm')}
+      ${kpiCard('EBITDA acumulado', k('EBITDA acumulado (MM$)').Valor, k('EBITDA acumulado (MM$)').Comparativo, k('EBITDA acumulado (MM$)').Estado, 'mm')}
+      ${kpiCard('Churn', k('Churn').Valor, k('Churn').Comparativo, k('Churn').Estado, 'pct')}
+      ${kpiCard('SLA Entrega', k('SLA Entrega').Valor, k('SLA Entrega').Comparativo, k('SLA Entrega').Estado, 'pct')}
+      ${kpiCard('Ingreso Rebate', k('Ingreso Rebate (CLP)').Valor, k('Ingreso Rebate (CLP)').Comparativo, k('Ingreso Rebate (CLP)').Estado, 'int')}
+      ${kpiCard('Margen Retail', k('Margen Retail').Valor, k('Margen Retail').Comparativo, k('Margen Retail').Estado, 'pct')}
+      ${kpiCard('Margen Volumen', k('Margen Volumen').Valor, k('Margen Volumen').Comparativo, k('Margen Volumen').Estado, 'pct')}
+    </div>
+
+    <div class="section-title">Contexto histórico</div>
+    <div class="kpi-grid">
+      ${kpiCard('Litros ' + lastAnual['Año'], lastAnual['Litros (M)'], yoy(lastAnual['Litros (M)'], prevAnual['Litros (M)']), null, 'lit')}
+      ${kpiCard('Venta UF ' + lastAnual['Año'], lastAnual['Venta UF'], yoy(lastAnual['Venta UF'], prevAnual['Venta UF']), null, 'int')}
+      ${kpiCard('Util Bruta UF ' + lastAnual['Año'], lastAnual['Util Bruta UF'], yoy(lastAnual['Util Bruta UF'], prevAnual['Util Bruta UF']), null, 'int')}
+      ${kpiCard('Rotación CxC', k('Rotación CxC (días)').Valor, k('Rotación CxC (días)').Comparativo, k('Rotación CxC (días)').Estado, 'int')}
+    </div>
+
+    <div class="section-title">Tendencia</div>
+    <div class="chart-grid">
+      <div class="chart-card">
+        <h3>Venta litros 10 años</h3>
+        <div class="chart-sub">Millones de litros por año</div>
+        <div class="chart-wrap"><canvas id="resLitros" role="img" aria-label="Litros por año"></canvas></div>
+      </div>
+      <div class="chart-card">
+        <h3>EBITDA histórico</h3>
+        <div class="chart-sub">Millones de pesos</div>
+        <div class="chart-wrap"><canvas id="resEbitda" role="img" aria-label="EBITDA por año"></canvas></div>
+      </div>
+    </div>
+  `;
+
+  renderChartLitros('resLitros');
+  renderChartEbitda('resEbitda');
+}
+
+function yoy(curr, prev) {
+  if (curr == null || prev == null || prev === 0) return '';
+  const d = (curr - prev) / prev;
+  const sign = d >= 0 ? '+' : '';
+  return sign + (d * 100).toFixed(1) + '% vs año anterior';
+}
+
+function kpiCard(label, value, compare, state, fmtType, hero) {
+  let v;
+  if (fmtType === 'mm') v = fmt.mm(value);
+  else if (fmtType === 'pct') v = fmt.pct(value);
+  else if (fmtType === 'lit') v = fmt.lit(value);
+  else v = fmt.int(value);
+  const stateCls = state || '';
+  const heroCls = hero ? 'hero' : '';
+  const compareCls = (state === 'bad') ? 'bad' : (state === 'good') ? 'good' : (state === 'warn') ? 'warn' : '';
+  return `<div class="kpi-card ${stateCls} ${heroCls}">
+    <div class="kpi-label">${label}</div>
+    <div class="kpi-value">${v}</div>
+    ${compare ? `<div class="kpi-compare ${compareCls}">${compare}</div>` : ''}
+  </div>`;
+}
+
+// ============ CHARTS shared ============
+function destroyChart(id) {
+  if (STATE.charts[id]) { STATE.charts[id].destroy(); delete STATE.charts[id]; }
+}
+
+function renderChartLitros(canvasId) {
+  destroyChart(canvasId);
+  const ctx = document.getElementById(canvasId);
+  if (!ctx) return;
+  const data = STATE.anual.filter(r => r['Año'] && r['Litros (M)'] != null);
+  STATE.charts[canvasId] = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: data.map(r => r['Año']),
+      datasets: [{
+        label: 'Litros M',
+        data: data.map(r => r['Litros (M)']),
+        backgroundColor: '#E8451A',
+        borderRadius: 4
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: { callbacks: { label: c => c.parsed.y.toFixed(2) + ' M L' } }
+      },
+      scales: {
+        x: { ticks: { font: { size: 10 }, maxRotation: 45, autoSkip: false } },
+        y: { ticks: { font: { size: 10 }, callback: v => v.toFixed(1) + 'M' } }
+      }
+    }
+  });
+}
+
+function renderChartEbitda(canvasId) {
+  destroyChart(canvasId);
+  const ctx = document.getElementById(canvasId);
+  if (!ctx) return;
+  const data = STATE.anual.filter(r => r['Año'] && r['EBITDA MM$'] != null);
+  STATE.charts[canvasId] = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: data.map(r => r['Año']),
+      datasets: [{
+        label: 'EBITDA',
+        data: data.map(r => r['EBITDA MM$']),
+        backgroundColor: '#185FA5',
+        borderRadius: 4
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: { callbacks: { label: c => c.parsed.y.toFixed(0) + ' MM$' } }
+      },
+      scales: {
+        x: { ticks: { font: { size: 10 } } },
+        y: { ticks: { font: { size: 10 }, callback: v => v + 'M' } }
+      }
+    }
+  });
+}
+
+// ============ TRAYECTORIA ============
+function renderTrayectoria() {
+  const panel = document.getElementById('panel-trayectoria');
+  panel.innerHTML = `
+    <div class="section-title">Crecimiento histórico</div>
+    <div class="chart-grid single">
+      <div class="chart-card">
+        <h3>Venta en litros (millones)</h3>
+        <div class="chart-sub">Volumen anual + promedio mensual</div>
+        <div class="chart-wrap tall"><canvas id="trLitros"></canvas></div>
+      </div>
+    </div>
+
+    <div class="chart-grid">
+      <div class="chart-card">
+        <h3>Venta UF</h3>
+        <div class="chart-sub">Total anual en UF</div>
+        <div class="chart-wrap"><canvas id="trUF"></canvas></div>
+      </div>
+      <div class="chart-card">
+        <h3>Utilidad Bruta UF</h3>
+        <div class="chart-sub">Total anual en UF</div>
+        <div class="chart-wrap"><canvas id="trUB"></canvas></div>
+      </div>
+    </div>
+
+    <div class="chart-grid single">
+      <div class="chart-card">
+        <h3>EBITDA & Margen EBITDA</h3>
+        <div class="chart-sub">MM$ (barras) y % sobre ventas (línea)</div>
+        <div class="chart-wrap tall"><canvas id="trEbitda"></canvas></div>
+      </div>
+    </div>
+
+    <div class="table-card">
+      <h3>Detalle año por año</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Año</th><th class="num">Litros M</th><th class="num">Venta UF</th>
+            <th class="num">Venta MM$</th><th class="num">EBITDA MM$</th>
+            <th class="num">EBITDA %</th><th class="num">Util Bruta UF</th>
+            <th>Notas</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${STATE.anual.map(r => `
+            <tr>
+              <td><b>${r['Año'] || ''}</b></td>
+              <td class="num">${fmt.dec(r['Litros (M)'], 2)}</td>
+              <td class="num">${fmt.int(r['Venta UF'])}</td>
+              <td class="num">${fmt.int(r['Venta MM$'])}</td>
+              <td class="num">${fmt.int(r['EBITDA MM$'])}</td>
+              <td class="num">${fmt.pct(r['EBITDA/Ventas %'])}</td>
+              <td class="num">${fmt.int(r['Util Bruta UF'])}</td>
+              <td style="color: var(--text-soft); font-size: 11px;">${r['Notas'] || ''}</td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>
+    </div>
+  `;
+
+  renderTrLitros();
+  renderTrUF();
+  renderTrUB();
+  renderTrEbitda();
+}
+
+function renderTrLitros() {
+  destroyChart('trLitros');
+  const data = STATE.anual.filter(r => r['Año'] && r['Litros (M)'] != null);
+  STATE.charts['trLitros'] = new Chart(document.getElementById('trLitros'), {
+    type: 'bar',
+    data: {
+      labels: data.map(r => r['Año']),
+      datasets: [
+        { label: 'Litros M', data: data.map(r => r['Litros (M)']), backgroundColor: '#E8451A', borderRadius: 4, yAxisID: 'y' },
+        { label: 'Prom mes M', type: 'line', data: data.map(r => r['Litros mes prom (M)']),
+          borderColor: '#7A9A3A', backgroundColor: '#7A9A3A', tension: 0.3, pointRadius: 4, yAxisID: 'y1', borderDash: [4,3] }
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: true, labels: { font: { size: 11 } } } },
+      scales: {
+        x: { ticks: { font: { size: 10 }, autoSkip: false, maxRotation: 45 } },
+        y: { position: 'left', ticks: { font: { size: 10 }, callback: v => v.toFixed(1) + 'M' } },
+        y1: { position: 'right', grid: { display: false }, ticks: { font: { size: 10 }, callback: v => v.toFixed(2) + 'M' } }
+      }
+    }
+  });
+}
+
+function renderTrUF() {
+  destroyChart('trUF');
+  const data = STATE.anual.filter(r => r['Año'] && r['Venta UF'] != null);
+  STATE.charts['trUF'] = new Chart(document.getElementById('trUF'), {
+    type: 'line',
+    data: {
+      labels: data.map(r => r['Año']),
+      datasets: [{ label: 'UF', data: data.map(r => r['Venta UF']),
+        borderColor: '#534AB7', backgroundColor: 'rgba(83,74,183,0.15)',
+        fill: true, tension: 0.3, pointRadius: 4 }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => c.parsed.y.toLocaleString('es-CL') + ' UF' } } },
+      scales: {
+        x: { ticks: { font: { size: 10 }, autoSkip: false, maxRotation: 45 } },
+        y: { ticks: { font: { size: 10 }, callback: v => (v/1000).toFixed(0) + 'k' } }
+      }
+    }
+  });
+}
+
+function renderTrUB() {
+  destroyChart('trUB');
+  const data = STATE.anual.filter(r => r['Año'] && r['Util Bruta UF'] != null);
+  STATE.charts['trUB'] = new Chart(document.getElementById('trUB'), {
+    type: 'line',
+    data: {
+      labels: data.map(r => r['Año']),
+      datasets: [{ label: 'UF', data: data.map(r => r['Util Bruta UF']),
+        borderColor: '#0F6E56', backgroundColor: 'rgba(15,110,86,0.15)',
+        fill: true, tension: 0.3, pointRadius: 4 }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => c.parsed.y.toLocaleString('es-CL') + ' UF' } } },
+      scales: {
+        x: { ticks: { font: { size: 10 }, autoSkip: false, maxRotation: 45 } },
+        y: { ticks: { font: { size: 10 }, callback: v => (v/1000).toFixed(0) + 'k' } }
+      }
+    }
+  });
+}
+
+function renderTrEbitda() {
+  destroyChart('trEbitda');
+  const data = STATE.anual.filter(r => r['Año'] && (r['EBITDA MM$'] != null || r['EBITDA/Ventas %'] != null));
+  STATE.charts['trEbitda'] = new Chart(document.getElementById('trEbitda'), {
+    data: {
+      labels: data.map(r => r['Año']),
+      datasets: [
+        { type: 'bar', label: 'EBITDA MM$', data: data.map(r => r['EBITDA MM$']),
+          backgroundColor: '#185FA5', borderRadius: 4, yAxisID: 'y' },
+        { type: 'line', label: '% Margen', data: data.map(r => r['EBITDA/Ventas %'] != null ? r['EBITDA/Ventas %'] * 100 : null),
+          borderColor: '#BA7517', backgroundColor: '#BA7517', tension: 0.3, pointRadius: 5,
+          pointStyle: 'rectRot', yAxisID: 'y1', borderDash: [4,3] }
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: true, labels: { font: { size: 11 } } } },
+      scales: {
+        x: { ticks: { font: { size: 10 }, autoSkip: false, maxRotation: 45 } },
+        y: { position: 'left', ticks: { font: { size: 10 }, callback: v => v + 'M' } },
+        y1: { position: 'right', grid: { display: false }, min: 0, max: 30,
+              ticks: { font: { size: 10 }, callback: v => v + '%' } }
+      }
+    }
+  });
+}
+
+// ============ ESTACIONALIDAD ============
+function renderEstacionalidad() {
+  const panel = document.getElementById('panel-estacionalidad');
+
+  // Build matrix: years × months
+  const yearsSet = new Set();
+  STATE.mensual.forEach(r => { if (r['Año']) yearsSet.add(Number(r['Año'])); });
+  const years = [...yearsSet].sort((a,b) => b-a);
+
+  // Compute max for heatmap scale
+  let maxLit = 0;
+  STATE.mensual.forEach(r => { const v = num(r['Litros Total']); if (v != null && v > maxLit) maxLit = v; });
+
+  const cells = [];
+  cells.push('<div class="hm-cell header"></div>');
+  MES_ORDER.forEach(m => cells.push(`<div class="hm-cell header">${m}</div>`));
+  years.forEach(y => {
+    cells.push(`<div class="hm-cell year-label">${y}</div>`);
+    MES_ORDER.forEach(m => {
+      const row = STATE.mensual.find(r => Number(r['Año']) === y && r['Mes'] === m);
+      const v = row ? num(row['Litros Total']) : null;
+      if (v == null) {
+        cells.push(`<div class="hm-cell empty">—</div>`);
+      } else {
+        const intensity = Math.min(1, v / maxLit);
+        const r = 232 - Math.round(intensity * 90);
+        const g = 69 + Math.round((1-intensity) * 100);
+        const b = 26 + Math.round((1-intensity) * 80);
+        const bg = `rgb(${r},${g},${b})`;
+        const textColor = intensity > 0.5 ? '#fff' : 'var(--text)';
+        cells.push(`<div class="hm-cell" style="background:${bg}; color:${textColor};" title="${y} ${m}: ${v.toFixed(3)} M L">${v.toFixed(2)}</div>`);
+      }
+    });
+  });
+
+  // Current month comparison: latest year vs avg of previous 5
+  const lastEntry = STATE.mensual.filter(r => num(r['Litros Total']) != null).slice(-1)[0];
+  let monthCompare = '';
+  if (lastEntry) {
+    const lastY = Number(lastEntry['Año']);
+    const lastM = lastEntry['Mes'];
+    const lastV = num(lastEntry['Litros Total']);
+    const prevVals = STATE.mensual
+      .filter(r => r['Mes'] === lastM && Number(r['Año']) < lastY && Number(r['Año']) >= lastY - 5)
+      .map(r => num(r['Litros Total']))
+      .filter(v => v != null);
+    if (prevVals.length > 0) {
+      const avg = prevVals.reduce((a,b)=>a+b,0) / prevVals.length;
+      const diff = (lastV - avg) / avg;
+      const sign = diff >= 0 ? '+' : '';
+      const cls = diff >= 0 ? 'good' : 'bad';
+      monthCompare = `<div class="kpi-card ${cls}">
+        <div class="kpi-label">${MES_FULL[lastM]} ${lastY} vs prom 5a</div>
+        <div class="kpi-value">${fmt.dec(lastV, 2)} M L</div>
+        <div class="kpi-compare ${cls}">${sign}${(diff*100).toFixed(1)}% vs ${avg.toFixed(2)} M L promedio</div>
+      </div>`;
+    }
+  }
+
+  panel.innerHTML = `
+    <div class="section-title">Comparativo mes actual vs histórico</div>
+    <div class="kpi-grid">
+      ${monthCompare}
+      ${seasonalSummary()}
+    </div>
+
+    <div class="section-title">Litros mensuales por año (heatmap)</div>
+    <div class="table-card">
+      <div class="heatmap-wrap">
+        <div class="heatmap">${cells.join('')}</div>
+      </div>
+      <div style="margin-top: 12px; font-size: 11px; color: var(--text-soft);">
+        Color más intenso (naranja) = mayor volumen. Pasa el mouse sobre cada celda para ver el valor exacto.
+      </div>
+    </div>
+
+    <div class="section-title">Estacionalidad promedio</div>
+    <div class="chart-grid single">
+      <div class="chart-card">
+        <h3>Promedio histórico por mes</h3>
+        <div class="chart-sub">Litros promedio mes a mes (todos los años disponibles)</div>
+        <div class="chart-wrap"><canvas id="estProm"></canvas></div>
+      </div>
+    </div>
+  `;
+
+  renderEstacionalProm();
+}
+
+function seasonalSummary() {
+  // Best & worst month historically
+  const monthAvg = {};
+  MES_ORDER.forEach(m => {
+    const vals = STATE.mensual.filter(r => r['Mes'] === m).map(r => num(r['Litros Total'])).filter(v => v != null);
+    if (vals.length > 0) monthAvg[m] = vals.reduce((a,b)=>a+b,0) / vals.length;
+  });
+  const sorted = Object.entries(monthAvg).sort((a,b) => b[1]-a[1]);
+  if (sorted.length === 0) return '';
+  const [bestM, bestV] = sorted[0];
+  const [worstM, worstV] = sorted[sorted.length - 1];
+  return `
+    <div class="kpi-card good">
+      <div class="kpi-label">Mes más fuerte (histórico)</div>
+      <div class="kpi-value">${MES_FULL[bestM]}</div>
+      <div class="kpi-compare good">${bestV.toFixed(2)} M L promedio</div>
+    </div>
+    <div class="kpi-card warn">
+      <div class="kpi-label">Mes más débil (histórico)</div>
+      <div class="kpi-value">${MES_FULL[worstM]}</div>
+      <div class="kpi-compare warn">${worstV.toFixed(2)} M L promedio</div>
+    </div>
+  `;
+}
+
+function renderEstacionalProm() {
+  destroyChart('estProm');
+  const monthAvg = MES_ORDER.map(m => {
+    const vals = STATE.mensual.filter(r => r['Mes'] === m).map(r => num(r['Litros Total'])).filter(v => v != null);
+    return vals.length > 0 ? vals.reduce((a,b)=>a+b,0) / vals.length : null;
+  });
+  STATE.charts['estProm'] = new Chart(document.getElementById('estProm'), {
+    type: 'bar',
+    data: {
+      labels: MES_ORDER,
+      datasets: [{ label: 'Promedio', data: monthAvg, backgroundColor: '#E8451A', borderRadius: 4 }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => c.parsed.y.toFixed(2) + ' M L' } } },
+      scales: {
+        x: { ticks: { font: { size: 11 } } },
+        y: { ticks: { font: { size: 10 }, callback: v => v.toFixed(2) + 'M' } }
+      }
+    }
+  });
+}
+
+// ============ RIESGO ============
+function renderRiesgo() {
+  const panel = document.getElementById('panel-riesgo');
+  const k = name => STATE.kpi.find(r => r['KPI'] === name) || {};
+  const lastR = STATE.riesgo[STATE.riesgo.length - 1] || {};
+
+  panel.innerHTML = `
+    <div class="section-title">Indicadores de riesgo actuales</div>
+    <div class="kpi-grid">
+      ${kpiCard('Rotación CxC', k('Rotación CxC (días)').Valor, k('Rotación CxC (días)').Comparativo, k('Rotación CxC (días)').Estado, 'int')}
+      ${kpiCard('Cobertura AVLA', k('Cobertura AVLA').Valor, k('Cobertura AVLA').Comparativo, k('Cobertura AVLA').Estado, 'pct')}
+      ${kpiCard('Mora >90 días', lastR['Mora >90 MM$'], '', null, 'int')}
+      ${kpiCard('% Incob/CxC último año', STATE.riesgo.filter(r => r['% Incob/CxC'] != null).slice(-1)[0]?.['% Incob/CxC'], '', null, 'pct')}
+    </div>
+
+    <div class="section-title">Histórico de riesgo</div>
+    <div class="chart-grid">
+      <div class="chart-card">
+        <h3>Incobrables anuales</h3>
+        <div class="chart-sub">MM$ por año</div>
+        <div class="chart-wrap"><canvas id="rsIncob"></canvas></div>
+      </div>
+      <div class="chart-card">
+        <h3>Cuentas por cobrar</h3>
+        <div class="chart-sub">MM$ promedio mensual y saldo a diciembre</div>
+        <div class="chart-wrap"><canvas id="rsCxC"></canvas></div>
+      </div>
+    </div>
+
+    <div class="table-card">
+      <h3>Detalle anual de riesgo</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Año</th>
+            <th class="num">Incob MM$</th>
+            <th class="num">CxC prom</th>
+            <th class="num">CxC dic</th>
+            <th class="num">% Incob/CxC</th>
+            <th>Cliente top incobrable</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${STATE.riesgo.map(r => `
+            <tr>
+              <td><b>${r['Año'] || ''}</b></td>
+              <td class="num">${fmt.dec(r['Incobrables MM$'], 1)}</td>
+              <td class="num">${fmt.int(r['CxC Promedio MM$'])}</td>
+              <td class="num">${fmt.int(r['CxC a Dic MM$'])}</td>
+              <td class="num">${fmt.pct(r['% Incob/CxC'])}</td>
+              <td style="color: var(--text-soft); font-size: 11px;">${r['Cliente Top Incob'] || ''}</td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>
+    </div>
+  `;
+
+  renderRsIncob();
+  renderRsCxC();
+}
+
+function renderRsIncob() {
+  destroyChart('rsIncob');
+  const data = STATE.riesgo.filter(r => r['Año'] && r['Incobrables MM$'] != null);
+  STATE.charts['rsIncob'] = new Chart(document.getElementById('rsIncob'), {
+    type: 'bar',
+    data: {
+      labels: data.map(r => r['Año']),
+      datasets: [{
+        label: 'Incobrables', data: data.map(r => r['Incobrables MM$']),
+        backgroundColor: data.map(r => r['Incobrables MM$'] > 50 ? '#A32D2D' : '#E24B4A'),
+        borderRadius: 4
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => c.parsed.y.toFixed(1) + ' MM$' } } },
+      scales: {
+        x: { ticks: { font: { size: 10 } } },
+        y: { ticks: { font: { size: 10 }, callback: v => v + 'M' } }
+      }
+    }
+  });
+}
+
+function renderRsCxC() {
+  destroyChart('rsCxC');
+  const data = STATE.riesgo.filter(r => r['Año'] && (r['CxC Promedio MM$'] != null || r['CxC a Dic MM$'] != null));
+  STATE.charts['rsCxC'] = new Chart(document.getElementById('rsCxC'), {
+    type: 'bar',
+    data: {
+      labels: data.map(r => r['Año']),
+      datasets: [
+        { label: 'CxC prom', data: data.map(r => r['CxC Promedio MM$']), backgroundColor: '#7F77DD', borderRadius: 4 },
+        { label: 'CxC dic', data: data.map(r => r['CxC a Dic MM$']), backgroundColor: '#534AB7', borderRadius: 4 }
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: true, labels: { font: { size: 11 } } } },
+      scales: {
+        x: { ticks: { font: { size: 10 } } },
+        y: { ticks: { font: { size: 10 }, callback: v => v + 'M' } }
+      }
+    }
+  });
+}
+
+// ============ RENTABILIDAD ============
+function renderRentabilidad() {
+  const panel = document.getElementById('panel-rentabilidad');
+  const k = name => STATE.kpi.find(r => r['KPI'] === name) || {};
+
+  panel.innerHTML = `
+    <div class="section-title">Márgenes mes en curso</div>
+    <div class="kpi-grid">
+      ${kpiCard('Margen Retail', k('Margen Retail').Valor, k('Margen Retail').Comparativo, k('Margen Retail').Estado, 'pct')}
+      ${kpiCard('Margen Volumen', k('Margen Volumen').Valor, k('Margen Volumen').Comparativo, k('Margen Volumen').Estado, 'pct')}
+    </div>
+
+    <div class="section-title">EBITDA / Ventas histórico</div>
+    <div class="chart-grid single">
+      <div class="chart-card">
+        <h3>% Margen EBITDA por año</h3>
+        <div class="chart-sub">Evolución de la rentabilidad operacional</div>
+        <div class="chart-wrap tall"><canvas id="rnEbPct"></canvas></div>
+      </div>
+    </div>
+
+    <div class="section-title">Márgenes mensuales (últimos 12 meses con datos)</div>
+    <div class="chart-grid single">
+      <div class="chart-card">
+        <h3>Margen Retail vs Volumen</h3>
+        <div class="chart-sub">% mensual</div>
+        <div class="chart-wrap tall"><canvas id="rnMargenes"></canvas></div>
+      </div>
+    </div>
+
+    <div class="table-card">
+      <h3>Detalle de rentabilidad anual</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Año</th><th class="num">EBITDA MM$</th>
+            <th class="num">% Ventas</th><th class="num">Venta MM$</th>
+            <th class="num">Util Bruta UF</th><th class="num">ROE</th><th class="num">ROA</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${STATE.anual.map(r => `
+            <tr>
+              <td><b>${r['Año'] || ''}</b></td>
+              <td class="num">${fmt.int(r['EBITDA MM$'])}</td>
+              <td class="num">${fmt.pct(r['EBITDA/Ventas %'])}</td>
+              <td class="num">${fmt.int(r['Venta MM$'])}</td>
+              <td class="num">${fmt.int(r['Util Bruta UF'])}</td>
+              <td class="num">${fmt.pct(r['ROE %'])}</td>
+              <td class="num">${fmt.pct(r['ROA %'])}</td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>
+    </div>
+  `;
+
+  renderRnEbPct();
+  renderRnMargenes();
+}
+
+function renderRnEbPct() {
+  destroyChart('rnEbPct');
+  const data = STATE.anual.filter(r => r['Año'] && r['EBITDA/Ventas %'] != null);
+  STATE.charts['rnEbPct'] = new Chart(document.getElementById('rnEbPct'), {
+    type: 'line',
+    data: {
+      labels: data.map(r => r['Año']),
+      datasets: [{
+        label: '% EBITDA',
+        data: data.map(r => r['EBITDA/Ventas %'] * 100),
+        borderColor: '#BA7517',
+        backgroundColor: 'rgba(186,117,23,0.18)',
+        fill: true, tension: 0.3, pointRadius: 5
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => c.parsed.y.toFixed(1) + '%' } } },
+      scales: {
+        x: { ticks: { font: { size: 10 } } },
+        y: { ticks: { font: { size: 10 }, callback: v => v + '%' } }
+      }
+    }
+  });
+}
+
+function renderRnMargenes() {
+  destroyChart('rnMargenes');
+  const data = STATE.mensual
+    .filter(r => r['Mes'] && (num(r['Margen Retail %']) != null || num(r['Margen Volumen %']) != null))
+    .slice(-12);
+  STATE.charts['rnMargenes'] = new Chart(document.getElementById('rnMargenes'), {
+    type: 'line',
+    data: {
+      labels: data.map(r => r['Mes'] + '-' + String(r['Año']).slice(-2)),
+      datasets: [
+        { label: 'Margen Retail', data: data.map(r => num(r['Margen Retail %']) != null ? num(r['Margen Retail %']) * 100 : null),
+          borderColor: '#E8451A', backgroundColor: '#E8451A', tension: 0.3, pointRadius: 4 },
+        { label: 'Margen Volumen', data: data.map(r => num(r['Margen Volumen %']) != null ? num(r['Margen Volumen %']) * 100 : null),
+          borderColor: '#7A9A3A', backgroundColor: '#7A9A3A', tension: 0.3, pointRadius: 4, borderDash: [4,3] }
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: true, labels: { font: { size: 11 } } } },
+      scales: {
+        x: { ticks: { font: { size: 10 } } },
+        y: { ticks: { font: { size: 10 }, callback: v => v.toFixed(1) + '%' } }
+      }
+    }
+  });
+}
+</script>
+</body>
+</html>
