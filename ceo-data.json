@@ -1,49 +1,55 @@
 {
-  "updated": "2026-05-14T17:11:10.218542",
+  "updated": "2026-05-14T20:45:33.523399",
   "weeks": [
     {
       "label": "14may-20may",
       "start": "2026-05-14",
       "end": "2026-05-20",
-      "ventas": 17302498,
-      "neto": 13532096,
-      "litros": 11399,
-      "litros_retail": 8100,
+      "ventas": 46496331,
+      "neto": 36360881,
+      "litros": 30409,
+      "litros_retail": 27110,
       "litros_volumen": 3300,
-      "precio_neto": 1187,
-      "precio_bruto": 1520,
-      "margin": 0.08353,
-      "margin_retail": 0.08782,
+      "precio_neto": 1196,
+      "precio_bruto": 1530,
+      "margin": 0.0899,
+      "margin_retail": 0.09193,
       "margin_volumen": 0.07276,
-      "facturas": 9,
+      "facturas": 24,
       "nc": 1,
-      "clientes": 8,
-      "recaud": 10321200,
-      "cheques": 0,
-      "transf": 10321200,
+      "clientes": 22,
+      "recaud": 48657233,
+      "cheques": 11555385,
+      "transf": 37101848,
       "factoring": 0,
       "compras_odoo": 0,
       "cheq_cartera_saldo": 0,
       "cheq_recibidos": 0,
-      "facturas_contado": 1,
-      "facturas_credito": 8,
+      "facturas_contado": 3,
+      "facturas_credito": 21,
       "margin_by_term": {
         "1 Día": {
-          "margin": 0.05058,
-          "normalizado": 0.06025,
-          "count": 1,
+          "margin": 0.07196,
+          "normalizado": 0.08162,
+          "count": 3,
           "days": 1
         },
+        "7 Días": {
+          "margin": 0.12531,
+          "normalizado": 0.13298,
+          "count": 1,
+          "days": 7
+        },
         "30 Días": {
-          "margin": 0.08591,
-          "normalizado": 0.08591,
-          "count": 8,
+          "margin": 0.08861,
+          "normalizado": 0.08861,
+          "count": 20,
           "days": 30
         }
       },
       "cotiz_canceladas": 2,
-      "visitas": 0,
-      "clientes_nuevos": 2,
+      "visitas": 8,
+      "clientes_nuevos": 5,
       "ppto": 213480,
       "ppto_retail": 153706,
       "ppto_volumen": 59774,
@@ -120,7 +126,7 @@
         }
       },
       "cotiz_canceladas": 8,
-      "visitas": 19,
+      "visitas": 15,
       "clientes_nuevos": 11,
       "ppto": 213480,
       "ppto_retail": 153706,
@@ -198,7 +204,7 @@
         }
       },
       "cotiz_canceladas": 2,
-      "visitas": 7,
+      "visitas": 5,
       "clientes_nuevos": 1,
       "ppto": 269236,
       "ppto_retail": 199235,
@@ -354,7 +360,7 @@
         }
       },
       "cotiz_canceladas": 11,
-      "visitas": 7,
+      "visitas": 6,
       "clientes_nuevos": 7,
       "ppto": 269236,
       "ppto_retail": 199235,
@@ -1242,8 +1248,8 @@
     {
       "date": "14may",
       "day": "Jue",
-      "litros": 11400,
-      "neto": 13553016
+      "litros": 30410,
+      "neto": 36381801
     },
     {
       "date": "13may",
@@ -1339,7 +1345,7 @@
   "banks": [
     {
       "name": "DE CHILE",
-      "balance": 10956800
+      "balance": 36792833
     },
     {
       "name": "ESTADO",
@@ -1366,15 +1372,15 @@
       "balance": -1727275
     }
   ],
-  "total_cash": 41176929,
+  "total_cash": 67012962,
   "receivables": {
-    "open_invoices": 256,
-    "total_due": 619528863,
-    "current": 546872732,
-    "overdue": 72656131,
-    "pct_overdue": 11.7,
+    "open_invoices": 261,
+    "total_due": 618014501,
+    "current": 563112367,
+    "overdue": 54902134,
+    "pct_overdue": 8.9,
     "aging": {
-      "0-30": 57890568,
+      "0-30": 40136571,
       "31-60": 0,
       "61-90": 5000000,
       "90+": 9765563
@@ -1382,7 +1388,7 @@
     "top_debtors": [
       {
         "name": "JOSE RODRIGO ORMAZABAL VIDAL",
-        "amount": 37196200
+        "amount": 36684200
       },
       {
         "name": "SOC AGRICOLA GRANJA SAN RAFAEL LIMITADA",
@@ -1405,20 +1411,12 @@
         "amount": 19961403
       },
       {
-        "name": "LUIS ANTONIO REYES FUENTES",
-        "amount": 16598999
-      },
-      {
         "name": "MAQUINARIAS Y ARIDOS SAN PEDRO SPA.",
         "amount": 16548479
       },
       {
         "name": "TRANSPORTE SANTA ELENITA SPA",
         "amount": 16104718
-      },
-      {
-        "name": "SAMUEL BUDINICH SPA",
-        "amount": 15411835
       },
       {
         "name": "AGROSERVICIOS JR SPA",
@@ -1445,6 +1443,10 @@
         "amount": 8483271
       },
       {
+        "name": "SAMUEL BUDINICH SPA",
+        "amount": 8330952
+      },
+      {
         "name": "VALENZUELA LEIVA MAX",
         "amount": 7895000
       },
@@ -1459,6 +1461,10 @@
       {
         "name": "VICTOR FAVIO VILCHES MARDONES",
         "amount": 7752000
+      },
+      {
+        "name": "TRANSPORTES SAN MARCELO SPA",
+        "amount": 7740000
       }
     ]
   },
@@ -1539,15 +1545,15 @@
   "riesgo": {
     "cubierto": 0,
     "cubierto_count": 0,
-    "no_cubierto": 619528863,
-    "no_cubierto_count": 256,
+    "no_cubierto": 618014501,
+    "no_cubierto_count": 261,
     "pct_monto": 100.0,
     "pct_count": 100.0
   },
   "churn": {
     "eligible_clients": 168,
-    "churned_count": 52,
-    "pct": 31.0,
+    "churned_count": 50,
+    "pct": 29.8,
     "churned": [
       {
         "name": "ERIKA DEL PILAR GUZMAN MANRIQUEZ",
@@ -1878,15 +1884,15 @@
       },
       {
         "month": "Apr 2026",
-        "pct": 64.5,
+        "pct": 66.7,
         "new_churn": 20,
-        "active_start": 31
+        "active_start": 30
       },
       {
         "month": "May 2026",
-        "pct": 77.6,
-        "new_churn": 38,
-        "active_start": 49
+        "pct": 80.0,
+        "new_churn": 36,
+        "active_start": 45
       }
     ]
   },
