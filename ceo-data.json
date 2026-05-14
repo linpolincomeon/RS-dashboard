@@ -1,23 +1,23 @@
 {
-  "updated": "2026-05-14T13:04:55.899075",
+  "updated": "2026-05-14T17:11:10.218542",
   "weeks": [
     {
       "label": "14may-20may",
       "start": "2026-05-14",
       "end": "2026-05-20",
-      "ventas": 3902500,
-      "neto": 3058379,
-      "litros": 2500,
-      "litros_retail": 2500,
-      "litros_volumen": 0,
-      "precio_neto": 1223,
-      "precio_bruto": 1561,
-      "margin": 0.10378,
-      "margin_retail": 0.10378,
-      "margin_volumen": 0,
-      "facturas": 1,
-      "nc": 0,
-      "clientes": 1,
+      "ventas": 17302498,
+      "neto": 13532096,
+      "litros": 11399,
+      "litros_retail": 8100,
+      "litros_volumen": 3300,
+      "precio_neto": 1187,
+      "precio_bruto": 1520,
+      "margin": 0.08353,
+      "margin_retail": 0.08782,
+      "margin_volumen": 0.07276,
+      "facturas": 9,
+      "nc": 1,
+      "clientes": 8,
       "recaud": 10321200,
       "cheques": 0,
       "transf": 10321200,
@@ -25,19 +25,25 @@
       "compras_odoo": 0,
       "cheq_cartera_saldo": 0,
       "cheq_recibidos": 0,
-      "facturas_contado": 0,
-      "facturas_credito": 1,
+      "facturas_contado": 1,
+      "facturas_credito": 8,
       "margin_by_term": {
-        "30 Días": {
-          "margin": 0.10378,
-          "normalizado": 0.10378,
+        "1 Día": {
+          "margin": 0.05058,
+          "normalizado": 0.06025,
           "count": 1,
+          "days": 1
+        },
+        "30 Días": {
+          "margin": 0.08591,
+          "normalizado": 0.08591,
+          "count": 8,
           "days": 30
         }
       },
-      "cotiz_canceladas": 1,
+      "cotiz_canceladas": 2,
       "visitas": 0,
-      "clientes_nuevos": 0,
+      "clientes_nuevos": 2,
       "ppto": 213480,
       "ppto_retail": 153706,
       "ppto_volumen": 59774,
@@ -64,7 +70,7 @@
       "cheques": 10464951,
       "transf": 185487397,
       "factoring": 101030061,
-      "compras_odoo": 223495098,
+      "compras_odoo": 244315920,
       "cheq_cartera_saldo": 0,
       "cheq_recibidos": 0,
       "facturas_contado": 20,
@@ -1236,8 +1242,8 @@
     {
       "date": "14may",
       "day": "Jue",
-      "litros": 2500,
-      "neto": 3058379
+      "litros": 11400,
+      "neto": 13553016
     },
     {
       "date": "13may",
@@ -1362,13 +1368,13 @@
   ],
   "total_cash": 41176929,
   "receivables": {
-    "open_invoices": 248,
-    "total_due": 606128865,
-    "current": 533447734,
-    "overdue": 72681131,
-    "pct_overdue": 12.0,
+    "open_invoices": 256,
+    "total_due": 619528863,
+    "current": 546872732,
+    "overdue": 72656131,
+    "pct_overdue": 11.7,
     "aging": {
-      "0-30": 57915568,
+      "0-30": 57890568,
       "31-60": 0,
       "61-90": 5000000,
       "90+": 9765563
@@ -1533,15 +1539,15 @@
   "riesgo": {
     "cubierto": 0,
     "cubierto_count": 0,
-    "no_cubierto": 606128865,
-    "no_cubierto_count": 248,
+    "no_cubierto": 619528863,
+    "no_cubierto_count": 256,
     "pct_monto": 100.0,
     "pct_count": 100.0
   },
   "churn": {
     "eligible_clients": 168,
-    "churned_count": 53,
-    "pct": 31.5,
+    "churned_count": 52,
+    "pct": 31.0,
     "churned": [
       {
         "name": "ERIKA DEL PILAR GUZMAN MANRIQUEZ",
@@ -1878,9 +1884,9 @@
       },
       {
         "month": "May 2026",
-        "pct": 78.0,
-        "new_churn": 39,
-        "active_start": 50
+        "pct": 77.6,
+        "new_churn": 38,
+        "active_start": 49
       }
     ]
   },
@@ -1916,10 +1922,10 @@
           "15293"
         ],
         "target_total": 374369,
-        "mtd_litros": 120001,
-        "compliance_pct": 32.1,
-        "projected": 265716,
-        "projected_pct": 71.0,
+        "mtd_litros": 135001,
+        "compliance_pct": 36.1,
+        "projected": 298931,
+        "projected_pct": 79.8,
         "plants": {
           "Maipu": {
             "target": 0
@@ -1931,10 +1937,10 @@
       }
     },
     "total_target": 876932,
-    "total_mtd": 240608,
-    "total_compliance_pct": 27.4,
-    "total_projected": 532775,
-    "total_projected_pct": 60.8
+    "total_mtd": 255608,
+    "total_compliance_pct": 29.1,
+    "total_projected": 565989,
+    "total_projected_pct": 64.5
   },
   "operaciones": {
     "months": [
@@ -2080,10 +2086,10 @@
     },
     {
       "month": "2026-04",
-      "cxc": 1048593684,
+      "cxc": 1038988785,
       "net_sales": 954233879,
       "days": 30,
-      "dso": 33.0
+      "dso": 32.7
     }
   ],
   "gerencia_goals": {
