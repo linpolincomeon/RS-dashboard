@@ -311,6 +311,14 @@ function loadWorkbook(wb) {
   STATE.riesgo = parseSheet(wb, 'RIESGO');
   STATE.kpi = parseSheet(wb, 'KPI_MES_ACTUAL', 4); // header at row 4
 
+  // Normalize Litros Total to millions (Excel stores absolute values like 587495)
+  STATE.mensual.forEach(r => {
+    const lt = num(r['Litros Total']);
+    if (lt != null && lt > 100) {  // if > 100, assume absolute value (litros), convert to M
+      r['Litros Total'] = lt / 1_000_000;
+    }
+  });
+
   // Update period subtitle
   const ref = STATE.kpi.find(r => r['KPI'] === 'Mes referencia');
   document.getElementById('periodSub').textContent = ref ? 'Período: ' + ref['Valor'] : 'Datos cargados';
