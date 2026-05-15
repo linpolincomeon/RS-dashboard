@@ -1,23 +1,23 @@
 {
-  "updated": "2026-05-15T14:02:40.141188",
+  "updated": "2026-05-15T17:02:47.792297",
   "weeks": [
     {
       "label": "14may-20may",
       "start": "2026-05-14",
       "end": "2026-05-20",
-      "ventas": 63568038,
-      "neto": 49660682,
-      "litros": 41895,
-      "litros_retail": 30596,
-      "litros_volumen": 11300,
-      "precio_neto": 1185,
-      "precio_bruto": 1518,
-      "margin": 0.08158,
-      "margin_retail": 0.09373,
-      "margin_volumen": 0.0469,
-      "facturas": 27,
-      "nc": 1,
-      "clientes": 25,
+      "ventas": 82606740,
+      "neto": 64502845,
+      "litros": 54595,
+      "litros_retail": 40896,
+      "litros_volumen": 14600,
+      "precio_neto": 1181,
+      "precio_bruto": 1514,
+      "margin": 0.0799,
+      "margin_retail": 0.09132,
+      "margin_volumen": 0.04626,
+      "facturas": 35,
+      "nc": 2,
+      "clientes": 33,
       "recaud": 117966534,
       "cheques": 11555385,
       "transf": 106411149,
@@ -26,7 +26,7 @@
       "cheq_cartera_saldo": 0,
       "cheq_recibidos": 0,
       "facturas_contado": 3,
-      "facturas_credito": 24,
+      "facturas_credito": 32,
       "margin_by_term": {
         "1 Día": {
           "margin": 0.07196,
@@ -35,15 +35,15 @@
           "days": 1
         },
         "7 Días": {
-          "margin": 0.12531,
-          "normalizado": 0.13298,
-          "count": 1,
+          "margin": 0.0766,
+          "normalizado": 0.08427,
+          "count": 2,
           "days": 7
         },
         "30 Días": {
-          "margin": 0.07856,
-          "normalizado": 0.07856,
-          "count": 22,
+          "margin": 0.0794,
+          "normalizado": 0.0794,
+          "count": 28,
           "days": 30
         },
         "45 Días": {
@@ -51,11 +51,17 @@
           "normalizado": 0.09993,
           "count": 1,
           "days": 45
+        },
+        "60 Días": {
+          "margin": 0.08798,
+          "normalizado": 0.07798,
+          "count": 1,
+          "days": 60
         }
       },
       "cotiz_canceladas": 2,
       "visitas": 7,
-      "clientes_nuevos": 5,
+      "clientes_nuevos": 6,
       "ppto": 213480,
       "ppto_retail": 153706,
       "ppto_volumen": 59774,
@@ -1254,8 +1260,8 @@
     {
       "date": "15may",
       "day": "Vie",
-      "litros": 1886,
-      "neto": 2318056
+      "litros": 15486,
+      "neto": 18203537
     },
     {
       "date": "14may",
@@ -1380,11 +1386,11 @@
   ],
   "total_cash": 62024590,
   "receivables": {
-    "open_invoices": 261,
-    "total_due": 630824499,
-    "current": 555994575,
+    "open_invoices": 241,
+    "total_due": 597440877,
+    "current": 522610953,
     "overdue": 74829924,
-    "pct_overdue": 11.9,
+    "pct_overdue": 12.5,
     "aging": {
       "0-30": 60064361,
       "31-60": 0,
@@ -1394,7 +1400,7 @@
     "top_debtors": [
       {
         "name": "JOSE RODRIGO ORMAZABAL VIDAL",
-        "amount": 36684200
+        "amount": 41178201
       },
       {
         "name": "SOC AGRICOLA GRANJA SAN RAFAEL LIMITADA",
@@ -1406,7 +1412,7 @@
       },
       {
         "name": "PATRICIO VISCAY ALBORNOZ",
-        "amount": 22833004
+        "amount": 25879004
       },
       {
         "name": "EL PARRON SPA",
@@ -1568,8 +1574,8 @@
   "riesgo": {
     "cubierto": 0,
     "cubierto_count": 0,
-    "no_cubierto": 630824499,
-    "no_cubierto_count": 261,
+    "no_cubierto": 597440877,
+    "no_cubierto_count": 241,
     "pct_monto": 100.0,
     "pct_count": 100.0
   },
