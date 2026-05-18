@@ -1,32 +1,32 @@
 {
-  "updated": "2026-05-18T17:38:49.697653",
+  "updated": "2026-05-18T20:46:26.122520",
   "weeks": [
     {
       "label": "14may-20may",
       "start": "2026-05-14",
       "end": "2026-05-20",
-      "ventas": 132615143,
-      "neto": 103466165,
-      "litros": 88197,
-      "litros_retail": 65898,
-      "litros_volumen": 23900,
-      "precio_neto": 1173,
-      "precio_bruto": 1504,
-      "margin": 0.07468,
-      "margin_retail": 0.08236,
-      "margin_volumen": 0.05279,
-      "facturas": 53,
-      "nc": 3,
-      "clientes": 50,
-      "recaud": 180742835,
+      "ventas": 148783344,
+      "neto": 116060272,
+      "litros": 99095,
+      "litros_retail": 71798,
+      "litros_volumen": 28900,
+      "precio_neto": 1171,
+      "precio_bruto": 1502,
+      "margin": 0.07344,
+      "margin_retail": 0.08162,
+      "margin_volumen": 0.05241,
+      "facturas": 58,
+      "nc": 5,
+      "clientes": 54,
+      "recaud": 193773092,
       "cheques": 41034020,
-      "transf": 139708815,
+      "transf": 152739072,
       "factoring": 0,
       "compras_odoo": 76798950,
       "cheq_cartera_saldo": 0,
       "cheq_recibidos": 0,
-      "facturas_contado": 7,
-      "facturas_credito": 46,
+      "facturas_contado": 9,
+      "facturas_credito": 49,
       "margin_by_term": {
         "Prepago": {
           "margin": 0,
@@ -35,9 +35,9 @@
           "days": 0
         },
         "1 Día": {
-          "margin": 0.06308,
-          "normalizado": 0.07274,
-          "count": 6,
+          "margin": 0.05958,
+          "normalizado": 0.06924,
+          "count": 8,
           "days": 1
         },
         "7 Días": {
@@ -47,9 +47,9 @@
           "days": 7
         },
         "30 Días": {
-          "margin": 0.07391,
-          "normalizado": 0.07391,
-          "count": 39,
+          "margin": 0.07377,
+          "normalizado": 0.07377,
+          "count": 42,
           "days": 30
         },
         "Sin plazo": {
@@ -71,7 +71,7 @@
           "days": 60
         }
       },
-      "cotiz_canceladas": 4,
+      "cotiz_canceladas": 5,
       "visitas": 9,
       "clientes_nuevos": 7,
       "ppto": 213480,
@@ -1272,8 +1272,8 @@
     {
       "date": "18may",
       "day": "Lun",
-      "litros": 16002,
-      "neto": 18767712
+      "litros": 26902,
+      "neto": 31361637
     },
     {
       "date": "15may",
@@ -1368,16 +1368,16 @@
   ],
   "banks": [
     {
-      "name": "DE CHILE",
-      "balance": 35164344
-    },
-    {
       "name": "ITAU",
       "balance": 21852272
     },
     {
       "name": "ESTADO",
-      "balance": 9811543
+      "balance": 11334543
+    },
+    {
+      "name": "DE CHILE",
+      "balance": 5635601
     },
     {
       "name": "CAJA",
@@ -1396,15 +1396,15 @@
       "balance": -1727275
     }
   ],
-  "total_cash": 69544151,
+  "total_cash": 41538408,
   "receivables": {
-    "open_invoices": 246,
-    "total_due": 620986633,
-    "current": 517626336,
-    "overdue": 103360297,
-    "pct_overdue": 16.6,
+    "open_invoices": 244,
+    "total_due": 623627577,
+    "current": 526937779,
+    "overdue": 96689798,
+    "pct_overdue": 15.5,
     "aging": {
-      "0-30": 87728934,
+      "0-30": 81058435,
       "31-60": 865800,
       "61-90": 5000000,
       "90+": 9765563
@@ -1592,8 +1592,8 @@
   "riesgo": {
     "cubierto": 0,
     "cubierto_count": 0,
-    "no_cubierto": 620986633,
-    "no_cubierto_count": 246,
+    "no_cubierto": 623627577,
+    "no_cubierto_count": 244,
     "pct_monto": 100.0,
     "pct_count": 100.0
   },
