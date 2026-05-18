@@ -1075,7 +1075,7 @@ function switchVentasSubTab(subTab) {
   document.getElementById('ventas-' + subTab).classList.add('active');
   document.querySelectorAll('#tab-ventas .tab-btn').forEach(b => b.classList.remove('active'));
   document.querySelector(`#tab-ventas .tab-btn[onclick*="${subTab}"]`).classList.add('active');
-  renderVentasData();
+  renderVentas();
 }
 
 function renderVentasData() {
