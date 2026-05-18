@@ -1,32 +1,32 @@
 {
-  "updated": "2026-05-18T00:10:17.190870",
+  "updated": "2026-05-18T14:41:16.176932",
   "weeks": [
     {
       "label": "14may-20may",
       "start": "2026-05-14",
       "end": "2026-05-20",
-      "ventas": 108547143,
-      "neto": 84698453,
-      "litros": 72195,
-      "litros_retail": 52896,
+      "ventas": 111541143,
+      "neto": 87032255,
+      "litros": 74195,
+      "litros_retail": 54896,
       "litros_volumen": 20900,
       "precio_neto": 1173,
       "precio_bruto": 1504,
-      "margin": 0.07435,
-      "margin_retail": 0.08492,
+      "margin": 0.07429,
+      "margin_retail": 0.08447,
       "margin_volumen": 0.04639,
-      "facturas": 44,
+      "facturas": 45,
       "nc": 3,
-      "clientes": 42,
-      "recaud": 151759567,
+      "clientes": 43,
+      "recaud": 180742835,
       "cheques": 41034020,
-      "transf": 110725547,
+      "transf": 139708815,
       "factoring": 0,
-      "compras_odoo": 20822370,
+      "compras_odoo": 76798950,
       "cheq_cartera_saldo": 0,
       "cheq_recibidos": 0,
       "facturas_contado": 5,
-      "facturas_credito": 39,
+      "facturas_credito": 40,
       "margin_by_term": {
         "1 Día": {
           "margin": 0.06302,
@@ -41,9 +41,9 @@
           "days": 7
         },
         "30 Días": {
-          "margin": 0.07421,
-          "normalizado": 0.07421,
-          "count": 34,
+          "margin": 0.07414,
+          "normalizado": 0.07414,
+          "count": 35,
           "days": 30
         },
         "45 Días": {
@@ -59,8 +59,8 @@
           "days": 60
         }
       },
-      "cotiz_canceladas": 2,
-      "visitas": 7,
+      "cotiz_canceladas": 4,
+      "visitas": 8,
       "clientes_nuevos": 6,
       "ppto": 213480,
       "ppto_retail": 153706,
@@ -1260,8 +1260,8 @@
     {
       "date": "18may",
       "day": "Lun",
-      "litros": 0,
-      "neto": 0
+      "litros": 2000,
+      "neto": 2333802
     },
     {
       "date": "15may",
@@ -1357,23 +1357,23 @@
   "banks": [
     {
       "name": "DE CHILE",
-      "balance": 57597494
+      "balance": 35164344
+    },
+    {
+      "name": "ITAU",
+      "balance": 21852272
     },
     {
       "name": "ESTADO",
       "balance": 9811543
     },
     {
-      "name": "ITAU",
-      "balance": 6852272
+      "name": "CAJA",
+      "balance": 3291177
     },
     {
       "name": "BCI",
-      "balance": 4647393
-    },
-    {
-      "name": "CAJA",
-      "balance": 3291177
+      "balance": 807071
     },
     {
       "name": "SANTANDER",
@@ -1384,15 +1384,15 @@
       "balance": -1727275
     }
   ],
-  "total_cash": 80817623,
+  "total_cash": 69544151,
   "receivables": {
-    "open_invoices": 248,
-    "total_due": 621734981,
-    "current": 499310486,
-    "overdue": 122424495,
-    "pct_overdue": 19.7,
+    "open_invoices": 241,
+    "total_due": 601707132,
+    "current": 496552336,
+    "overdue": 105154796,
+    "pct_overdue": 17.5,
     "aging": {
-      "0-30": 106793132,
+      "0-30": 89523433,
       "31-60": 865800,
       "61-90": 5000000,
       "90+": 9765563
@@ -1400,7 +1400,7 @@
     "top_debtors": [
       {
         "name": "JOSE RODRIGO ORMAZABAL VIDAL",
-        "amount": 41178201
+        "amount": 37876001
       },
       {
         "name": "SOC AGRICOLA GRANJA SAN RAFAEL LIMITADA",
@@ -1435,10 +1435,6 @@
         "amount": 16104718
       },
       {
-        "name": "AGROSERVICIOS JR SPA",
-        "amount": 12632000
-      },
-      {
         "name": "SOC. DE TRANSPORTES TRACMAVI LTDA.",
         "amount": 12318348
       },
@@ -1455,12 +1451,12 @@
         "amount": 9912297
       },
       {
-        "name": "AGRICOLA LOS BOLDOS SPA",
-        "amount": 9102000
+        "name": "AGROSERVICIOS JR SPA",
+        "amount": 9514000
       },
       {
-        "name": "FORESTAL PUIHUA SPA",
-        "amount": 8725400
+        "name": "AGRICOLA LOS BOLDOS SPA",
+        "amount": 9102000
       },
       {
         "name": "SOC AGRICOLA SANTA TERESA SPA",
@@ -1477,6 +1473,10 @@
       {
         "name": "Servicios de construcción y maquinarias Talmaqq Ltda.",
         "amount": 7850000
+      },
+      {
+        "name": "VICTOR FAVIO VILCHES MARDONES",
+        "amount": 7752000
       }
     ]
   },
@@ -1580,8 +1580,8 @@
   "riesgo": {
     "cubierto": 0,
     "cubierto_count": 0,
-    "no_cubierto": 621734981,
-    "no_cubierto_count": 248,
+    "no_cubierto": 601707132,
+    "no_cubierto_count": 241,
     "pct_monto": 100.0,
     "pct_count": 100.0
   },
@@ -1941,10 +1941,10 @@
           "5667"
         ],
         "target_total": 502563,
-        "mtd_litros": 120607,
-        "compliance_pct": 24.0,
-        "projected": 207712,
-        "projected_pct": 41.3,
+        "mtd_litros": 145774,
+        "compliance_pct": 29.0,
+        "projected": 251055,
+        "projected_pct": 50.0,
         "plants": {
           "Maipu": {
             "target": 183025
@@ -1963,10 +1963,10 @@
           "15293"
         ],
         "target_total": 374369,
-        "mtd_litros": 150001,
-        "compliance_pct": 40.1,
-        "projected": 258335,
-        "projected_pct": 69.0,
+        "mtd_litros": 165001,
+        "compliance_pct": 44.1,
+        "projected": 284168,
+        "projected_pct": 75.9,
         "plants": {
           "Maipu": {
             "target": 0
@@ -1978,10 +1978,10 @@
       }
     },
     "total_target": 876932,
-    "total_mtd": 270608,
-    "total_compliance_pct": 30.9,
-    "total_projected": 466047,
-    "total_projected_pct": 53.1
+    "total_mtd": 310775,
+    "total_compliance_pct": 35.4,
+    "total_projected": 535224,
+    "total_projected_pct": 61.0
   },
   "operaciones": {
     "months": [
@@ -2074,13 +2074,13 @@
         "month": "2026-05",
         "label": "May 2026",
         "budget": 10055583,
-        "actual": 7881061,
-        "compliance_pct": 78.4,
+        "actual": 8517274,
+        "compliance_pct": 84.7,
         "categories": {
           "Petróleo": 4724746,
           "Mantención y Reparación": 1115306,
           "Gastos Traslados (TAG)": 1269563,
-          "Seguros": 39990,
+          "Seguros": 676203,
           "Gastos Vehículos": 328448,
           "Arriendo": 400000,
           "EPP": 3008,
