@@ -1,23 +1,23 @@
 {
-  "updated": "2026-05-18T14:41:16.176932",
+  "updated": "2026-05-18T17:38:49.697653",
   "weeks": [
     {
       "label": "14may-20may",
       "start": "2026-05-14",
       "end": "2026-05-20",
-      "ventas": 111541143,
-      "neto": 87032255,
-      "litros": 74195,
-      "litros_retail": 54896,
-      "litros_volumen": 20900,
+      "ventas": 132615143,
+      "neto": 103466165,
+      "litros": 88197,
+      "litros_retail": 65898,
+      "litros_volumen": 23900,
       "precio_neto": 1173,
       "precio_bruto": 1504,
-      "margin": 0.07429,
-      "margin_retail": 0.08447,
-      "margin_volumen": 0.04639,
-      "facturas": 45,
+      "margin": 0.07468,
+      "margin_retail": 0.08236,
+      "margin_volumen": 0.05279,
+      "facturas": 53,
       "nc": 3,
-      "clientes": 43,
+      "clientes": 50,
       "recaud": 180742835,
       "cheques": 41034020,
       "transf": 139708815,
@@ -25,13 +25,19 @@
       "compras_odoo": 76798950,
       "cheq_cartera_saldo": 0,
       "cheq_recibidos": 0,
-      "facturas_contado": 5,
-      "facturas_credito": 40,
+      "facturas_contado": 7,
+      "facturas_credito": 46,
       "margin_by_term": {
+        "Prepago": {
+          "margin": 0,
+          "normalizado": 0.01,
+          "count": 1,
+          "days": 0
+        },
         "1 Día": {
-          "margin": 0.06302,
-          "normalizado": 0.07269,
-          "count": 5,
+          "margin": 0.06308,
+          "normalizado": 0.07274,
+          "count": 6,
           "days": 1
         },
         "7 Días": {
@@ -41,15 +47,21 @@
           "days": 7
         },
         "30 Días": {
-          "margin": 0.07414,
-          "normalizado": 0.07414,
-          "count": 35,
+          "margin": 0.07391,
+          "normalizado": 0.07391,
+          "count": 39,
+          "days": 30
+        },
+        "Sin plazo": {
+          "margin": 0,
+          "normalizado": 0.0,
+          "count": 1,
           "days": 30
         },
         "45 Días": {
-          "margin": 0.10493,
-          "normalizado": 0.09993,
-          "count": 1,
+          "margin": 0.09857,
+          "normalizado": 0.09357,
+          "count": 2,
           "days": 45
         },
         "60 Días": {
@@ -60,8 +72,8 @@
         }
       },
       "cotiz_canceladas": 4,
-      "visitas": 8,
-      "clientes_nuevos": 6,
+      "visitas": 9,
+      "clientes_nuevos": 7,
       "ppto": 213480,
       "ppto_retail": 153706,
       "ppto_volumen": 59774,
@@ -690,7 +702,7 @@
         }
       },
       "cotiz_canceladas": 49,
-      "visitas": 34,
+      "visitas": 33,
       "clientes_nuevos": 16,
       "ppto": 234090,
       "ppto_retail": 177908,
@@ -1260,8 +1272,8 @@
     {
       "date": "18may",
       "day": "Lun",
-      "litros": 2000,
-      "neto": 2333802
+      "litros": 16002,
+      "neto": 18767712
     },
     {
       "date": "15may",
@@ -1386,13 +1398,13 @@
   ],
   "total_cash": 69544151,
   "receivables": {
-    "open_invoices": 241,
-    "total_due": 601707132,
-    "current": 496552336,
-    "overdue": 105154796,
-    "pct_overdue": 17.5,
+    "open_invoices": 246,
+    "total_due": 620986633,
+    "current": 517626336,
+    "overdue": 103360297,
+    "pct_overdue": 16.6,
     "aging": {
-      "0-30": 89523433,
+      "0-30": 87728934,
       "31-60": 865800,
       "61-90": 5000000,
       "90+": 9765563
@@ -1419,16 +1431,16 @@
         "amount": 21735000
       },
       {
+        "name": "MAQUINARIAS Y ARIDOS SAN PEDRO SPA.",
+        "amount": 21153479
+      },
+      {
         "name": "ALFREDO ALFONSO OPAZO MUÑOZ",
         "amount": 19961403
       },
       {
         "name": "LUIS ANTONIO REYES FUENTES",
         "amount": 16694100
-      },
-      {
-        "name": "MAQUINARIAS Y ARIDOS SAN PEDRO SPA.",
-        "amount": 16548479
       },
       {
         "name": "TRANSPORTE SANTA ELENITA SPA",
@@ -1445,6 +1457,10 @@
       {
         "name": "URAN ANTONIO LUNA DOMÍNGUEZ",
         "amount": 11424000
+      },
+      {
+        "name": "INVERSIONES SANTA BERTINA",
+        "amount": 10381000
       },
       {
         "name": "ANDES SOLAR SA",
@@ -1473,10 +1489,6 @@
       {
         "name": "Servicios de construcción y maquinarias Talmaqq Ltda.",
         "amount": 7850000
-      },
-      {
-        "name": "VICTOR FAVIO VILCHES MARDONES",
-        "amount": 7752000
       }
     ]
   },
@@ -1580,15 +1592,15 @@
   "riesgo": {
     "cubierto": 0,
     "cubierto_count": 0,
-    "no_cubierto": 601707132,
-    "no_cubierto_count": 241,
+    "no_cubierto": 620986633,
+    "no_cubierto_count": 246,
     "pct_monto": 100.0,
     "pct_count": 100.0
   },
   "churn": {
     "eligible_clients": 166,
-    "churned_count": 58,
-    "pct": 34.9,
+    "churned_count": 56,
+    "pct": 33.7,
     "churned": [
       {
         "name": "ERIKA DEL PILAR GUZMAN MANRIQUEZ",
@@ -1919,15 +1931,15 @@
       },
       {
         "month": "Apr 2026",
-        "pct": 66.7,
-        "new_churn": 20,
-        "active_start": 30
+        "pct": 65.5,
+        "new_churn": 19,
+        "active_start": 29
       },
       {
         "month": "May 2026",
-        "pct": 81.0,
-        "new_churn": 34,
-        "active_start": 42
+        "pct": 80.5,
+        "new_churn": 33,
+        "active_start": 41
       }
     ]
   },
@@ -2074,10 +2086,10 @@
         "month": "2026-05",
         "label": "May 2026",
         "budget": 10055583,
-        "actual": 8517274,
-        "compliance_pct": 84.7,
+        "actual": 13063901,
+        "compliance_pct": 129.9,
         "categories": {
-          "Petróleo": 4724746,
+          "Petróleo": 9271373,
           "Mantención y Reparación": 1115306,
           "Gastos Traslados (TAG)": 1269563,
           "Seguros": 676203,
