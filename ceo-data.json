@@ -1,32 +1,32 @@
 {
-  "updated": "2026-05-19T17:45:23.081809",
+  "updated": "2026-05-19T20:54:22.860808",
   "weeks": [
     {
       "label": "14may-20may",
       "start": "2026-05-14",
       "end": "2026-05-20",
-      "ventas": 210743989,
-      "neto": 164340596,
-      "litros": 140707,
-      "litros_retail": 91598,
+      "ventas": 227838390,
+      "neto": 177699180,
+      "litros": 151757,
+      "litros_retail": 102648,
       "litros_volumen": 50712,
-      "precio_neto": 1168,
-      "precio_bruto": 1498,
-      "margin": 0.07126,
-      "margin_retail": 0.0808,
+      "precio_neto": 1171,
+      "precio_bruto": 1502,
+      "margin": 0.07312,
+      "margin_retail": 0.0825,
       "margin_volumen": 0.05345,
-      "facturas": 76,
+      "facturas": 85,
       "nc": 5,
-      "clientes": 69,
-      "recaud": 280502206,
-      "cheques": 41034020,
-      "transf": 239468186,
+      "clientes": 76,
+      "recaud": 307544806,
+      "cheques": 44224119,
+      "transf": 263320687,
       "factoring": 0,
       "compras_odoo": 160464071,
       "cheq_cartera_saldo": 0,
       "cheq_recibidos": 0,
-      "facturas_contado": 16,
-      "facturas_credito": 60,
+      "facturas_contado": 17,
+      "facturas_credito": 68,
       "margin_by_term": {
         "Prepago": {
           "margin": 0,
@@ -35,21 +35,27 @@
           "days": 0
         },
         "1 Día": {
-          "margin": 0.05318,
-          "normalizado": 0.06284,
-          "count": 15,
+          "margin": 0.05339,
+          "normalizado": 0.06305,
+          "count": 16,
           "days": 1
         },
         "7 Días": {
-          "margin": 0.0766,
-          "normalizado": 0.08427,
-          "count": 2,
+          "margin": 0.08583,
+          "normalizado": 0.0935,
+          "count": 4,
           "days": 7
         },
+        "15 Días": {
+          "margin": 0.12617,
+          "normalizado": 0.13117,
+          "count": 1,
+          "days": 15
+        },
         "30 Días": {
-          "margin": 0.07461,
-          "normalizado": 0.07461,
-          "count": 50,
+          "margin": 0.07602,
+          "normalizado": 0.07602,
+          "count": 54,
           "days": 30
         },
         "Sin plazo": {
@@ -59,9 +65,9 @@
           "days": 30
         },
         "45 Días": {
-          "margin": 0.09857,
-          "normalizado": 0.09357,
-          "count": 2,
+          "margin": 0.09116,
+          "normalizado": 0.08616,
+          "count": 3,
           "days": 45
         },
         "60 Días": {
@@ -1272,8 +1278,8 @@
     {
       "date": "19may",
       "day": "Mar",
-      "litros": 29412,
-      "neto": 33892957
+      "litros": 40462,
+      "neto": 47251541
     },
     {
       "date": "18may",
@@ -1369,7 +1375,7 @@
   "banks": [
     {
       "name": "DE CHILE",
-      "balance": 22864715
+      "balance": 37428253
     },
     {
       "name": "ESTADO",
@@ -1396,17 +1402,17 @@
       "balance": -1727275
     }
   ],
-  "total_cash": 51045212,
+  "total_cash": 65608750,
   "receivables": {
-    "open_invoices": 229,
-    "total_due": 597751228,
-    "current": 521070117,
-    "overdue": 76681111,
-    "pct_overdue": 12.8,
+    "open_invoices": 232,
+    "total_due": 594713029,
+    "current": 521069418,
+    "overdue": 73643611,
+    "pct_overdue": 12.4,
     "aging": {
-      "0-30": 65549748,
+      "0-30": 63012248,
       "31-60": 865800,
-      "61-90": 500000,
+      "61-90": 0,
       "90+": 9765563
     },
     "top_debtors": [
@@ -1440,11 +1446,7 @@
       },
       {
         "name": "TRANSPORTE SANTA ELENITA SPA",
-        "amount": 17687718
-      },
-      {
-        "name": "TRANSPORTES SAN MARCELO SPA",
-        "amount": 14980000
+        "amount": 16849618
       },
       {
         "name": "SOC. DE TRANSPORTES TRACMAVI LTDA.",
@@ -1489,6 +1491,10 @@
       {
         "name": "VICTOR FAVIO VILCHES MARDONES",
         "amount": 7752000
+      },
+      {
+        "name": "TRANSPORTES SAN MARCELO SPA",
+        "amount": 7740000
       }
     ]
   },
@@ -1508,10 +1514,10 @@
           ]
         },
         "Curico": {
-          "total": 22,
+          "total": 23,
           "on_time": 9,
-          "late": 13,
-          "pct": 40.91,
+          "late": 14,
+          "pct": 39.13,
           "late_clients": [
             "AGROSERVICIOS VALVE LIMITADA, JAIME VALDES",
             "AGRICOLA LAS PERDICES LTDA, AGRICOLA LAS PERDICES -Daniela Ponce",
@@ -1525,7 +1531,8 @@
             "BEPATAGONIA GENERACION S.A., BEPATAGONIA",
             "JOSE RODRIGO ORMAZABAL VIDAL, Caroline",
             "ARIDOS LO VALDIVIA LIMITADA, Gissele",
-            "INVERSIONES SANTA BERTINA, INVERSIONES SANTA BERTINA-Matias"
+            "INVERSIONES SANTA BERTINA, INVERSIONES SANTA BERTINA-Matias",
+            "AGROINDUSTRIAL SIRACUSA S A, Sagrada Familia-Jaime Martinez"
           ]
         },
         "Rancagua": {
@@ -1597,15 +1604,15 @@
   "riesgo": {
     "cubierto": 0,
     "cubierto_count": 0,
-    "no_cubierto": 597751228,
-    "no_cubierto_count": 229,
+    "no_cubierto": 594713029,
+    "no_cubierto_count": 232,
     "pct_monto": 100.0,
     "pct_count": 100.0
   },
   "churn": {
     "eligible_clients": 166,
-    "churned_count": 57,
-    "pct": 34.3,
+    "churned_count": 56,
+    "pct": 33.7,
     "churned": [
       {
         "name": "ERIKA DEL PILAR GUZMAN MANRIQUEZ",
@@ -1936,9 +1943,9 @@
       },
       {
         "month": "Apr 2026",
-        "pct": 65.5,
-        "new_churn": 19,
-        "active_start": 29
+        "pct": 64.3,
+        "new_churn": 18,
+        "active_start": 28
       },
       {
         "month": "May 2026",
