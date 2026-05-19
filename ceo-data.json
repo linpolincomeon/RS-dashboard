@@ -1,32 +1,32 @@
 {
-  "updated": "2026-05-19T14:09:38.494397",
+  "updated": "2026-05-19T17:45:23.081809",
   "weeks": [
     {
       "label": "14may-20may",
       "start": "2026-05-14",
       "end": "2026-05-20",
-      "ventas": 183231642,
-      "neto": 142897983,
-      "litros": 122295,
-      "litros_retail": 86798,
-      "litros_volumen": 37100,
+      "ventas": 210743989,
+      "neto": 164340596,
+      "litros": 140707,
+      "litros_retail": 91598,
+      "litros_volumen": 50712,
       "precio_neto": 1168,
-      "precio_bruto": 1499,
-      "margin": 0.07137,
-      "margin_retail": 0.08046,
-      "margin_volumen": 0.0493,
-      "facturas": 70,
+      "precio_bruto": 1498,
+      "margin": 0.07126,
+      "margin_retail": 0.0808,
+      "margin_volumen": 0.05345,
+      "facturas": 76,
       "nc": 5,
-      "clientes": 65,
+      "clientes": 69,
       "recaud": 280502206,
       "cheques": 41034020,
       "transf": 239468186,
       "factoring": 0,
-      "compras_odoo": 139266060,
+      "compras_odoo": 160464071,
       "cheq_cartera_saldo": 0,
       "cheq_recibidos": 0,
-      "facturas_contado": 14,
-      "facturas_credito": 56,
+      "facturas_contado": 16,
+      "facturas_credito": 60,
       "margin_by_term": {
         "Prepago": {
           "margin": 0,
@@ -35,9 +35,9 @@
           "days": 0
         },
         "1 Día": {
-          "margin": 0.05552,
-          "normalizado": 0.06519,
-          "count": 13,
+          "margin": 0.05318,
+          "normalizado": 0.06284,
+          "count": 15,
           "days": 1
         },
         "7 Días": {
@@ -47,9 +47,9 @@
           "days": 7
         },
         "30 Días": {
-          "margin": 0.07378,
-          "normalizado": 0.07378,
-          "count": 48,
+          "margin": 0.07461,
+          "normalizado": 0.07461,
+          "count": 50,
           "days": 30
         },
         "Sin plazo": {
@@ -65,9 +65,9 @@
           "days": 45
         },
         "60 Días": {
-          "margin": 0.08577,
-          "normalizado": 0.07577,
-          "count": 3,
+          "margin": 0.08208,
+          "normalizado": 0.07208,
+          "count": 5,
           "days": 60
         }
       },
@@ -1272,8 +1272,8 @@
     {
       "date": "19may",
       "day": "Mar",
-      "litros": 11000,
-      "neto": 12450344
+      "litros": 29412,
+      "neto": 33892957
     },
     {
       "date": "18may",
@@ -1372,12 +1372,16 @@
       "balance": 22864715
     },
     {
-      "name": "ITAU",
-      "balance": 21852272
-    },
-    {
       "name": "ESTADO",
       "balance": 11334543
+    },
+    {
+      "name": "SANTANDER",
+      "balance": 7410696
+    },
+    {
+      "name": "ITAU",
+      "balance": 7064285
     },
     {
       "name": "CAJA",
@@ -1388,28 +1392,28 @@
       "balance": 807071
     },
     {
-      "name": "SANTANDER",
-      "balance": 345019
-    },
-    {
       "name": "DE CREDITO",
       "balance": -1727275
     }
   ],
-  "total_cash": 58767522,
+  "total_cash": 51045212,
   "receivables": {
-    "open_invoices": 245,
-    "total_due": 646454687,
-    "current": 558033576,
-    "overdue": 88421111,
-    "pct_overdue": 13.7,
+    "open_invoices": 229,
+    "total_due": 597751228,
+    "current": 521070117,
+    "overdue": 76681111,
+    "pct_overdue": 12.8,
     "aging": {
-      "0-30": 72789748,
+      "0-30": 65549748,
       "31-60": 865800,
-      "61-90": 5000000,
+      "61-90": 500000,
       "90+": 9765563
     },
     "top_debtors": [
+      {
+        "name": "AGROINDUSTRIAL SIRACUSA S A",
+        "amount": 40372799
+      },
       {
         "name": "JOSE RODRIGO ORMAZABAL VIDAL",
         "amount": 37876001
@@ -1419,12 +1423,8 @@
         "amount": 31330781
       },
       {
-        "name": "AGROINDUSTRIAL SIRACUSA S A",
-        "amount": 30577299
-      },
-      {
         "name": "PATRICIO VISCAY ALBORNOZ",
-        "amount": 25879004
+        "amount": 24246184
       },
       {
         "name": "EL PARRON SPA",
@@ -1443,28 +1443,16 @@
         "amount": 17687718
       },
       {
-        "name": "LUIS ANTONIO REYES FUENTES",
-        "amount": 16694100
-      },
-      {
         "name": "TRANSPORTES SAN MARCELO SPA",
         "amount": 14980000
       },
       {
         "name": "SOC. DE TRANSPORTES TRACMAVI LTDA.",
-        "amount": 12318348
-      },
-      {
-        "name": "AGRICOLA LA PALMA S A",
-        "amount": 11608000
+        "amount": 14298248
       },
       {
         "name": "URAN ANTONIO LUNA DOMÍNGUEZ",
         "amount": 11424000
-      },
-      {
-        "name": "INVERSIONES SANTA BERTINA",
-        "amount": 10381000
       },
       {
         "name": "ANDES SOLAR SA",
@@ -1489,6 +1477,18 @@
       {
         "name": "SAMUEL BUDINICH SPA",
         "amount": 8330952
+      },
+      {
+        "name": "VALENZUELA LEIVA MAX",
+        "amount": 7895000
+      },
+      {
+        "name": "Servicios de construcción y maquinarias Talmaqq Ltda.",
+        "amount": 7850000
+      },
+      {
+        "name": "VICTOR FAVIO VILCHES MARDONES",
+        "amount": 7752000
       }
     ]
   },
@@ -1597,8 +1597,8 @@
   "riesgo": {
     "cubierto": 0,
     "cubierto_count": 0,
-    "no_cubierto": 646454687,
-    "no_cubierto_count": 245,
+    "no_cubierto": 597751228,
+    "no_cubierto_count": 229,
     "pct_monto": 100.0,
     "pct_count": 100.0
   },
@@ -1942,9 +1942,9 @@
       },
       {
         "month": "May 2026",
-        "pct": 80.0,
-        "new_churn": 32,
-        "active_start": 40
+        "pct": 79.5,
+        "new_churn": 31,
+        "active_start": 39
       }
     ]
   },
@@ -1958,10 +1958,10 @@
           "5667"
         ],
         "target_total": 502563,
-        "mtd_litros": 145774,
-        "compliance_pct": 29.0,
-        "projected": 237842,
-        "projected_pct": 47.3,
+        "mtd_litros": 160923,
+        "compliance_pct": 32.0,
+        "projected": 262559,
+        "projected_pct": 52.2,
         "plants": {
           "Maipu": {
             "target": 183025
@@ -1995,10 +1995,10 @@
       }
     },
     "total_target": 876932,
-    "total_mtd": 355775,
-    "total_compliance_pct": 40.6,
-    "total_projected": 580475,
-    "total_projected_pct": 66.2
+    "total_mtd": 370924,
+    "total_compliance_pct": 42.3,
+    "total_projected": 605192,
+    "total_projected_pct": 69.0
   },
   "operaciones": {
     "months": [
