@@ -1,32 +1,32 @@
 {
-  "updated": "2026-05-19T00:20:13.392235",
+  "updated": "2026-05-19T14:09:38.494397",
   "weeks": [
     {
       "label": "14may-20may",
       "start": "2026-05-14",
       "end": "2026-05-20",
-      "ventas": 180186643,
-      "neto": 140518655,
-      "litros": 120295,
-      "litros_retail": 84798,
+      "ventas": 183231642,
+      "neto": 142897983,
+      "litros": 122295,
+      "litros_retail": 86798,
       "litros_volumen": 37100,
       "precio_neto": 1168,
-      "precio_bruto": 1498,
-      "margin": 0.07115,
-      "margin_retail": 0.08037,
+      "precio_bruto": 1499,
+      "margin": 0.07137,
+      "margin_retail": 0.08046,
       "margin_volumen": 0.0493,
-      "facturas": 68,
+      "facturas": 70,
       "nc": 5,
-      "clientes": 63,
-      "recaud": 193773092,
+      "clientes": 65,
+      "recaud": 280502206,
       "cheques": 41034020,
-      "transf": 152739072,
+      "transf": 239468186,
       "factoring": 0,
-      "compras_odoo": 76798950,
+      "compras_odoo": 139266060,
       "cheq_cartera_saldo": 0,
       "cheq_recibidos": 0,
-      "facturas_contado": 13,
-      "facturas_credito": 55,
+      "facturas_contado": 14,
+      "facturas_credito": 56,
       "margin_by_term": {
         "Prepago": {
           "margin": 0,
@@ -35,9 +35,9 @@
           "days": 0
         },
         "1 Día": {
-          "margin": 0.05513,
-          "normalizado": 0.0648,
-          "count": 12,
+          "margin": 0.05552,
+          "normalizado": 0.06519,
+          "count": 13,
           "days": 1
         },
         "7 Días": {
@@ -47,9 +47,9 @@
           "days": 7
         },
         "30 Días": {
-          "margin": 0.07341,
-          "normalizado": 0.07341,
-          "count": 47,
+          "margin": 0.07378,
+          "normalizado": 0.07378,
+          "count": 48,
           "days": 30
         },
         "Sin plazo": {
@@ -72,8 +72,8 @@
         }
       },
       "cotiz_canceladas": 5,
-      "visitas": 9,
-      "clientes_nuevos": 10,
+      "visitas": 8,
+      "clientes_nuevos": 11,
       "ppto": 213480,
       "ppto_retail": 153706,
       "ppto_volumen": 59774,
@@ -1272,8 +1272,8 @@
     {
       "date": "19may",
       "day": "Mar",
-      "litros": 9000,
-      "neto": 10071016
+      "litros": 11000,
+      "neto": 12450344
     },
     {
       "date": "18may",
@@ -1368,16 +1368,16 @@
   ],
   "banks": [
     {
+      "name": "DE CHILE",
+      "balance": 22864715
+    },
+    {
       "name": "ITAU",
       "balance": 21852272
     },
     {
       "name": "ESTADO",
       "balance": 11334543
-    },
-    {
-      "name": "DE CHILE",
-      "balance": 5635601
     },
     {
       "name": "CAJA",
@@ -1396,16 +1396,16 @@
       "balance": -1727275
     }
   ],
-  "total_cash": 41538408,
+  "total_cash": 58767522,
   "receivables": {
-    "open_invoices": 254,
-    "total_due": 655030876,
-    "current": 558341078,
-    "overdue": 96689798,
-    "pct_overdue": 14.8,
+    "open_invoices": 245,
+    "total_due": 646454687,
+    "current": 558033576,
+    "overdue": 88421111,
+    "pct_overdue": 13.7,
     "aging": {
-      "0-30": 81010434,
-      "31-60": 913801,
+      "0-30": 72789748,
+      "31-60": 865800,
       "61-90": 5000000,
       "90+": 9765563
     },
@@ -1447,6 +1447,10 @@
         "amount": 16694100
       },
       {
+        "name": "TRANSPORTES SAN MARCELO SPA",
+        "amount": 14980000
+      },
+      {
         "name": "SOC. DE TRANSPORTES TRACMAVI LTDA.",
         "amount": 12318348
       },
@@ -1485,10 +1489,6 @@
       {
         "name": "SAMUEL BUDINICH SPA",
         "amount": 8330952
-      },
-      {
-        "name": "VALENZUELA LEIVA MAX",
-        "amount": 7895000
       }
     ]
   },
@@ -1497,20 +1497,21 @@
       "label": "14may-20may",
       "zones": {
         "Chillan": {
-          "total": 3,
-          "on_time": 1,
-          "late": 2,
-          "pct": 33.33,
+          "total": 6,
+          "on_time": 3,
+          "late": 3,
+          "pct": 50.0,
           "late_clients": [
             "INGENERIA Y CONSTRUCCIONES FEBLANCA SPA, PLANTA PARRAL",
-            "ARIDOS DON EDUARDO SPA, ANGELICA MOLINA, FEBLANCA SAN CARLOS"
+            "ARIDOS DON EDUARDO SPA, ANGELICA MOLINA, FEBLANCA SAN CARLOS",
+            "INGENERIA Y CONSTRUCCIONES FEBLANCA SPA, PLANTA PARRAL"
           ]
         },
         "Curico": {
-          "total": 19,
-          "on_time": 7,
-          "late": 12,
-          "pct": 36.84,
+          "total": 22,
+          "on_time": 9,
+          "late": 13,
+          "pct": 40.91,
           "late_clients": [
             "AGROSERVICIOS VALVE LIMITADA, JAIME VALDES",
             "AGRICOLA LAS PERDICES LTDA, AGRICOLA LAS PERDICES -Daniela Ponce",
@@ -1523,14 +1524,15 @@
             "ARESTI CHILE WINE SA, Fundo Bellavista",
             "BEPATAGONIA GENERACION S.A., BEPATAGONIA",
             "JOSE RODRIGO ORMAZABAL VIDAL, Caroline",
-            "ARIDOS LO VALDIVIA LIMITADA, Gissele"
+            "ARIDOS LO VALDIVIA LIMITADA, Gissele",
+            "INVERSIONES SANTA BERTINA, INVERSIONES SANTA BERTINA-Matias"
           ]
         },
         "Rancagua": {
-          "total": 15,
-          "on_time": 7,
+          "total": 18,
+          "on_time": 10,
           "late": 8,
-          "pct": 46.67,
+          "pct": 55.56,
           "late_clients": [
             "SAMUEL BUDINICH SPA, FUNDO ESTACION-Nicolas Carla o Karin",
             "MAESTRANZA Y SERVICIOS INTEGRALES METALMECANICOS CACHAPOAL S A, CASA FRANCISCO CARTAGENA",
@@ -1543,10 +1545,10 @@
           ]
         },
         "San Fernando": {
-          "total": 11,
-          "on_time": 5,
+          "total": 12,
+          "on_time": 6,
           "late": 6,
-          "pct": 45.45,
+          "pct": 50.0,
           "late_clients": [
             "SERVICIOS AGRICOLAS LUIS PULGAR E.I.R.L., LA TUNA-Francisco",
             "AGRÍCOLA CORVAL II SPA, AGRICOLA CORVAL II-Mauricio",
@@ -1557,10 +1559,10 @@
           ]
         },
         "Talca": {
-          "total": 21,
-          "on_time": 10,
-          "late": 11,
-          "pct": 47.62,
+          "total": 31,
+          "on_time": 19,
+          "late": 12,
+          "pct": 61.29,
           "late_clients": [
             "EMPRESAS TUCAPEL S A, FIDEL CONCHA, TUCPAEL RETIRO",
             "EMPRESAS TUCAPEL S A, FIDEL CONCHA, TUCPAEL RETIRO",
@@ -1572,18 +1574,21 @@
             "PETROVAL LTDA, PETROVAL- MANUEL GOGUET",
             "GABRIEL ANDRES DUQUE SANCHEZ, PARCELA 43 LA APARICION DE PAINE",
             "CIA CHILENA DE FOSFOROS S A, CIA CHILENA DE FOSORO, RETIRO",
-            "PATRICIO VISCAY ALBORNOZ, Cristopher"
+            "PATRICIO VISCAY ALBORNOZ, Cristopher",
+            "EMPRESAS TUCAPEL S A, FIDEL CONCHA, TUCPAEL RETIRO"
           ]
         },
         "VI Costa": {
-          "total": 4,
+          "total": 6,
           "on_time": 1,
-          "late": 3,
-          "pct": 25.0,
+          "late": 5,
+          "pct": 16.67,
           "late_clients": [
             "AGRICOLA TRINIDAD LIMITADA, Delivery Address",
+            "CBARRIOS CONSTRUCTORA SPA, Obra Coya, Rancagua",
             "AGRICOLA SANTA AMELIA LTDA, José Miguel Rodriguez",
-            "AGRICOLA SANTA ANA DEL HUIQUE    SPA, Luis Saavedra"
+            "AGRICOLA SANTA ANA DEL HUIQUE    SPA, Luis Saavedra",
+            "BELEN IGNACIA TOLEDO VALDERRAMA, ENRIQUE TOLEDO"
           ]
         }
       }
@@ -1592,15 +1597,15 @@
   "riesgo": {
     "cubierto": 0,
     "cubierto_count": 0,
-    "no_cubierto": 655030876,
-    "no_cubierto_count": 254,
+    "no_cubierto": 646454687,
+    "no_cubierto_count": 245,
     "pct_monto": 100.0,
     "pct_count": 100.0
   },
   "churn": {
     "eligible_clients": 166,
-    "churned_count": 58,
-    "pct": 34.9,
+    "churned_count": 57,
+    "pct": 34.3,
     "churned": [
       {
         "name": "ERIKA DEL PILAR GUZMAN MANRIQUEZ",
@@ -1937,9 +1942,9 @@
       },
       {
         "month": "May 2026",
-        "pct": 80.5,
-        "new_churn": 33,
-        "active_start": 41
+        "pct": 80.0,
+        "new_churn": 32,
+        "active_start": 40
       }
     ]
   },
@@ -1975,10 +1980,10 @@
           "15293"
         ],
         "target_total": 374369,
-        "mtd_litros": 165001,
-        "compliance_pct": 44.1,
-        "projected": 269212,
-        "projected_pct": 71.9,
+        "mtd_litros": 210001,
+        "compliance_pct": 56.1,
+        "projected": 342633,
+        "projected_pct": 91.5,
         "plants": {
           "Maipu": {
             "target": 0
@@ -1990,10 +1995,10 @@
       }
     },
     "total_target": 876932,
-    "total_mtd": 310775,
-    "total_compliance_pct": 35.4,
-    "total_projected": 507054,
-    "total_projected_pct": 57.8
+    "total_mtd": 355775,
+    "total_compliance_pct": 40.6,
+    "total_projected": 580475,
+    "total_projected_pct": 66.2
   },
   "operaciones": {
     "months": [
