@@ -287,6 +287,8 @@ def extract_crm_data(models, uid):
             "days_in_stage": d_stage,
             "days_since_activity": d_activity,
             "last_update": (l.get("write_date") or l.get("date_last_stage_update") or "")[:10],
+            "won_date": (l.get("date_last_stage_update") or l.get("write_date") or "")[:10],
+            "partner_id": l["partner_id"][0] if l.get("partner_id") else None,
             "origin": l.get("x_origen_oportunidad") or "—",
             "created": (l.get("create_date") or "")[:10],
             "probability": l.get("probability", 0),
@@ -411,6 +413,27 @@ def extract_crm_data(models, uid):
         if not note:
             note = last_activity_by_lead.get(w["id"], "")
         w["last_note"] = note
+
+    # Enrich won_deals with first invoice date (inmune al cron de Odoo que pisa write_date)
+    won_partner_ids = [w["partner_id"] for w in won_deals if w.get("partner_id")]
+    first_inv_by_partner = {}
+    if won_partner_ids:
+        try:
+            inv_rows = sr(models, uid, "account.move", [
+                ["move_type", "=", "out_invoice"],
+                ["state", "=", "posted"],
+                ["partner_id", "in", won_partner_ids],
+            ], ["partner_id", "invoice_date"], limit=5000, order="invoice_date asc")
+            for inv in inv_rows:
+                pid = inv["partner_id"][0] if inv.get("partner_id") else None
+                if pid and pid not in first_inv_by_partner and inv.get("invoice_date"):
+                    first_inv_by_partner[pid] = inv["invoice_date"]
+            print(f"  Won deals: first invoice found for {len(first_inv_by_partner)}/{len(set(won_partner_ids))} partners")
+        except Exception as e:
+            print(f"  Won deals first_invoice skipped: {e}")
+    for w in won_deals:
+        pid = w.get("partner_id")
+        w["first_invoice_date"] = first_inv_by_partner.get(pid, "") if pid else ""
 
     return {
         "has_litros": cf["x_litros_estimados"],
