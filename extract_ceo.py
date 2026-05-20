@@ -1124,100 +1124,131 @@ def extract_riesgo(models, uid):
 
 
 # ── DSO (Days Sales Outstanding) ──
-# CxC = Clientes Nacionales + Factoring no liquidado (plata en la calle)
+# Numerador: CxC cuentas (1.1.04.05 + 1.1.04.11) + cheques en cartera (journal 114)
+# Promedio 3 meses para suavizar distorsiones de fin de mes
+# Denominador: ventas netas del mes × 30 dias fijos (comparable entre meses)
 CXC_ACCOUNT_CODES = ["1.1.04.05", "1.1.04.11"]
 
 
 def extract_dso(models, uid, n_months=6):
-    """DSO mensual usando saldo de cuentas 1.1.04.05 + 1.1.04.11.
+    """DSO = promedio_CxC_3m / ventas_mes * 30.
 
-    1.1.04.05 = CLIENTES NACIONALES (facturas directas)
-    1.1.04.11 = DOCUMENTOS EN FACTORING (cedidas al factor, no liquidadas)
+    Numerador: saldo acumulado cuentas 1.1.04.05 + 1.1.04.11
+               + cheques en cartera (journal 114)
+               al cierre del mes, promediado con los 2 meses anteriores.
 
-    Ambas representan plata en la calle. Se excluyen cheques en cartera,
-    anticipos y otros que inflaban el calculo anterior ($79M+$7M).
+    Denominador: ventas netas del mes (out_invoice - out_refund, posted,
+               amount_untaxed). Normalizado a 30 dias para comparar meses
+               de distinta duracion.
 
-    Validado contra reporte Odoo 'Cuentas por cobrar vencidas' al
-    30/04/2026: 1.1.04.05=$598M + 1.1.04.11=$452M = $1,050M.
+    Tambien retorna cxc_hoy: planta impago HOY (CxC + cheques a fecha ejecucion).
     """
     print(f"Extracting DSO ({n_months} months)...")
 
-    # 1. Obtener IDs de las cuentas de CxC
+    # 1. IDs cuentas CxC
     acc_ids = models.execute_kw(
         ODOO_DB, uid, ODOO_KEY, "account.account", "search",
         [[["code", "in", CXC_ACCOUNT_CODES]]]
     )
     if not acc_ids:
         print("  WARNING: cuentas CxC no encontradas, DSO omitido")
-        return []
+        return {"months": [], "cxc_hoy": 0}
     print(f"  Cuentas CxC: {len(acc_ids)} encontradas (codes: {CXC_ACCOUNT_CODES})")
 
-    # 2. Generar ultimos N meses cerrados
+    def get_cxc_at(cutoff_date):
+        """Saldo CxC contable al cutoff."""
+        rg = models.execute_kw(
+            ODOO_DB, uid, ODOO_KEY, "account.move.line", "read_group",
+            [[["account_id", "in", acc_ids],
+              ["parent_state", "=", "posted"],
+              ["date", "<=", cutoff_date]]],
+            {"fields": ["debit", "credit"], "groupby": [], "lazy": False}
+        )
+        debit = rg[0].get("debit", 0) if rg else 0
+        credit = rg[0].get("credit", 0) if rg else 0
+        return max(debit - credit, 0)
+
+    def get_cheques_at(cutoff_date):
+        """Saldo cheques en cartera (journal 114) al cutoff."""
+        rg = models.execute_kw(
+            ODOO_DB, uid, ODOO_KEY, "account.move.line", "read_group",
+            [[["journal_id", "=", CHEQUES_CARTERA_JOURNAL],
+              ["parent_state", "=", "posted"],
+              ["date", "<=", cutoff_date]]],
+            {"fields": ["debit", "credit"], "groupby": [], "lazy": False}
+        )
+        debit = rg[0].get("debit", 0) if rg else 0
+        credit = rg[0].get("credit", 0) if rg else 0
+        return max(debit - credit, 0)
+
+    # 2. Generar N+2 meses cerrados (extra para calcular promedio 3m desde el primer mes)
     today = datetime.now()
     months = []
-    d = today.replace(day=1) - timedelta(days=1)  # ultimo dia del mes anterior
-    for _ in range(n_months):
+    d = today.replace(day=1) - timedelta(days=1)
+    for _ in range(n_months + 2):
         y, m = d.year, d.month
         _, last = monthrange(y, m)
         months.append({
-            "y": y, "m": m, "days": last,
+            "y": y, "m": m,
             "first": f"{y}-{m:02d}-01",
             "last": f"{y}-{m:02d}-{last:02d}",
             "label": f"{y}-{m:02d}",
         })
         d = d.replace(day=1) - timedelta(days=1)
-    months.reverse()  # mas antiguo primero
+    months.reverse()
 
-    results = []
+    # 3. Calcular CxC+cheques y ventas para todos los meses
+    raw = []
     for mo in months:
-        # 3. CxC al cierre del mes = sum(debit - credit) en 1.1.04.05, posted, date <= cutoff
-        rg = models.execute_kw(
-            ODOO_DB, uid, ODOO_KEY, "account.move.line", "read_group",
-            [[["account_id", "in", acc_ids],
-              ["parent_state", "=", "posted"],
-              ["date", "<=", mo["last"]]]],
-            {"fields": ["debit", "credit"], "groupby": [], "lazy": False}
-        )
-        debit = rg[0].get("debit", 0) if rg else 0
-        credit = rg[0].get("credit", 0) if rg else 0
-        cxc = debit - credit
+        cxc_acc = get_cxc_at(mo["last"])
+        cheq = get_cheques_at(mo["last"])
+        cxc_total = cxc_acc + cheq
 
-        # 4. Ventas netas del mes = out_invoice - out_refund (amount_untaxed, posted)
         base_domain = [["state", "=", "posted"],
                        ["invoice_date", ">=", mo["first"]],
                        ["invoice_date", "<=", mo["last"]]]
-
         inv_rg = models.execute_kw(
             ODOO_DB, uid, ODOO_KEY, "account.move", "read_group",
-            [[["move_type", "=", "out_invoice"]] + base_domain],
+            [[[("move_type", "=", "out_invoice")] + base_domain]],
             {"fields": ["amount_untaxed"], "groupby": [], "lazy": False}
         )
         ref_rg = models.execute_kw(
             ODOO_DB, uid, ODOO_KEY, "account.move", "read_group",
-            [[["move_type", "=", "out_refund"]] + base_domain],
+            [[[("move_type", "=", "out_refund")] + base_domain]],
             {"fields": ["amount_untaxed"], "groupby": [], "lazy": False}
         )
         ventas_inv = inv_rg[0].get("amount_untaxed", 0) if inv_rg else 0
         ventas_ref = ref_rg[0].get("amount_untaxed", 0) if ref_rg else 0
-        net_sales = ventas_inv - ventas_ref
+        net_sales = max(ventas_inv - ventas_ref, 0)
+        raw.append({"label": mo["label"], "cxc_total": cxc_total, "cxc_acc": cxc_acc, "cheques": cheq, "net_sales": net_sales})
 
-        # 5. DSO
-        dso = round(cxc / net_sales * mo["days"], 1) if net_sales > 0 else 0
-
-        print(f"  {mo['label']}: CxC=${cxc:,.0f} | Ventas=${net_sales:,.0f} | DSO={dso}d")
+    # 4. DSO con promedio 3m (solo para los ultimos n_months)
+    results = []
+    for i in range(2, len(raw)):
+        cur = raw[i]
+        avg_cxc = round((raw[i]["cxc_total"] + raw[i-1]["cxc_total"] + raw[i-2]["cxc_total"]) / 3)
+        net_sales = cur["net_sales"]
+        dso = round(avg_cxc / net_sales * 30, 1) if net_sales > 0 else 0
+        print(f"  {cur['label']}: CxC_prom3m=${avg_cxc:,.0f} | Ventas=${net_sales:,.0f} | DSO={dso}d")
         results.append({
-            "month": mo["label"],
-            "cxc": round(cxc),
+            "month": cur["label"],
+            "cxc": round(cur["cxc_total"]),
+            "cxc_acc": round(cur["cxc_acc"]),
+            "cheques": round(cur["cheques"]),
+            "avg_cxc_3m": avg_cxc,
             "net_sales": round(net_sales),
-            "days": mo["days"],
             "dso": dso,
         })
 
-    return results
+    # 5. CxC hoy (planta actual)
+    today_str = today.strftime("%Y-%m-%d")
+    cxc_hoy = get_cxc_at(today_str) + get_cheques_at(today_str)
+    print(f"  CxC hoy (planta): ${cxc_hoy:,.0f}")
+
+    return {"months": results, "cxc_hoy": round(cxc_hoy)}
 
 
-# ── MAIN ──
-def main():
+# ── MAIN ──def main():
     print("=== CEO Dashboard · Odoo Extraction ===")
     models, uid = connect()
 
