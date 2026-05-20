@@ -1411,6 +1411,53 @@ def extract_churn_data(models, uid):
         avg_litros_lost = {pid: round(max(total, 0) / 8) for pid, total in avg_litros_lost.items()}
         print(f"  Avg monthly litros computed for {len(avg_litros_lost)} lost partners")
 
+    # ── Last vendor note for lost clients ──
+    last_note_by_pid_lost = {}
+    if lost_pids:
+        try:
+            for i in range(0, len(lost_pids), batch_size):
+                batch = lost_pids[i:i+batch_size]
+                msgs = sr(models, uid, "mail.message", [
+                    ["model", "=", "res.partner"],
+                    ["res_id", "in", batch],
+                    ["message_type", "in", ["comment", "email"]],
+                ], ["res_id", "body", "date"], limit=500, order="date desc")
+                for m in msgs:
+                    pid = m.get("res_id")
+                    if pid and pid not in last_note_by_pid_lost:
+                        body = strip_html(m.get("body") or "")
+                        if len(body) > 3 and not any(n in body.lower()[:60] for n in _noise):
+                            last_note_by_pid_lost[pid] = body[:150]
+            missing_pids_lost = [p for p in lost_pids if p not in last_note_by_pid_lost]
+            if missing_pids_lost:
+                for i in range(0, len(missing_pids_lost), batch_size):
+                    batch = missing_pids_lost[i:i+batch_size]
+                    leads = sr(models, uid, "crm.lead", [
+                        ["partner_id", "in", batch],
+                        ["active", "in", [True, False]],
+                    ], ["id", "partner_id"], limit=1000)
+                    lead_ids = [l["id"] for l in leads]
+                    lead_pid = {l["id"]: safe_id(l.get("partner_id")) for l in leads}
+                    if lead_ids:
+                        msgs = sr(models, uid, "mail.message", [
+                            ["model", "=", "crm.lead"],
+                            ["res_id", "in", lead_ids],
+                            ["message_type", "in", ["comment", "email"]],
+                        ], ["res_id", "body", "date"], limit=500, order="date desc")
+                        for m in msgs:
+                            pid = lead_pid.get(m.get("res_id"))
+                            if pid and pid not in last_note_by_pid_lost:
+                                body = strip_html(m.get("body") or "")
+                                if len(body) > 3 and not any(n in body.lower()[:60] for n in _noise):
+                                    last_note_by_pid_lost[pid] = body[:150]
+            print(f"  Last notes found for {len(last_note_by_pid_lost)}/{len(lost_pids)} lost clients")
+        except Exception as e:
+            print(f"  Lost notes skipped: {e}")
+
+    for c in lost_list:
+        pid = c.get("partner_id")
+        c["last_note"] = last_note_by_pid_lost.get(pid, "")
+
     for c in lost_list:
         c["avg_monthly_litros"] = avg_litros_lost.get(c.get("partner_id"), 0)
         c.pop("partner_id", None)
