@@ -1,32 +1,32 @@
 {
-  "updated": "2026-05-20T18:02:21.371973",
+  "updated": "2026-05-20T21:28:56.496602",
   "weeks": [
     {
       "label": "14may-20may",
       "start": "2026-05-14",
       "end": "2026-05-20",
-      "ventas": 264996847,
-      "neto": 206689706,
-      "litros": 176296,
-      "litros_retail": 126698,
-      "litros_volumen": 51201,
-      "precio_neto": 1172,
-      "precio_bruto": 1503,
-      "margin": 0.07419,
-      "margin_retail": 0.08176,
-      "margin_volumen": 0.05483,
-      "facturas": 99,
+      "ventas": 286762500,
+      "neto": 223677143,
+      "litros": 190646,
+      "litros_retail": 138048,
+      "litros_volumen": 54201,
+      "precio_neto": 1173,
+      "precio_bruto": 1504,
+      "margin": 0.07478,
+      "margin_retail": 0.08246,
+      "margin_volumen": 0.05456,
+      "facturas": 108,
       "nc": 5,
-      "clientes": 86,
-      "recaud": 335102827,
+      "clientes": 92,
+      "recaud": 336797327,
       "cheques": 44224119,
-      "transf": 173114189,
+      "transf": 174808689,
       "factoring": 117764519,
       "compras_odoo": 195318292,
       "cheq_cartera_saldo": 0,
       "cheq_recibidos": 0,
-      "facturas_contado": 18,
-      "facturas_credito": 81,
+      "facturas_contado": 19,
+      "facturas_credito": 89,
       "margin_by_term": {
         "Prepago": {
           "margin": 0,
@@ -35,9 +35,9 @@
           "days": 0
         },
         "1 Día": {
-          "margin": 0.05386,
-          "normalizado": 0.06353,
-          "count": 17,
+          "margin": 0.05411,
+          "normalizado": 0.06378,
+          "count": 18,
           "days": 1
         },
         "7 Días": {
@@ -53,9 +53,9 @@
           "days": 15
         },
         "30 Días": {
-          "margin": 0.07832,
-          "normalizado": 0.07832,
-          "count": 66,
+          "margin": 0.07927,
+          "normalizado": 0.07927,
+          "count": 74,
           "days": 30
         },
         "Sin plazo": {
@@ -1278,8 +1278,8 @@
     {
       "date": "20may",
       "day": "Mié",
-      "litros": 22839,
-      "neto": 26866794
+      "litros": 37189,
+      "neto": 43854231
     },
     {
       "date": "19may",
@@ -1375,7 +1375,7 @@
   "banks": [
     {
       "name": "DE CHILE",
-      "balance": 13113471
+      "balance": 23676972
     },
     {
       "name": "ESTADO",
@@ -1402,15 +1402,15 @@
       "balance": -1727275
     }
   ],
-  "total_cash": 41293968,
+  "total_cash": 51857469,
   "receivables": {
-    "open_invoices": 231,
-    "total_due": 608912661,
-    "current": 534884071,
-    "overdue": 74028590,
-    "pct_overdue": 12.2,
+    "open_invoices": 235,
+    "total_due": 621635813,
+    "current": 549516723,
+    "overdue": 72119090,
+    "pct_overdue": 11.6,
     "aging": {
-      "0-30": 63397227,
+      "0-30": 61487727,
       "31-60": 865800,
       "61-90": 0,
       "90+": 9765563
@@ -1457,6 +1457,10 @@
         "amount": 14244199
       },
       {
+        "name": "AGROSERVICIOS JR SPA",
+        "amount": 12624000
+      },
+      {
         "name": "URAN ANTONIO LUNA DOMÍNGUEZ",
         "amount": 11424000
       },
@@ -1467,10 +1471,6 @@
       {
         "name": "EMPRESAS TUCAPEL S A",
         "amount": 9793503
-      },
-      {
-        "name": "AGROSERVICIOS JR SPA",
-        "amount": 9514000
       },
       {
         "name": "AGRICOLA LOS BOLDOS SPA",
@@ -1613,15 +1613,15 @@
   "riesgo": {
     "cubierto": 0,
     "cubierto_count": 0,
-    "no_cubierto": 608912661,
-    "no_cubierto_count": 231,
+    "no_cubierto": 621635813,
+    "no_cubierto_count": 235,
     "pct_monto": 100.0,
     "pct_count": 100.0
   },
   "churn": {
     "eligible_clients": 167,
-    "churned_count": 56,
-    "pct": 33.5,
+    "churned_count": 55,
+    "pct": 32.9,
     "churned": [
       {
         "name": "ERIKA DEL PILAR GUZMAN MANRIQUEZ",
@@ -1958,9 +1958,9 @@
       },
       {
         "month": "May 2026",
-        "pct": 78.9,
-        "new_churn": 30,
-        "active_start": 38
+        "pct": 80.6,
+        "new_churn": 29,
+        "active_start": 36
       }
     ]
   },
@@ -2122,50 +2122,65 @@
       }
     ]
   },
-  "dso": [
-    {
-      "month": "2025-11",
-      "cxc": 598492049,
-      "net_sales": 553307068,
-      "days": 30,
-      "dso": 32.4
-    },
-    {
-      "month": "2025-12",
-      "cxc": 845407495,
-      "net_sales": 726348601,
-      "days": 31,
-      "dso": 36.1
-    },
-    {
-      "month": "2026-01",
-      "cxc": 716967364,
-      "net_sales": 557617933,
-      "days": 31,
-      "dso": 39.9
-    },
-    {
-      "month": "2026-02",
-      "cxc": 771966162,
-      "net_sales": 613987215,
-      "days": 28,
-      "dso": 35.2
-    },
-    {
-      "month": "2026-03",
-      "cxc": 841555281,
-      "net_sales": 935545540,
-      "days": 31,
-      "dso": 27.9
-    },
-    {
-      "month": "2026-04",
-      "cxc": 1038988785,
-      "net_sales": 954233879,
-      "days": 30,
-      "dso": 32.7
-    }
-  ],
+  "dso": {
+    "months": [
+      {
+        "month": "2025-11",
+        "cxc": 598492049,
+        "cxc_acc": 598492049,
+        "cheques": 0,
+        "avg_cxc_3m": 563595169,
+        "net_sales": 553307068,
+        "dso": 30.6
+      },
+      {
+        "month": "2025-12",
+        "cxc": 845407495,
+        "cxc_acc": 845407495,
+        "cheques": 0,
+        "avg_cxc_3m": 669900696,
+        "net_sales": 726348601,
+        "dso": 27.7
+      },
+      {
+        "month": "2026-01",
+        "cxc": 716967364,
+        "cxc_acc": 716967364,
+        "cheques": 0,
+        "avg_cxc_3m": 720288969,
+        "net_sales": 557617933,
+        "dso": 38.8
+      },
+      {
+        "month": "2026-02",
+        "cxc": 771966162,
+        "cxc_acc": 771966162,
+        "cheques": 0,
+        "avg_cxc_3m": 778113674,
+        "net_sales": 613987215,
+        "dso": 38.0
+      },
+      {
+        "month": "2026-03",
+        "cxc": 841555281,
+        "cxc_acc": 841555281,
+        "cheques": 0,
+        "avg_cxc_3m": 776829602,
+        "net_sales": 935545540,
+        "dso": 24.9
+      },
+      {
+        "month": "2026-04",
+        "cxc": 1038988785,
+        "cxc_acc": 1038988785,
+        "cheques": 0,
+        "avg_cxc_3m": 884170076,
+        "net_sales": 954233879,
+        "dso": 27.8
+      }
+    ],
+    "cxc_hoy": 1128756515
+  },
   "gerencia_goals": {
     "margen_contado_meta": 0.085,
     "margen_credito_meta": 0.06,
