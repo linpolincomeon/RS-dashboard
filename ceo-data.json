@@ -1,32 +1,32 @@
 {
-  "updated": "2026-05-20T13:51:50.457196",
+  "updated": "2026-05-20T17:39:22.679938",
   "weeks": [
     {
       "label": "14may-20may",
       "start": "2026-05-14",
       "end": "2026-05-20",
-      "ventas": 232507690,
-      "neto": 181349715,
-      "litros": 154757,
-      "litros_retail": 105648,
-      "litros_volumen": 50712,
+      "ventas": 263442847,
+      "neto": 205474906,
+      "litros": 175296,
+      "litros_retail": 125698,
+      "litros_volumen": 51201,
       "precio_neto": 1172,
       "precio_bruto": 1503,
-      "margin": 0.07373,
-      "margin_retail": 0.08312,
-      "margin_volumen": 0.05345,
-      "facturas": 87,
+      "margin": 0.07404,
+      "margin_retail": 0.08161,
+      "margin_volumen": 0.05483,
+      "facturas": 98,
       "nc": 5,
-      "clientes": 78,
-      "recaud": 313506102,
+      "clientes": 85,
+      "recaud": 335102827,
       "cheques": 44224119,
-      "transf": 269281983,
-      "factoring": 0,
-      "compras_odoo": 160464071,
+      "transf": 173114189,
+      "factoring": 117764519,
+      "compras_odoo": 195318292,
       "cheq_cartera_saldo": 0,
       "cheq_recibidos": 0,
-      "facturas_contado": 17,
-      "facturas_credito": 70,
+      "facturas_contado": 18,
+      "facturas_credito": 80,
       "margin_by_term": {
         "Prepago": {
           "margin": 0,
@@ -35,15 +35,15 @@
           "days": 0
         },
         "1 Día": {
-          "margin": 0.05339,
-          "normalizado": 0.06305,
-          "count": 16,
+          "margin": 0.05386,
+          "normalizado": 0.06353,
+          "count": 17,
           "days": 1
         },
         "7 Días": {
-          "margin": 0.08583,
-          "normalizado": 0.0935,
-          "count": 4,
+          "margin": 0.07152,
+          "normalizado": 0.07919,
+          "count": 5,
           "days": 7
         },
         "15 Días": {
@@ -53,9 +53,9 @@
           "days": 15
         },
         "30 Días": {
-          "margin": 0.07694,
-          "normalizado": 0.07694,
-          "count": 56,
+          "margin": 0.07812,
+          "normalizado": 0.07812,
+          "count": 65,
           "days": 30
         },
         "Sin plazo": {
@@ -78,7 +78,7 @@
         }
       },
       "cotiz_canceladas": 5,
-      "visitas": 8,
+      "visitas": 10,
       "clientes_nuevos": 11,
       "ppto": 213480,
       "ppto_retail": 153706,
@@ -170,13 +170,13 @@
       "ventas": 252803414,
       "neto": 191301155,
       "litros": 162332,
-      "litros_retail": 119045,
-      "litros_volumen": 47587,
+      "litros_retail": 124045,
+      "litros_volumen": 42587,
       "precio_neto": 1178,
       "precio_bruto": 1555,
       "margin": 0.07333,
-      "margin_retail": 0.07993,
-      "margin_volumen": 0.05635,
+      "margin_retail": 0.07859,
+      "margin_volumen": 0.05763,
       "facturas": 98,
       "nc": 4,
       "clientes": 81,
@@ -234,7 +234,7 @@
         }
       },
       "cotiz_canceladas": 2,
-      "visitas": 4,
+      "visitas": 2,
       "clientes_nuevos": 1,
       "ppto": 269236,
       "ppto_retail": 199235,
@@ -326,13 +326,13 @@
       "ventas": 321817760,
       "neto": 266114422,
       "litros": 207165,
-      "litros_retail": 136043,
-      "litros_volumen": 73075,
+      "litros_retail": 142043,
+      "litros_volumen": 67075,
       "precio_neto": 1285,
       "precio_bruto": 1556,
       "margin": 0.0779,
-      "margin_retail": 0.0847,
-      "margin_volumen": 0.06493,
+      "margin_retail": 0.08321,
+      "margin_volumen": 0.06643,
       "facturas": 108,
       "nc": 4,
       "clientes": 79,
@@ -1278,8 +1278,8 @@
     {
       "date": "20may",
       "day": "Mié",
-      "litros": 1300,
-      "neto": 1526803
+      "litros": 21839,
+      "neto": 25651994
     },
     {
       "date": "19may",
@@ -1374,6 +1374,10 @@
   ],
   "banks": [
     {
+      "name": "DE CHILE",
+      "balance": 13113471
+    },
+    {
       "name": "ESTADO",
       "balance": 11334543
     },
@@ -1384,10 +1388,6 @@
     {
       "name": "ITAU",
       "balance": 7064285
-    },
-    {
-      "name": "DE CHILE",
-      "balance": 6520160
     },
     {
       "name": "CAJA",
@@ -1402,15 +1402,15 @@
       "balance": -1727275
     }
   ],
-  "total_cash": 34700657,
+  "total_cash": 41293968,
   "receivables": {
-    "open_invoices": 231,
-    "total_due": 595500528,
-    "current": 519965917,
-    "overdue": 75534611,
-    "pct_overdue": 12.7,
+    "open_invoices": 230,
+    "total_due": 607358661,
+    "current": 533330071,
+    "overdue": 74028590,
+    "pct_overdue": 12.2,
     "aging": {
-      "0-30": 64903248,
+      "0-30": 63397227,
       "31-60": 865800,
       "61-90": 0,
       "90+": 9765563
@@ -1453,12 +1453,20 @@
         "amount": 14298248
       },
       {
+        "name": "AGRICOLA MANTOS VERDES LIMITADA",
+        "amount": 14244199
+      },
+      {
         "name": "URAN ANTONIO LUNA DOMÍNGUEZ",
         "amount": 11424000
       },
       {
         "name": "ANDES SOLAR SA",
         "amount": 9912297
+      },
+      {
+        "name": "EMPRESAS TUCAPEL S A",
+        "amount": 9793503
       },
       {
         "name": "AGROSERVICIOS JR SPA",
@@ -1469,12 +1477,12 @@
         "amount": 9102000
       },
       {
-        "name": "LEONEL JAIME VALDES CONCHA",
-        "amount": 8573999
+        "name": "CIA CHILENA DE FOSFOROS S A",
+        "amount": 8998002
       },
       {
-        "name": "SOC AGRICOLA SANTA TERESA SPA",
-        "amount": 8483271
+        "name": "LEONEL JAIME VALDES CONCHA",
+        "amount": 8573999
       },
       {
         "name": "SAMUEL BUDINICH SPA",
@@ -1487,14 +1495,6 @@
       {
         "name": "Servicios de construcción y maquinarias Talmaqq Ltda.",
         "amount": 7850000
-      },
-      {
-        "name": "VICTOR FAVIO VILCHES MARDONES",
-        "amount": 7752000
-      },
-      {
-        "name": "TRANSPORTES SAN MARCELO SPA",
-        "amount": 7740000
       }
     ]
   },
@@ -1613,15 +1613,15 @@
   "riesgo": {
     "cubierto": 0,
     "cubierto_count": 0,
-    "no_cubierto": 595500528,
-    "no_cubierto_count": 231,
+    "no_cubierto": 607358661,
+    "no_cubierto_count": 230,
     "pct_monto": 100.0,
     "pct_count": 100.0
   },
   "churn": {
-    "eligible_clients": 166,
+    "eligible_clients": 167,
     "churned_count": 56,
-    "pct": 33.7,
+    "pct": 33.5,
     "churned": [
       {
         "name": "ERIKA DEL PILAR GUZMAN MANRIQUEZ",
@@ -1958,9 +1958,9 @@
       },
       {
         "month": "May 2026",
-        "pct": 79.5,
-        "new_churn": 31,
-        "active_start": 39
+        "pct": 78.9,
+        "new_churn": 30,
+        "active_start": 38
       }
     ]
   },
@@ -1974,10 +1974,10 @@
           "5667"
         ],
         "target_total": 502563,
-        "mtd_litros": 160923,
-        "compliance_pct": 32.0,
-        "projected": 249431,
-        "projected_pct": 49.6,
+        "mtd_litros": 185787,
+        "compliance_pct": 37.0,
+        "projected": 287970,
+        "projected_pct": 57.3,
         "plants": {
           "Maipu": {
             "target": 183025
@@ -2011,10 +2011,10 @@
       }
     },
     "total_target": 876932,
-    "total_mtd": 370924,
-    "total_compliance_pct": 42.3,
-    "total_projected": 574932,
-    "total_projected_pct": 65.6
+    "total_mtd": 395788,
+    "total_compliance_pct": 45.1,
+    "total_projected": 613471,
+    "total_projected_pct": 70.0
   },
   "operaciones": {
     "months": [
