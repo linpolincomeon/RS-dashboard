@@ -206,12 +206,12 @@ tr:hover td{background:#fafaf8}
 
       <!-- Nuevos Durmientes de la Semana -->
       <div class="sec"><div class="sec-h"><h2>😴 Nuevos Durmientes de la Semana</h2></div><div class="sec-b" style="max-height:400px;overflow-y:auto">
-        <table><thead><tr><th>Prioridad</th><th>Cliente</th><th>Prom. Mensual 8M</th><th>Responsable</th><th>Última Actividad</th></tr></thead><tbody id="newDormantBody"></tbody></table>
+        <table><thead><tr><th>Prioridad</th><th>Cliente</th><th>Prom. Mensual 8M</th><th>Responsable</th><th>Fecha</th><th>Última Nota</th></tr></thead><tbody id="newDormantBody"></tbody></table>
         <div class="nodata" id="noNewDormant" style="display:none">Sin nuevos durmientes esta semana</div></div></div>
 
       <!-- Nuevos Perdidos de la Semana -->
       <div class="sec"><div class="sec-h"><h2>💀 Nuevos Perdidos de la Semana</h2></div><div class="sec-b" style="max-height:400px;overflow-y:auto">
-        <table><thead><tr><th>Prioridad</th><th>Cliente</th><th>Prom. Mensual 8M</th><th>Último vendedor</th><th>Fecha cambio</th></tr></thead><tbody id="newLostBody"></tbody></table>
+        <table><thead><tr><th>Prioridad</th><th>Cliente</th><th>Prom. Mensual 8M</th><th>Último vendedor</th><th>Fecha cambio</th><th>Última Nota</th></tr></thead><tbody id="newLostBody"></tbody></table>
         <div class="nodata" id="noNewLost" style="display:none">Sin nuevos perdidos esta semana</div></div></div>
 
       <!-- Lost clients this month (below Churn KPI) -->
@@ -1451,9 +1451,9 @@ function renderFidelizacion() {
         : l >= 1000 ? '<span style="color:var(--yellow);font-weight:700">' + fL(l) + '</span>'
         : '<span style="color:var(--dim)">' + fL(l) + '</span>';
       const priority = l >= 5000 ? '🔴' : l >= 1000 ? '🟡' : '⚪';
-      const note = c.last_note ? `<div style="font-size:11px;color:var(--dim);max-width:300px;white-space:normal">${H(c.last_note)}</div>` : '';
+      const noteHtmlD = c.last_note ? `<span style="font-size:11px;color:var(--dim)">${H(c.last_note)}</span>` : '<span style="color:var(--dim)">—</span>';
       const tr = document.createElement('tr');
-      tr.innerHTML = `<td>${priority}</td><td class="bold">${H(c.name)}</td><td>${lTag}</td><td>${H(c.user || '—')}</td><td>${c.last_update || '—'}${note}</td>`;
+      tr.innerHTML = `<td>${priority}</td><td class="bold">${H(c.name)}</td><td>${lTag}</td><td>${H(c.user || '—')}</td><td>${c.last_update || '—'}</td><td style="max-width:260px;white-space:normal">${noteHtmlD}</td>`;
       ndb.appendChild(tr);
     });
   }
@@ -1479,8 +1479,9 @@ function renderFidelizacion() {
         : l >= 1000 ? '<span style="color:var(--yellow);font-weight:700">' + fL(l) + '</span>'
         : '<span style="color:var(--dim)">' + fL(l) + '</span>';
       const priority = l >= 5000 ? '🔴' : l >= 1000 ? '🟡' : '⚪';
+      const noteHtmlL = c.last_note ? `<span style="font-size:11px;color:var(--dim)">${H(c.last_note)}</span>` : '<span style="color:var(--dim)">—</span>';
       const tr = document.createElement('tr');
-      tr.innerHTML = `<td>${priority}</td><td class="bold">${H(c.name)}</td><td>${lTag}</td><td>${H(c.user || '—')}</td><td>${c.last_update || '—'}</td>`;
+      tr.innerHTML = `<td>${priority}</td><td class="bold">${H(c.name)}</td><td>${lTag}</td><td>${H(c.user || '—')}</td><td>${c.last_update || '—'}</td><td style="max-width:260px;white-space:normal">${noteHtmlL}</td>`;
       nlb.appendChild(tr);
     });
   }
