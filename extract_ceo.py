@@ -1248,7 +1248,8 @@ def extract_dso(models, uid, n_months=6):
     return {"months": results, "cxc_hoy": round(cxc_hoy)}
 
 
-# ── MAIN ──def main():
+# ── MAIN ──
+def main():
     print("=== CEO Dashboard · Odoo Extraction ===")
     models, uid = connect()
 
