@@ -201,14 +201,14 @@ def get_week_ranges(n_weeks=16):
 def classify_bsl(ref, amount):
     """
     Cheques: ref contains dep.cheq, dep. docto (but NOT 'efectivo')
-    Factoring: Fingo, or Security-style 'Transferencia De Otro Banco Via Spav'
-               (only if amount >= FACTORING_MIN_AMOUNT)
+    Factoring: Fingo, Go Capital, or Security-style 'Transferencia De Otro Banco Via Spav'
+               (only if amount >= FACTORING_MIN_AMOUNT for Security)
     Transfer: everything else
     """
     r = (ref or "").lower()
     if ("dep.cheq" in r or "dep. docto" in r) and "efectivo" not in r:
         return "cheques"
-    if "fingo" in r or "factoring" in r:
+    if "fingo" in r or "factoring" in r or "go capital" in r:
         return "factoring"
     if "otro banco via spav" in r and amount >= FACTORING_MIN_AMOUNT:
         return "factoring"
