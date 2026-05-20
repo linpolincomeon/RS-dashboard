@@ -1,32 +1,32 @@
 {
-  "updated": "2026-05-20T00:20:07.232128",
+  "updated": "2026-05-20T13:51:50.457196",
   "weeks": [
     {
       "label": "14may-20may",
       "start": "2026-05-14",
       "end": "2026-05-20",
-      "ventas": 230549890,
-      "neto": 179822912,
-      "litros": 153457,
-      "litros_retail": 104348,
+      "ventas": 232507690,
+      "neto": 181349715,
+      "litros": 154757,
+      "litros_retail": 105648,
       "litros_volumen": 50712,
       "precio_neto": 1172,
       "precio_bruto": 1503,
-      "margin": 0.0737,
-      "margin_retail": 0.08319,
+      "margin": 0.07373,
+      "margin_retail": 0.08312,
       "margin_volumen": 0.05345,
-      "facturas": 86,
+      "facturas": 87,
       "nc": 5,
-      "clientes": 77,
-      "recaud": 309369241,
+      "clientes": 78,
+      "recaud": 313506102,
       "cheques": 44224119,
-      "transf": 265145122,
+      "transf": 269281983,
       "factoring": 0,
       "compras_odoo": 160464071,
       "cheq_cartera_saldo": 0,
       "cheq_recibidos": 0,
       "facturas_contado": 17,
-      "facturas_credito": 69,
+      "facturas_credito": 70,
       "margin_by_term": {
         "Prepago": {
           "margin": 0,
@@ -53,9 +53,9 @@
           "days": 15
         },
         "30 Días": {
-          "margin": 0.07693,
-          "normalizado": 0.07693,
-          "count": 55,
+          "margin": 0.07694,
+          "normalizado": 0.07694,
+          "count": 56,
           "days": 30
         },
         "Sin plazo": {
@@ -878,13 +878,13 @@
       "ventas": 213081678,
       "neto": 157642587,
       "litros": 232904,
-      "litros_retail": 187684,
-      "litros_volumen": 46250,
+      "litros_retail": 189684,
+      "litros_volumen": 44250,
       "precio_neto": 677,
       "precio_bruto": 914,
       "margin": 0.10718,
-      "margin_retail": 0.10636,
-      "margin_volumen": 0.11056,
+      "margin_retail": 0.10639,
+      "margin_volumen": 0.11062,
       "facturas": 155,
       "nc": 2,
       "clientes": 116,
@@ -1278,8 +1278,8 @@
     {
       "date": "20may",
       "day": "Mié",
-      "litros": 0,
-      "neto": 0
+      "litros": 1300,
+      "neto": 1526803
     },
     {
       "date": "19may",
@@ -1374,10 +1374,6 @@
   ],
   "banks": [
     {
-      "name": "DE CHILE",
-      "balance": 37428253
-    },
-    {
       "name": "ESTADO",
       "balance": 11334543
     },
@@ -1388,6 +1384,10 @@
     {
       "name": "ITAU",
       "balance": 7064285
+    },
+    {
+      "name": "DE CHILE",
+      "balance": 6520160
     },
     {
       "name": "CAJA",
@@ -1402,15 +1402,15 @@
       "balance": -1727275
     }
   ],
-  "total_cash": 65608750,
+  "total_cash": 34700657,
   "receivables": {
-    "open_invoices": 233,
-    "total_due": 597424529,
-    "current": 520389918,
-    "overdue": 77034611,
-    "pct_overdue": 12.9,
+    "open_invoices": 231,
+    "total_due": 595500528,
+    "current": 519965917,
+    "overdue": 75534611,
+    "pct_overdue": 12.7,
     "aging": {
-      "0-30": 66403248,
+      "0-30": 64903248,
       "31-60": 865800,
       "61-90": 0,
       "90+": 9765563
@@ -1613,8 +1613,8 @@
   "riesgo": {
     "cubierto": 0,
     "cubierto_count": 0,
-    "no_cubierto": 597424529,
-    "no_cubierto_count": 233,
+    "no_cubierto": 595500528,
+    "no_cubierto_count": 231,
     "pct_monto": 100.0,
     "pct_count": 100.0
   },
