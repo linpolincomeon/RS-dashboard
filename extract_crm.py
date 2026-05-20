@@ -1404,15 +1404,18 @@ def extract_churn_data(models, uid):
     lost_pids = [c["partner_id"] for c in lost_list if c.get("partner_id")]
     avg_litros_lost = {}
     if lost_pids:
-        # Reuse same 8-month window calculated for dormant
-        print(f"  Querying 8-month litros for {len(lost_pids)} lost partners...")
+        # Lost clients by definition have no invoices in last 8 months —
+        # use 24-month window to capture their last active period
+        lost_lookback = today.replace(day=1) - timedelta(days=365*2)
+        lost_lookback_start = lost_lookback.replace(day=1)
+        print(f"  Querying 24-month litros for {len(lost_pids)} lost partners ({fmt(lost_lookback_start)} → {fmt(today)})...")
         for i in range(0, len(lost_pids), batch_size):
             batch = lost_pids[i:i+batch_size]
             invs = sr(models, uid, "account.move", [
                 ["move_type", "=", "out_invoice"],
                 ["state", "=", "posted"],
                 ["partner_id", "in", batch],
-                ["invoice_date", ">=", fmt(eight_months_start)],
+                ["invoice_date", ">=", fmt(lost_lookback_start)],
                 ["invoice_date", "<=", fmt(today)],
             ], ["id", "partner_id"], limit=50000)
             inv_ids_l = [inv["id"] for inv in invs]
@@ -1434,7 +1437,7 @@ def extract_churn_data(models, uid):
                 ["move_type", "=", "out_refund"],
                 ["state", "=", "posted"],
                 ["partner_id", "in", batch],
-                ["invoice_date", ">=", fmt(eight_months_start)],
+                ["invoice_date", ">=", fmt(lost_lookback_start)],
                 ["invoice_date", "<=", fmt(today)],
             ], ["id", "partner_id"], limit=10000)
             nc_ids_l = [nc["id"] for nc in ncs_l]
@@ -1450,7 +1453,7 @@ def extract_churn_data(models, uid):
                     if pid_ln:
                         avg_litros_lost[pid_ln] = avg_litros_lost.get(pid_ln, 0) - (ln.get("quantity", 0) or 0)
 
-        avg_litros_lost = {pid: round(max(total, 0) / 8) for pid, total in avg_litros_lost.items()}
+        avg_litros_lost = {pid: round(max(total, 0) / 24) for pid, total in avg_litros_lost.items()}
         print(f"  Avg monthly litros computed for {len(avg_litros_lost)} lost partners")
 
     # Lost notes: extender last_note_by_pid con lost_pids que aún no tienen nota
