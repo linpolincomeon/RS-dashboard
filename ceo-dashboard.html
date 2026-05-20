@@ -348,7 +348,6 @@
         <div id="p-operaciones" class="panel"></div>
         <div id="p-riesgo" class="panel"></div>
         <div id="p-cashflow" class="panel"></div>
-        <div id="p-cxc" class="panel"></div>
     </main>
     <div id="loading" style="text-align: center; padding: 3rem;">
         <div style="color: var(--text3);">Cargando datos...</div>
@@ -366,7 +365,7 @@ const fP=n=>!n&&n!==0?'—':(n*100).toFixed(1)+'%';
 const pD=(c,p)=>(!c||!p)?null:((c-p)/Math.abs(p))*100;
 const dH=d=>{if(d==null)return'';const u=d>=0;return`<div class="kpi-delta ${u?'up':'dn'}">${u?'▲':'▼'} ${Math.abs(d).toFixed(1)}%</div>`};
 function setupTabs(){
-    const tabDefs=[['ventas','RS'],['gerencia','Gerencia'],['resumen','Resumen'],['operaciones','Operaciones'],['riesgo','⚠️ Riesgo'],['cashflow','💰 Cash Flow'],['cxc','📋 CxC Detalle']];
+    const tabDefs=[['ventas','RS'],['gerencia','Gerencia'],['resumen','Resumen'],['operaciones','Operaciones'],['riesgo','⚠️ Riesgo'],['cashflow','💰 Cash Flow']];
     document.getElementById('tabs').innerHTML=tabDefs.map(([k,l])=>
         `<button class="tab ${k===curTab?'active':''}" onclick="switchTab('${k}')">${l}</button>`
     ).join('');
@@ -399,7 +398,6 @@ function render(){
     else if(curTab==='operaciones') renderOperaciones();
     else if(curTab==='riesgo') renderRiesgo();
     else if(curTab==='cashflow') renderCashflow();
-    else if(curTab==='cxc') renderCxc();
     setupTabs();
 }
 // ── RS (was Ventas) ──
@@ -425,19 +423,25 @@ function renderVentas(){
         h+=kpi('Margen Bruto',fP(last.margin),pD(last.margin,prev.margin),last.margin>=.085?'c-green':'c-red','margin_zone ponderado');
     }
     h+=kpi('Recaudación',fM(last.recaud),pD(last.recaud,prev.recaud||1),'c-purple',`Transf: ${fM(last.transf||0)} · Cheq: ${fM(last.cheques||0)} · Fact: ${fM(last.factoring||0)}`);
-    // ── KPI DSO mensual (Cuentas por Cobrar / Ventas × días). Lee D.dso (generado por extract_ceo.py) ──
-    // Fallback a hardcoded si el extractor aún no se ha corrido con la nueva versión.
-    let dsoHist = D.dso || [{mes:'Mar 2026', dias:25.8, label:'Mar 2026'}];
-    // Normalize: extractor returns {label, dso}, hardcoded uses {mes, dias}
-    dsoHist = dsoHist.map(d => ({label: d.label||d.mes, dso: d.dso!=null?d.dso:d.dias}));
-    const dsoCur = dsoHist[dsoHist.length-1];
-    const dsoPrev = dsoHist.length>1 ? dsoHist[dsoHist.length-2] : null;
-    const dsoDelta = dsoPrev ? dsoCur.dso - dsoPrev.dso : null;
-    const dsoCls = dsoCur.dso<=25 ? 'c-green' : dsoCur.dso<=35 ? 'c-amber' : 'c-red';
-    const dsoSub = dsoPrev
-        ? `${dsoCur.label} · vs ${dsoPrev.label}: ${dsoDelta>0?'+':''}${dsoDelta.toFixed(1)}d`
-        : `${dsoCur.label} · pendiente mes siguiente`;
-    h+=kpi('DSO Mensual', dsoCur.dso.toFixed(1)+'d', null, dsoCls, dsoSub);
+    // ── KPI DSO mensual + Planta CxC ──
+    // dso puede ser array legacy [{month,dso}] o nuevo {months:[...], cxc_hoy:N}
+    const dsoRaw = D.dso || {};
+    const dsoMonths = Array.isArray(dsoRaw) ? dsoRaw : (dsoRaw.months || []);
+    const cxcHoy = Array.isArray(dsoRaw) ? null : (dsoRaw.cxc_hoy || null);
+    let dsoHist = dsoMonths.map(d => ({label: d.label || d.month || d.mes, dso: d.dso != null ? d.dso : (d.dias || 0)}));
+    if (!dsoHist.length) dsoHist = [{label: 'Mar 2026', dso: 25.8}];
+    const dsoCur = dsoHist[dsoHist.length - 1];
+    const dsoPrev = dsoHist.length > 1 ? dsoHist[dsoHist.length - 2] : null;
+    const dsoDelta = (dsoPrev && dsoCur.dso != null && dsoPrev.dso != null) ? dsoCur.dso - dsoPrev.dso : null;
+    const dsoCls = dsoCur.dso <= 25 ? 'c-green' : dsoCur.dso <= 35 ? 'c-amber' : 'c-red';
+    const dsoSub = dsoPrev && dsoDelta != null
+        ? `${dsoCur.label} · vs ${dsoPrev.label}: ${dsoDelta > 0 ? '+' : ''}${dsoDelta.toFixed(1)}d`
+        : `${dsoCur.label} · promedio 3m / ventas × 30d`;
+    h += kpi('DSO Mensual', dsoCur.dso.toFixed(1) + 'd', null, dsoCls, dsoSub);
+    if (cxcHoy != null) {
+        const cxcM = (cxcHoy / 1e6).toFixed(1) + 'M';
+        h += kpi('Planta CxC', '$' + cxcM, null, 'c-purple', 'Impago hoy: CxC + cheques cartera');
+    }
     h+='</div>';
     // Charts: Litros Retail vs Ppto, Litros Volumen vs Ppto
     h+='<div class="chart-row two">';
@@ -1251,63 +1255,6 @@ function renderCashflow(){
         h+='<div class="cf-bad"><strong>🚨 Riesgo</strong> — Faltan <strong>$'+fNoSign(falta)+'</strong> para cubrir la semana. Caja actual: $'+fNoSign(cajaActual)+' · Requerido: $'+fNoSign(saldoReq)+'. Acciones: acelerar cobranza Itaú, revisar descuento de cheques en cartera, o postergar compras a ENAP.</div>';
     }
     h+='</div>';
-
-    el.innerHTML=h;
-}
-// ── CxC DETALLE (facturas con saldo al último cierre de mes) ──
-function renderCxc(){
-    const el=document.getElementById('p-cxc');
-    const cxc=D.cxc_detail;
-    if(!cxc||!cxc.rows||cxc.rows.length===0){
-        el.innerHTML='<div class="note" style="text-align:center;padding:40px;color:var(--text3)">'+
-            'No hay datos de CxC detalle. Ejecuta el extractor (extract_ceo.py) para generarlos.'+
-            '</div>';
-        return;
-    }
-    const fM=n=>!n&&n!==0?'—':'$'+(n/1e6).toFixed(1)+'M';
-    const fMt=n=>!n&&n!==0?'—':'$'+Math.round(n).toLocaleString('es-CL');
-    const cutoffLabel=cxc.cutoff||'?';
-    const rows=cxc.rows;
-    const total=cxc.total||0;
-    const pagadas=cxc.pagadas_count||0;
-    const sinPagar=cxc.sin_pagar_count||0;
-    const montoPag=rows.filter(r=>r.estado==='Pagada').reduce((s,r)=>s+(r.monto||0),0);
-    const montoSP=rows.filter(r=>r.estado==='Sin pagar').reduce((s,r)=>s+(r.monto||0),0);
-    const diasArr=rows.filter(r=>r.dias!=null).map(r=>r.dias);
-    const diasProm=diasArr.length?diasArr.reduce((a,b)=>a+b,0)/diasArr.length:0;
-
-    let h='<div class="section-label">📋 Cuentas por Cobrar — Detalle al '+cutoffLabel+'</div>';
-    h+='<div class="note" style="margin-bottom:16px">Listado de facturas con saldo > 0 al cierre de mes. Para las que ya se pagaron después del cierre, muestra fecha de pago real. Auditoría del numerador del DSO.</div>';
-
-    // KPIs
-    h+='<div class="kpis">';
-    h+=kpi('Total CxC',fM(total),null,'c-purple',rows.length+' facturas');
-    h+=kpi('Pagadas (post-cierre)',pagadas.toString(),null,'c-green',fM(montoPag));
-    h+=kpi('Sin pagar (a hoy)',sinPagar.toString(),null,sinPagar>0?'c-red':'c-green',fM(montoSP));
-    h+=kpi('Días promedio',diasProm.toFixed(1)+'d',null,diasProm<=30?'c-green':diasProm<=45?'c-amber':'c-red','desde emisión');
-    h+='</div>';
-
-    // Tabla
-    h+='<div class="table-card" style="overflow-x:auto;margin-top:16px"><table><thead><tr>';
-    h+='<th>Cliente</th><th class="r">Fecha emisión</th><th class="r">Fecha pago</th><th class="r">Monto</th><th class="r">Días</th><th style="text-align:center">Estado</th>';
-    h+='</tr></thead><tbody>';
-    rows.forEach(r=>{
-        const isPaid=r.estado==='Pagada';
-        const dotBg=isPaid?'#e8f5ec':'#fcebeb';
-        const dotClr=isPaid?'#0f6e56':'#a32d2d';
-        const dot=isPaid?'🟢':'🔴';
-        const diasCls=r.dias==null?'':r.dias>45?'bad':r.dias>30?'':'ok';
-        h+='<tr>';
-        h+='<td class="hi">'+r.cliente+'</td>';
-        h+='<td class="r" style="font-size:11px;white-space:nowrap">'+r.fecha_emision+'</td>';
-        h+='<td class="r" style="font-size:11px;white-space:nowrap">'+(r.fecha_pago||'—')+'</td>';
-        h+='<td class="r">'+fMt(r.monto)+'</td>';
-        h+='<td class="r '+diasCls+'">'+(r.dias!=null?r.dias+'d':'—')+'</td>';
-        h+='<td style="text-align:center"><span style="display:inline-block;background:'+dotBg+';color:'+dotClr+';font-weight:700;padding:2px 8px;border-radius:6px;font-size:11px;white-space:nowrap">'+dot+' '+r.estado+'</span></td>';
-        h+='</tr>';
-    });
-    h+='</tbody></table>';
-    h+='<div class="note">Listado ordenado por monto. Estado 🟢 Pagada = ya se cobró después del cierre. 🔴 Sin pagar = sigue impaga a hoy.</div></div>';
 
     el.innerHTML=h;
 }
