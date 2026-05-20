@@ -391,6 +391,9 @@ function getGoal(name) {
 
 const H = s => { if (!s) return ''; const d = document.createElement('div'); d.textContent = s; return d.innerHTML; };
 const fL = n => n ? Math.round(n).toLocaleString('es-CL') + ' L' : '0 L';
+// wonDate: prefiere first_invoice_date (fuente de verdad), fallback a won_date/last_update
+// Inmune al cron de Odoo que pisa date_last_stage_update en masa
+const wonDate = w => w.first_invoice_date || w.won_date || w.last_update || '';
 const fLs = n => { if(!n) return '0'; if(n>=1e6) return (n/1e6).toFixed(1)+'M'; if(n>=1e3) return Math.round(n/1e3)+'k'; return ''+Math.round(n); };
 const fCs = n => { if(!n) return '$0'; if(n>=1e6) return '$'+(n/1e6).toFixed(1)+'M'; if(n>=1e3) return '$'+Math.round(n/1e3)+'k'; return '$'+Math.round(n); };
 const pct = (v, g) => g ? Math.min(Math.round((v / g) * 100), 999) : 0;
@@ -833,7 +836,7 @@ function renderEjecutivos() {
     const mvNewClients = mvNcDetail.filter(c => matchesExec(c.vendedor));
     const prevWon = (D.won_deals || []).filter(w => {
       const ms = VP.month_start || '', me = VP.month_end || '';
-      return matchesExec(w.exec) && (w.last_update || '') >= ms && (w.last_update || '') <= me;
+      return matchesExec(w.exec) && (wonDate(w) || '') >= ms && (wonDate(w) || '') <= me;
     });
 
     h += `<div class="sec"><div class="sec-h"><h2>💰 Detalle ${H(prevLabel)} — ${EJECUTIVOS[selectedExec]?.name || ''}</h2></div>`;
@@ -1644,7 +1647,7 @@ function renderCS() {
   let clientesGanados = 0;
   for (const w of wonAll) {
     if (isCS(w.exec)) {
-      const lu = w.last_update || '';
+      const lu = wonDate(w);
       if (csSubTab === 'semanal') {
         if (weekStart && weekEnd && lu >= weekStart && lu <= weekEnd) clientesGanados++;
       } else {
@@ -1699,7 +1702,7 @@ function renderCS() {
   // Populate Clientes Ganados tables
   const ganados = wonAll.filter(w => {
     if (!isCS(w.exec)) return false;
-    const lu = w.last_update || '';
+    const lu = wonDate(w);
     if (csSubTab === 'semanal') {
       return weekStart && weekEnd && lu >= weekStart && lu <= weekEnd;
     } else {
@@ -1718,7 +1721,7 @@ function renderCS() {
     ganados.forEach(w => {
       const tr = document.createElement('tr');
       const litros = (w.litros || 0);
-      tr.innerHTML = `<td class="bold">${H(w.name)}</td><td>${H(w.exec)}</td><td>${fL(litros)}</td><td>${w.last_update || ''}</td>`;
+      tr.innerHTML = `<td class="bold">${H(w.name)}</td><td>${H(w.exec)}</td><td>${fL(litros)}</td><td>${wonDate(w) || ''}</td>`;
       semanalBody.appendChild(tr);
     });
   }
@@ -1734,7 +1737,7 @@ function renderCS() {
     ganados.forEach(w => {
       const tr = document.createElement('tr');
       const litros = (w.litros || 0);
-      tr.innerHTML = `<td class="bold">${H(w.name)}</td><td>${H(w.exec)}</td><td>${fL(litros)}</td><td>${w.last_update || ''}</td>`;
+      tr.innerHTML = `<td class="bold">${H(w.name)}</td><td>${H(w.exec)}</td><td>${fL(litros)}</td><td>${wonDate(w) || ''}</td>`;
       acumuladoBody.appendChild(tr);
     });
   }
