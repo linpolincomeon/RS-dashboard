@@ -1209,12 +1209,12 @@ def extract_dso(models, uid, n_months=6):
                        ["invoice_date", "<=", mo["last"]]]
         inv_rg = models.execute_kw(
             ODOO_DB, uid, ODOO_KEY, "account.move", "read_group",
-            [[["move_type", "=", "out_invoice"] + base_domain]],
+           [[["move_type", "=", "out_invoice"]] + base_domain],
             {"fields": ["amount_untaxed"], "groupby": [], "lazy": False}
         )
         ref_rg = models.execute_kw(
             ODOO_DB, uid, ODOO_KEY, "account.move", "read_group",
-            [[["move_type", "=", "out_refund"] + base_domain]],
+            [[["move_type", "=", "out_refund"]] + base_domain],
             {"fields": ["amount_untaxed"], "groupby": [], "lazy": False}
         )
         ventas_inv = inv_rg[0].get("amount_untaxed", 0) if inv_rg else 0
