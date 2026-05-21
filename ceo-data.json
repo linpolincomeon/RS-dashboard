@@ -1,23 +1,23 @@
 {
-  "updated": "2026-05-21T00:19:47.628804",
+  "updated": "2026-05-21T14:21:25.963025",
   "weeks": [
     {
       "label": "21may-27may",
       "start": "2026-05-21",
       "end": "2026-05-27",
-      "ventas": 0,
-      "neto": 0,
-      "litros": 0,
-      "litros_retail": 0,
+      "ventas": 2001222,
+      "neto": 1562017,
+      "litros": 1314,
+      "litros_retail": 1314,
       "litros_volumen": 0,
-      "precio_neto": 0,
-      "precio_bruto": 0,
-      "margin": 0,
-      "margin_retail": 0,
+      "precio_neto": 1189,
+      "precio_bruto": 1523,
+      "margin": 0.08798,
+      "margin_retail": 0.08798,
       "margin_volumen": 0,
-      "facturas": 0,
+      "facturas": 1,
       "nc": 0,
-      "clientes": 0,
+      "clientes": 1,
       "recaud": 8869001,
       "cheques": 0,
       "transf": 8869001,
@@ -26,10 +26,17 @@
       "cheq_cartera_saldo": 0,
       "cheq_recibidos": 0,
       "facturas_contado": 0,
-      "facturas_credito": 0,
-      "margin_by_term": {},
+      "facturas_credito": 1,
+      "margin_by_term": {
+        "30 Días": {
+          "margin": 0.08798,
+          "normalizado": 0.08798,
+          "count": 1,
+          "days": 30
+        }
+      },
       "cotiz_canceladas": 0,
-      "visitas": 1,
+      "visitas": 69,
       "clientes_nuevos": 0,
       "ppto": 213480,
       "ppto_retail": 153706,
@@ -113,7 +120,7 @@
         }
       },
       "cotiz_canceladas": 5,
-      "visitas": 67,
+      "visitas": 0,
       "clientes_nuevos": 11,
       "ppto": 213480,
       "ppto_retail": 153706,
@@ -1235,8 +1242,8 @@
     {
       "date": "21may",
       "day": "Jue",
-      "litros": 0,
-      "neto": 0
+      "litros": 1314,
+      "neto": 1562017
     },
     {
       "date": "20may",
@@ -1361,9 +1368,9 @@
   ],
   "total_cash": 51857469,
   "receivables": {
-    "open_invoices": 238,
-    "total_due": 625486813,
-    "current": 539484222,
+    "open_invoices": 239,
+    "total_due": 627488035,
+    "current": 541485444,
     "overdue": 86002591,
     "pct_overdue": 13.7,
     "aging": {
@@ -1458,14 +1465,76 @@
   "sla": [
     {
       "label": "21may-27may",
-      "zones": {}
+      "zones": {
+        "Chillan": {
+          "total": 1,
+          "on_time": 1,
+          "late": 0,
+          "pct": 100.0,
+          "late_clients": []
+        },
+        "Curico": {
+          "total": 5,
+          "on_time": 0,
+          "late": 5,
+          "pct": 0.0,
+          "late_clients": [
+            "AGRICOLA LA SORPRESA SPA, SORPRESA-QUILLAYES",
+            "AGRICOLA LA HACIENDA LTDA, AGRICOLA LA HACIENDA-LITU SAN RAFAEL",
+            "GINO ALEJANDRO ALIAGA ALVAREZ, GINO ALIAGA",
+            "ARIDOS LO VALDIVIA LIMITADA, Gissele",
+            "AGRICOLA MANTOS VERDES LIMITADA, LOS PRETILES"
+          ]
+        },
+        "Rancagua": {
+          "total": 3,
+          "on_time": 3,
+          "late": 0,
+          "pct": 100.0,
+          "late_clients": []
+        },
+        "San Fernando": {
+          "total": 5,
+          "on_time": 1,
+          "late": 4,
+          "pct": 20.0,
+          "late_clients": [
+            "ALIMENTOS Y FRUTOS S.A., ALIMENTOS Y FRUTOS, RENGO",
+            "FRUTICOLA AGUA BUENA LTDA, CASA DE DON DARIO",
+            "RENE MONTENEGRO MARQUEZ, RENE MONTENEGRO-Nice",
+            "NUEVO SUR SPA, NUEVO SUR- Juan Carlos Muñoz"
+          ]
+        },
+        "Talca": {
+          "total": 9,
+          "on_time": 5,
+          "late": 4,
+          "pct": 55.56,
+          "late_clients": [
+            "FELIPE HERNANDEZ HERNANDEZ, FELIPE HERNANDEZ HERNANDEZ-Felipe",
+            "EMPRESAS TUCAPEL S A, FIDEL CONCHA, TUCPAEL RETIRO",
+            "EMPRESAS TUCAPEL S A, FIDEL CONCHA, TUCPAEL RETIRO",
+            "SERVICIOS REVIVA SPA, SERVICIOS REVIVA-René"
+          ]
+        },
+        "VI Costa": {
+          "total": 2,
+          "on_time": 0,
+          "late": 2,
+          "pct": 0.0,
+          "late_clients": [
+            "AGROSERVICIOS TIERRA SANTA LIMITADA, Felipe Morales",
+            "ELABORADORA Y COMERCIALIZADORA DE ACEITES DE OLIVA PICHUANTE E HIJOS SPA, ALMAZARA PICHUANTE - Joaquin"
+          ]
+        }
+      }
     }
   ],
   "riesgo": {
     "cubierto": 0,
     "cubierto_count": 0,
-    "no_cubierto": 625486813,
-    "no_cubierto_count": 238,
+    "no_cubierto": 627488035,
+    "no_cubierto_count": 239,
     "pct_monto": 100.0,
     "pct_count": 100.0
   },
@@ -2030,7 +2099,7 @@
         "dso": 27.8
       }
     ],
-    "cxc_hoy": 1132607515
+    "cxc_hoy": 1134608737
   },
   "gerencia_goals": {
     "margen_contado_meta": 0.085,
