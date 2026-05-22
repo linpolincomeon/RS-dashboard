@@ -391,9 +391,15 @@ function getGoal(name) {
 
 const H = s => { if (!s) return ''; const d = document.createElement('div'); d.textContent = s; return d.innerHTML; };
 const fL = n => n ? Math.round(n).toLocaleString('es-CL') + ' L' : '0 L';
-// wonDate: prefiere first_invoice_date (fuente de verdad), fallback a won_date/last_update
-// Inmune al cron de Odoo que pisa date_last_stage_update en masa
-const wonDate = w => w.first_invoice_date || w.won_date || w.last_update || '';
+// wonDate: usa won_date (fecha CRM) para filtrar por semana.
+// first_invoice_date se usa solo como display cuando won_date parece contaminado por cron
+// (si won_date de muchos deals cae el mismo día = probable cron batch)
+const wonDate = w => w.won_date || w.last_update || '';
+
+// getLeadDate: usa stage_update (date_last_stage_update) como fuente primaria para movimientos.
+// Más confiable que write_date que el cron de Odoo pisa en batch.
+// Si stage_update no existe, fallback a last_update.
+const getLeadDate = p => (p.stage_update || p.last_update || '').slice(0, 10);
 const fLs = n => { if(!n) return '0'; if(n>=1e6) return (n/1e6).toFixed(1)+'M'; if(n>=1e3) return Math.round(n/1e3)+'k'; return ''+Math.round(n); };
 const fCs = n => { if(!n) return '$0'; if(n>=1e6) return '$'+(n/1e6).toFixed(1)+'M'; if(n>=1e3) return '$'+Math.round(n/1e3)+'k'; return '$'+Math.round(n); };
 const pct = (v, g) => g ? Math.min(Math.round((v / g) * 100), 999) : 0;
@@ -1011,9 +1017,9 @@ function renderEjecutivos() {
   // Split: movements within selected week vs needs attention (8-90d)
   const execRecent = execFresh.filter(p => {
     if (!ws || !we) return p.days_in_stage <= 7;
-    const lu = (p.last_update || '').slice(0, 10);
+    const lu = getLeadDate(p);
     return lu >= ws && lu <= we;
-  }).sort((a, b) => ((b.last_update || '') > (a.last_update || '') ? 1 : -1));
+  }).sort((a, b) => (getLeadDate(b) > getLeadDate(a) ? 1 : -1));
   const execStale = execFresh.filter(p => p.days_in_stage > 7).sort((a, b) => (b.value || 0) - (a.value || 0));
 
   // Summary KPIs for exec pipeline
@@ -1035,7 +1041,7 @@ function renderEjecutivos() {
   } else {
     execRecent.forEach(p => {
       const actDesc = p._activity ? H((p._activity.type || '') + ': ' + (p._activity.desc || '')) : (p.last_note ? H(p.last_note) : '<span style="color:var(--dim)">—</span>');
-      const fecha = (p.last_update || '').slice(0, 10) || '—';
+      const fecha = getLeadDate(p) || '—';
       h += `<tr><td class="bold">${H(p.name)}</td><td>${stageTag(p.stage, p.stage_class)}</td><td class="bold">${fV_exec(p.value)}</td><td style="white-space:nowrap">${fecha}</td><td style="max-width:300px;white-space:normal;font-size:12px">${actDesc}</td></tr>`;
     });
   }
@@ -1720,7 +1726,7 @@ function renderCS() {
     noSemanal.style.display = 'none';
     ganados.forEach(w => {
       const tr = document.createElement('tr');
-      const litros = (w.litros || 0);
+      const litros = (w.value || w.litros || 0);
       tr.innerHTML = `<td class="bold">${H(w.name)}</td><td>${H(w.exec)}</td><td>${fL(litros)}</td><td>${wonDate(w) || ''}</td>`;
       semanalBody.appendChild(tr);
     });
@@ -1736,7 +1742,7 @@ function renderCS() {
     noAcumulado.style.display = 'none';
     ganados.forEach(w => {
       const tr = document.createElement('tr');
-      const litros = (w.litros || 0);
+      const litros = (w.value || w.litros || 0);
       tr.innerHTML = `<td class="bold">${H(w.name)}</td><td>${H(w.exec)}</td><td>${fL(litros)}</td><td>${wonDate(w) || ''}</td>`;
       acumuladoBody.appendChild(tr);
     });
