@@ -286,7 +286,9 @@ def extract_crm_data(models, uid):
             "value": round(get_value(l)),
             "days_in_stage": d_stage,
             "days_since_activity": d_activity,
-            "last_update": (l.get("write_date") or l.get("date_last_stage_update") or "")[:10],
+            "last_update": (l.get("date_last_stage_update") or l.get("write_date") or "")[:10],
+            "stage_update": (l.get("date_last_stage_update") or "")[:10],
+            "write_date": (l.get("write_date") or "")[:10],
             "won_date": (l.get("date_last_stage_update") or l.get("write_date") or "")[:10],
             "partner_id": l["partner_id"][0] if l.get("partner_id") else None,
             "origin": l.get("x_origen_oportunidad") or "—",
@@ -448,7 +450,10 @@ def extract_crm_data(models, uid):
         "executives": executives,
         "funnel": funnel,
         "pipeline": sorted(pipeline, key=lambda x: x["days_in_stage"])[:150],
-        "won_deals": sorted(won_deals, key=lambda x: -(x.get("avg_monthly_litros") or 0)),
+        "won_deals": sorted(
+            {w["partner_id"]: w for w in reversed(won_deals) if w.get("partner_id")}.values(),
+            key=lambda x: -(x.get("value") or x.get("avg_monthly_litros") or 0)
+        ),
         "stale": stale_leads,
         "activities": act_list[:50],
         "messages": msg_list[:30],
