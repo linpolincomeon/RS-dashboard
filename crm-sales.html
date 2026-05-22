@@ -300,7 +300,7 @@ tr:hover td{background:#fafaf8}
           <thead><tr><th style="width:180px">Variable</th><th>Definición</th><th style="width:120px">Fuente Odoo</th></tr></thead>
           <tbody>
             <tr><td class="bold">Litros Totales</td><td>Litros de Diesel B1 facturados en la semana/mes (facturas posteadas, descontando NC)</td><td>account.move.line</td></tr>
-            <tr><td class="bold">Litros Ejecutivos</td><td>Litros vendidos por Toro, Muñoz y Ron</td><td>invoice_user_id</td></tr>
+            <tr><td class="bold">Litros Ejecutivos</td><td>Litros vendidos por Toro y Muñoz</td><td>invoice_user_id</td></tr>
             <tr><td class="bold">Litros Fidelización</td><td>Litros vendidos por equipo CS (Comber, Mauro, TomEnergy) + otros</td><td>invoice_user_id</td></tr>
             <tr><td class="bold">Litros Freelancer</td><td>Litros vendidos por Avilés, Jullian, Márquez, Bisquertt</td><td>invoice_user_id</td></tr>
             <tr style="border-top:2px solid #e5e4df"><td class="bold">Leads</td><td>Oportunidades CREADAS esa semana en CRM (create_date dentro de la semana). No incluye leads existentes con actividad.</td><td>crm.lead create_date</td></tr>
@@ -330,7 +330,7 @@ tr:hover td{background:#fafaf8}
 let D = null;
 let CEO = null; // ceo-data.json for weekly margins
 let selectedWeek = 0;
-let selectedExec = 0; // 0=Toro, 1=Muñoz, 2=Ron, 3=Freelancers
+let selectedExec = 0; // 0=Toro, 1=Muñoz, 2=Freelancers
 let execSubTab = 'semanal';
 let csSubTab = 'semanal'; // For CS tab sub-tabs
 let chartWeekly = null;
@@ -338,7 +338,7 @@ let chartWeekly = null;
 const norm = s => s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').split(/\s+/).filter(Boolean).sort().join(' ');
 
 const ALLOWED_VENDORS = [
-  'toro gonzález sebastian enrique','muñoz encalada joaquin','ron yenire'
+  'toro gonzález sebastian enrique','muñoz encalada joaquin'
 ];
 const FREELANCERS = [
   'carolina avilés','fernando jullian','marcela márquez','raúl bisquertt','rodrigo retamal'
@@ -720,7 +720,6 @@ function renderVendedores() {
 const EJECUTIVOS = [
   { key: 'toro', name: 'Toro', fullName: 'toro gonzález sebastian enrique' },
   { key: 'munoz', name: 'Muñoz', fullName: 'muñoz encalada joaquin' },
-  { key: 'ron', name: 'Ron', fullName: 'ron yenire' },
   { key: 'aviles', name: 'Avilés', fullName: 'carolina avilés', freelancer: true },
   { key: 'jullian', name: 'Jullian', fullName: 'fernando jullian', freelancer: true },
   { key: 'marquez', name: 'Márquez', fullName: 'marcela márquez', freelancer: true },
