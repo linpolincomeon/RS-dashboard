@@ -80,6 +80,7 @@ _CANONICAL_VENDORS = [
     ({"marquez", "marcela"}, "Marcela Márquez"),
     ({"bisquertt", "raul"}, "Raúl Bisquertt"),
     ({"boccardo", "mauro"}, "Mauro Boccardo"),
+    ({"retamal", "rodrigo"}, "Rodrigo Retamal"),
 ]
 
 def canonical_vendedor(name):
@@ -2649,7 +2650,7 @@ def main():
         window_end = today - timedelta(days=60)
         _exec_names = [
             "toro gonzález sebastian enrique", "muñoz encalada joaquin", "ron yenire",
-            "carolina avilés", "fernando jullian", "marcela márquez", "raúl bisquertt",
+            "carolina avilés", "fernando jullian", "marcela márquez", "raúl bisquertt", "rodrigo retamal",
         ]
 
         # Get all invoices in the window (candidates for first invoice)
