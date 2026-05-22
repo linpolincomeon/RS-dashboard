@@ -1,37 +1,37 @@
 {
-  "updated": "2026-05-22T00:17:34.728497",
+  "updated": "2026-05-22T13:40:09.496747",
   "weeks": [
     {
       "label": "21may-27may",
       "start": "2026-05-21",
       "end": "2026-05-27",
-      "ventas": 2001222,
-      "neto": 1562017,
-      "litros": 1314,
+      "ventas": 11025222,
+      "neto": 8598717,
+      "litros": 7314,
       "litros_retail": 1314,
-      "litros_volumen": 0,
-      "precio_neto": 1189,
-      "precio_bruto": 1523,
-      "margin": 0.08798,
+      "litros_volumen": 6000,
+      "precio_neto": 1176,
+      "precio_bruto": 1507,
+      "margin": 0.07801,
       "margin_retail": 0.08798,
-      "margin_volumen": 0,
-      "facturas": 1,
+      "margin_volumen": 0.0758,
+      "facturas": 2,
       "nc": 0,
-      "clientes": 1,
-      "recaud": 8869001,
+      "clientes": 2,
+      "recaud": 24910501,
       "cheques": 0,
-      "transf": 8869001,
+      "transf": 24910501,
       "factoring": 0,
       "compras_odoo": 0,
       "cheq_cartera_saldo": 0,
       "cheq_recibidos": 0,
       "facturas_contado": 0,
-      "facturas_credito": 1,
+      "facturas_credito": 2,
       "margin_by_term": {
         "30 Días": {
-          "margin": 0.08798,
-          "normalizado": 0.08798,
-          "count": 1,
+          "margin": 0.07801,
+          "normalizado": 0.07801,
+          "count": 2,
           "days": 30
         }
       },
@@ -60,9 +60,9 @@
       "facturas": 111,
       "nc": 5,
       "clientes": 94,
-      "recaud": 336797327,
+      "recaud": 337663127,
       "cheques": 44224119,
-      "transf": 174808689,
+      "transf": 175674489,
       "factoring": 117764519,
       "compras_odoo": 195318292,
       "cheq_cartera_saldo": 0,
@@ -1242,8 +1242,8 @@
     {
       "date": "22may",
       "day": "Vie",
-      "litros": 0,
-      "neto": 0
+      "litros": 6000,
+      "neto": 7036700
     },
     {
       "date": "21may",
@@ -1339,7 +1339,7 @@
   "banks": [
     {
       "name": "DE CHILE",
-      "balance": 23676972
+      "balance": 40584272
     },
     {
       "name": "ESTADO",
@@ -1366,16 +1366,16 @@
       "balance": -1727275
     }
   ],
-  "total_cash": 51857469,
+  "total_cash": 68764769,
   "receivables": {
-    "open_invoices": 239,
-    "total_due": 627488035,
-    "current": 526074083,
-    "overdue": 101413952,
-    "pct_overdue": 16.2,
+    "open_invoices": 236,
+    "total_due": 622613735,
+    "current": 535098083,
+    "overdue": 87515652,
+    "pct_overdue": 14.1,
     "aging": {
-      "0-30": 87809589,
-      "31-60": 3838800,
+      "0-30": 74777089,
+      "31-60": 2973000,
       "61-90": 0,
       "90+": 9765563
     },
@@ -1417,10 +1417,6 @@
         "amount": 14298248
       },
       {
-        "name": "AGRICOLA MANTOS VERDES LIMITADA",
-        "amount": 14244199
-      },
-      {
         "name": "AGROSERVICIOS JR SPA",
         "amount": 12624000
       },
@@ -1439,6 +1435,10 @@
       {
         "name": "AGRICOLA LOS BOLDOS SPA",
         "amount": 9102000
+      },
+      {
+        "name": "CIA AGRICOLA Y FORESTAL EL ALAMO LIMITADA",
+        "amount": 9024000
       },
       {
         "name": "CIA CHILENA DE FOSFOROS S A",
@@ -1533,8 +1533,8 @@
   "riesgo": {
     "cubierto": 0,
     "cubierto_count": 0,
-    "no_cubierto": 627488035,
-    "no_cubierto_count": 239,
+    "no_cubierto": 622613735,
+    "no_cubierto_count": 236,
     "pct_monto": 100.0,
     "pct_count": 100.0
   },
@@ -2099,7 +2099,7 @@
         "dso": 27.8
       }
     ],
-    "cxc_hoy": 1127260736
+    "cxc_hoy": 1122386436
   },
   "gerencia_goals": {
     "margen_contado_meta": 0.085,
