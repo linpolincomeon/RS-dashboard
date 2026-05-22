@@ -1,1014 +1,710 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>TomEnergy — Dashboard Directorio</title>
-<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Tomenergy — Historia 2011-2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&family=DM+Serif+Display&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <style>
   :root {
-    --orange: #E8451A;
-    --orange-soft: #FAECE7;
-    --green: #C8D9A0;
-    --green-dark: #7A9A3A;
-    --yellow: #F5C842;
-    --yellow-soft: #FDF4D9;
-    --bg: #FAFAF7;
-    --card: #FFFFFF;
-    --text: #2C2C2A;
-    --text-soft: #6B6B68;
-    --text-dim: #9A9A95;
-    --border: #E8E6DC;
-    --good: #3B6D11;
-    --good-bg: #EAF3DE;
-    --bad: #A32D2D;
-    --bad-bg: #FCEBEB;
-    --warn: #854F0B;
-    --warn-bg: #FAEEDA;
+    --bg: #f7f6f3;
+    --paper: #ffffff;
+    --ink: #1a1a1a;
+    --ink-soft: #4a4a48;
+    --ink-muted: #8a8a85;
+    --rule: #e6e3dc;
+    --rule-strong: #cfccc3;
+    --accent: #c8360e;
+    --accent-soft: #f4e2db;
+    --positive: #1d6b4a;
+    --positive-soft: #e0efe7;
+    --warn: #b07408;
+    --warn-soft: #f6ead3;
+    --neg: #a82a1f;
   }
   * { box-sizing: border-box; }
-  body {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
-    margin: 0;
-    background: var(--bg);
-    color: var(--text);
-    line-height: 1.5;
+  html, body {
+    margin: 0; padding: 0; background: var(--bg); color: var(--ink);
+    font-family: 'DM Sans', system-ui, sans-serif;
+    font-feature-settings: "ss01", "tnum";
+    -webkit-font-smoothing: antialiased;
   }
-  .container { max-width: 1280px; margin: 0 auto; padding: 24px; }
-  header {
-    display: flex; align-items: center; justify-content: space-between;
-    margin-bottom: 8px; flex-wrap: wrap; gap: 16px;
-  }
-  .brand { display: flex; align-items: center; gap: 14px; }
-  .logo-mark {
-    width: 42px; height: 42px; border-radius: 10px;
-    background: var(--orange); color: #fff;
-    display: flex; align-items: center; justify-content: center;
-    font-weight: 700; font-size: 18px; letter-spacing: -0.5px;
-  }
-  .brand h1 { margin: 0; font-size: 18px; font-weight: 600; }
-  .brand .sub { font-size: 12px; color: var(--text-soft); margin-top: 2px; }
-  .file-picker {
-    display: flex; align-items: center; gap: 10px;
-    font-size: 12px; color: var(--text-soft);
-  }
-  .file-picker label {
-    background: var(--card); border: 1px solid var(--border);
-    padding: 7px 12px; border-radius: 8px; cursor: pointer;
-    font-weight: 500; color: var(--text);
-  }
-  .file-picker label:hover { border-color: var(--orange); }
-  .file-picker input { display: none; }
-  .status { font-size: 11px; color: var(--text-dim); }
-  .status.ok { color: var(--good); }
-  .status.err { color: var(--bad); }
+  .page { max-width: 1280px; margin: 0 auto; padding: 36px 40px 80px; }
 
-  .tabs {
-    display: flex; gap: 4px; border-bottom: 1px solid var(--border);
-    margin: 20px 0 24px; overflow-x: auto; scrollbar-width: thin;
+  /* ===== Masthead — newspaper feel ===== */
+  .masthead {
+    border-top: 3px solid var(--ink);
+    border-bottom: 1px solid var(--ink);
+    padding: 22px 0 18px;
+    margin-bottom: 28px;
   }
-  .tab {
-    padding: 10px 16px; cursor: pointer; font-size: 13px;
-    color: var(--text-soft); border-bottom: 2px solid transparent;
-    white-space: nowrap; font-weight: 500;
-    transition: all 0.15s;
+  .masthead-top {
+    display: flex; justify-content: space-between; align-items: baseline;
+    font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--ink-soft); margin-bottom: 14px;
   }
-  .tab:hover { color: var(--text); }
-  .tab.active { color: var(--orange); border-bottom-color: var(--orange); }
+  .masthead h1 {
+    font-family: 'DM Serif Display', Georgia, serif;
+    font-weight: 400; font-size: 64px; line-height: 0.95;
+    margin: 0; letter-spacing: -0.02em;
+  }
+  .masthead h1 .accent { color: var(--accent); font-style: italic; }
+  .masthead-sub {
+    margin-top: 12px; font-size: 14px; color: var(--ink-soft);
+    display: flex; gap: 28px; flex-wrap: wrap;
+  }
+  .masthead-sub span b { color: var(--ink); font-weight: 500; }
 
-  .panel { display: none; }
-  .panel.active { display: block; }
+  /* ===== Section headers ===== */
+  .section-head {
+    display: flex; align-items: baseline; gap: 14px; margin: 44px 0 18px;
+  }
+  .section-head .kicker {
+    font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--accent); font-weight: 500;
+  }
+  .section-head h2 {
+    font-family: 'DM Serif Display', Georgia, serif;
+    font-weight: 400; font-size: 28px; margin: 0; letter-spacing: -0.01em;
+  }
+  .section-head .rule { flex: 1; height: 1px; background: var(--rule-strong); margin-left: 8px; }
 
-  .section-title {
-    font-size: 11px; letter-spacing: 1px; text-transform: uppercase;
-    color: var(--text-dim); margin: 28px 0 12px;
+  /* ===== KPI strip ===== */
+  .kpi-strip {
+    display: grid; grid-template-columns: repeat(5, 1fr); gap: 1px;
+    background: var(--rule); border: 1px solid var(--rule);
   }
-  .section-title:first-child { margin-top: 0; }
-
-  /* KPI cards */
-  .kpi-grid {
-    display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-    gap: 12px; margin-bottom: 24px;
+  .kpi {
+    background: var(--paper); padding: 18px 20px;
   }
-  .kpi-card {
-    background: var(--card); border: 1px solid var(--border);
-    border-radius: 12px; padding: 16px;
-    position: relative; overflow: hidden;
-  }
-  .kpi-card.hero { background: var(--orange-soft); border-color: var(--orange); }
-  .kpi-card.good::before, .kpi-card.bad::before, .kpi-card.warn::before {
-    content: ''; position: absolute; top: 0; left: 0; width: 3px; height: 100%;
-  }
-  .kpi-card.good::before { background: var(--good); }
-  .kpi-card.bad::before { background: var(--bad); }
-  .kpi-card.warn::before { background: var(--warn); }
   .kpi-label {
-    font-size: 11px; color: var(--text-soft); text-transform: uppercase;
-    letter-spacing: 0.5px; margin-bottom: 6px; font-weight: 500;
+    font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--ink-muted); margin-bottom: 8px;
   }
   .kpi-value {
-    font-size: 24px; font-weight: 600; color: var(--text);
-    line-height: 1.1;
+    font-family: 'DM Serif Display', Georgia, serif;
+    font-size: 32px; line-height: 1; margin-bottom: 6px;
   }
-  .kpi-card.hero .kpi-value { font-size: 28px; }
-  .kpi-compare {
-    font-size: 11px; margin-top: 6px; color: var(--text-soft);
-  }
-  .kpi-compare.good { color: var(--good); }
-  .kpi-compare.bad { color: var(--bad); }
-  .kpi-compare.warn { color: var(--warn); }
+  .kpi-meta { font-size: 12px; color: var(--ink-soft); }
+  .kpi-meta.good { color: var(--positive); }
+  .kpi-meta.bad { color: var(--neg); }
+  .kpi-meta.warn { color: var(--warn); }
 
-  /* Chart cards */
-  .chart-grid {
-    display: grid; grid-template-columns: 1fr 1fr; gap: 16px;
-    margin-bottom: 20px;
+  /* ===== Two-column grid ===== */
+  .grid-2 {
+    display: grid; grid-template-columns: 1.4fr 1fr; gap: 28px; margin-top: 8px;
   }
-  .chart-grid.single { grid-template-columns: 1fr; }
   .chart-card {
-    background: var(--card); border: 1px solid var(--border);
-    border-radius: 12px; padding: 18px;
+    background: var(--paper); border: 1px solid var(--rule);
+    padding: 20px 22px;
   }
   .chart-card h3 {
-    margin: 0 0 4px; font-size: 14px; font-weight: 600;
+    font-family: 'DM Sans', sans-serif; font-weight: 500;
+    font-size: 14px; margin: 0 0 4px; letter-spacing: 0;
   }
-  .chart-card .chart-sub {
-    font-size: 11px; color: var(--text-soft); margin-bottom: 14px;
+  .chart-card .sub {
+    font-size: 12px; color: var(--ink-muted); margin-bottom: 14px;
   }
-  .chart-wrap { position: relative; width: 100%; height: 280px; }
-  .chart-wrap.tall { height: 360px; }
+  .chart-wrap { position: relative; height: 280px; }
 
-  /* Tables */
-  .table-card {
-    background: var(--card); border: 1px solid var(--border);
-    border-radius: 12px; padding: 18px; overflow-x: auto;
+  /* ===== Timeline / annual narrative — the heart of the dashboard ===== */
+  .timeline {
+    display: flex; flex-direction: column; gap: 0;
+    border-top: 1px solid var(--rule);
   }
-  .table-card h3 {
-    margin: 0 0 12px; font-size: 14px; font-weight: 600;
+  .year-row {
+    display: grid;
+    grid-template-columns: 90px 1fr 320px;
+    gap: 28px;
+    padding: 22px 0;
+    border-bottom: 1px solid var(--rule);
+    align-items: start;
   }
-  table { width: 100%; border-collapse: collapse; font-size: 12px; }
-  th {
-    text-align: left; padding: 8px 10px; font-weight: 500;
-    color: var(--text-soft); border-bottom: 1px solid var(--border);
-    font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px;
+  .year-row.era-shift { background: linear-gradient(to right, var(--accent-soft) 0%, transparent 30%); }
+  .year-tag {
+    font-family: 'DM Serif Display', Georgia, serif;
+    font-size: 38px; line-height: 1; color: var(--ink);
   }
-  td {
-    padding: 8px 10px; border-bottom: 1px solid var(--border);
+  .year-tag .era {
+    display: block; font-family: 'DM Sans', sans-serif; font-size: 9px;
+    letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--accent); margin-top: 6px; font-weight: 500;
   }
-  td.num { text-align: right; font-variant-numeric: tabular-nums; }
-  tr:last-child td { border-bottom: none; }
-  .badge {
-    display: inline-block; padding: 2px 8px; border-radius: 999px;
-    font-size: 10px; font-weight: 500;
+  .year-body h4 {
+    font-family: 'DM Sans', sans-serif; font-weight: 500;
+    font-size: 15px; margin: 0 0 6px;
   }
-  .badge.good { background: var(--good-bg); color: var(--good); }
-  .badge.bad { background: var(--bad-bg); color: var(--bad); }
-  .badge.warn { background: var(--warn-bg); color: var(--warn); }
+  .year-body .note {
+    font-size: 13.5px; color: var(--ink-soft); line-height: 1.55;
+    margin: 0 0 10px;
+  }
+  .year-body .implication {
+    font-size: 12.5px; color: var(--ink); line-height: 1.5;
+    padding: 10px 12px; background: var(--bg);
+    border-left: 3px solid var(--accent);
+    margin-top: 8px;
+  }
+  .year-body .implication b { font-weight: 500; }
+  .year-stats {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 4px 14px;
+    font-size: 12px;
+  }
+  .year-stats .stat {
+    display: flex; justify-content: space-between;
+    padding: 4px 0; border-bottom: 1px dotted var(--rule);
+  }
+  .year-stats .stat .lbl { color: var(--ink-muted); }
+  .year-stats .stat .val { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--ink); }
+  .year-stats .stat .val.up { color: var(--positive); }
+  .year-stats .stat .val.down { color: var(--neg); }
 
-  /* Heatmap */
-  .heatmap-wrap { overflow-x: auto; padding-bottom: 8px; }
-  .heatmap {
-    display: grid; gap: 3px;
-    grid-template-columns: 60px repeat(12, minmax(54px, 1fr));
-    min-width: 720px;
+  /* ===== Pill / chip ===== */
+  .chip {
+    display: inline-block; font-size: 10px; letter-spacing: 0.08em;
+    text-transform: uppercase; padding: 3px 8px; border-radius: 2px;
+    font-weight: 500; margin-right: 6px;
   }
-  .hm-cell {
-    aspect-ratio: 1.4; border-radius: 6px;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 10px; font-weight: 500; color: var(--text);
-  }
-  .hm-cell.header { background: transparent; color: var(--text-soft); font-weight: 500; font-size: 11px; }
-  .hm-cell.year-label { font-weight: 600; color: var(--text); font-size: 11px; }
-  .hm-cell.empty { background: #F0F0EC; color: var(--text-dim); }
+  .chip.pos { background: var(--positive-soft); color: var(--positive); }
+  .chip.neg { background: var(--accent-soft); color: var(--accent); }
+  .chip.warn { background: var(--warn-soft); color: var(--warn); }
+  .chip.neutral { background: var(--rule); color: var(--ink-soft); }
 
-  /* Empty state */
-  .empty {
-    text-align: center; padding: 80px 20px; color: var(--text-soft);
+  /* ===== Era markers ===== */
+  .era-divider {
+    margin: 38px 0 18px; padding: 14px 18px;
+    background: var(--ink); color: var(--bg);
+    display: flex; justify-content: space-between; align-items: baseline;
   }
-  .empty .big { font-size: 16px; color: var(--text); margin-bottom: 8px; font-weight: 600; }
-
-  /* Footer */
-  footer {
-    margin-top: 40px; padding-top: 16px; border-top: 1px solid var(--border);
-    font-size: 11px; color: var(--text-dim); display: flex;
-    justify-content: space-between; flex-wrap: wrap; gap: 8px;
+  .era-divider .era-title {
+    font-family: 'DM Serif Display', Georgia, serif; font-size: 22px;
+  }
+  .era-divider .era-period {
+    font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase;
+    opacity: 0.7;
+  }
+  .era-divider .era-thesis {
+    font-size: 12px; max-width: 460px; text-align: right;
+    color: rgba(247,246,243,0.85); line-height: 1.5;
   }
 
-  @media (max-width: 720px) {
-    .container { padding: 14px; }
-    .chart-grid { grid-template-columns: 1fr; }
-    .brand h1 { font-size: 16px; }
-    .kpi-value { font-size: 20px; }
+  /* ===== Footnote ===== */
+  .footnote {
+    margin-top: 50px; padding-top: 18px; border-top: 1px solid var(--rule);
+    font-size: 11px; color: var(--ink-muted); line-height: 1.6;
+  }
+  .footnote b { color: var(--ink-soft); font-weight: 500; }
+
+  @media (max-width: 980px) {
+    .page { padding: 24px 18px 60px; }
+    .masthead h1 { font-size: 42px; }
+    .grid-2 { grid-template-columns: 1fr; }
+    .kpi-strip { grid-template-columns: repeat(2, 1fr); }
+    .year-row { grid-template-columns: 1fr; gap: 12px; }
+    .year-tag { font-size: 28px; }
+  }
+  @media print {
+    body { background: white; }
+    .page { padding: 0; max-width: none; }
+    .year-row { page-break-inside: avoid; }
+    .chart-card, .kpi { break-inside: avoid; }
   }
 </style>
 </head>
 <body>
-<div class="container">
+<div class="page">
 
-  <header>
-    <div class="brand">
-      <div class="logo-mark">TE</div>
-      <div>
-        <h1>TomEnergy — Dashboard Directorio</h1>
-        <div class="sub" id="periodSub">Cargando datos…</div>
-      </div>
+  <!-- ========== MASTHEAD ========== -->
+  <header class="masthead">
+    <div class="masthead-top">
+      <span>Tomenergy · Directorio</span>
+      <span>Edición de Cierre · Mayo 2026</span>
     </div>
-    <div class="file-picker">
-      <label for="fileInput">📁 Cargar Excel</label>
-      <input type="file" id="fileInput" accept=".xlsx,.xls">
-      <span class="status" id="status">Esperando archivo…</span>
+    <h1>Quince años en <span class="accent">diésel.</span></h1>
+    <div class="masthead-sub">
+      <span><b>2011-2026</b> historia operacional</span>
+      <span><b>5.2 → 12.5</b> millones de litros proyectados</span>
+      <span><b>Plan 2x2x2</b> en ejecución</span>
     </div>
   </header>
 
-  <nav class="tabs">
-    <div class="tab active" data-tab="resumen">Resumen Ejecutivo</div>
-    <div class="tab" data-tab="trayectoria">Trayectoria 10 años</div>
-    <div class="tab" data-tab="estacionalidad">Estacionalidad</div>
-    <div class="tab" data-tab="riesgo">Riesgo & Crédito</div>
-    <div class="tab" data-tab="rentabilidad">Rentabilidad</div>
-  </nav>
-
-  <div id="panel-resumen" class="panel active">
-    <div class="empty"><div class="big">Carga el Excel BOARD_DATA</div>
-    <div>El archivo debe tener las hojas: ANUAL, MENSUAL, RIESGO, KPI_MES_ACTUAL.</div></div>
+  <!-- ========== KPI STRIP (estado actual) ========== -->
+  <div class="section-head">
+    <span class="kicker">01</span>
+    <h2>Dónde estamos hoy</h2>
+    <span class="rule"></span>
   </div>
-  <div id="panel-trayectoria" class="panel"></div>
-  <div id="panel-estacionalidad" class="panel"></div>
-  <div id="panel-riesgo" class="panel"></div>
-  <div id="panel-rentabilidad" class="panel"></div>
 
-  <footer>
-    <span>TomEnergy · TOM PETROL S.P.A. · Dashboard generado desde BOARD_DATA.xlsx</span>
-    <span id="loadedAt"></span>
-  </footer>
+  <div class="kpi-strip">
+    <div class="kpi">
+      <div class="kpi-label">Litros · abril 2026</div>
+      <div class="kpi-value">764K</div>
+      <div class="kpi-meta bad">−34.5% vs ppto</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">EBITDA acumulado</div>
+      <div class="kpi-value">$31M</div>
+      <div class="kpi-meta bad">−56.3% vs ppto</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">Churn</div>
+      <div class="kpi-value">1.98%</div>
+      <div class="kpi-meta good">desde 6.85% en marzo</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">SLA entrega</div>
+      <div class="kpi-value">92.5%</div>
+      <div class="kpi-meta good">desde 85.7% en marzo</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">Rotación CxC</div>
+      <div class="kpi-value">23d</div>
+      <div class="kpi-meta good">óptimo &lt; 30d</div>
+    </div>
+  </div>
+
+  <!-- ========== GRÁFICOS ========== -->
+  <div class="section-head">
+    <span class="kicker">02</span>
+    <h2>El arco de quince años</h2>
+    <span class="rule"></span>
+  </div>
+
+  <div class="grid-2">
+    <div class="chart-card">
+      <h3>Litros vendidos por año</h3>
+      <div class="sub">Millones de litros · el escalón 2021 marca el quiebre post-COVID</div>
+      <div class="chart-wrap"><canvas id="litrosChart" role="img" aria-label="Litros vendidos por año, 2011 a 2026"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <h3>Margen y EBITDA</h3>
+      <div class="sub">El margen sube en 2020-2024, EBITDA cae en 2025 por costos</div>
+      <div class="chart-wrap"><canvas id="margenChart" role="img" aria-label="Margen porcentual y EBITDA por año"></canvas></div>
+    </div>
+  </div>
+
+  <!-- ========== ERA 1 — FUNDACIÓN ========== -->
+  <div class="era-divider">
+    <div>
+      <div class="era-title">I. Fundación y maduración</div>
+      <div class="era-period">2011 — 2019 · gestión Tom anterior</div>
+    </div>
+    <div class="era-thesis">
+      Operación que crece en márgenes pero acumula riesgo crediticio.<br>
+      Termina con un golpe de incobrables que fuerza el reset.
+    </div>
+  </div>
+
+  <div class="timeline">
+
+    <div class="year-row">
+      <div class="year-tag">2011</div>
+      <div class="year-body">
+        <h4>Año de origen — base operacional</h4>
+        <p class="note">Punto de partida: 5.2M litros, 140K UF de venta, margen aún sin medir formalmente. La operación arranca con escala respetable pero sin disciplina financiera moderna.</p>
+      </div>
+      <div class="year-stats">
+        <div class="stat"><span class="lbl">Litros</span><span class="val">5.23M</span></div>
+        <div class="stat"><span class="lbl">Venta UF</span><span class="val">140,534</span></div>
+        <div class="stat"><span class="lbl">Util Bruta</span><span class="val">$155M</span></div>
+        <div class="stat"><span class="lbl">Camiones</span><span class="val">—</span></div>
+      </div>
+    </div>
+
+    <div class="year-row">
+      <div class="year-tag">2012-2014</div>
+      <div class="year-body">
+        <h4>Margen empieza a subir, volumen oscila</h4>
+        <p class="note">Tres años de aprendizaje. El margen bruto sube de 5.7% (2012) a 7.1% (2014). Venta UF se mueve en torno a 130-140K. El negocio se consolida pero todavía sin política crediticia robusta.</p>
+      </div>
+      <div class="year-stats">
+        <div class="stat"><span class="lbl">Litros (rango)</span><span class="val">4.8–5.0M</span></div>
+        <div class="stat"><span class="lbl">Margen 2014</span><span class="val up">7.1%</span></div>
+        <div class="stat"><span class="lbl">Util Bruta 2014</span><span class="val">$236M</span></div>
+        <div class="stat"><span class="lbl">Venta UF 2014</span><span class="val">135,648</span></div>
+      </div>
+    </div>
+
+    <div class="year-row">
+      <div class="year-tag">2015-2016
+        <span class="era">peak volumen</span>
+      </div>
+      <div class="year-body">
+        <h4>Boom de volumen — 6.5M litros récord</h4>
+        <p class="note">2016 es el año de mayor volumen físico hasta ese momento: 6.5M litros, +15% sobre 2015. El margen salta a 12.1%. Pero la venta UF cae (109K vs 114K) — más litros, menos valor por unidad. Se vende barato.</p>
+        <p class="implication"><b>Implicancia estratégica:</b> primera vez que el negocio descubre el dilema volumen vs margen. La elección por volumen se pagará en los próximos tres años con problemas de cobranza.</p>
+      </div>
+      <div class="year-stats">
+        <div class="stat"><span class="lbl">Litros 2016</span><span class="val up">6.50M</span></div>
+        <div class="stat"><span class="lbl">Margen 2016</span><span class="val up">12.1%</span></div>
+        <div class="stat"><span class="lbl">Venta UF 2016</span><span class="val down">109,117</span></div>
+        <div class="stat"><span class="lbl">USD prom 2017</span><span class="val">$607</span></div>
+      </div>
+    </div>
+
+    <div class="year-row">
+      <div class="year-tag">2017</div>
+      <div class="year-body">
+        <h4>Primera señal de alarma crediticia</h4>
+        <p class="note">Margen sigue subiendo (13.0%) y la utilidad bruta llega a $368M. Pero el incobrable salta a $43M sobre $547M de CxC — 7.86%. Cliente top en incobrables: <i>winter impregnados / fardo</i>.</p>
+        <p class="implication"><b>Patrón a observar:</b> el margen contable mejora mientras la cartera se contamina. El EERR luce bien y el balance se va deteriorando en silencio.</p>
+      </div>
+      <div class="year-stats">
+        <div class="stat"><span class="lbl">Litros</span><span class="val">5.63M</span></div>
+        <div class="stat"><span class="lbl">Margen</span><span class="val up">13.0%</span></div>
+        <div class="stat"><span class="lbl">Incobrable</span><span class="val down">$43M</span></div>
+        <div class="stat"><span class="lbl">% Incob/CxC</span><span class="val down">7.86%</span></div>
+      </div>
+    </div>
+
+    <div class="year-row">
+      <div class="year-tag">2018</div>
+      <div class="year-body">
+        <h4>Caída de volumen, EBITDA $120M</h4>
+        <p class="note">Litros caen a 4.77M, el mínimo desde 2013. Primer registro EBITDA: $120M (11.2% sobre ventas). Incobrable corregido a $11.6M. Top deudores: <i>codetrans / travesía</i>.</p>
+      </div>
+      <div class="year-stats">
+        <div class="stat"><span class="lbl">Litros</span><span class="val down">4.77M</span></div>
+        <div class="stat"><span class="lbl">EBITDA</span><span class="val">$120M</span></div>
+        <div class="stat"><span class="lbl">EBITDA/Vta</span><span class="val">11.2%</span></div>
+        <div class="stat"><span class="lbl">Util Bruta</span><span class="val">$315M</span></div>
+      </div>
+    </div>
+
+    <div class="year-row">
+      <div class="year-tag">2019
+        <span class="era">crisis crediticia</span>
+      </div>
+      <div class="year-body">
+        <h4><span class="chip neg">Punto de inflexión</span>El incobrable de $122M que rompe el modelo</h4>
+        <p class="note">Año bisagra. Incobrables explotan a $122M sobre $654M de CxC — <b>18.65%</b>, peor cifra histórica. Top deudores: <i>bys palavecino / amparo / seagro</i>. Margen 12.5%, EBITDA $114M.</p>
+        <p class="implication"><b>Por qué importa:</b> esta crisis fuerza la redefinición de la política comercial. Se siembra la decisión que dará fruto en 2020-2024: <b>preferir cartera limpia sobre crecimiento sucio</b>. Sin este shock, no hay Plan Cabo Hornos.</p>
+      </div>
+      <div class="year-stats">
+        <div class="stat"><span class="lbl">Litros</span><span class="val">4.87M</span></div>
+        <div class="stat"><span class="lbl">Margen</span><span class="val up">12.5%</span></div>
+        <div class="stat"><span class="lbl">Incobrable</span><span class="val down">$122M</span></div>
+        <div class="stat"><span class="lbl">% Incob/CxC</span><span class="val down">18.65%</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== ERA 2 — RECONFIGURACIÓN ========== -->
+  <div class="era-divider">
+    <div>
+      <div class="era-title">II. Reconfiguración con disciplina</div>
+      <div class="era-period">2020 — 2024 · Plan Cabo Hornos</div>
+    </div>
+    <div class="era-thesis">
+      Tesis: subir margen 30%, reducir cartera 30%.<br>
+      Cinco años de ejecución que llevan al EBITDA récord de 2024.
+    </div>
+  </div>
+
+  <div class="timeline">
+
+    <div class="year-row era-shift">
+      <div class="year-tag">2020
+        <span class="era">COVID — pivot</span>
+      </div>
+      <div class="year-body">
+        <h4><span class="chip warn">Año atípico</span>El shock que acelera la disciplina</h4>
+        <p class="note">Litros caen a 4.51M (−7%). Pero el <b>margen salta a 15.5%</b> — el más alto de la historia hasta hoy. CxC promedio se reduce de $654M (2019) a $286M. Incobrable $60M (20.98% de CxC, alto pero sobre base menor).</p>
+        <p class="implication"><b>Implicancia:</b> la pandemia obliga a algo que en 2019 era voluntario — restricción crediticia. Se descubre que es posible vender menos y ganar más. Esta es la semilla intelectual del Plan Cabo Hornos.</p>
+      </div>
+      <div class="year-stats">
+        <div class="stat"><span class="lbl">Litros</span><span class="val down">4.51M</span></div>
+        <div class="stat"><span class="lbl">Margen</span><span class="val up">15.5%</span></div>
+        <div class="stat"><span class="lbl">EBITDA</span><span class="val">$98M</span></div>
+        <div class="stat"><span class="lbl">CxC prom</span><span class="val up">$286M</span></div>
+      </div>
+    </div>
+
+    <div class="year-row">
+      <div class="year-tag">2021
+        <span class="era">récord post-COVID</span>
+      </div>
+      <div class="year-body">
+        <h4><span class="chip pos">Récord histórico</span>7.3M litros y +125 clientes nuevos</h4>
+        <p class="note">El rebote: <b>7.30M litros (+62%)</b>, EBITDA récord $235M, venta UF se duplica a 165K. Se incorporan 125 clientes nuevos, base activa pasa a 174. Margen baja a 14.0% (esperable por mix).</p>
+        <p class="implication"><b>Lectura:</b> demanda reprimida + capacidad disciplinada = año excepcional. Pero llegan también clientes nuevos sin selección rigurosa — la deuda implícita de este año se pagará en 2022.</p>
+      </div>
+      <div class="year-stats">
+        <div class="stat"><span class="lbl">Litros</span><span class="val up">7.30M</span></div>
+        <div class="stat"><span class="lbl">EBITDA</span><span class="val up">$235M</span></div>
+        <div class="stat"><span class="lbl">Clientes nuevos</span><span class="val up">125</span></div>
+        <div class="stat"><span class="lbl">Venta UF</span><span class="val up">165,329</span></div>
+      </div>
+    </div>
+
+    <div class="year-row">
+      <div class="year-tag">2022</div>
+      <div class="year-body">
+        <h4>Resaca del crecimiento — el problema San Fernando</h4>
+        <p class="note">Litros caen a 6.79M, margen comprime a 9.5% (datos directorio Nov-22). Zona San Fernando es el dolor: 46 clientes con margen 8.5%, arrastrando la zona completa. Churn anual llega a 47% — pérdida de 100 clientes. Top deudores: <i>gladys / fdo / felipe / roble</i>.</p>
+        <p class="implication"><b>Decisión que se toma:</b> el Plan de Acción San Fernando (Nov-22) define la doctrina que después se llamará Plan Cabo Hornos: subir precios selectivamente, no temer al churn, perseguir margen estructural sobre volumen contable.</p>
+      </div>
+      <div class="year-stats">
+        <div class="stat"><span class="lbl">Litros</span><span class="val down">6.79M</span></div>
+        <div class="stat"><span class="lbl">Margen</span><span class="val down">~9.5%</span></div>
+        <div class="stat"><span class="lbl">EBITDA</span><span class="val">$247M</span></div>
+        <div class="stat"><span class="lbl">Clientes perdidos</span><span class="val down">100</span></div>
+      </div>
+    </div>
+
+    <div class="year-row era-shift">
+      <div class="year-tag">2023
+        <span class="era">Cabo Hornos</span>
+      </div>
+      <div class="year-body">
+        <h4><span class="chip pos">Plan Cabo Hornos en ejecución</span>Margen 9.6% → 12.5% en seis meses</h4>
+        <p class="note">Estrategia ejecutada limpiamente: <b>+30% margen bruto en 6 meses</b>, en lugar de bajar 30% los litros sólo bajan 5%. K de T cae 15% (de 714 a 610) sin necesidad de crédito. EBITDA $311M. Incobrable cae a $3M.</p>
+        <p class="implication"><b>Por qué fue replicable:</b> demostró que la disciplina crediticia y de precios no destruye volumen tanto como se temía. Pricing power y discriminación de cliente son herramientas que funcionan.</p>
+      </div>
+      <div class="year-stats">
+        <div class="stat"><span class="lbl">Litros</span><span class="val">6.49M</span></div>
+        <div class="stat"><span class="lbl">Margen final</span><span class="val up">12.5%</span></div>
+        <div class="stat"><span class="lbl">EBITDA</span><span class="val up">$311M</span></div>
+        <div class="stat"><span class="lbl">Incobrable</span><span class="val up">$3M</span></div>
+      </div>
+    </div>
+
+    <div class="year-row era-shift">
+      <div class="year-tag">2024
+        <span class="era">EBITDA récord</span>
+      </div>
+      <div class="year-body">
+        <h4><span class="chip pos">Punto más alto del modelo "viejo"</span>EBITDA $419M con incobrable cero</h4>
+        <p class="note">Cumple presupuesto: 270 utilidad, 12% margen, incobrable 0%. <b>EBITDA $419M</b> — récord absoluto. Plan 2x2x2 se anuncia este año. Rotación CxC 31.5 días. Hito operativo: Odoo en marcha y AI/Scoring crediticio con GPT-4.</p>
+        <p class="implication"><b>Implicancia clave:</b> el modelo "limpio y disciplinado" llega a su techo natural. El siguiente salto requiere otra cosa — más litros, más camiones, más equipo. De ahí el Plan 2x2x2. La pregunta era: ¿se puede duplicar sin romper la disciplina?</p>
+      </div>
+      <div class="year-stats">
+        <div class="stat"><span class="lbl">Litros</span><span class="val">6.44M</span></div>
+        <div class="stat"><span class="lbl">Margen</span><span class="val up">11.9%</span></div>
+        <div class="stat"><span class="lbl">EBITDA</span><span class="val up">$419M</span></div>
+        <div class="stat"><span class="lbl">Incobrable</span><span class="val up">$0</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== ERA 3 — 2X2X2 ========== -->
+  <div class="era-divider">
+    <div>
+      <div class="era-title">III. Plan 2x2x2 — la transformación</div>
+      <div class="era-period">2025 — en curso</div>
+    </div>
+    <div class="era-thesis">
+      2x litros, 2x margen, 2x EBITDA al 2026.<br>
+      2025 fue "año de transparencia y orden", no de rentabilidad.
+    </div>
+  </div>
+
+  <div class="timeline">
+
+    <div class="year-row era-shift">
+      <div class="year-tag">2025
+        <span class="era">consolidación</span>
+      </div>
+      <div class="year-body">
+        <h4><span class="chip warn">Récord en litros, colapso en EBITDA</span>7.85M litros — pero el EBITDA cae a ~$15M</h4>
+        <p class="note">Récord histórico de volumen: <b>7.85M litros (+22%)</b>. Pero EBITDA se derrumba de $419M a ~$15M. Causas según directorio Enero-26: +$110M sueldos + $30M finiquitos (salida de Emilio, "dientes", Rom); +$20M reconfiguración flota; +$10M VW fundido; +$13M Odoo y GAV; +$73M por meses bajo punto de equilibrio (550K litros).</p>
+        <p class="implication"><b>Cómo se está leyendo internamente:</b> el 2025 no se midió por rentabilidad sino por "transparencia, orden y consolidación". Es la base estructural — costos conocidos, equipo nuevo, Odoo al 100%, scoring crediticio AI — sobre la cual debe correr el 2026.</p>
+      </div>
+      <div class="year-stats">
+        <div class="stat"><span class="lbl">Litros</span><span class="val up">7.85M</span></div>
+        <div class="stat"><span class="lbl">Margen</span><span class="val">11.6%</span></div>
+        <div class="stat"><span class="lbl">EBITDA</span><span class="val down">~$15M</span></div>
+        <div class="stat"><span class="lbl">Clientes activos dic</span><span class="val up">246</span></div>
+      </div>
+    </div>
+
+    <div class="year-row era-shift">
+      <div class="year-tag">2026
+        <span class="era">en curso</span>
+      </div>
+      <div class="year-body">
+        <h4><span class="chip neutral">YTD abril</span>Presupuesto exigente — 12.5M litros · primer trimestre bajo</h4>
+        <p class="note">Presupuesto 2026: <b>11.6M litros</b> (vs 7.85M reales 2025, +48%). YTD a abril: 3.57M litros — proyectado a ese ritmo cerraría en ~10.7M. Abril −34.5% vs presupuesto, EBITDA acumulado $31M (−56% vs ppto). Señales positivas: churn 1.98% (desde 6.85% marzo), SLA 92.5% (desde 85.7%), rotación CxC 23 días.</p>
+        <p class="implication"><b>La pregunta del directorio:</b> ¿el gap vs presupuesto es estacional o estructural? Las métricas de calidad (churn, SLA, cobranza) están mejorando rápido. La métrica de volumen, todavía no. La decisión que viene: ajustar presupuesto o sostener la apuesta.</p>
+      </div>
+      <div class="year-stats">
+        <div class="stat"><span class="lbl">Litros YTD</span><span class="val">3.57M</span></div>
+        <div class="stat"><span class="lbl">Ppto anual</span><span class="val">11.6M</span></div>
+        <div class="stat"><span class="lbl">Margen retail</span><span class="val warn">8.4%</span></div>
+        <div class="stat"><span class="lbl">Margen volumen</span><span class="val up">6.8%</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== TESIS DE CIERRE ========== -->
+  <div class="section-head">
+    <span class="kicker">03</span>
+    <h2>Lectura para el directorio</h2>
+    <span class="rule"></span>
+  </div>
+
+  <div style="background: var(--paper); border: 1px solid var(--rule); padding: 26px 30px; line-height: 1.7; font-size: 14px; color: var(--ink-soft);">
+    <p style="margin-top: 0;"><b style="color:var(--ink);font-weight:500;">Tres patrones recurrentes que el dashboard hace visibles:</b></p>
+    <p>① <b style="color:var(--ink);">Cada salto de volumen viene seguido de una corrección de calidad.</b> 2016 → 2017-19 (incobrables). 2021 → 2022 (margen y churn). 2025 (récord litros) → ¿2026? La organización ya conoce este patrón; la pregunta es qué controles tiene activados esta vez. La diferencia respecto a 2017 es real: hoy hay Odoo, AVLA, scoring crediticio AI, rotación CxC bajo control.</p>
+    <p>② <b style="color:var(--ink);">El margen no es lineal con el volumen.</b> Los dos años de mayor margen (2020: 15.5%, 2024: 11.9%) fueron años de cartera disciplinada, no de máximo volumen. Plan 2x2x2 apuesta a romper esta correlación. El precedente Cabo Hornos 2023 sugiere que se puede — pero a otra escala de equipo y costos.</p>
+    <p style="margin-bottom: 0;">③ <b style="color:var(--ink);">2025 fue un año de inversión, no de pérdida.</b> El delta de EBITDA ($419M → $15M) es trazable a costos identificables y mayormente no recurrentes (finiquitos, VW, Odoo). Si la estructura nueva opera como se diseñó, 2026 debería capturar el upside operacional sin repetir el costo.</p>
+  </div>
+
+  <!-- ========== FOOTNOTE ========== -->
+  <div class="footnote">
+    <b>Fuentes:</b> BOARD_DATA_template (hojas anual, mensual, riesgo, kpi_mes_actual). Narrativa cualitativa extraída de Directorio Noviembre 2022, Directorio Enero 2024 (resultados '23), Directorio Febrero 2025 (resultados '24), Directorio Enero 2026 (cierre '25). Las cifras de 2026 son YTD a abril. EBITDA 2025 indicado como ~$15M según directorio Enero-26; pendiente confirmar cifra de cierre auditada.
+    <br><br>
+    <b>Cómo se actualiza:</b> los datos numéricos provienen del Excel maestro <code style="font-family:'JetBrains Mono',monospace;font-size:10px;background:var(--bg);padding:1px 5px;">BOARD_DATA_template</code>. Las notas cualitativas requieren edición manual al cierre de cada directorio anual.
+  </div>
+
 </div>
 
 <script>
-'use strict';
+// ============ DATOS HISTÓRICOS ============
+const years = ['2011','2012','2013','2014','2015','2016','2017','2018','2019','2020','2021','2022','2023','2024','2025','2026*'];
+const litros = [5.226, 5.179, 4.785, 4.956, 5.629, 6.500, 5.634, 4.772, 4.866, 4.506, 7.299, 6.793, 6.491, 6.439, 7.851, 3.569];
+const margen = [null, 5.7, 6.4, 7.1, 10.1, 12.1, 13.0, 11.2, 12.5, 15.5, 14.0, 9.5, 12.0, 11.9, 11.6, null];
+const ebitda = [null, null, null, null, null, null, null, 120, 114, 98, 235, 247, 311, 419, 15, null];
 
-const STATE = {
-  anual: [],
-  mensual: [],
-  riesgo: [],
-  kpi: [],
-  charts: {}
-};
+// Color tokens
+const INK = '#1a1a1a';
+const ACCENT = '#c8360e';
+const POS = '#1d6b4a';
+const RULE = '#cfccc3';
 
-const MES_ORDER = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
-const MES_FULL = { Ene:'Enero',Feb:'Febrero',Mar:'Marzo',Abr:'Abril',May:'Mayo',Jun:'Junio',Jul:'Julio',Ago:'Agosto',Sep:'Septiembre',Oct:'Octubre',Nov:'Noviembre',Dic:'Diciembre' };
-
-const fmt = {
-  int: n => n == null || isNaN(n) ? '—' : Math.round(n).toLocaleString('es-CL'),
-  dec: (n, d=2) => n == null || isNaN(n) ? '—' : Number(n).toLocaleString('es-CL', {minimumFractionDigits: d, maximumFractionDigits: d}),
-  pct: n => n == null || isNaN(n) ? '—' : (n * 100).toFixed(1) + '%',
-  mm: n => n == null || isNaN(n) ? '—' : (n >= 0 ? '' : '-') + Math.abs(n).toFixed(1) + ' MM$',
-  lit: n => n == null || isNaN(n) ? '—' : Number(n).toFixed(2) + ' M L',
-};
-
-// ============ TABS ============
-document.querySelectorAll('.tab').forEach(t => {
-  t.addEventListener('click', () => {
-    document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
-    document.querySelectorAll('.panel').forEach(x => x.classList.remove('active'));
-    t.classList.add('active');
-    document.getElementById('panel-' + t.dataset.tab).classList.add('active');
-  });
-});
-
-// ============ FILE LOAD ============
-document.getElementById('fileInput').addEventListener('change', e => {
-  const file = e.target.files[0];
-  if (!file) return;
-  setStatus('Leyendo ' + file.name + '…', '');
-  const reader = new FileReader();
-  reader.onload = ev => {
-    try {
-      const wb = XLSX.read(ev.target.result, {type: 'array'});
-      loadWorkbook(wb);
-      setStatus('✓ ' + file.name, 'ok');
-      document.getElementById('loadedAt').textContent = 'Cargado: ' + new Date().toLocaleString('es-CL');
-    } catch (err) {
-      console.error(err);
-      setStatus('Error: ' + err.message, 'err');
-    }
-  };
-  reader.readAsArrayBuffer(file);
-});
-
-function setStatus(msg, cls) {
-  const s = document.getElementById('status');
-  s.textContent = msg;
-  s.className = 'status ' + cls;
-}
-
-// ============ DATA LOAD ============
-function loadWorkbook(wb) {
-  const sheets = wb.SheetNames;
-  if (!sheets.includes('ANUAL')) throw new Error('Falta hoja ANUAL');
-
-  STATE.anual = parseSheet(wb, 'ANUAL');
-  STATE.mensual = parseSheet(wb, 'MENSUAL');
-  STATE.riesgo = parseSheet(wb, 'RIESGO');
-  STATE.kpi = parseSheet(wb, 'KPI_MES_ACTUAL', 4); // header at row 4
-
-  // Normalize Litros Total to millions (Excel stores absolute values like 587495)
-  STATE.mensual.forEach(r => {
-    const lt = num(r['Litros Total']);
-    if (lt != null && lt > 100) {  // if > 100, assume absolute value (litros), convert to M
-      r['Litros Total'] = lt / 1_000_000;
-    }
-  });
-
-  // Update period subtitle
-  const ref = STATE.kpi.find(r => r['KPI'] === 'Mes referencia');
-  document.getElementById('periodSub').textContent = ref ? 'Período: ' + ref['Valor'] : 'Datos cargados';
-
-  renderResumen();
-  renderTrayectoria();
-  renderEstacionalidad();
-  renderRiesgo();
-  renderRentabilidad();
-}
-
-function parseSheet(wb, name, headerRow) {
-  if (!wb.SheetNames.includes(name)) return [];
-  const ws = wb.Sheets[name];
-  if (headerRow != null) {
-    // Custom: header at specific row (1-indexed)
-    const opts = { range: headerRow - 1, defval: null };
-    return XLSX.utils.sheet_to_json(ws, opts).filter(r => Object.values(r).some(v => v != null && v !== ''));
-  }
-  return XLSX.utils.sheet_to_json(ws, { defval: null }).filter(r => Object.values(r).some(v => v != null && v !== ''));
-}
-
-function num(v) {
-  if (v == null || v === '') return null;
-  const n = Number(v);
-  return isNaN(n) ? null : n;
-}
-
-// ============ RESUMEN ============
-function renderResumen() {
-  const panel = document.getElementById('panel-resumen');
-  const kpi = STATE.kpi;
-  const lastAnual = STATE.anual[STATE.anual.length - 1] || {};
-  const prevAnual = STATE.anual[STATE.anual.length - 2] || {};
-
-  // Helper to get KPI value
-  const k = name => kpi.find(r => r['KPI'] === name) || {};
-
-  panel.innerHTML = `
-    <div class="section-title">Mes en curso</div>
-    <div class="kpi-grid">
-      ${kpiCard('Litros mes', k('Litros mes').Valor, k('Litros mes').Comparativo, k('Litros mes').Estado, 'int', true)}
-      ${kpiCard('EBITDA mes', k('EBITDA mes (MM$)').Valor, k('EBITDA mes (MM$)').Comparativo, k('EBITDA mes (MM$)').Estado, 'mm')}
-      ${kpiCard('EBITDA acumulado', k('EBITDA acumulado (MM$)').Valor, k('EBITDA acumulado (MM$)').Comparativo, k('EBITDA acumulado (MM$)').Estado, 'mm')}
-      ${kpiCard('Churn', k('Churn').Valor, k('Churn').Comparativo, k('Churn').Estado, 'pct')}
-      ${kpiCard('SLA Entrega', k('SLA Entrega').Valor, k('SLA Entrega').Comparativo, k('SLA Entrega').Estado, 'pct')}
-      ${kpiCard('Ingreso Rebate', k('Ingreso Rebate (CLP)').Valor, k('Ingreso Rebate (CLP)').Comparativo, k('Ingreso Rebate (CLP)').Estado, 'int')}
-      ${kpiCard('Margen Retail', k('Margen Retail').Valor, k('Margen Retail').Comparativo, k('Margen Retail').Estado, 'pct')}
-      ${kpiCard('Margen Volumen', k('Margen Volumen').Valor, k('Margen Volumen').Comparativo, k('Margen Volumen').Estado, 'pct')}
-    </div>
-
-    <div class="section-title">Contexto histórico</div>
-    <div class="kpi-grid">
-      ${kpiCard('Litros ' + lastAnual['Año'], lastAnual['Litros (M)'], yoy(lastAnual['Litros (M)'], prevAnual['Litros (M)']), null, 'lit')}
-      ${kpiCard('Venta UF ' + lastAnual['Año'], lastAnual['Venta UF'], yoy(lastAnual['Venta UF'], prevAnual['Venta UF']), null, 'int')}
-      ${kpiCard('Util Bruta UF ' + lastAnual['Año'], lastAnual['Util Bruta UF'], yoy(lastAnual['Util Bruta UF'], prevAnual['Util Bruta UF']), null, 'int')}
-      ${kpiCard('Rotación CxC', k('Rotación CxC (días)').Valor, k('Rotación CxC (días)').Comparativo, k('Rotación CxC (días)').Estado, 'int')}
-    </div>
-
-    <div class="section-title">Tendencia</div>
-    <div class="chart-grid">
-      <div class="chart-card">
-        <h3>Venta litros 10 años</h3>
-        <div class="chart-sub">Millones de litros por año</div>
-        <div class="chart-wrap"><canvas id="resLitros" role="img" aria-label="Litros por año"></canvas></div>
-      </div>
-      <div class="chart-card">
-        <h3>EBITDA histórico</h3>
-        <div class="chart-sub">Millones de pesos</div>
-        <div class="chart-wrap"><canvas id="resEbitda" role="img" aria-label="EBITDA por año"></canvas></div>
-      </div>
-    </div>
-  `;
-
-  renderChartLitros('resLitros');
-  renderChartEbitda('resEbitda');
-}
-
-function yoy(curr, prev) {
-  if (curr == null || prev == null || prev === 0) return '';
-  const d = (curr - prev) / prev;
-  const sign = d >= 0 ? '+' : '';
-  return sign + (d * 100).toFixed(1) + '% vs año anterior';
-}
-
-function kpiCard(label, value, compare, state, fmtType, hero) {
-  let v;
-  if (fmtType === 'mm') v = fmt.mm(value);
-  else if (fmtType === 'pct') v = fmt.pct(value);
-  else if (fmtType === 'lit') v = fmt.lit(value);
-  else v = fmt.int(value);
-  const stateCls = state || '';
-  const heroCls = hero ? 'hero' : '';
-  const compareCls = (state === 'bad') ? 'bad' : (state === 'good') ? 'good' : (state === 'warn') ? 'warn' : '';
-  return `<div class="kpi-card ${stateCls} ${heroCls}">
-    <div class="kpi-label">${label}</div>
-    <div class="kpi-value">${v}</div>
-    ${compare ? `<div class="kpi-compare ${compareCls}">${compare}</div>` : ''}
-  </div>`;
-}
-
-// ============ CHARTS shared ============
-function destroyChart(id) {
-  if (STATE.charts[id]) { STATE.charts[id].destroy(); delete STATE.charts[id]; }
-}
-
-function renderChartLitros(canvasId) {
-  destroyChart(canvasId);
-  const ctx = document.getElementById(canvasId);
-  if (!ctx) return;
-  const data = STATE.anual.filter(r => r['Año'] && r['Litros (M)'] != null);
-  STATE.charts[canvasId] = new Chart(ctx, {
-    type: 'bar',
-    data: {
-      labels: data.map(r => r['Año']),
-      datasets: [{
-        label: 'Litros M',
-        data: data.map(r => r['Litros (M)']),
-        backgroundColor: '#E8451A',
-        borderRadius: 4
-      }]
+// ============ CHART 1 — LITROS ============
+new Chart(document.getElementById('litrosChart'), {
+  type: 'bar',
+  data: {
+    labels: years,
+    datasets: [{
+      label: 'Litros (M)',
+      data: litros,
+      backgroundColor: years.map((y,i) => {
+        // Resaltar años clave
+        if (y === '2021' || y === '2025') return ACCENT;
+        if (y === '2026*') return '#e8a890';
+        return '#3a3a38';
+      }),
+      borderRadius: 0,
+      barPercentage: 0.78,
+      categoryPercentage: 0.92
+    }]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        backgroundColor: INK, padding: 10, titleFont: { family: 'DM Sans', weight: 500 },
+        bodyFont: { family: 'DM Sans' },
+        callbacks: {
+          label: (ctx) => `${ctx.parsed.y.toFixed(2)}M litros`
+        }
+      }
     },
-    options: {
-      responsive: true, maintainAspectRatio: false,
-      plugins: {
-        legend: { display: false },
-        tooltip: { callbacks: { label: c => c.parsed.y.toFixed(2) + ' M L' } }
+    scales: {
+      y: {
+        grid: { color: RULE, drawBorder: false },
+        ticks: { color: '#6a6a65', font: { family: 'DM Sans', size: 11 }, callback: v => v + 'M' },
+        beginAtZero: true
       },
-      scales: {
-        x: { ticks: { font: { size: 10 }, maxRotation: 45, autoSkip: false } },
-        y: { ticks: { font: { size: 10 }, callback: v => v.toFixed(1) + 'M' } }
+      x: {
+        grid: { display: false },
+        ticks: { color: '#6a6a65', font: { family: 'DM Sans', size: 10 }, maxRotation: 0, autoSkip: false }
       }
-    }
-  });
-}
-
-function renderChartEbitda(canvasId) {
-  destroyChart(canvasId);
-  const ctx = document.getElementById(canvasId);
-  if (!ctx) return;
-  const data = STATE.anual.filter(r => r['Año'] && r['EBITDA MM$'] != null);
-  STATE.charts[canvasId] = new Chart(ctx, {
-    type: 'bar',
-    data: {
-      labels: data.map(r => r['Año']),
-      datasets: [{
-        label: 'EBITDA',
-        data: data.map(r => r['EBITDA MM$']),
-        backgroundColor: '#185FA5',
-        borderRadius: 4
-      }]
-    },
-    options: {
-      responsive: true, maintainAspectRatio: false,
-      plugins: {
-        legend: { display: false },
-        tooltip: { callbacks: { label: c => c.parsed.y.toFixed(0) + ' MM$' } }
-      },
-      scales: {
-        x: { ticks: { font: { size: 10 } } },
-        y: { ticks: { font: { size: 10 }, callback: v => v + 'M' } }
-      }
-    }
-  });
-}
-
-// ============ TRAYECTORIA ============
-function renderTrayectoria() {
-  const panel = document.getElementById('panel-trayectoria');
-  panel.innerHTML = `
-    <div class="section-title">Crecimiento histórico</div>
-    <div class="chart-grid single">
-      <div class="chart-card">
-        <h3>Venta en litros (millones)</h3>
-        <div class="chart-sub">Volumen anual + promedio mensual</div>
-        <div class="chart-wrap tall"><canvas id="trLitros"></canvas></div>
-      </div>
-    </div>
-
-    <div class="chart-grid">
-      <div class="chart-card">
-        <h3>Venta UF</h3>
-        <div class="chart-sub">Total anual en UF</div>
-        <div class="chart-wrap"><canvas id="trUF"></canvas></div>
-      </div>
-      <div class="chart-card">
-        <h3>Utilidad Bruta UF</h3>
-        <div class="chart-sub">Total anual en UF</div>
-        <div class="chart-wrap"><canvas id="trUB"></canvas></div>
-      </div>
-    </div>
-
-    <div class="chart-grid single">
-      <div class="chart-card">
-        <h3>EBITDA & Margen EBITDA</h3>
-        <div class="chart-sub">MM$ (barras) y % sobre ventas (línea)</div>
-        <div class="chart-wrap tall"><canvas id="trEbitda"></canvas></div>
-      </div>
-    </div>
-
-    <div class="table-card">
-      <h3>Detalle año por año</h3>
-      <table>
-        <thead>
-          <tr>
-            <th>Año</th><th class="num">Litros M</th><th class="num">Venta UF</th>
-            <th class="num">Venta MM$</th><th class="num">EBITDA MM$</th>
-            <th class="num">EBITDA %</th><th class="num">Util Bruta UF</th>
-            <th>Notas</th>
-          </tr>
-        </thead>
-        <tbody>
-          ${STATE.anual.map(r => `
-            <tr>
-              <td><b>${r['Año'] || ''}</b></td>
-              <td class="num">${fmt.dec(r['Litros (M)'], 2)}</td>
-              <td class="num">${fmt.int(r['Venta UF'])}</td>
-              <td class="num">${fmt.int(r['Venta MM$'])}</td>
-              <td class="num">${fmt.int(r['EBITDA MM$'])}</td>
-              <td class="num">${fmt.pct(r['EBITDA/Ventas %'])}</td>
-              <td class="num">${fmt.int(r['Util Bruta UF'])}</td>
-              <td style="color: var(--text-soft); font-size: 11px;">${r['Notas'] || ''}</td>
-            </tr>
-          `).join('')}
-        </tbody>
-      </table>
-    </div>
-  `;
-
-  renderTrLitros();
-  renderTrUF();
-  renderTrUB();
-  renderTrEbitda();
-}
-
-function renderTrLitros() {
-  destroyChart('trLitros');
-  const data = STATE.anual.filter(r => r['Año'] && r['Litros (M)'] != null);
-  STATE.charts['trLitros'] = new Chart(document.getElementById('trLitros'), {
-    type: 'bar',
-    data: {
-      labels: data.map(r => r['Año']),
-      datasets: [
-        { label: 'Litros M', data: data.map(r => r['Litros (M)']), backgroundColor: '#E8451A', borderRadius: 4, yAxisID: 'y' },
-        { label: 'Prom mes M', type: 'line', data: data.map(r => r['Litros mes prom (M)']),
-          borderColor: '#7A9A3A', backgroundColor: '#7A9A3A', tension: 0.3, pointRadius: 4, yAxisID: 'y1', borderDash: [4,3] }
-      ]
-    },
-    options: {
-      responsive: true, maintainAspectRatio: false,
-      plugins: { legend: { display: true, labels: { font: { size: 11 } } } },
-      scales: {
-        x: { ticks: { font: { size: 10 }, autoSkip: false, maxRotation: 45 } },
-        y: { position: 'left', ticks: { font: { size: 10 }, callback: v => v.toFixed(1) + 'M' } },
-        y1: { position: 'right', grid: { display: false }, ticks: { font: { size: 10 }, callback: v => v.toFixed(2) + 'M' } }
-      }
-    }
-  });
-}
-
-function renderTrUF() {
-  destroyChart('trUF');
-  const data = STATE.anual.filter(r => r['Año'] && r['Venta UF'] != null);
-  STATE.charts['trUF'] = new Chart(document.getElementById('trUF'), {
-    type: 'line',
-    data: {
-      labels: data.map(r => r['Año']),
-      datasets: [{ label: 'UF', data: data.map(r => r['Venta UF']),
-        borderColor: '#534AB7', backgroundColor: 'rgba(83,74,183,0.15)',
-        fill: true, tension: 0.3, pointRadius: 4 }]
-    },
-    options: {
-      responsive: true, maintainAspectRatio: false,
-      plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => c.parsed.y.toLocaleString('es-CL') + ' UF' } } },
-      scales: {
-        x: { ticks: { font: { size: 10 }, autoSkip: false, maxRotation: 45 } },
-        y: { ticks: { font: { size: 10 }, callback: v => (v/1000).toFixed(0) + 'k' } }
-      }
-    }
-  });
-}
-
-function renderTrUB() {
-  destroyChart('trUB');
-  const data = STATE.anual.filter(r => r['Año'] && r['Util Bruta UF'] != null);
-  STATE.charts['trUB'] = new Chart(document.getElementById('trUB'), {
-    type: 'line',
-    data: {
-      labels: data.map(r => r['Año']),
-      datasets: [{ label: 'UF', data: data.map(r => r['Util Bruta UF']),
-        borderColor: '#0F6E56', backgroundColor: 'rgba(15,110,86,0.15)',
-        fill: true, tension: 0.3, pointRadius: 4 }]
-    },
-    options: {
-      responsive: true, maintainAspectRatio: false,
-      plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => c.parsed.y.toLocaleString('es-CL') + ' UF' } } },
-      scales: {
-        x: { ticks: { font: { size: 10 }, autoSkip: false, maxRotation: 45 } },
-        y: { ticks: { font: { size: 10 }, callback: v => (v/1000).toFixed(0) + 'k' } }
-      }
-    }
-  });
-}
-
-function renderTrEbitda() {
-  destroyChart('trEbitda');
-  const data = STATE.anual.filter(r => r['Año'] && (r['EBITDA MM$'] != null || r['EBITDA/Ventas %'] != null));
-  STATE.charts['trEbitda'] = new Chart(document.getElementById('trEbitda'), {
-    data: {
-      labels: data.map(r => r['Año']),
-      datasets: [
-        { type: 'bar', label: 'EBITDA MM$', data: data.map(r => r['EBITDA MM$']),
-          backgroundColor: '#185FA5', borderRadius: 4, yAxisID: 'y' },
-        { type: 'line', label: '% Margen', data: data.map(r => r['EBITDA/Ventas %'] != null ? r['EBITDA/Ventas %'] * 100 : null),
-          borderColor: '#BA7517', backgroundColor: '#BA7517', tension: 0.3, pointRadius: 5,
-          pointStyle: 'rectRot', yAxisID: 'y1', borderDash: [4,3] }
-      ]
-    },
-    options: {
-      responsive: true, maintainAspectRatio: false,
-      plugins: { legend: { display: true, labels: { font: { size: 11 } } } },
-      scales: {
-        x: { ticks: { font: { size: 10 }, autoSkip: false, maxRotation: 45 } },
-        y: { position: 'left', ticks: { font: { size: 10 }, callback: v => v + 'M' } },
-        y1: { position: 'right', grid: { display: false }, min: 0, max: 30,
-              ticks: { font: { size: 10 }, callback: v => v + '%' } }
-      }
-    }
-  });
-}
-
-// ============ ESTACIONALIDAD ============
-function renderEstacionalidad() {
-  const panel = document.getElementById('panel-estacionalidad');
-
-  // Build matrix: years × months
-  const yearsSet = new Set();
-  STATE.mensual.forEach(r => { if (r['Año']) yearsSet.add(Number(r['Año'])); });
-  const years = [...yearsSet].sort((a,b) => b-a);
-
-  // Compute max for heatmap scale
-  let maxLit = 0;
-  STATE.mensual.forEach(r => { const v = num(r['Litros Total']); if (v != null && v > maxLit) maxLit = v; });
-
-  const cells = [];
-  cells.push('<div class="hm-cell header"></div>');
-  MES_ORDER.forEach(m => cells.push(`<div class="hm-cell header">${m}</div>`));
-  years.forEach(y => {
-    cells.push(`<div class="hm-cell year-label">${y}</div>`);
-    MES_ORDER.forEach(m => {
-      const row = STATE.mensual.find(r => Number(r['Año']) === y && r['Mes'] === m);
-      const v = row ? num(row['Litros Total']) : null;
-      if (v == null) {
-        cells.push(`<div class="hm-cell empty">—</div>`);
-      } else {
-        const intensity = Math.min(1, v / maxLit);
-        const r = 232 - Math.round(intensity * 90);
-        const g = 69 + Math.round((1-intensity) * 100);
-        const b = 26 + Math.round((1-intensity) * 80);
-        const bg = `rgb(${r},${g},${b})`;
-        const textColor = intensity > 0.5 ? '#fff' : 'var(--text)';
-        cells.push(`<div class="hm-cell" style="background:${bg}; color:${textColor};" title="${y} ${m}: ${v.toFixed(3)} M L">${v.toFixed(2)}</div>`);
-      }
-    });
-  });
-
-  // Current month comparison: latest year vs avg of previous 5
-  const lastEntry = STATE.mensual.filter(r => num(r['Litros Total']) != null).slice(-1)[0];
-  let monthCompare = '';
-  if (lastEntry) {
-    const lastY = Number(lastEntry['Año']);
-    const lastM = lastEntry['Mes'];
-    const lastV = num(lastEntry['Litros Total']);
-    const prevVals = STATE.mensual
-      .filter(r => r['Mes'] === lastM && Number(r['Año']) < lastY && Number(r['Año']) >= lastY - 5)
-      .map(r => num(r['Litros Total']))
-      .filter(v => v != null);
-    if (prevVals.length > 0) {
-      const avg = prevVals.reduce((a,b)=>a+b,0) / prevVals.length;
-      const diff = (lastV - avg) / avg;
-      const sign = diff >= 0 ? '+' : '';
-      const cls = diff >= 0 ? 'good' : 'bad';
-      monthCompare = `<div class="kpi-card ${cls}">
-        <div class="kpi-label">${MES_FULL[lastM]} ${lastY} vs prom 5a</div>
-        <div class="kpi-value">${fmt.dec(lastV, 2)} M L</div>
-        <div class="kpi-compare ${cls}">${sign}${(diff*100).toFixed(1)}% vs ${avg.toFixed(2)} M L promedio</div>
-      </div>`;
     }
   }
+});
 
-  panel.innerHTML = `
-    <div class="section-title">Comparativo mes actual vs histórico</div>
-    <div class="kpi-grid">
-      ${monthCompare}
-      ${seasonalSummary()}
-    </div>
-
-    <div class="section-title">Litros mensuales por año (heatmap)</div>
-    <div class="table-card">
-      <div class="heatmap-wrap">
-        <div class="heatmap">${cells.join('')}</div>
-      </div>
-      <div style="margin-top: 12px; font-size: 11px; color: var(--text-soft);">
-        Color más intenso (naranja) = mayor volumen. Pasa el mouse sobre cada celda para ver el valor exacto.
-      </div>
-    </div>
-
-    <div class="section-title">Estacionalidad promedio</div>
-    <div class="chart-grid single">
-      <div class="chart-card">
-        <h3>Promedio histórico por mes</h3>
-        <div class="chart-sub">Litros promedio mes a mes (todos los años disponibles)</div>
-        <div class="chart-wrap"><canvas id="estProm"></canvas></div>
-      </div>
-    </div>
-  `;
-
-  renderEstacionalProm();
-}
-
-function seasonalSummary() {
-  // Best & worst month historically
-  const monthAvg = {};
-  MES_ORDER.forEach(m => {
-    const vals = STATE.mensual.filter(r => r['Mes'] === m).map(r => num(r['Litros Total'])).filter(v => v != null);
-    if (vals.length > 0) monthAvg[m] = vals.reduce((a,b)=>a+b,0) / vals.length;
-  });
-  const sorted = Object.entries(monthAvg).sort((a,b) => b[1]-a[1]);
-  if (sorted.length === 0) return '';
-  const [bestM, bestV] = sorted[0];
-  const [worstM, worstV] = sorted[sorted.length - 1];
-  return `
-    <div class="kpi-card good">
-      <div class="kpi-label">Mes más fuerte (histórico)</div>
-      <div class="kpi-value">${MES_FULL[bestM]}</div>
-      <div class="kpi-compare good">${bestV.toFixed(2)} M L promedio</div>
-    </div>
-    <div class="kpi-card warn">
-      <div class="kpi-label">Mes más débil (histórico)</div>
-      <div class="kpi-value">${MES_FULL[worstM]}</div>
-      <div class="kpi-compare warn">${worstV.toFixed(2)} M L promedio</div>
-    </div>
-  `;
-}
-
-function renderEstacionalProm() {
-  destroyChart('estProm');
-  const monthAvg = MES_ORDER.map(m => {
-    const vals = STATE.mensual.filter(r => r['Mes'] === m).map(r => num(r['Litros Total'])).filter(v => v != null);
-    return vals.length > 0 ? vals.reduce((a,b)=>a+b,0) / vals.length : null;
-  });
-  STATE.charts['estProm'] = new Chart(document.getElementById('estProm'), {
-    type: 'bar',
-    data: {
-      labels: MES_ORDER,
-      datasets: [{ label: 'Promedio', data: monthAvg, backgroundColor: '#E8451A', borderRadius: 4 }]
+// ============ CHART 2 — MARGEN & EBITDA ============
+new Chart(document.getElementById('margenChart'), {
+  type: 'bar',
+  data: {
+    labels: years,
+    datasets: [
+      {
+        type: 'bar',
+        label: 'EBITDA ($M)',
+        data: ebitda,
+        backgroundColor: '#dcd6c8',
+        yAxisID: 'y',
+        order: 2,
+        barPercentage: 0.7
+      },
+      {
+        type: 'line',
+        label: 'Margen %',
+        data: margen,
+        borderColor: ACCENT,
+        backgroundColor: ACCENT,
+        borderWidth: 2,
+        pointRadius: 3,
+        pointBackgroundColor: ACCENT,
+        tension: 0.25,
+        yAxisID: 'y1',
+        order: 1,
+        spanGaps: true
+      }
+    ]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        backgroundColor: INK, padding: 10,
+        callbacks: {
+          label: (ctx) => {
+            if (ctx.dataset.label === 'Margen %') return `Margen: ${ctx.parsed.y}%`;
+            return `EBITDA: $${ctx.parsed.y}M`;
+          }
+        }
+      }
     },
-    options: {
-      responsive: true, maintainAspectRatio: false,
-      plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => c.parsed.y.toFixed(2) + ' M L' } } },
-      scales: {
-        x: { ticks: { font: { size: 11 } } },
-        y: { ticks: { font: { size: 10 }, callback: v => v.toFixed(2) + 'M' } }
+    scales: {
+      y: {
+        position: 'left',
+        grid: { color: RULE, drawBorder: false },
+        ticks: { color: '#6a6a65', font: { family: 'DM Sans', size: 11 }, callback: v => '$' + v + 'M' },
+        beginAtZero: true
+      },
+      y1: {
+        position: 'right',
+        grid: { display: false },
+        ticks: { color: ACCENT, font: { family: 'DM Sans', size: 11 }, callback: v => v + '%' },
+        min: 0, max: 18
+      },
+      x: {
+        grid: { display: false },
+        ticks: { color: '#6a6a65', font: { family: 'DM Sans', size: 10 }, maxRotation: 0, autoSkip: false }
       }
     }
-  });
-}
+  }
+});
 
-// ============ RIESGO ============
-function renderRiesgo() {
-  const panel = document.getElementById('panel-riesgo');
-  const k = name => STATE.kpi.find(r => r['KPI'] === name) || {};
-  const lastR = STATE.riesgo[STATE.riesgo.length - 1] || {};
+// Legend manual debajo del chart de margen
+const margenCard = document.getElementById('margenChart').parentElement.parentElement;
+const legend = document.createElement('div');
+legend.style.cssText = 'display:flex;gap:18px;margin-top:10px;font-size:11px;color:#6a6a65;justify-content:center;';
+legend.innerHTML = `
+  <span style="display:flex;align-items:center;gap:6px;"><span style="width:10px;height:10px;background:#dcd6c8;display:inline-block;"></span>EBITDA ($M)</span>
+  <span style="display:flex;align-items:center;gap:6px;"><span style="width:14px;height:2px;background:${ACCENT};display:inline-block;"></span>Margen bruto (%)</span>
+`;
+margenCard.appendChild(legend);
 
-  panel.innerHTML = `
-    <div class="section-title">Indicadores de riesgo actuales</div>
-    <div class="kpi-grid">
-      ${kpiCard('Rotación CxC', k('Rotación CxC (días)').Valor, k('Rotación CxC (días)').Comparativo, k('Rotación CxC (días)').Estado, 'int')}
-      ${kpiCard('Cobertura AVLA', k('Cobertura AVLA').Valor, k('Cobertura AVLA').Comparativo, k('Cobertura AVLA').Estado, 'pct')}
-      ${kpiCard('Mora >90 días', lastR['Mora >90 MM$'], '', null, 'int')}
-      ${kpiCard('% Incob/CxC último año', STATE.riesgo.filter(r => r['% Incob/CxC'] != null).slice(-1)[0]?.['% Incob/CxC'], '', null, 'pct')}
-    </div>
-
-    <div class="section-title">Histórico de riesgo</div>
-    <div class="chart-grid">
-      <div class="chart-card">
-        <h3>Incobrables anuales</h3>
-        <div class="chart-sub">MM$ por año</div>
-        <div class="chart-wrap"><canvas id="rsIncob"></canvas></div>
-      </div>
-      <div class="chart-card">
-        <h3>Cuentas por cobrar</h3>
-        <div class="chart-sub">MM$ promedio mensual y saldo a diciembre</div>
-        <div class="chart-wrap"><canvas id="rsCxC"></canvas></div>
-      </div>
-    </div>
-
-    <div class="table-card">
-      <h3>Detalle anual de riesgo</h3>
-      <table>
-        <thead>
-          <tr>
-            <th>Año</th>
-            <th class="num">Incob MM$</th>
-            <th class="num">CxC prom</th>
-            <th class="num">CxC dic</th>
-            <th class="num">% Incob/CxC</th>
-            <th>Cliente top incobrable</th>
-          </tr>
-        </thead>
-        <tbody>
-          ${STATE.riesgo.map(r => `
-            <tr>
-              <td><b>${r['Año'] || ''}</b></td>
-              <td class="num">${fmt.dec(r['Incobrables MM$'], 1)}</td>
-              <td class="num">${fmt.int(r['CxC Promedio MM$'])}</td>
-              <td class="num">${fmt.int(r['CxC a Dic MM$'])}</td>
-              <td class="num">${fmt.pct(r['% Incob/CxC'])}</td>
-              <td style="color: var(--text-soft); font-size: 11px;">${r['Cliente Top Incob'] || ''}</td>
-            </tr>
-          `).join('')}
-        </tbody>
-      </table>
-    </div>
-  `;
-
-  renderRsIncob();
-  renderRsCxC();
-}
-
-function renderRsIncob() {
-  destroyChart('rsIncob');
-  const data = STATE.riesgo.filter(r => r['Año'] && r['Incobrables MM$'] != null);
-  STATE.charts['rsIncob'] = new Chart(document.getElementById('rsIncob'), {
-    type: 'bar',
-    data: {
-      labels: data.map(r => r['Año']),
-      datasets: [{
-        label: 'Incobrables', data: data.map(r => r['Incobrables MM$']),
-        backgroundColor: data.map(r => r['Incobrables MM$'] > 50 ? '#A32D2D' : '#E24B4A'),
-        borderRadius: 4
-      }]
-    },
-    options: {
-      responsive: true, maintainAspectRatio: false,
-      plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => c.parsed.y.toFixed(1) + ' MM$' } } },
-      scales: {
-        x: { ticks: { font: { size: 10 } } },
-        y: { ticks: { font: { size: 10 }, callback: v => v + 'M' } }
-      }
-    }
-  });
-}
-
-function renderRsCxC() {
-  destroyChart('rsCxC');
-  const data = STATE.riesgo.filter(r => r['Año'] && (r['CxC Promedio MM$'] != null || r['CxC a Dic MM$'] != null));
-  STATE.charts['rsCxC'] = new Chart(document.getElementById('rsCxC'), {
-    type: 'bar',
-    data: {
-      labels: data.map(r => r['Año']),
-      datasets: [
-        { label: 'CxC prom', data: data.map(r => r['CxC Promedio MM$']), backgroundColor: '#7F77DD', borderRadius: 4 },
-        { label: 'CxC dic', data: data.map(r => r['CxC a Dic MM$']), backgroundColor: '#534AB7', borderRadius: 4 }
-      ]
-    },
-    options: {
-      responsive: true, maintainAspectRatio: false,
-      plugins: { legend: { display: true, labels: { font: { size: 11 } } } },
-      scales: {
-        x: { ticks: { font: { size: 10 } } },
-        y: { ticks: { font: { size: 10 }, callback: v => v + 'M' } }
-      }
-    }
-  });
-}
-
-// ============ RENTABILIDAD ============
-function renderRentabilidad() {
-  const panel = document.getElementById('panel-rentabilidad');
-  const k = name => STATE.kpi.find(r => r['KPI'] === name) || {};
-
-  panel.innerHTML = `
-    <div class="section-title">Márgenes mes en curso</div>
-    <div class="kpi-grid">
-      ${kpiCard('Margen Retail', k('Margen Retail').Valor, k('Margen Retail').Comparativo, k('Margen Retail').Estado, 'pct')}
-      ${kpiCard('Margen Volumen', k('Margen Volumen').Valor, k('Margen Volumen').Comparativo, k('Margen Volumen').Estado, 'pct')}
-    </div>
-
-    <div class="section-title">EBITDA / Ventas histórico</div>
-    <div class="chart-grid single">
-      <div class="chart-card">
-        <h3>% Margen EBITDA por año</h3>
-        <div class="chart-sub">Evolución de la rentabilidad operacional</div>
-        <div class="chart-wrap tall"><canvas id="rnEbPct"></canvas></div>
-      </div>
-    </div>
-
-    <div class="section-title">Márgenes mensuales (últimos 12 meses con datos)</div>
-    <div class="chart-grid single">
-      <div class="chart-card">
-        <h3>Margen Retail vs Volumen</h3>
-        <div class="chart-sub">% mensual</div>
-        <div class="chart-wrap tall"><canvas id="rnMargenes"></canvas></div>
-      </div>
-    </div>
-
-    <div class="table-card">
-      <h3>Detalle de rentabilidad anual</h3>
-      <table>
-        <thead>
-          <tr>
-            <th>Año</th><th class="num">EBITDA MM$</th>
-            <th class="num">% Ventas</th><th class="num">Venta MM$</th>
-            <th class="num">Util Bruta UF</th><th class="num">ROE</th><th class="num">ROA</th>
-          </tr>
-        </thead>
-        <tbody>
-          ${STATE.anual.map(r => `
-            <tr>
-              <td><b>${r['Año'] || ''}</b></td>
-              <td class="num">${fmt.int(r['EBITDA MM$'])}</td>
-              <td class="num">${fmt.pct(r['EBITDA/Ventas %'])}</td>
-              <td class="num">${fmt.int(r['Venta MM$'])}</td>
-              <td class="num">${fmt.int(r['Util Bruta UF'])}</td>
-              <td class="num">${fmt.pct(r['ROE %'])}</td>
-              <td class="num">${fmt.pct(r['ROA %'])}</td>
-            </tr>
-          `).join('')}
-        </tbody>
-      </table>
-    </div>
-  `;
-
-  renderRnEbPct();
-  renderRnMargenes();
-}
-
-function renderRnEbPct() {
-  destroyChart('rnEbPct');
-  const data = STATE.anual.filter(r => r['Año'] && r['EBITDA/Ventas %'] != null);
-  STATE.charts['rnEbPct'] = new Chart(document.getElementById('rnEbPct'), {
-    type: 'line',
-    data: {
-      labels: data.map(r => r['Año']),
-      datasets: [{
-        label: '% EBITDA',
-        data: data.map(r => r['EBITDA/Ventas %'] * 100),
-        borderColor: '#BA7517',
-        backgroundColor: 'rgba(186,117,23,0.18)',
-        fill: true, tension: 0.3, pointRadius: 5
-      }]
-    },
-    options: {
-      responsive: true, maintainAspectRatio: false,
-      plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => c.parsed.y.toFixed(1) + '%' } } },
-      scales: {
-        x: { ticks: { font: { size: 10 } } },
-        y: { ticks: { font: { size: 10 }, callback: v => v + '%' } }
-      }
-    }
-  });
-}
-
-function renderRnMargenes() {
-  destroyChart('rnMargenes');
-  const data = STATE.mensual
-    .filter(r => r['Mes'] && (num(r['Margen Retail %']) != null || num(r['Margen Volumen %']) != null))
-    .slice(-12);
-  STATE.charts['rnMargenes'] = new Chart(document.getElementById('rnMargenes'), {
-    type: 'line',
-    data: {
-      labels: data.map(r => r['Mes'] + '-' + String(r['Año']).slice(-2)),
-      datasets: [
-        { label: 'Margen Retail', data: data.map(r => num(r['Margen Retail %']) != null ? num(r['Margen Retail %']) * 100 : null),
-          borderColor: '#E8451A', backgroundColor: '#E8451A', tension: 0.3, pointRadius: 4 },
-        { label: 'Margen Volumen', data: data.map(r => num(r['Margen Volumen %']) != null ? num(r['Margen Volumen %']) * 100 : null),
-          borderColor: '#7A9A3A', backgroundColor: '#7A9A3A', tension: 0.3, pointRadius: 4, borderDash: [4,3] }
-      ]
-    },
-    options: {
-      responsive: true, maintainAspectRatio: false,
-      plugins: { legend: { display: true, labels: { font: { size: 11 } } } },
-      scales: {
-        x: { ticks: { font: { size: 10 } } },
-        y: { ticks: { font: { size: 10 }, callback: v => v.toFixed(1) + '%' } }
-      }
-    }
-  });
-}
+const litrosCard = document.getElementById('litrosChart').parentElement.parentElement;
+const legend2 = document.createElement('div');
+legend2.style.cssText = 'display:flex;gap:18px;margin-top:10px;font-size:11px;color:#6a6a65;justify-content:center;';
+legend2.innerHTML = `
+  <span style="display:flex;align-items:center;gap:6px;"><span style="width:10px;height:10px;background:#3a3a38;display:inline-block;"></span>Histórico</span>
+  <span style="display:flex;align-items:center;gap:6px;"><span style="width:10px;height:10px;background:${ACCENT};display:inline-block;"></span>Récord (2021, 2025)</span>
+  <span style="display:flex;align-items:center;gap:6px;"><span style="width:10px;height:10px;background:#e8a890;display:inline-block;"></span>YTD 2026</span>
+`;
+litrosCard.appendChild(legend2);
 </script>
+
 </body>
 </html>
