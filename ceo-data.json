@@ -1,32 +1,32 @@
 {
-  "updated": "2026-05-22T17:21:47.676418",
+  "updated": "2026-05-22T20:49:29.047569",
   "weeks": [
     {
       "label": "21may-27may",
       "start": "2026-05-21",
       "end": "2026-05-27",
-      "ventas": 58335224,
-      "neto": 45483740,
-      "litros": 38838,
-      "litros_retail": 20838,
+      "ventas": 82230474,
+      "neto": 64129237,
+      "litros": 54588,
+      "litros_retail": 36588,
       "litros_volumen": 18000,
-      "precio_neto": 1171,
-      "precio_bruto": 1502,
-      "margin": 0.08472,
-      "margin_retail": 0.07568,
+      "precio_neto": 1175,
+      "precio_bruto": 1506,
+      "margin": 0.08392,
+      "margin_retail": 0.07844,
       "margin_volumen": 0.09466,
-      "facturas": 13,
+      "facturas": 25,
       "nc": 0,
-      "clientes": 13,
-      "recaud": 24910501,
-      "cheques": 0,
-      "transf": 24910501,
-      "factoring": 0,
+      "clientes": 25,
+      "recaud": 97478281,
+      "cheques": 1603000,
+      "transf": 38295366,
+      "factoring": 57579915,
       "compras_odoo": 0,
       "cheq_cartera_saldo": 0,
       "cheq_recibidos": 0,
       "facturas_contado": 1,
-      "facturas_credito": 12,
+      "facturas_credito": 24,
       "margin_by_term": {
         "Prepago": {
           "margin": 0,
@@ -35,16 +35,22 @@
           "days": 0
         },
         "15 Días": {
-          "margin": 0.10371,
-          "normalizado": 0.10871,
-          "count": 1,
+          "margin": 0.10136,
+          "normalizado": 0.10636,
+          "count": 3,
           "days": 15
         },
         "30 Días": {
-          "margin": 0.07402,
-          "normalizado": 0.07402,
-          "count": 10,
+          "margin": 0.0792,
+          "normalizado": 0.0792,
+          "count": 19,
           "days": 30
+        },
+        "45 Días": {
+          "margin": 0.04138,
+          "normalizado": 0.03638,
+          "count": 1,
+          "days": 45
         },
         "60 Días": {
           "margin": 0.11616,
@@ -55,7 +61,7 @@
       },
       "cotiz_canceladas": 0,
       "visitas": 69,
-      "clientes_nuevos": 1,
+      "clientes_nuevos": 2,
       "ppto": 213480,
       "ppto_retail": 153706,
       "ppto_volumen": 59774,
@@ -1260,8 +1266,8 @@
     {
       "date": "22may",
       "day": "Vie",
-      "litros": 37524,
-      "neto": 43921723
+      "litros": 53274,
+      "neto": 62567220
     },
     {
       "date": "21may",
@@ -1357,7 +1363,7 @@
   "banks": [
     {
       "name": "DE CHILE",
-      "balance": 40584272
+      "balance": 67754272
     },
     {
       "name": "ESTADO",
@@ -1384,15 +1390,15 @@
       "balance": -1727275
     }
   ],
-  "total_cash": 68764769,
+  "total_cash": 95934769,
   "receivables": {
-    "open_invoices": 246,
-    "total_due": 669923737,
-    "current": 582408085,
-    "overdue": 87515652,
-    "pct_overdue": 13.1,
+    "open_invoices": 256,
+    "total_due": 691590387,
+    "current": 605657735,
+    "overdue": 85932652,
+    "pct_overdue": 12.4,
     "aging": {
-      "0-30": 74777089,
+      "0-30": 73194089,
       "31-60": 2973000,
       "61-90": 0,
       "90+": 9765563
@@ -1447,12 +1453,12 @@
         "amount": 12624000
       },
       {
-        "name": "URAN ANTONIO LUNA DOMÍNGUEZ",
-        "amount": 11424000
+        "name": "ANDES SOLAR SA",
+        "amount": 11886997
       },
       {
-        "name": "ANDES SOLAR SA",
-        "amount": 9912297
+        "name": "URAN ANTONIO LUNA DOMÍNGUEZ",
+        "amount": 11424000
       },
       {
         "name": "EMPRESAS TUCAPEL S A",
@@ -1475,8 +1481,8 @@
         "amount": 8573999
       },
       {
-        "name": "SAMUEL BUDINICH SPA",
-        "amount": 8330952
+        "name": "SOC AGRICOLA SANTA TERESA SPA",
+        "amount": 8525250
       }
     ]
   },
@@ -1551,15 +1557,15 @@
   "riesgo": {
     "cubierto": 0,
     "cubierto_count": 0,
-    "no_cubierto": 669923737,
-    "no_cubierto_count": 246,
+    "no_cubierto": 691590387,
+    "no_cubierto_count": 256,
     "pct_monto": 100.0,
     "pct_count": 100.0
   },
   "churn": {
-    "eligible_clients": 165,
+    "eligible_clients": 166,
     "churned_count": 55,
-    "pct": 33.3,
+    "pct": 33.1,
     "churned": [
       {
         "name": "ERIKA DEL PILAR GUZMAN MANRIQUEZ",
@@ -1896,9 +1902,9 @@
       },
       {
         "month": "May 2026",
-        "pct": 80.0,
+        "pct": 82.4,
         "new_churn": 28,
-        "active_start": 35
+        "active_start": 34
       }
     ]
   },
@@ -2117,7 +2123,7 @@
         "dso": 27.8
       }
     ],
-    "cxc_hoy": 1169696438
+    "cxc_hoy": 1191363088
   },
   "gerencia_goals": {
     "margen_contado_meta": 0.085,
