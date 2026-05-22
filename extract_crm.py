@@ -2034,7 +2034,8 @@ def extract_credit_risk(models, uid):
     ], ["id", "name", "user_id", "monto_credito", "saldo_credito",
         "property_payment_term_id", "property_product_pricelist",
         "credit", "category_id",
-        "delivery_zone_id", "is_volume_client"],  # zona + flag volumen para calc excepción
+        "delivery_zone_id", "is_volume_client",
+        "group_consultek_id"],  # grupo holding para agregar riesgo
     limit=2000)
 
     print(f"  Partners with credit line: {len(credit_partners)}")
@@ -2043,6 +2044,18 @@ def extract_credit_risk(models, uid):
 
     partner_map = {p["id"]: p for p in credit_partners}
     partner_ids = list(partner_map.keys())
+
+    # ── Build group map: group_id → list of partner_ids ──
+    # Partners in the same group share risk exposure (holding structure)
+    group_to_pids = {}  # group_id → [pid, ...]
+    pid_to_group = {}   # pid → group_id
+    for p in credit_partners:
+        gid = p.get("group_consultek_id")
+        gid = gid[0] if isinstance(gid, (list, tuple)) and gid else gid
+        if gid:
+            group_to_pids.setdefault(gid, []).append(p["id"])
+            pid_to_group[p["id"]] = gid
+    print(f"  Groups found: {len(group_to_pids)} (covering {len(pid_to_group)} partners)")
 
     # ── 1b. Resolve tag names to detect DICOM ──
     all_tag_ids = set()
@@ -2192,17 +2205,44 @@ def extract_credit_risk(models, uid):
 
     for pid, stats in partner_stats.items():
         p = partner_map[pid]
-        monto = p.get("monto_credito", 0) or 0
-        saldo = p.get("saldo_credito", 0) or 0
-        ar_balance = p.get("credit", 0) or 0
+
+        # ── Consolidación a nivel de grupo (group_consultek_id) ──
+        # Si el partner pertenece a un grupo, agregar stats de todos los miembros del grupo
+        # para reflejar la exposición real del holding. El score se muestra en el partner
+        # con mayor crédito del grupo.
+        gid = pid_to_group.get(pid)
+        group_peers = [partner_map[gp] for gp in group_to_pids.get(gid, []) if gp != pid and gp in partner_map] if gid else []
+
+        # Consolidated stats = own stats + all peers' stats
+        cons_stats = dict(stats)  # copy
+        for gp_id in group_to_pids.get(gid, []):
+            if gp_id != pid and gp_id in partner_stats:
+                gs = partner_stats[gp_id]
+                for k in ["litros_total", "venta_total", "invoice_count",
+                          "avg_payment_days_sum", "avg_payment_days_count",
+                          "overdue_count", "overdue_amount", "siniestro_count",
+                          "margin_sum", "margin_count"]:
+                    cons_stats[k] = cons_stats.get(k, 0) + gs.get(k, 0)
+                cons_stats["cobranza_labels"] = cons_stats.get("cobranza_labels", []) + gs.get("cobranza_labels", [])
+
+        # Consolidated credit line = sum of all group members
+        monto = sum((partner_map[gp].get("monto_credito", 0) or 0) for gp in group_to_pids.get(gid, [pid])) if gid else (p.get("monto_credito", 0) or 0)
+        saldo = sum((partner_map[gp].get("saldo_credito", 0) or 0) for gp in group_to_pids.get(gid, [pid])) if gid else (p.get("saldo_credito", 0) or 0)
+        ar_balance = sum((partner_map[gp].get("credit", 0) or 0) for gp in group_to_pids.get(gid, [pid])) if gid else (p.get("credit", 0) or 0)
+
+        # is_volume: True si cualquier miembro del grupo es volumen
+        is_volume_group = any(partner_map[gp].get("is_volume_client") for gp in group_to_pids.get(gid, [pid])) if gid else bool(p.get("is_volume_client"))
+
+        group_label = f" (+{len(group_peers)} del grupo)" if group_peers else ""
+
         payment_term = safe_name(p.get("property_payment_term_id"))
         pricelist = safe_name(p.get("property_product_pricelist"))
         vendedor_partner = canonical_vendedor(safe_name(p.get("user_id")))  # vendedor asignado al cliente
-        name = p.get("name", "?")
+        name = p.get("name", "?") + (f" [Grupo: {len(group_peers)+1}]" if group_peers else "")
 
         # ── Zona y tipo de venta (para calculadora de excepción) ──
         zona = safe_name(p.get("delivery_zone_id")) or "Sin zona"
-        is_volume = bool(p.get("is_volume_client"))
+        is_volume = is_volume_group  # usar flag consolidada del grupo
 
         # Parse payment term days (e.g., "30 Days", "Plazo 30 días")
         pt_days = 30  # default
@@ -2220,18 +2260,18 @@ def extract_credit_risk(models, uid):
         else:
             tipo_venta = "Crédito"
 
-        # Averages
-        avg_monthly_litros = round(stats["litros_total"] / months_in_window)
-        avg_monthly_venta = round(stats["venta_total"] / months_in_window)
-        avg_payment_days = round(stats["avg_payment_days_sum"] / max(stats["avg_payment_days_count"], 1), 1)
-        avg_margin = round((stats["margin_sum"] / max(stats["margin_count"], 1)) * 100, 1)
-        avg_price_rango = round(stats["price_rango_sum"] / max(stats["price_rango_count"], 1), 1)
+        # Averages — usando cons_stats (grupo consolidado si aplica)
+        avg_monthly_litros = round(cons_stats["litros_total"] / months_in_window)
+        avg_monthly_venta = round(cons_stats["venta_total"] / months_in_window)
+        avg_payment_days = round(cons_stats["avg_payment_days_sum"] / max(cons_stats["avg_payment_days_count"], 1), 1)
+        avg_margin = round((cons_stats["margin_sum"] / max(cons_stats["margin_count"], 1)) * 100, 1)
+        avg_price_rango = round(cons_stats["price_rango_sum"] / max(cons_stats["price_rango_count"], 1), 1)
 
         # ── Utilization % ──
         utilizacion = round(((monto - saldo) / max(monto, 1)) * 100, 1) if monto > 0 else 0
 
         # ── Projected monthly billing vs credit line ──
-        avg_price_per_liter = stats["venta_total"] / max(stats["litros_total"], 1) if stats["litros_total"] > 0 else 0
+        avg_price_per_liter = cons_stats["venta_total"] / max(cons_stats["litros_total"], 1) if cons_stats["litros_total"] > 0 else 0
         projected_monthly = round(avg_monthly_litros * avg_price_per_liter)
         linea_ratio = round((projected_monthly / max(monto, 1)) * 100, 1) if monto > 0 else 999
 
@@ -2245,10 +2285,10 @@ def extract_credit_risk(models, uid):
 
         # Component 3: Cobranza / Siniestro (0-20 pts)
         score_cobranza = 0
-        if stats["siniestro_count"] > 0:
+        if cons_stats["siniestro_count"] > 0:
             score_cobranza = 20  # Siniestro = max risk
-        elif stats["overdue_count"] > 0:
-            overdue_ratio = stats["overdue_count"] / max(stats["invoice_count"], 1)
+        elif cons_stats["overdue_count"] > 0:
+            overdue_ratio = cons_stats["overdue_count"] / max(cons_stats["invoice_count"], 1)
             score_cobranza = min(15, round(overdue_ratio * 15))
 
         # Component 4: Margen bajo (0-15 pts) — lower margin = more risk
@@ -2280,7 +2320,7 @@ def extract_credit_risk(models, uid):
         entry = {
             "_pid": pid,
             "name": name,
-            "vendedor": vendedor_partner or stats["vendedor"],  # partner.user_id > invoice_user_id
+            "vendedor": vendedor_partner or cons_stats["vendedor"],  # partner.user_id > invoice_user_id
             "monto_credito": monto,
             "saldo_credito": saldo,
             "utilizacion_pct": utilizacion,
@@ -2292,10 +2332,10 @@ def extract_credit_risk(models, uid):
             "plazo_pago_dias": pt_days,
             "plazo_pago_label": payment_term or "—",
             "mora_ratio": round(mora_ratio, 2),
-            "overdue_count": stats["overdue_count"],
-            "overdue_amount": round(stats["overdue_amount"]),
-            "siniestro_count": stats["siniestro_count"],
-            "excepcion_count": stats["excepcion_count"],
+            "overdue_count": cons_stats["overdue_count"],
+            "overdue_amount": round(cons_stats["overdue_amount"]),
+            "siniestro_count": cons_stats["siniestro_count"],
+            "excepcion_count": cons_stats["excepcion_count"],
             "has_dicom": has_dicom,
             "avg_margin_pct": avg_margin,
             "avg_price_rango": avg_price_rango,
