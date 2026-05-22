@@ -1,23 +1,23 @@
 {
-  "updated": "2026-05-22T13:40:09.496747",
+  "updated": "2026-05-22T15:49:22.346488",
   "weeks": [
     {
       "label": "21may-27may",
       "start": "2026-05-21",
       "end": "2026-05-27",
-      "ventas": 11025222,
-      "neto": 8598717,
-      "litros": 7314,
-      "litros_retail": 1314,
-      "litros_volumen": 6000,
-      "precio_neto": 1176,
-      "precio_bruto": 1507,
-      "margin": 0.07801,
-      "margin_retail": 0.08798,
-      "margin_volumen": 0.0758,
-      "facturas": 2,
+      "ventas": 41992223,
+      "neto": 32752033,
+      "litros": 27838,
+      "litros_retail": 9838,
+      "litros_volumen": 18000,
+      "precio_neto": 1177,
+      "precio_bruto": 1508,
+      "margin": 0.09259,
+      "margin_retail": 0.08854,
+      "margin_volumen": 0.09466,
+      "facturas": 8,
       "nc": 0,
-      "clientes": 2,
+      "clientes": 8,
       "recaud": 24910501,
       "cheques": 0,
       "transf": 24910501,
@@ -25,19 +25,37 @@
       "compras_odoo": 0,
       "cheq_cartera_saldo": 0,
       "cheq_recibidos": 0,
-      "facturas_contado": 0,
-      "facturas_credito": 2,
+      "facturas_contado": 1,
+      "facturas_credito": 7,
       "margin_by_term": {
+        "Prepago": {
+          "margin": 0,
+          "normalizado": 0.01,
+          "count": 1,
+          "days": 0
+        },
+        "15 Días": {
+          "margin": 0.10371,
+          "normalizado": 0.10871,
+          "count": 1,
+          "days": 15
+        },
         "30 Días": {
-          "margin": 0.07801,
-          "normalizado": 0.07801,
-          "count": 2,
+          "margin": 0.08121,
+          "normalizado": 0.08121,
+          "count": 5,
           "days": 30
+        },
+        "60 Días": {
+          "margin": 0.11616,
+          "normalizado": 0.10616,
+          "count": 1,
+          "days": 60
         }
       },
       "cotiz_canceladas": 0,
       "visitas": 69,
-      "clientes_nuevos": 0,
+      "clientes_nuevos": 1,
       "ppto": 213480,
       "ppto_retail": 153706,
       "ppto_volumen": 59774,
@@ -1242,8 +1260,8 @@
     {
       "date": "22may",
       "day": "Vie",
-      "litros": 6000,
-      "neto": 7036700
+      "litros": 29524,
+      "neto": 34693240
     },
     {
       "date": "21may",
@@ -1368,11 +1386,11 @@
   ],
   "total_cash": 68764769,
   "receivables": {
-    "open_invoices": 236,
-    "total_due": 622613735,
-    "current": 535098083,
+    "open_invoices": 242,
+    "total_due": 658074737,
+    "current": 570559085,
     "overdue": 87515652,
-    "pct_overdue": 14.1,
+    "pct_overdue": 13.3,
     "aging": {
       "0-30": 74777089,
       "31-60": 2973000,
@@ -1381,12 +1399,12 @@
     },
     "top_debtors": [
       {
-        "name": "AGROINDUSTRIAL SIRACUSA S A",
-        "amount": 40372799
+        "name": "JOSE RODRIGO ORMAZABAL VIDAL",
+        "amount": 42370002
       },
       {
-        "name": "JOSE RODRIGO ORMAZABAL VIDAL",
-        "amount": 37876001
+        "name": "AGROINDUSTRIAL SIRACUSA S A",
+        "amount": 40372799
       },
       {
         "name": "SOC AGRICOLA GRANJA SAN RAFAEL LIMITADA",
@@ -1409,8 +1427,16 @@
         "amount": 19961403
       },
       {
+        "name": "EMM SERVICIOS SPA",
+        "amount": 18744000
+      },
+      {
         "name": "TRANSPORTE SANTA ELENITA SPA",
-        "amount": 16849618
+        "amount": 18433618
+      },
+      {
+        "name": "Servicios de construcción y maquinarias Talmaqq Ltda.",
+        "amount": 15455001
       },
       {
         "name": "SOC. DE TRANSPORTES TRACMAVI LTDA.",
@@ -1451,14 +1477,6 @@
       {
         "name": "SAMUEL BUDINICH SPA",
         "amount": 8330952
-      },
-      {
-        "name": "VALENZUELA LEIVA MAX",
-        "amount": 7895000
-      },
-      {
-        "name": "Servicios de construcción y maquinarias Talmaqq Ltda.",
-        "amount": 7850000
       }
     ]
   },
@@ -1533,8 +1551,8 @@
   "riesgo": {
     "cubierto": 0,
     "cubierto_count": 0,
-    "no_cubierto": 622613735,
-    "no_cubierto_count": 236,
+    "no_cubierto": 658074737,
+    "no_cubierto_count": 242,
     "pct_monto": 100.0,
     "pct_count": 100.0
   },
@@ -2099,7 +2117,7 @@
         "dso": 27.8
       }
     ],
-    "cxc_hoy": 1122386436
+    "cxc_hoy": 1157847438
   },
   "gerencia_goals": {
     "margen_contado_meta": 0.085,
