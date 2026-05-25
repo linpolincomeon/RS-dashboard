@@ -1,38 +1,44 @@
 {
-  "updated": "2026-05-25T00:14:51.574626",
+  "updated": "2026-05-25T14:19:32.529029",
   "weeks": [
     {
       "label": "21may-27may",
       "start": "2026-05-21",
       "end": "2026-05-27",
-      "ventas": 96978476,
-      "neto": 75634463,
-      "litros": 64338,
-      "litros_retail": 45338,
+      "ventas": 99556280,
+      "neto": 77691386,
+      "litros": 65538,
+      "litros_retail": 46538,
       "litros_volumen": 19000,
-      "precio_neto": 1176,
-      "precio_bruto": 1507,
-      "margin": 0.08349,
-      "margin_retail": 0.07906,
+      "precio_neto": 1185,
+      "precio_bruto": 1519,
+      "margin": 0.08315,
+      "margin_retail": 0.07874,
       "margin_volumen": 0.09372,
-      "facturas": 30,
+      "facturas": 31,
       "nc": 0,
-      "clientes": 30,
-      "recaud": 97478281,
+      "clientes": 31,
+      "recaud": 118980081,
       "cheques": 1603000,
-      "transf": 38295366,
+      "transf": 59797166,
       "factoring": 57579915,
-      "compras_odoo": 0,
+      "compras_odoo": 21003572,
       "cheq_cartera_saldo": 0,
       "cheq_recibidos": 0,
-      "facturas_contado": 2,
+      "facturas_contado": 3,
       "facturas_credito": 28,
       "margin_by_term": {
         "Prepago": {
-          "margin": 0.06586,
-          "normalizado": 0.07586,
+          "margin": 0.07294,
+          "normalizado": 0.08294,
           "count": 2,
           "days": 0
+        },
+        "1 Día": {
+          "margin": 0.06334,
+          "normalizado": 0.07301,
+          "count": 1,
+          "days": 1
         },
         "15 Días": {
           "margin": 0.10136,
@@ -88,7 +94,7 @@
       "cheques": 44224119,
       "transf": 175674489,
       "factoring": 117764519,
-      "compras_odoo": 195318292,
+      "compras_odoo": 271955354,
       "cheq_cartera_saldo": 0,
       "cheq_recibidos": 0,
       "facturas_contado": 19,
@@ -1266,14 +1272,14 @@
     {
       "date": "25may",
       "day": "Lun",
-      "litros": 0,
-      "neto": 0
+      "litros": 1200,
+      "neto": 1387172
     },
     {
       "date": "22may",
       "day": "Vie",
       "litros": 62024,
-      "neto": 72898822
+      "neto": 73568573
     },
     {
       "date": "21may",
@@ -1363,19 +1369,15 @@
   "banks": [
     {
       "name": "DE CHILE",
-      "balance": 67754272
-    },
-    {
-      "name": "ESTADO",
-      "balance": 11334543
-    },
-    {
-      "name": "SANTANDER",
-      "balance": 7410696
+      "balance": 38214013
     },
     {
       "name": "ITAU",
-      "balance": 7064285
+      "balance": 23064285
+    },
+    {
+      "name": "ESTADO",
+      "balance": 6848151
     },
     {
       "name": "CAJA",
@@ -1386,20 +1388,24 @@
       "balance": 807071
     },
     {
+      "name": "SANTANDER",
+      "balance": 410696
+    },
+    {
       "name": "DE CREDITO",
       "balance": -1727275
     }
   ],
-  "total_cash": 95934769,
+  "total_cash": 70908118,
   "receivables": {
-    "open_invoices": 259,
-    "total_due": 703349639,
-    "current": 586632379,
-    "overdue": 116717260,
-    "pct_overdue": 16.6,
+    "open_invoices": 254,
+    "total_due": 690830327,
+    "current": 586857179,
+    "overdue": 103973148,
+    "pct_overdue": 15.1,
     "aging": {
-      "0-30": 103073697,
-      "31-60": 3878000,
+      "0-30": 91234585,
+      "31-60": 2973000,
       "61-90": 0,
       "90+": 9765563
     },
@@ -1422,7 +1428,7 @@
       },
       {
         "name": "PATRICIO VISCAY ALBORNOZ",
-        "amount": 26913185
+        "amount": 25043185
       },
       {
         "name": "EL PARRON SPA",
@@ -1453,16 +1459,16 @@
         "amount": 12624000
       },
       {
-        "name": "ANDES SOLAR SA",
-        "amount": 11886997
-      },
-      {
         "name": "URAN ANTONIO LUNA DOMÍNGUEZ",
         "amount": 11424000
       },
       {
         "name": "EMPRESAS TUCAPEL S A",
         "amount": 11298503
+      },
+      {
+        "name": "ANDES SOLAR SA",
+        "amount": 9880261
       },
       {
         "name": "AGRICOLA LOS BOLDOS SPA",
@@ -1591,8 +1597,8 @@
   "riesgo": {
     "cubierto": 0,
     "cubierto_count": 0,
-    "no_cubierto": 703349639,
-    "no_cubierto_count": 259,
+    "no_cubierto": 690830327,
+    "no_cubierto_count": 254,
     "pct_monto": 100.0,
     "pct_count": 100.0
   },
@@ -1892,7 +1898,7 @@
         "new_this_week": true
       },
       {
-        "name": "AGRICOLA POCH S.A.",
+        "name": "AGRICOLA POCH S.A. (siniestrado)",
         "freq": "Irregular (Promedio: 28 días)",
         "freq_days": 28,
         "last_invoice": "2026-03-23",
@@ -1952,10 +1958,10 @@
           "5667"
         ],
         "target_total": 502563,
-        "mtd_litros": 185787,
-        "compliance_pct": 37.0,
-        "projected": 230376,
-        "projected_pct": 45.8,
+        "mtd_litros": 225794,
+        "compliance_pct": 44.9,
+        "projected": 279985,
+        "projected_pct": 55.7,
         "plants": {
           "Maipu": {
             "target": 183025
@@ -1974,10 +1980,10 @@
           "15293"
         ],
         "target_total": 374369,
-        "mtd_litros": 210001,
-        "compliance_pct": 56.1,
-        "projected": 260401,
-        "projected_pct": 69.6,
+        "mtd_litros": 255001,
+        "compliance_pct": 68.1,
+        "projected": 316201,
+        "projected_pct": 84.5,
         "plants": {
           "Maipu": {
             "target": 0
@@ -1989,10 +1995,10 @@
       }
     },
     "total_target": 876932,
-    "total_mtd": 395788,
-    "total_compliance_pct": 45.1,
-    "total_projected": 490777,
-    "total_projected_pct": 56.0
+    "total_mtd": 480795,
+    "total_compliance_pct": 54.8,
+    "total_projected": 596186,
+    "total_projected_pct": 68.0
   },
   "operaciones": {
     "months": [
@@ -2157,7 +2163,7 @@
         "dso": 27.8
       }
     ],
-    "cxc_hoy": 1203122340
+    "cxc_hoy": 1190603028
   },
   "gerencia_goals": {
     "margen_contado_meta": 0.085,
