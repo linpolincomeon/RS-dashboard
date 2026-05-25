@@ -569,67 +569,61 @@ def extract_receivables(models, uid):
     }
 
 
-# ── SLA DELIVERY (stock.picking by delivery_zone_id) ──
+# ── SLA DELIVERY (sale.order + account.move) ──
 # 6 zones: Talca, San Fernando, Curicó, Chillán, Rancagua, VI Costa
 VALID_ZONES = {"Talca", "San Fernando", "Curicó", "Chillán", "Rancagua", "VI Costa"}
 
 
 def extract_sla(models, uid, weeks):
-    """Delivery SLA per zone per week from stock.picking.
-    Zone from partner.delivery_zone_id (partner.delivery.zone model).
-    On time = date_done within 24h of scheduled_date."""
+    """Delivery SLA per zone per week.
+    On time = invoice_date de la primera factura == shipping_date (mismo día calendario)."""
     print("Extracting SLA delivery data...")
     sla_data = []
-    for i, wd in enumerate(weeks[:1]):  # SLA for current week only
-        # Outgoing deliveries completed this week
-        pickings = sr(models, uid, "stock.picking", [
-            ["picking_type_code", "=", "outgoing"],
-            ["state", "=", "done"],
-            ["date_done", ">=", wd["start"] + " 00:00:00"],
-            ["date_done", "<=", wd["end"] + " 23:59:59"],
-        ], ["partner_id", "scheduled_date", "date_done", "sale_id"], 2000)
+    for wd in weeks[:1]:
+        orders = sr(models, uid, "sale.order", [
+            ["state", "in", ["sale", "done"]],
+            ["shipping_date", ">=", wd["start"]],
+            ["shipping_date", "<=", wd["end"]],
+        ], ["id", "name", "shipping_date", "partner_id", "delivery_zone_id"], 2000)
 
-        # Get delivery_zone_id from sale.order (not res.partner)
-        sale_ids = list(set(p["sale_id"][0] for p in pickings if p.get("sale_id")))
-        sale_zone = {}  # sale_id -> zone name
-        for soff in range(0, len(sale_ids), 200):
-            batch = sale_ids[soff:soff + 200]
-            orders = sr(models, uid, "sale.order", [["id", "in", batch]],
-                         ["id", "delivery_zone_id"], limit=200)
-            for o in orders:
-                dz = o.get("delivery_zone_id")
-                if dz:
-                    sale_zone[o["id"]] = dz[1]  # [id, name]
+        if not orders:
+            sla_data.append({"label": wd["label"], "zones": {}})
+            print(f"  {wd['label']}: 0 orders with shipping_date")
+            continue
 
-        # Map picking -> zone via sale_id
-        picking_zone = {}
-        for p in pickings:
-            sid = p["sale_id"][0] if p.get("sale_id") else None
-            picking_zone[p["id"]] = sale_zone.get(sid, "Sin Zona") if sid else "Sin Zona"
+        order_names = [o["name"] for o in orders]
+        invoices = sr(models, uid, "account.move", [
+            ["move_type", "=", "out_invoice"],
+            ["state", "=", "posted"],
+            ["invoice_origin", "in", order_names],
+        ], ["invoice_origin", "invoice_date"], 5000)
+
+        first_invoice = {}
+        for inv in invoices:
+            orig = inv.get("invoice_origin", "")
+            idate = inv.get("invoice_date", "")
+            if orig and idate:
+                if orig not in first_invoice or idate < first_invoice[orig]:
+                    first_invoice[orig] = idate
 
         zone_stats = {}
-        for p in pickings:
-            pid = p.get("partner_id")
-            if not pid:
+        for o in orders:
+            shipping = o.get("shipping_date", "")
+            if not shipping:
                 continue
-            zone = picking_zone.get(p["id"], "Sin Zona")
+            shipping_day = shipping[:10]
+            dz = o.get("delivery_zone_id")
+            zone = dz[1] if dz else "Sin Zona"
             if zone not in zone_stats:
                 zone_stats[zone] = {"total": 0, "on_time": 0, "late_clients": []}
             zone_stats[zone]["total"] += 1
-            # On time = delivered within 24h of scheduled
-            sched = p.get("scheduled_date", "")
-            done = p.get("date_done", "")
-            if sched and done:
-                try:
-                    s_dt = datetime.strptime(sched[:19], "%Y-%m-%d %H:%M:%S")
-                    d_dt = datetime.strptime(done[:19], "%Y-%m-%d %H:%M:%S")
-                    if (d_dt - s_dt).total_seconds() <= 86400:  # 24h
-                        zone_stats[zone]["on_time"] += 1
-                    else:
-                        pname = pid[1] if pid else "N/A"
-                        zone_stats[zone]["late_clients"].append(pname)
-                except (ValueError, TypeError):
-                    zone_stats[zone]["on_time"] += 1  # assume on time if parse fails
+            inv_date = first_invoice.get(o["name"])
+            if inv_date and inv_date[:10] == shipping_day:
+                zone_stats[zone]["on_time"] += 1
+            else:
+                pname = o["partner_id"][1] if o.get("partner_id") else "N/A"
+                inv_display = inv_date[:10] if inv_date else "sin factura"
+                zone_stats[zone]["late_clients"].append(f"{pname} (prom: {shipping_day}, fact: {inv_display})")
 
         week_sla = {}
         for zone, st in sorted(zone_stats.items()):
@@ -639,12 +633,12 @@ def extract_sla(models, uid, weeks):
                 "on_time": st["on_time"],
                 "late": st["total"] - st["on_time"],
                 "pct": pct,
-                "late_clients": st["late_clients"],  # all late clients
+                "late_clients": st["late_clients"],
             }
         sla_data.append({"label": wd["label"], "zones": week_sla})
         total_p = sum(s["total"] for s in week_sla.values())
         total_ot = sum(s["on_time"] for s in week_sla.values())
-        print(f"  {wd['label']}: {total_p} pickings, {total_ot} on time, zones: {list(week_sla.keys())}")
+        print(f"  {wd['label']}: {total_p} orders, {total_ot} on time, zones: {list(week_sla.keys())}")
     return sla_data
 
 
