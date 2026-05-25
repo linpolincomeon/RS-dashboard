@@ -1,32 +1,32 @@
 {
-  "updated": "2026-05-25T14:19:32.529029",
+  "updated": "2026-05-25T16:37:48.833577",
   "weeks": [
     {
       "label": "21may-27may",
       "start": "2026-05-21",
       "end": "2026-05-27",
-      "ventas": 99556280,
-      "neto": 77691386,
-      "litros": 65538,
-      "litros_retail": 46538,
-      "litros_volumen": 19000,
-      "precio_neto": 1185,
-      "precio_bruto": 1519,
-      "margin": 0.08315,
-      "margin_retail": 0.07874,
-      "margin_volumen": 0.09372,
-      "facturas": 31,
+      "ventas": 113455739,
+      "neto": 88518164,
+      "litros": 74908,
+      "litros_retail": 51408,
+      "litros_volumen": 23500,
+      "precio_neto": 1182,
+      "precio_bruto": 1515,
+      "margin": 0.0806,
+      "margin_retail": 0.07872,
+      "margin_volumen": 0.08467,
+      "facturas": 37,
       "nc": 0,
-      "clientes": 31,
+      "clientes": 37,
       "recaud": 118980081,
       "cheques": 1603000,
       "transf": 59797166,
       "factoring": 57579915,
-      "compras_odoo": 21003572,
+      "compras_odoo": 62677164,
       "cheq_cartera_saldo": 0,
       "cheq_recibidos": 0,
-      "facturas_contado": 3,
-      "facturas_credito": 28,
+      "facturas_contado": 6,
+      "facturas_credito": 31,
       "margin_by_term": {
         "Prepago": {
           "margin": 0.07294,
@@ -35,10 +35,16 @@
           "days": 0
         },
         "1 Día": {
-          "margin": 0.06334,
-          "normalizado": 0.07301,
-          "count": 1,
+          "margin": 0.06139,
+          "normalizado": 0.07106,
+          "count": 4,
           "days": 1
+        },
+        "7 Días": {
+          "margin": 0.04402,
+          "normalizado": 0.05169,
+          "count": 1,
+          "days": 7
         },
         "15 Días": {
           "margin": 0.10136,
@@ -47,9 +53,9 @@
           "days": 15
         },
         "30 Días": {
-          "margin": 0.07956,
-          "normalizado": 0.07956,
-          "count": 22,
+          "margin": 0.08012,
+          "normalizado": 0.08012,
+          "count": 23,
           "days": 30
         },
         "45 Días": {
@@ -59,9 +65,9 @@
           "days": 45
         },
         "60 Días": {
-          "margin": 0.09847,
-          "normalizado": 0.08847,
-          "count": 2,
+          "margin": 0.09988,
+          "normalizado": 0.08988,
+          "count": 3,
           "days": 60
         }
       },
@@ -94,7 +100,7 @@
       "cheques": 44224119,
       "transf": 175674489,
       "factoring": 117764519,
-      "compras_odoo": 271955354,
+      "compras_odoo": 292777724,
       "cheq_cartera_saldo": 0,
       "cheq_recibidos": 0,
       "facturas_contado": 19,
@@ -1272,8 +1278,8 @@
     {
       "date": "25may",
       "day": "Lun",
-      "litros": 1200,
-      "neto": 1387172
+      "litros": 10570,
+      "neto": 12213950
     },
     {
       "date": "22may",
@@ -1398,13 +1404,13 @@
   ],
   "total_cash": 70908118,
   "receivables": {
-    "open_invoices": 254,
-    "total_due": 690830327,
-    "current": 586857179,
-    "overdue": 103973148,
-    "pct_overdue": 15.1,
+    "open_invoices": 233,
+    "total_due": 643883657,
+    "current": 542170513,
+    "overdue": 101713144,
+    "pct_overdue": 15.8,
     "aging": {
-      "0-30": 91234585,
+      "0-30": 88974581,
       "31-60": 2973000,
       "61-90": 0,
       "90+": 9765563
@@ -1459,12 +1465,12 @@
         "amount": 12624000
       },
       {
-        "name": "URAN ANTONIO LUNA DOMÍNGUEZ",
-        "amount": 11424000
+        "name": "ARIDOS LO VALDIVIA LIMITADA",
+        "amount": 12355001
       },
       {
-        "name": "EMPRESAS TUCAPEL S A",
-        "amount": 11298503
+        "name": "URAN ANTONIO LUNA DOMÍNGUEZ",
+        "amount": 11424000
       },
       {
         "name": "ANDES SOLAR SA",
@@ -1597,15 +1603,15 @@
   "riesgo": {
     "cubierto": 0,
     "cubierto_count": 0,
-    "no_cubierto": 690830327,
-    "no_cubierto_count": 254,
+    "no_cubierto": 643883657,
+    "no_cubierto_count": 233,
     "pct_monto": 100.0,
     "pct_count": 100.0
   },
   "churn": {
     "eligible_clients": 165,
-    "churned_count": 61,
-    "pct": 37.0,
+    "churned_count": 59,
+    "pct": 35.8,
     "churned": [
       {
         "name": "CRISTIAN HUGO FUENZALIDA MEZA",
@@ -1936,15 +1942,15 @@
       },
       {
         "month": "Apr 2026",
-        "pct": 64.3,
+        "pct": 66.7,
         "new_churn": 18,
-        "active_start": 28
+        "active_start": 27
       },
       {
         "month": "May 2026",
-        "pct": 82.4,
-        "new_churn": 28,
-        "active_start": 34
+        "pct": 81.8,
+        "new_churn": 27,
+        "active_start": 33
       }
     ]
   },
@@ -1980,10 +1986,10 @@
           "15293"
         ],
         "target_total": 374369,
-        "mtd_litros": 255001,
-        "compliance_pct": 68.1,
-        "projected": 316201,
-        "projected_pct": 84.5,
+        "mtd_litros": 285001,
+        "compliance_pct": 76.1,
+        "projected": 353401,
+        "projected_pct": 94.4,
         "plants": {
           "Maipu": {
             "target": 0
@@ -1995,10 +2001,10 @@
       }
     },
     "total_target": 876932,
-    "total_mtd": 480795,
-    "total_compliance_pct": 54.8,
-    "total_projected": 596186,
-    "total_projected_pct": 68.0
+    "total_mtd": 510795,
+    "total_compliance_pct": 58.2,
+    "total_projected": 633386,
+    "total_projected_pct": 72.2
   },
   "operaciones": {
     "months": [
@@ -2091,12 +2097,12 @@
         "month": "2026-05",
         "label": "May 2026",
         "budget": 10055583,
-        "actual": 13063901,
-        "compliance_pct": 129.9,
+        "actual": 13151068,
+        "compliance_pct": 130.8,
         "categories": {
           "Petróleo": 9271373,
-          "Mantención y Reparación": 1115306,
-          "Gastos Traslados (TAG)": 1269563,
+          "Mantención y Reparación": 1122029,
+          "Gastos Traslados (TAG)": 1350007,
           "Seguros": 676203,
           "Gastos Vehículos": 328448,
           "Arriendo": 400000,
@@ -2163,7 +2169,7 @@
         "dso": 27.8
       }
     ],
-    "cxc_hoy": 1190603028
+    "cxc_hoy": 1202277987
   },
   "gerencia_goals": {
     "margen_contado_meta": 0.085,
