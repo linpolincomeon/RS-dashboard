@@ -583,7 +583,7 @@ def extract_sla(models, uid, weeks):
         orders = sr(models, uid, "sale.order", [
             ["state", "in", ["sale", "done"]],
             ["shipping_date", ">=", wd["start"]],
-            ["shipping_date", "<=", wd["end"]],
+          ["shipping_date", "<=", datetime.now().strftime("%Y-%m-%d")],
         ], ["id", "name", "shipping_date", "partner_id", "delivery_zone_id"], 2000)
 
         if not orders:
