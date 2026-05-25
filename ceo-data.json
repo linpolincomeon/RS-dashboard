@@ -1,32 +1,32 @@
 {
-  "updated": "2026-05-25T17:37:00.704345",
+  "updated": "2026-05-25T19:39:18.834843",
   "weeks": [
     {
       "label": "21may-27may",
       "start": "2026-05-21",
       "end": "2026-05-27",
-      "ventas": 116679059,
-      "neto": 91032831,
-      "litros": 77038,
-      "litros_retail": 53538,
-      "litros_volumen": 38500,
+      "ventas": 120707019,
+      "neto": 94177942,
+      "litros": 79670,
+      "litros_retail": 55438,
+      "litros_volumen": 39232,
       "precio_neto": 1182,
-      "precio_bruto": 1504,
-      "margin": 0.07321,
-      "margin_retail": 0.07871,
-      "margin_volumen": 0.06549,
-      "facturas": 41,
+      "precio_bruto": 1505,
+      "margin": 0.0736,
+      "margin_retail": 0.07914,
+      "margin_volumen": 0.06569,
+      "facturas": 44,
       "nc": 2,
-      "clientes": 39,
-      "recaud": 118980081,
-      "cheques": 1603000,
-      "transf": 59797166,
+      "clientes": 41,
+      "recaud": 165910083,
+      "cheques": 10176999,
+      "transf": 98153169,
       "factoring": 57579915,
       "compras_odoo": 62677164,
       "cheq_cartera_saldo": 0,
       "cheq_recibidos": 0,
       "facturas_contado": 7,
-      "facturas_credito": 34,
+      "facturas_credito": 37,
       "margin_by_term": {
         "Prepago": {
           "margin": 0.07294,
@@ -53,9 +53,9 @@
           "days": 15
         },
         "30 Días": {
-          "margin": 0.08075,
-          "normalizado": 0.08075,
-          "count": 24,
+          "margin": 0.08109,
+          "normalizado": 0.08109,
+          "count": 27,
           "days": 30
         },
         "45 Días": {
@@ -1278,8 +1278,8 @@
     {
       "date": "25may",
       "day": "Lun",
-      "litros": 27700,
-      "neto": 31667129
+      "litros": 30332,
+      "neto": 34812240
     },
     {
       "date": "22may",
@@ -1375,7 +1375,7 @@
   "banks": [
     {
       "name": "DE CHILE",
-      "balance": 38214013
+      "balance": 50144015
     },
     {
       "name": "ITAU",
@@ -1402,24 +1402,20 @@
       "balance": -1727275
     }
   ],
-  "total_cash": 70908118,
+  "total_cash": 82838120,
   "receivables": {
-    "open_invoices": 235,
-    "total_due": 647106977,
-    "current": 545393833,
-    "overdue": 101713144,
-    "pct_overdue": 15.7,
+    "open_invoices": 225,
+    "total_due": 626431934,
+    "current": 540031291,
+    "overdue": 86400643,
+    "pct_overdue": 13.8,
     "aging": {
-      "0-30": 88974581,
+      "0-30": 73662080,
       "31-60": 2973000,
       "61-90": 0,
       "90+": 9765563
     },
     "top_debtors": [
-      {
-        "name": "JOSE RODRIGO ORMAZABAL VIDAL",
-        "amount": 42370002
-      },
       {
         "name": "AGROINDUSTRIAL SIRACUSA S A",
         "amount": 40372799
@@ -1427,6 +1423,10 @@
       {
         "name": "SOC AGRICOLA GRANJA SAN RAFAEL LIMITADA",
         "amount": 32840781
+      },
+      {
+        "name": "JOSE RODRIGO ORMAZABAL VIDAL",
+        "amount": 31863002
       },
       {
         "name": "ALFREDO ALFONSO OPAZO MUÑOZ",
@@ -1465,20 +1465,12 @@
         "amount": 12624000
       },
       {
-        "name": "ARIDOS LO VALDIVIA LIMITADA",
-        "amount": 12355001
-      },
-      {
         "name": "URAN ANTONIO LUNA DOMÍNGUEZ",
         "amount": 11424000
       },
       {
         "name": "ANDES SOLAR SA",
         "amount": 9880261
-      },
-      {
-        "name": "AGRICOLA LOS BOLDOS SPA",
-        "amount": 9102000
       },
       {
         "name": "CIA AGRICOLA Y FORESTAL EL ALAMO LIMITADA",
@@ -1495,6 +1487,14 @@
       {
         "name": "SAMUEL BUDINICH SPA",
         "amount": 8330952
+      },
+      {
+        "name": "AGRICOLA LOS BOLDOS SPA",
+        "amount": 8293000
+      },
+      {
+        "name": "VALENZUELA LEIVA MAX",
+        "amount": 7895000
       }
     ]
   },
@@ -1503,99 +1503,65 @@
       "label": "21may-27may",
       "zones": {
         "Chillan": {
-          "total": 4,
-          "on_time": 1,
-          "late": 3,
-          "pct": 25.0,
-          "late_clients": [
-            "GABRIEL ANTONIO HERNANDEZ ESPINOZA, MARCELO HERNANDEZ",
-            "INGENERIA Y CONSTRUCCIONES FEBLANCA SPA, PLANTA PARRAL",
-            "GABRIEL OCTAVIO HERNANDEZ MUNOZ, MARCELO HERNANDEZ, DUEÑO"
-          ]
+          "total": 5,
+          "on_time": 5,
+          "late": 0,
+          "pct": 100.0,
+          "late_clients": []
         },
         "Curico": {
-          "total": 11,
-          "on_time": 0,
-          "late": 11,
-          "pct": 0.0,
-          "late_clients": [
-            "AGRICOLA LA SORPRESA SPA, SORPRESA-QUILLAYES",
-            "AGRICOLA LA HACIENDA LTDA, AGRICOLA LA HACIENDA-LITU SAN RAFAEL",
-            "GINO ALEJANDRO ALIAGA ALVAREZ, GINO ALIAGA",
-            "ARIDOS LO VALDIVIA LIMITADA, Gissele",
-            "AGRICOLA MANTOS VERDES LIMITADA, LOS PRETILES",
-            "AGRICOLA EL MILAGRO LTDA., AGRICOLA EL MILAGRO-Denis",
-            "JOSE RODRIGO ORMAZABAL VIDAL, Caroline",
-            "AGRICOLA LA CAMPANA SPA, AGRICOLA LA CAMPANA - VILLA PRAT",
-            "TRANSPORTES JORGE MARTINEZ SCHNETTLER E.I.R.L., TRANSPORTES JORGE MARTINEZ- LOS VIDALES",
-            "PROVEAGRO SERVICIOS SPA, PROVEAGRO-LOS VIDALES",
-            "CRISTIAN ANTONIO REYES SERRANO, Cristian"
-          ]
+          "total": 8,
+          "on_time": 8,
+          "late": 0,
+          "pct": 100.0,
+          "late_clients": []
         },
         "Rancagua": {
-          "total": 7,
+          "total": 11,
           "on_time": 4,
-          "late": 3,
-          "pct": 57.14,
+          "late": 7,
+          "pct": 36.36,
           "late_clients": [
-            "MAESTRANZA Y SERVICIOS INTEGRALES METALMECANICOS CACHAPOAL S A, CASA FRANCISCO CARTAGENA",
-            "AGRICOLA SAN NICOLAS LTDA, AGRICOLA SAN NICOLAS- Isabel",
-            "CARLOS SOTO CORREA, Picarquin-Fabio"
+            "AMASANDERIA CAMILA SPA (prom: 2026-05-25, fact: sin factura)",
+            "INVERSIONES VB SPA (prom: 2026-05-25, fact: sin factura)",
+            "AGRICOLA LA PATAGUILLA LTDA (prom: 2026-05-25, fact: sin factura)",
+            "SOCIEDAD AGRÍCOLA EL BOSQUE LTDA (prom: 2026-05-25, fact: sin factura)",
+            "AGRICOLA LA PATAGUILLA LTDA (prom: 2026-05-25, fact: sin factura)",
+            "AGRICOLA EUGENIO LIRA ESPINOZA E.I.R.L. (prom: 2026-05-25, fact: sin factura)",
+            "AGRICOLA BA FARMS SPA (prom: 2026-05-22, fact: sin factura)"
           ]
         },
         "Región Metropolitana": {
           "total": 1,
-          "on_time": 0,
-          "late": 1,
-          "pct": 0.0,
-          "late_clients": [
-            "EMM SERVICIOS SPA, EMM SERVICIOS SPA, CAMILO BALCAZAR"
-          ]
+          "on_time": 1,
+          "late": 0,
+          "pct": 100.0,
+          "late_clients": []
         },
         "San Fernando": {
-          "total": 8,
-          "on_time": 3,
-          "late": 5,
-          "pct": 37.5,
-          "late_clients": [
-            "ALIMENTOS Y FRUTOS S.A., ALIMENTOS Y FRUTOS, RENGO",
-            "FRUTICOLA AGUA BUENA LTDA, CASA DE DON DARIO",
-            "RENE MONTENEGRO MARQUEZ, RENE MONTENEGRO-Nice",
-            "NUEVO SUR SPA, NUEVO SUR- Juan Carlos Muñoz",
-            "SOCIEDAD  AGRÍCOLA  Y COMERCIAL SANTA ANA SPA, AGRICOLA SANTA ANA MARCELO PIÑA"
-          ]
+          "total": 5,
+          "on_time": 5,
+          "late": 0,
+          "pct": 100.0,
+          "late_clients": []
         },
         "Talca": {
-          "total": 22,
-          "on_time": 8,
-          "late": 14,
-          "pct": 36.36,
+          "total": 18,
+          "on_time": 15,
+          "late": 3,
+          "pct": 83.33,
           "late_clients": [
-            "FELIPE HERNANDEZ HERNANDEZ, FELIPE HERNANDEZ HERNANDEZ-Felipe",
-            "EMPRESAS TUCAPEL S A, FIDEL CONCHA, TUCPAEL RETIRO",
-            "EMPRESAS TUCAPEL S A, FIDEL CONCHA, TUCPAEL RETIRO",
-            "CIA AGRICOLA Y FORESTAL EL ALAMO LIMITADA, AGRICOLA Y FORESTAL EL ALAMO, RETIRO",
-            "SERVICIOS REVIVA SPA, SERVICIOS REVIVA-René",
-            "SOC AGRICOLA SANTA TERESA SPA, PARRAL-Javiera",
-            "DANIEL ENRIQUE AVILA HERNANDEZ, CAMPO DANIEL AVILA",
-            "Servicios de construcción y maquinarias Talmaqq Ltda., TALMAQQ",
-            "AGROPELLIN SPA, AGROPELLIN-La Obra-Mauricio",
-            "AGRICOLA SAN BENITO DE BUREO S.P.A., AGRICOLA SAN BENITO DE BUREO-Alfredo Roca",
-            "MARGARITA MARIA ALARCON VERGARA, MARGARITA MARIA ALARCON-BRAMADERO ok",
-            "SERVICIO DE MAQUINARIA AGRICOLA LIMITADA, SERVICIO DE MAQUINARIA AGRICOLA-Carlos Fuentes",
-            "PATRICIO VISCAY ALBORNOZ, Cristopher",
-            "AGRICOLA MILLAMALAL E.I.R.L, LEANDRO BUSTAMANTE"
+            "EMPRESAS TUCAPEL S A (prom: 2026-05-25, fact: sin factura)",
+            "EMPRESAS TUCAPEL S A (prom: 2026-05-25, fact: sin factura)",
+            "DANIEL ENRIQUE AVILA HERNANDEZ (prom: 2026-05-22, fact: 2026-05-21)"
           ]
         },
         "VI Costa": {
           "total": 2,
-          "on_time": 0,
-          "late": 2,
-          "pct": 0.0,
-          "late_clients": [
-            "AGROSERVICIOS TIERRA SANTA LIMITADA, Felipe Morales",
-            "ELABORADORA Y COMERCIALIZADORA DE ACEITES DE OLIVA PICHUANTE E HIJOS SPA, ALMAZARA PICHUANTE - Joaquin"
-          ]
+          "on_time": 2,
+          "late": 0,
+          "pct": 100.0,
+          "late_clients": []
         }
       }
     }
@@ -1603,8 +1569,8 @@
   "riesgo": {
     "cubierto": 0,
     "cubierto_count": 0,
-    "no_cubierto": 647106977,
-    "no_cubierto_count": 235,
+    "no_cubierto": 626431934,
+    "no_cubierto_count": 225,
     "pct_monto": 100.0,
     "pct_count": 100.0
   },
@@ -2161,15 +2127,15 @@
       },
       {
         "month": "2026-04",
-        "cxc": 1038988785,
-        "cxc_acc": 1038988785,
+        "cxc": 1039801354,
+        "cxc_acc": 1039801354,
         "cheques": 0,
-        "avg_cxc_3m": 884170076,
+        "avg_cxc_3m": 884440932,
         "net_sales": 954233879,
         "dso": 27.8
       }
     ],
-    "cxc_hoy": 1205501307
+    "cxc_hoy": 1168527075
   },
   "gerencia_goals": {
     "margen_contado_meta": 0.085,
