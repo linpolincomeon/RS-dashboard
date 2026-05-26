@@ -168,7 +168,7 @@
     display: block;
     margin-bottom: 6px;
   }
-  input[type="number"], input[type="text"] {
+  input[type="number"], input[type="text"], input[type="tel"] {
     width: 100%;
     background: var(--gris-medio);
     border: 2px solid var(--gris-borde);
@@ -182,7 +182,7 @@
     appearance: none;
     -moz-appearance: textfield;
   }
-  input[type="number"]:focus, input[type="text"]:focus {
+  input[type="number"]:focus, input[type="text"]:focus, input[type="tel"]:focus {
     border-color: var(--amarillo);
     background: #1A1800;
   }
@@ -403,8 +403,9 @@
   <!-- LITROS -->
   <div class="section-label">3. Litros</div>
   <div class="input-group">
-    <input type="number" id="litros" placeholder="0" inputmode="numeric" min="0"
-           oninput="actualizarPreview()">
+    <!-- type=tel + pattern: muestra teclado numérico SIN auto-formato del navegador -->
+    <input type="tel" id="litros" placeholder="0" inputmode="numeric" pattern="[0-9]*" maxlength="6"
+           oninput="limpiarLitros(this); actualizarPreview()">
   </div>
 
   <!-- CAMPOS EXTRA (solo ventas) -->
@@ -457,10 +458,20 @@
 <script>
   let camionSel = null;
   let tipoSel = null;
-  const WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbyHbnqCOn01GIanDjEXxULDreMAEr6B0WaDizlgqoO1KaISiydyM6Fr7C_MsVli4zGW/exec'; // Aquí va la URL del Google Apps Script Web App
+  const WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbyEEI4ujT7TVXhYMJPWtDskgvpDO-f5ZNJCPnmM4me11u2PSkiu9LmB8pPFzJI9xWak/exec';
 
   function pad(n){ return n.toString().padStart(2,'0'); }
-  
+
+  // CRÍTICO: limpia cualquier caracter no-numérico para evitar bugs de formato
+  function limpiarLitros(input){
+    input.value = input.value.replace(/\D/g, '');
+  }
+
+  // Formato visual SOLO para mostrar (no para guardar)
+  function formatearMiles(n){
+    return Number(n).toLocaleString('es-CL').replace(/,/g, '.');
+  }
+
   function updateTime(){
     const now = new Date();
     const dias = ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
@@ -486,7 +497,7 @@
     document.querySelectorAll('.tipo-btn').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
     tipoSel = btn.dataset.tipo;
-    
+
     const extra = document.getElementById('extra-fields');
     const obsLabel = document.getElementById('obs-label');
     if(tipoSel === 'venta'){
@@ -518,7 +529,8 @@
     }[tipoSel];
 
     let html = `<span>${camionSel}</span> · ${tipoTexto}<br>`;
-    html += `Litros: <span>${parseFloat(litros).toLocaleString('es-CL')}</span>`;
+    // Litros visual con separador de miles (1.000, 15.000) - solo para mostrar
+    html += `Litros: <span>${formatearMiles(litros)}</span>`;
     if(tipoSel === 'venta'){
       if(factura) html += `<br>Fact: <span>${factura}</span>`;
       if(cliente) html += `<br>Cliente: <span>${cliente}</span>`;
@@ -533,7 +545,7 @@
   function checkSubmit(){
     const litros = document.getElementById('litros').value;
     const btn = document.getElementById('submit-btn');
-    btn.disabled = !(camionSel && tipoSel && litros && parseFloat(litros) > 0);
+    btn.disabled = !(camionSel && tipoSel && litros && parseInt(litros, 10) > 0);
   }
 
   function enviar(){
@@ -542,41 +554,35 @@
     btn.textContent = 'ENVIANDO...';
 
     const now = new Date();
+    // CRÍTICO: parseInt sin formato, valor crudo del input ya limpio
+    const litrosRaw = document.getElementById('litros').value;
+    const litrosInt = parseInt(litrosRaw, 10);
+
     const data = {
       timestamp: now.toISOString(),
       fecha: pad(now.getDate()) + '/' + pad(now.getMonth()+1) + '/' + now.getFullYear(),
       hora: pad(now.getHours()) + ':' + pad(now.getMinutes()),
       camion: camionSel,
       tipo: tipoSel.toUpperCase(),
-      litros: parseFloat(document.getElementById('litros').value),
+      litros: litrosInt,
       factura: document.getElementById('factura').value || '',
       cliente: document.getElementById('cliente').value || '',
       observacion: document.getElementById('observacion').value || ''
     };
 
-    // Si hay webhook configurado, enviar
-    if(WEBHOOK_URL){
-      // Google Apps Script requiere form submit para CORS
-      const form = document.createElement('form');
-      form.method = 'POST';
-      form.action = WEBHOOK_URL;
-      form.target = 'hidden_iframe';
-      form.style.display = 'none';
-      const input = document.createElement('input');
-      input.type = 'hidden';
-      input.name = 'payload';
-      input.value = JSON.stringify(data);
-      form.appendChild(input);
-      document.body.appendChild(form);
-      form.submit();
-      setTimeout(() => { document.body.removeChild(form); mostrarExito(data); }, 1000);
-    } else {
-      // Modo demo: guardar en localStorage para pruebas
-      const registros = JSON.parse(localStorage.getItem('te_reportes') || '[]');
-      registros.push(data);
-      localStorage.setItem('te_reportes', JSON.stringify(registros));
-      setTimeout(() => mostrarExito(data), 600);
-    }
+    // Envío con fetch + no-cors + text/plain (compatible con Apps Script doPost)
+    fetch(WEBHOOK_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: {'Content-Type': 'text/plain;charset=utf-8'},
+      body: JSON.stringify(data)
+    }).then(() => {
+      mostrarExito(data);
+    }).catch((err) => {
+      // Con no-cors el .catch raramente se dispara, pero por si acaso
+      console.error('Error envío:', err);
+      mostrarExito(data);
+    });
   }
 
   function mostrarExito(data){
@@ -585,7 +591,7 @@
       'INICIO': '🟣 INICIO DÍA', 'CARGA': '🔵 CARGA ENAP',
       'VENTA': '🟠 VENTA', 'TRASLADO': '🟡 TRASLADO', 'CIERRE': '🟢 CIERRE DÍA'
     }[data.tipo] || data.tipo;
-    let detalle = `Camión: ${data.camion}\nTipo: ${tipoTexto}\nLitros: ${data.litros.toLocaleString('es-CL')}\nHora: ${data.hora}`;
+    let detalle = `Camión: ${data.camion}\nTipo: ${tipoTexto}\nLitros: ${formatearMiles(data.litros)}\nHora: ${data.hora}`;
     if(data.factura) detalle += `\nFactura: ${data.factura}`;
     if(data.cliente) detalle += `\nCliente: ${data.cliente}`;
     document.getElementById('success-detail').style.whiteSpace = 'pre-line';
@@ -611,6 +617,5 @@
     window.scrollTo(0,0);
   }
 </script>
-<iframe name="hidden_iframe" style="display:none"></iframe>
 </body>
 </html>
