@@ -575,20 +575,26 @@ VALID_ZONES = {"Talca", "San Fernando", "Curicó", "Chillán", "Rancagua", "VI C
 
 
 def extract_sla(models, uid, weeks):
-    """Delivery SLA per zone per week.
-    On time = invoice_date de la primera factura == shipping_date (mismo día calendario)."""
-    print("Extracting SLA delivery data...")
+    """Delivery SLA per zone per week — todas las semanas del selector.
+    On time = invoice_date de la primera factura válida == shipping_date (mismo día).
+    Para la semana actual: excluye pedidos con shipping_date > hoy (aún en curso).
+    Ignora facturas con invoice_date < 2020-01-01 (datos corruptos)."""
+    print("Extracting SLA delivery data (all weeks)...")
+    today_str = datetime.now().strftime("%Y-%m-%d")
     sla_data = []
-    for wd in weeks[:1]:
+
+    for i, wd in enumerate(weeks):
+        # Para semana actual limitar al día de hoy; semanas pasadas usar fin de semana
+        cutoff = today_str if i == 0 else wd["end"]
+
         orders = sr(models, uid, "sale.order", [
             ["state", "in", ["sale", "done"]],
             ["shipping_date", ">=", wd["start"]],
-          ["shipping_date", "<=", datetime.now().strftime("%Y-%m-%d")],
+            ["shipping_date", "<=", cutoff],
         ], ["id", "name", "shipping_date", "partner_id", "delivery_zone_id"], 2000)
 
         if not orders:
             sla_data.append({"label": wd["label"], "zones": {}})
-            print(f"  {wd['label']}: 0 orders with shipping_date")
             continue
 
         order_names = [o["name"] for o in orders]
@@ -598,11 +604,12 @@ def extract_sla(models, uid, weeks):
             ["invoice_origin", "in", order_names],
         ], ["invoice_origin", "invoice_date"], 5000)
 
+        # Primera factura válida por orden (ignorar fechas corruptas < 2020)
         first_invoice = {}
         for inv in invoices:
             orig = inv.get("invoice_origin", "")
             idate = inv.get("invoice_date", "")
-            if orig and idate:
+            if orig and idate and idate >= "2020-01-01":
                 if orig not in first_invoice or idate < first_invoice[orig]:
                     first_invoice[orig] = idate
 
@@ -623,7 +630,8 @@ def extract_sla(models, uid, weeks):
             else:
                 pname = o["partner_id"][1] if o.get("partner_id") else "N/A"
                 inv_display = inv_date[:10] if inv_date else "sin factura"
-                zone_stats[zone]["late_clients"].append(f"{pname} (prom: {shipping_day}, fact: {inv_display})")
+                zone_stats[zone]["late_clients"].append(
+                    f"{pname} (prom: {shipping_day}, fact: {inv_display})")
 
         week_sla = {}
         for zone, st in sorted(zone_stats.items()):
@@ -638,7 +646,7 @@ def extract_sla(models, uid, weeks):
         sla_data.append({"label": wd["label"], "zones": week_sla})
         total_p = sum(s["total"] for s in week_sla.values())
         total_ot = sum(s["on_time"] for s in week_sla.values())
-        print(f"  {wd['label']}: {total_p} orders, {total_ot} on time, zones: {list(week_sla.keys())}")
+        print(f"  {wd['label']}: {total_p} orders, {total_ot} on time")
     return sla_data
 
 
