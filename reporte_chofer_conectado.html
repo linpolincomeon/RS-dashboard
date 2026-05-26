@@ -558,9 +558,10 @@
     if(WEBHOOK_URL){
       fetch(WEBHOOK_URL, {
         method: 'POST',
-        headers: {'Content-Type': 'application/json'},
+        mode: 'no-cors',
+        headers: {'Content-Type': 'text/plain'},
         body: JSON.stringify(data)
-      }).then(() => mostrarExito(data)).catch(() => mostrarExito(data));
+      }).finally(() => mostrarExito(data));
     } else {
       // Modo demo: guardar en localStorage para pruebas
       const registros = JSON.parse(localStorage.getItem('te_reportes') || '[]');
