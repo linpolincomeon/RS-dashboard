@@ -1,23 +1,23 @@
 {
-  "updated": "2026-05-26T14:38:00.661624",
+  "updated": "2026-05-26T15:10:01.694699",
   "weeks": [
     {
       "label": "21may-27may",
       "start": "2026-05-21",
       "end": "2026-05-27",
-      "ventas": 140046320,
-      "neto": 109276354,
-      "litros": 92330,
-      "litros_retail": 64388,
-      "litros_volumen": 42942,
-      "precio_neto": 1184,
-      "precio_bruto": 1507,
-      "margin": 0.07502,
-      "margin_retail": 0.07983,
-      "margin_volumen": 0.06773,
-      "facturas": 52,
+      "ventas": 153279321,
+      "neto": 119576781,
+      "litros": 101330,
+      "litros_retail": 68388,
+      "litros_volumen": 47942,
+      "precio_neto": 1180,
+      "precio_bruto": 1504,
+      "margin": 0.07349,
+      "margin_retail": 0.07935,
+      "margin_volumen": 0.065,
+      "facturas": 55,
       "nc": 2,
-      "clientes": 46,
+      "clientes": 49,
       "recaud": 191571484,
       "cheques": 10176999,
       "transf": 123814570,
@@ -25,8 +25,8 @@
       "compras_odoo": 118386058,
       "cheq_cartera_saldo": 0,
       "cheq_recibidos": 0,
-      "facturas_contado": 8,
-      "facturas_credito": 44,
+      "facturas_contado": 9,
+      "facturas_credito": 46,
       "margin_by_term": {
         "Prepago": {
           "margin": 0.07294,
@@ -35,9 +35,9 @@
           "days": 0
         },
         "1 Día": {
-          "margin": 0.0698,
-          "normalizado": 0.07947,
-          "count": 6,
+          "margin": 0.05721,
+          "normalizado": 0.06688,
+          "count": 7,
           "days": 1
         },
         "7 Días": {
@@ -47,15 +47,15 @@
           "days": 7
         },
         "15 Días": {
-          "margin": 0.06707,
-          "normalizado": 0.07207,
-          "count": 5,
+          "margin": 0.06704,
+          "normalizado": 0.07204,
+          "count": 6,
           "days": 15
         },
         "30 Días": {
-          "margin": 0.08008,
-          "normalizado": 0.08008,
-          "count": 32,
+          "margin": 0.07996,
+          "normalizado": 0.07996,
+          "count": 33,
           "days": 30
         },
         "45 Días": {
@@ -1266,8 +1266,8 @@
     {
       "date": "26may",
       "day": "Mar",
-      "litros": 4400,
-      "neto": 5366465
+      "litros": 13400,
+      "neto": 15666892
     },
     {
       "date": "25may",
@@ -1392,11 +1392,11 @@
   ],
   "total_cash": 39671666,
   "receivables": {
-    "open_invoices": 231,
-    "total_due": 634703236,
-    "current": 553097592,
+    "open_invoices": 234,
+    "total_due": 647936237,
+    "current": 566330593,
     "overdue": 81605644,
-    "pct_overdue": 12.9,
+    "pct_overdue": 12.6,
     "aging": {
       "0-30": 68867081,
       "31-60": 2973000,
@@ -1445,12 +1445,20 @@
         "amount": 15455001
       },
       {
+        "name": "TRANSPORTES SAN MARCELO SPA",
+        "amount": 14985001
+      },
+      {
         "name": "SOC. DE TRANSPORTES TRACMAVI LTDA.",
         "amount": 14298248
       },
       {
         "name": "AGROSERVICIOS JR SPA",
         "amount": 12624000
+      },
+      {
+        "name": "CIA CHILENA DE FOSFOROS S A",
+        "amount": 12008002
       },
       {
         "name": "URAN ANTONIO LUNA DOMÍNGUEZ",
@@ -1465,10 +1473,6 @@
         "amount": 9024000
       },
       {
-        "name": "CIA CHILENA DE FOSFOROS S A",
-        "amount": 8998002
-      },
-      {
         "name": "SAMUEL BUDINICH SPA",
         "amount": 8330952
       },
@@ -1479,10 +1483,6 @@
       {
         "name": "VALENZUELA LEIVA MAX",
         "amount": 7895000
-      },
-      {
-        "name": "VICTOR FAVIO VILCHES MARDONES",
-        "amount": 7752000
       }
     ]
   },
@@ -1492,11 +1492,10 @@
       "zones": {
         "Chillan": {
           "total": 7,
-          "on_time": 5,
-          "late": 2,
-          "pct": 71.43,
+          "on_time": 6,
+          "late": 1,
+          "pct": 85.71,
           "late_clients": [
-            "TRANSPORTES SAN MARCELO SPA (prom: 2026-05-26, fact: sin factura)",
             "SERVICIOS AGRICOLAS MARISEL ESPINAZA OÑATE E.I.R.L. (prom: 2026-05-26, fact: sin factura)"
           ]
         },
@@ -1508,11 +1507,12 @@
           "late_clients": []
         },
         "Rancagua": {
-          "total": 16,
+          "total": 17,
           "on_time": 7,
-          "late": 9,
-          "pct": 43.75,
+          "late": 10,
+          "pct": 41.18,
           "late_clients": [
+            "ALEX PRADO FRUTAS Y TRANSPORTES SPA (prom: 2026-05-26, fact: sin factura)",
             "SERVICIO AGRICOLA SANTA FLORENCIA SPA (FILOMENA) (prom: 2026-05-26, fact: sin factura)",
             "AGRICOLA EL CABRINO LIMITADA (prom: 2026-05-26, fact: sin factura)",
             "AGRICOLA EL CABRINO LIMITADA (prom: 2026-05-26, fact: sin factura)",
@@ -1542,15 +1542,13 @@
         },
         "Talca": {
           "total": 23,
-          "on_time": 17,
-          "late": 6,
-          "pct": 73.91,
+          "on_time": 19,
+          "late": 4,
+          "pct": 82.61,
           "late_clients": [
             "SERVICIOS MONTEAGRO SPA (prom: 2026-05-26, fact: sin factura)",
             "MIGUEL VIAL Y CIA LTDA (prom: 2026-05-26, fact: sin factura)",
             "AGRÍCOLA CANCEL LIMITADA (prom: 2026-05-26, fact: sin factura)",
-            "CIA CHILENA DE FOSFOROS S A (prom: 2026-05-26, fact: sin factura)",
-            "EXCAVACIONES SEBASTIAN ARAVENA E.I.R.L. (prom: 2026-05-26, fact: sin factura)",
             "DANIEL ENRIQUE AVILA HERNANDEZ (prom: 2026-05-22, fact: 2026-05-21)"
           ]
         },
@@ -2564,8 +2562,8 @@
   "riesgo": {
     "cubierto": 0,
     "cubierto_count": 0,
-    "no_cubierto": 637681236,
-    "no_cubierto_count": 232,
+    "no_cubierto": 647936237,
+    "no_cubierto_count": 234,
     "pct_monto": 100.0,
     "pct_count": 100.0
   },
@@ -3130,7 +3128,7 @@
         "dso": 27.8
       }
     ],
-    "cxc_hoy": 1092159315
+    "cxc_hoy": 1102414316
   },
   "gerencia_goals": {
     "margen_contado_meta": 0.085,
