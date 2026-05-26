@@ -556,12 +556,20 @@
 
     // Si hay webhook configurado, enviar
     if(WEBHOOK_URL){
-      fetch(WEBHOOK_URL, {
-        method: 'POST',
-        mode: 'no-cors',
-        headers: {'Content-Type': 'text/plain'},
-        body: JSON.stringify(data)
-      }).finally(() => mostrarExito(data));
+      // Google Apps Script requiere form submit para CORS
+      const form = document.createElement('form');
+      form.method = 'POST';
+      form.action = WEBHOOK_URL;
+      form.target = 'hidden_iframe';
+      form.style.display = 'none';
+      const input = document.createElement('input');
+      input.type = 'hidden';
+      input.name = 'payload';
+      input.value = JSON.stringify(data);
+      form.appendChild(input);
+      document.body.appendChild(form);
+      form.submit();
+      setTimeout(() => { document.body.removeChild(form); mostrarExito(data); }, 1000);
     } else {
       // Modo demo: guardar en localStorage para pruebas
       const registros = JSON.parse(localStorage.getItem('te_reportes') || '[]');
@@ -603,5 +611,6 @@
     window.scrollTo(0,0);
   }
 </script>
+<iframe name="hidden_iframe" style="display:none"></iframe>
 </body>
 </html>
