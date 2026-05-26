@@ -1,32 +1,32 @@
 {
-  "updated": "2026-05-26T18:09:48.939218",
+  "updated": "2026-05-26T21:03:14.819810",
   "weeks": [
     {
       "label": "21may-27may",
       "start": "2026-05-21",
       "end": "2026-05-27",
-      "ventas": 180559121,
-      "neto": 140856327,
-      "litros": 119378,
-      "litros_retail": 81736,
-      "litros_volumen": 67642,
+      "ventas": 189525911,
+      "neto": 147857239,
+      "litros": 125268,
+      "litros_retail": 87736,
+      "litros_volumen": 70682,
       "precio_neto": 1180,
-      "precio_bruto": 1500,
-      "margin": 0.07007,
-      "margin_retail": 0.08038,
-      "margin_volumen": 0.05732,
-      "facturas": 70,
-      "nc": 4,
-      "clientes": 60,
-      "recaud": 217077180,
+      "precio_bruto": 1501,
+      "margin": 0.07119,
+      "margin_retail": 0.08078,
+      "margin_volumen": 0.059,
+      "facturas": 75,
+      "nc": 6,
+      "clientes": 62,
+      "recaud": 221228180,
       "cheques": 12612999,
-      "transf": 146884266,
+      "transf": 151035266,
       "factoring": 57579915,
       "compras_odoo": 118386058,
       "cheq_cartera_saldo": 0,
       "cheq_recibidos": 0,
       "facturas_contado": 11,
-      "facturas_credito": 59,
+      "facturas_credito": 64,
       "margin_by_term": {
         "Prepago": {
           "margin": 0.06036,
@@ -47,21 +47,21 @@
           "days": 7
         },
         "15 Días": {
-          "margin": 0.05701,
-          "normalizado": 0.06201,
-          "count": 9,
+          "margin": 0.0582,
+          "normalizado": 0.0632,
+          "count": 10,
           "days": 15
         },
         "30 Días": {
-          "margin": 0.08074,
-          "normalizado": 0.08074,
-          "count": 38,
+          "margin": 0.0808,
+          "normalizado": 0.0808,
+          "count": 41,
           "days": 30
         },
         "45 Días": {
-          "margin": 0.0775,
-          "normalizado": 0.0725,
-          "count": 3,
+          "margin": 0.08319,
+          "normalizado": 0.07819,
+          "count": 4,
           "days": 45
         },
         "60 Días": {
@@ -1266,8 +1266,8 @@
     {
       "date": "26may",
       "day": "Mar",
-      "litros": 46448,
-      "neto": 53884950
+      "litros": 56988,
+      "neto": 66375881
     },
     {
       "date": "25may",
@@ -1363,7 +1363,7 @@
   "banks": [
     {
       "name": "DE CHILE",
-      "balance": 36613513
+      "balance": 25764513
     },
     {
       "name": "ITAU",
@@ -1390,15 +1390,15 @@
       "balance": -1727275
     }
   ],
-  "total_cash": 65177362,
+  "total_cash": 54328362,
   "receivables": {
-    "open_invoices": 240,
-    "total_due": 648898537,
-    "current": 572354293,
-    "overdue": 76544244,
-    "pct_overdue": 11.8,
+    "open_invoices": 242,
+    "total_due": 656834327,
+    "current": 581897083,
+    "overdue": 74937244,
+    "pct_overdue": 11.4,
     "aging": {
-      "0-30": 63805681,
+      "0-30": 62198681,
       "31-60": 2973000,
       "61-90": 0,
       "90+": 9765563
@@ -1409,12 +1409,12 @@
         "amount": 40372799
       },
       {
-        "name": "SOC AGRICOLA GRANJA SAN RAFAEL LIMITADA",
-        "amount": 32840781
+        "name": "JOSE RODRIGO ORMAZABAL VIDAL",
+        "amount": 36360003
       },
       {
-        "name": "JOSE RODRIGO ORMAZABAL VIDAL",
-        "amount": 31863002
+        "name": "SOC AGRICOLA GRANJA SAN RAFAEL LIMITADA",
+        "amount": 32840781
       },
       {
         "name": "ALFREDO ALFONSO OPAZO MUÑOZ",
@@ -1426,7 +1426,7 @@
       },
       {
         "name": "MAQUINARIAS Y ARIDOS SAN PEDRO SPA.",
-        "amount": 24916678
+        "amount": 24981118
       },
       {
         "name": "EL PARRON SPA",
@@ -1492,22 +1492,17 @@
       "zones": {
         "Chillan": {
           "total": 8,
-          "on_time": 7,
-          "late": 1,
-          "pct": 87.5,
-          "late_clients": [
-            "AGRICOLA E INVERSIONES TOLSTOI SPA (prom: 2026-05-26, fact: sin factura)"
-          ]
+          "on_time": 8,
+          "late": 0,
+          "pct": 100.0,
+          "late_clients": []
         },
         "Curico": {
           "total": 10,
-          "on_time": 8,
-          "late": 2,
-          "pct": 80.0,
-          "late_clients": [
-            "BEPATAGONIA MAQUINARIA S.A. (prom: 2026-05-26, fact: sin factura)",
-            "JOSE RODRIGO ORMAZABAL VIDAL (prom: 2026-05-26, fact: sin factura)"
-          ]
+          "on_time": 10,
+          "late": 0,
+          "pct": 100.0,
+          "late_clients": []
         },
         "Rancagua": {
           "total": 16,
@@ -1545,14 +1540,11 @@
           ]
         },
         "VI Costa": {
-          "total": 4,
-          "on_time": 2,
-          "late": 2,
-          "pct": 50.0,
-          "late_clients": [
-            "ARIDOS LO VALDIVIA LIMITADA (prom: 2026-05-26, fact: sin factura)",
-            "CBARRIOS CONSTRUCTORA SPA (prom: 2026-05-26, fact: sin factura)"
-          ]
+          "total": 3,
+          "on_time": 3,
+          "late": 0,
+          "pct": 100.0,
+          "late_clients": []
         }
       }
     },
@@ -2555,8 +2547,8 @@
   "riesgo": {
     "cubierto": 0,
     "cubierto_count": 0,
-    "no_cubierto": 648898537,
-    "no_cubierto_count": 240,
+    "no_cubierto": 656834327,
+    "no_cubierto_count": 242,
     "pct_monto": 100.0,
     "pct_count": 100.0
   },
@@ -3121,7 +3113,7 @@
         "dso": 27.8
       }
     ],
-    "cxc_hoy": 1103376616
+    "cxc_hoy": 1111312406
   },
   "gerencia_goals": {
     "margen_contado_meta": 0.085,
