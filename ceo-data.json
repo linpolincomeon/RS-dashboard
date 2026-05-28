@@ -1,37 +1,37 @@
 {
-  "updated": "2026-05-28T18:22:43.136422",
+  "updated": "2026-05-28T21:21:28.225812",
   "weeks": [
     {
       "label": "28may-03jun",
       "start": "2026-05-28",
       "end": "2026-06-03",
-      "ventas": 24568621,
-      "neto": 19076648,
-      "litros": 16811,
-      "litros_retail": 13811,
-      "litros_volumen": 3000,
-      "precio_neto": 1135,
-      "precio_bruto": 1461,
-      "margin": 0.09168,
-      "margin_retail": 0.09977,
-      "margin_volumen": 0.05225,
-      "facturas": 10,
+      "ventas": 51368221,
+      "neto": 39730933,
+      "litros": 35511,
+      "litros_retail": 27511,
+      "litros_volumen": 8000,
+      "precio_neto": 1119,
+      "precio_bruto": 1447,
+      "margin": 0.08263,
+      "margin_retail": 0.09098,
+      "margin_volumen": 0.05268,
+      "facturas": 21,
       "nc": 0,
-      "clientes": 10,
-      "recaud": 32091602,
+      "clientes": 21,
+      "recaud": 52779766,
       "cheques": 0,
-      "transf": 32091602,
-      "factoring": 0,
+      "transf": 51546220,
+      "factoring": 1233546,
       "compras_odoo": 0,
       "cheq_cartera_saldo": 0,
       "cheq_recibidos": 0,
-      "facturas_contado": 2,
-      "facturas_credito": 8,
+      "facturas_contado": 6,
+      "facturas_credito": 15,
       "margin_by_term": {
         "1 Día": {
-          "margin": 0.09075,
-          "normalizado": 0.10042,
-          "count": 2,
+          "margin": 0.07333,
+          "normalizado": 0.083,
+          "count": 6,
           "days": 1
         },
         "7 Días": {
@@ -40,16 +40,28 @@
           "count": 2,
           "days": 7
         },
+        "15 Días": {
+          "margin": 0.09993,
+          "normalizado": 0.10493,
+          "count": 2,
+          "days": 15
+        },
         "30 Días": {
-          "margin": 0.09749,
-          "normalizado": 0.09749,
-          "count": 6,
+          "margin": 0.09479,
+          "normalizado": 0.09479,
+          "count": 10,
           "days": 30
+        },
+        "45 Días": {
+          "margin": 0.04404,
+          "normalizado": 0.03904,
+          "count": 1,
+          "days": 45
         }
       },
       "cotiz_canceladas": 0,
-      "visitas": 81,
-      "clientes_nuevos": 0,
+      "visitas": 80,
+      "clientes_nuevos": 2,
       "ppto": 213480,
       "ppto_retail": 153706,
       "ppto_volumen": 59774,
@@ -1242,8 +1254,8 @@
     {
       "date": "28may",
       "day": "Jue",
-      "litros": 16811,
-      "neto": 19076648
+      "litros": 36511,
+      "neto": 40837330
     },
     {
       "date": "27may",
@@ -1338,12 +1350,12 @@
   ],
   "banks": [
     {
-      "name": "DE CHILE",
-      "balance": 26502344
-    },
-    {
       "name": "ITAU",
       "balance": 18689029
+    },
+    {
+      "name": "DE CHILE",
+      "balance": 7190508
     },
     {
       "name": "ESTADO",
@@ -1366,15 +1378,15 @@
       "balance": -1727275
     }
   ],
-  "total_cash": 55026474,
+  "total_cash": 35714638,
   "receivables": {
-    "open_invoices": 226,
-    "total_due": 626111310,
-    "current": 559388828,
-    "overdue": 66722482,
-    "pct_overdue": 10.7,
+    "open_invoices": 227,
+    "total_due": 633403406,
+    "current": 572180424,
+    "overdue": 61222982,
+    "pct_overdue": 9.7,
     "aging": {
-      "0-30": 53882699,
+      "0-30": 48383199,
       "31-60": 3074220,
       "61-90": 0,
       "90+": 9765563
@@ -1421,6 +1433,10 @@
         "amount": 15455001
       },
       {
+        "name": "AGROSERVICIOS JR SPA",
+        "amount": 12402000
+      },
+      {
         "name": "CIA CHILENA DE FOSFOROS S A",
         "amount": 12008002
       },
@@ -1435,10 +1451,6 @@
       {
         "name": "SOC AGRICOLA CUNCULEN LTDA",
         "amount": 9424999
-      },
-      {
-        "name": "AGROSERVICIOS JR SPA",
-        "amount": 9422000
       },
       {
         "name": "CIA AGRICOLA Y FORESTAL EL ALAMO LIMITADA",
@@ -1474,50 +1486,35 @@
           "late_clients": []
         },
         "Curico": {
-          "total": 4,
-          "on_time": 1,
-          "late": 3,
-          "pct": 25.0,
-          "late_clients": [
-            "FRUTICOLA DENISSE M. DEL CARMEN SALINAS M. EIRL (prom: 2026-05-28, fact: sin factura)",
-            "AGRICOLA SANTA CAROLINA SPA (prom: 2026-05-28, fact: sin factura)",
-            "TRANSPORTES JORGE MARTINEZ SCHNETTLER E.I.R.L. (prom: 2026-05-28, fact: sin factura)"
-          ]
+          "total": 3,
+          "on_time": 3,
+          "late": 0,
+          "pct": 100.0,
+          "late_clients": []
         },
         "Rancagua": {
-          "total": 4,
-          "on_time": 1,
-          "late": 3,
-          "pct": 25.0,
-          "late_clients": [
-            "AGROINVEST LOS GOMEROS SPA (prom: 2026-05-28, fact: sin factura)",
-            "AGRICOLA TRICAHUE LIMITADA (prom: 2026-05-28, fact: sin factura)",
-            "JUAN WIDMER VALDES (prom: 2026-05-28, fact: sin factura)"
-          ]
+          "total": 3,
+          "on_time": 3,
+          "late": 0,
+          "pct": 100.0,
+          "late_clients": []
         },
         "San Fernando": {
           "total": 5,
-          "on_time": 1,
-          "late": 4,
-          "pct": 20.0,
+          "on_time": 4,
+          "late": 1,
+          "pct": 80.0,
           "late_clients": [
-            "LABRA E HIJAS SPA (prom: 2026-05-28, fact: sin factura)",
-            "AGROSERVICIOS JR SPA (prom: 2026-05-28, fact: sin factura)",
-            "AGRICOLA TORREVAL LIMITADA (prom: 2026-05-28, fact: sin factura)",
             "ALIMENTOS Y FRUTOS S.A. (prom: 2026-05-28, fact: 2026-05-27)"
           ]
         },
         "Talca": {
           "total": 9,
-          "on_time": 4,
-          "late": 5,
-          "pct": 44.44,
+          "on_time": 8,
+          "late": 1,
+          "pct": 88.89,
           "late_clients": [
-            "VITIVINICOLA INVINA LTDA (prom: 2026-05-28, fact: sin factura)",
-            "URBANO AMADOR GUTIERREZ PALMA (prom: 2026-05-28, fact: sin factura)",
-            "MATIAS ANTONIO RIVERA MORAGA (prom: 2026-05-28, fact: sin factura)",
-            "AGRICOLA MILLAMALAL E.I.R.L (prom: 2026-05-28, fact: sin factura)",
-            "JUAN PABLO ARMANDO CANCINO CORVALAN (prom: 2026-05-28, fact: sin factura)"
+            "VITIVINICOLA INVINA LTDA (prom: 2026-05-28, fact: sin factura)"
           ]
         }
       }
@@ -1538,7 +1535,7 @@
           "late": 1,
           "pct": 93.33,
           "late_clients": [
-            "ARESTI CHILE WINE SA (prom: 2026-05-26, fact: sin factura)"
+            "ARESTI CHILE WINE SA (prom: 2026-05-26, fact: 2026-05-28)"
           ]
         },
         "Rancagua": {
@@ -2514,15 +2511,15 @@
   "riesgo": {
     "cubierto": 0,
     "cubierto_count": 0,
-    "no_cubierto": 626111310,
-    "no_cubierto_count": 226,
+    "no_cubierto": 633403406,
+    "no_cubierto_count": 227,
     "pct_monto": 100.0,
     "pct_count": 100.0
   },
   "churn": {
     "eligible_clients": 164,
-    "churned_count": 63,
-    "pct": 38.4,
+    "churned_count": 62,
+    "pct": 37.8,
     "churned": [
       {
         "name": "CRISTIAN HUGO FUENZALIDA MEZA",
@@ -2805,16 +2802,6 @@
         "new_this_week": false
       },
       {
-        "name": "LABRA E HIJAS SPA",
-        "freq": "Irregular (Promedio: 12 días)",
-        "freq_days": 12,
-        "last_invoice": "2026-03-24",
-        "days_since": 65,
-        "threshold": 24,
-        "invoices_8m": 10,
-        "new_this_week": false
-      },
-      {
         "name": "AGRICOLA Y COMERCIAL EL RINCON LIMITADA",
         "freq": "Bimensual (Quincenal)",
         "freq_days": 15,
@@ -2822,6 +2809,16 @@
         "days_since": 65,
         "threshold": 30,
         "invoices_8m": 11,
+        "new_this_week": false
+      },
+      {
+        "name": "HECTOR RODRIGO TRONCOSO ZAPATA",
+        "freq": "Irregular (Promedio: 20 días)",
+        "freq_days": 20,
+        "last_invoice": "2026-03-24",
+        "days_since": 65,
+        "threshold": 40,
+        "invoices_8m": 8,
         "new_this_week": false
       }
     ],
@@ -2853,9 +2850,9 @@
       },
       {
         "month": "Apr 2026",
-        "pct": 68.0,
-        "new_churn": 17,
-        "active_start": 25
+        "pct": 66.7,
+        "new_churn": 16,
+        "active_start": 24
       },
       {
         "month": "May 2026",
@@ -3080,7 +3077,7 @@
         "dso": 27.8
       }
     ],
-    "cxc_hoy": 1099241070
+    "cxc_hoy": 1106533166
   },
   "gerencia_goals": {
     "margen_contado_meta": 0.085,
