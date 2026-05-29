@@ -239,7 +239,7 @@ def extract_weekly(models, uid, supplier_ids, contado_term_ids, ruta_stage_id, t
             ["state", "=", "posted"],
             ["invoice_date", ">=", wd["start"]],
             ["invoice_date", "<=", wd["end"]],
-        ], ["amount_total", "amount_untaxed"])
+        ], ["amount_total", "amount_untaxed", "partner_id"])
 
         ventas = sum(x["amount_total"] for x in invoices) - sum(r["amount_total"] for r in refunds)
         neto = sum(x["amount_untaxed"] for x in invoices) - sum(r["amount_untaxed"] for r in refunds)
@@ -263,6 +263,12 @@ def extract_weekly(models, uid, supplier_ids, contado_term_ids, ruta_stage_id, t
             pid = inv["partner_id"][0] if inv.get("partner_id") else None
             inv_partner[inv["id"]] = pid
             inv_is_vol[inv["id"]] = pid in volume_partner_ids
+
+        # Build refund → is_volume map (needed to split NC correctly into retail/vol)
+        ref_is_vol = {}
+        for r in refunds:
+            pid = r["partner_id"][0] if r.get("partner_id") else None
+            ref_is_vol[r["id"]] = pid in volume_partner_ids
 
         # ── Margin: overall + retail vs volumen (by is_volume_client) + per payment term ──
         sum_mn, sum_n = 0, 0
@@ -334,7 +340,7 @@ def extract_weekly(models, uid, supplier_ids, contado_term_ids, ruta_stage_id, t
             ["move_id.invoice_date", ">=", wd["start"]],
             ["move_id.invoice_date", "<=", wd["end"]],
             ["display_type", "=", "product"],
-        ], ["quantity", "price_subtotal"], 2000)
+        ], ["quantity", "price_subtotal", "move_id"], 2000)
 
         litros = round(sum(l["quantity"] for l in lines) - sum(l["quantity"] for l in ref_lines))
         neto_lineas = sum(l["price_subtotal"] for l in lines) - sum(l["price_subtotal"] for l in ref_lines)
@@ -348,6 +354,13 @@ def extract_weekly(models, uid, supplier_ids, contado_term_ids, ruta_stage_id, t
                 litros_volumen += l["quantity"]
             else:
                 litros_retail += l["quantity"]
+        # Subtract NC lines from retail/vol split
+        for l in ref_lines:
+            mid = l["move_id"][0] if l.get("move_id") else None
+            if ref_is_vol.get(mid, False):
+                litros_volumen -= l["quantity"]
+            else:
+                litros_retail -= l["quantity"]
         litros_retail = round(litros_retail)
         litros_volumen = round(litros_volumen)
 
