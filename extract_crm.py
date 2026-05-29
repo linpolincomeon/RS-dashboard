@@ -1063,6 +1063,34 @@ def extract_sales_data(models, uid, custom_start=None, custom_end=None, label_ov
                 wk_vbu[u] += s
                 wk_mbu_venta[u] += s
                 wk_mbu_costo[u] += s * (1 - m) if m else s
+        # ── NC subtraction for weekly_history ──
+        wk_nc_invs = sr(models, uid, "account.move", [
+            ["move_type", "=", "out_refund"],
+            ["state", "=", "posted"],
+            ["invoice_date", ">=", fmt(ws_d)],
+            ["invoice_date", "<=", fmt(we_d)],
+        ], ["id", "partner_id", "invoice_user_id"], limit=1000)
+        if wk_nc_invs:
+            nc_id_map = {}
+            for ni in wk_nc_invs:
+                nid = ni["id"]
+                np_ = safe_id(ni.get("partner_id"))
+                if np_ and np_ in partner_user_map:
+                    nc_id_map[nid] = partner_user_map[np_]
+                else:
+                    nc_id_map[nid] = canonical_vendedor(safe_name(ni.get("invoice_user_id")))
+            nc_ids_ = [ni["id"] for ni in wk_nc_invs]
+            wk_nc_lines = sr(models, uid, "account.move.line", [
+                ["move_id", "in", nc_ids_],
+                ["product_id", "=", DIESEL_PRODUCT_ID],
+            ], ["move_id", "quantity"], limit=2000)
+            for ln in wk_nc_lines:
+                q = abs(ln.get("quantity", 0))
+                mid = safe_id(ln.get("move_id"))
+                u = nc_id_map.get(mid, "Sin asignar")
+                wk_l -= q
+                wk_lbu[u] -= q
+
         wk_margin_by_user = {}
         for u in wk_lbu:
             v = wk_mbu_venta.get(u, 0)
