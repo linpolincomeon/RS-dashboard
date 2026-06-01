@@ -1,32 +1,32 @@
 {
-  "updated": "2026-06-01T16:49:59.700021",
+  "updated": "2026-06-01T22:19:40.939287",
   "weeks": [
     {
       "label": "28may-03jun",
       "start": "2026-05-28",
       "end": "2026-06-03",
-      "ventas": 141223080,
-      "neto": 108805454,
-      "litros": 97546,
-      "litros_retail": 72192,
+      "ventas": 154416281,
+      "neto": 118929141,
+      "litros": 106746,
+      "litros_retail": 81392,
       "litros_volumen": 25354,
-      "precio_neto": 1115,
-      "precio_bruto": 1446,
-      "margin": 0.08321,
-      "margin_retail": 0.09205,
+      "precio_neto": 1114,
+      "precio_bruto": 1445,
+      "margin": 0.08255,
+      "margin_retail": 0.09009,
       "margin_volumen": 0.06688,
-      "facturas": 61,
+      "facturas": 66,
       "nc": 2,
-      "clientes": 59,
-      "recaud": 176069667,
+      "clientes": 63,
+      "recaud": 187994667,
       "cheques": 39293820,
-      "transf": 135542301,
+      "transf": 147467301,
       "factoring": 1233546,
       "compras_odoo": 133123592,
       "cheq_cartera_saldo": 0,
       "cheq_recibidos": 0,
-      "facturas_contado": 17,
-      "facturas_credito": 44,
+      "facturas_contado": 18,
+      "facturas_credito": 48,
       "margin_by_term": {
         "Prepago": {
           "margin": 0.1048,
@@ -35,9 +35,9 @@
           "days": 0
         },
         "1 Día": {
-          "margin": 0.06221,
-          "normalizado": 0.07188,
-          "count": 16,
+          "margin": 0.06214,
+          "normalizado": 0.07181,
+          "count": 17,
           "days": 1
         },
         "7 Días": {
@@ -53,9 +53,9 @@
           "days": 15
         },
         "30 Días": {
-          "margin": 0.09727,
-          "normalizado": 0.09727,
-          "count": 31,
+          "margin": 0.09387,
+          "normalizado": 0.09387,
+          "count": 35,
           "days": 30
         },
         "45 Días": {
@@ -72,7 +72,7 @@
         }
       },
       "cotiz_canceladas": 4,
-      "visitas": 79,
+      "visitas": 78,
       "clientes_nuevos": 8,
       "ppto": 213480,
       "ppto_retail": 153706,
@@ -1266,8 +1266,8 @@
     {
       "date": "01jun",
       "day": "Lun",
-      "litros": 29631,
-      "neto": 33482579
+      "litros": 38831,
+      "neto": 43606266
     },
     {
       "date": "29may",
@@ -1362,12 +1362,12 @@
   ],
   "banks": [
     {
-      "name": "SANTANDER",
-      "balance": 10245977
+      "name": "DE CHILE",
+      "balance": 16035417
     },
     {
-      "name": "DE CHILE",
-      "balance": 8886417
+      "name": "SANTANDER",
+      "balance": 10245977
     },
     {
       "name": "ESTADO",
@@ -1390,15 +1390,15 @@
       "balance": -1727275
     }
   ],
-  "total_cash": 31739517,
+  "total_cash": 38888517,
   "receivables": {
-    "open_invoices": 236,
-    "total_due": 644286164,
-    "current": 548923453,
-    "overdue": 95362711,
-    "pct_overdue": 14.8,
+    "open_invoices": 239,
+    "total_due": 651767366,
+    "current": 562116654,
+    "overdue": 89650712,
+    "pct_overdue": 13.8,
     "aging": {
-      "0-30": 82522928,
+      "0-30": 76810929,
       "31-60": 3074220,
       "61-90": 0,
       "90+": 9765563
@@ -1499,23 +1499,19 @@
         },
         "Curico": {
           "total": 13,
-          "on_time": 10,
-          "late": 3,
-          "pct": 76.92,
+          "on_time": 12,
+          "late": 1,
+          "pct": 92.31,
           "late_clients": [
-            "TERRAMATER S A (prom: 2026-06-01, fact: sin factura)",
-            "VIÑA VALDIVIESO LTDA. (prom: 2026-06-01, fact: sin factura)",
             "SOCIEDAD FORESTAL Y AGRICOLA LAS PITRAS DE PAULA LIMITADA (prom: 2026-06-01, fact: sin factura)"
           ]
         },
         "Rancagua": {
-          "total": 11,
-          "on_time": 5,
-          "late": 6,
-          "pct": 45.45,
+          "total": 12,
+          "on_time": 8,
+          "late": 4,
+          "pct": 66.67,
           "late_clients": [
-            "ALEJANDRO GARNHAM POBLETE (prom: 2026-06-01, fact: sin factura)",
-            "CBARRIOS CONSTRUCTORA SPA (prom: 2026-06-01, fact: sin factura)",
             "AGRICOLA TRICAHUE LIMITADA (prom: 2026-05-28, fact: 2026-05-29)",
             "CRISTIAN FELIPE MEZA VANNINI (prom: 2026-05-28, fact: 2026-05-29)",
             "AGRICOLA OMEGA TRES LIMITADA (prom: 2026-05-28, fact: 2026-05-29)",
@@ -1532,11 +1528,12 @@
           ]
         },
         "Talca": {
-          "total": 22,
+          "total": 23,
           "on_time": 19,
-          "late": 3,
-          "pct": 86.36,
+          "late": 4,
+          "pct": 82.61,
           "late_clients": [
+            "CONSTRUCTORA MONIER SPA (prom: 2026-06-01, fact: sin factura)",
             "GUSTAVO EGALDO MENDEZ HEVIA MAQUINARIAS SPA (prom: 2026-05-29, fact: 2026-06-01)",
             "JULIO ENRIQUE RUBILAR ROMERO (prom: 2026-05-29, fact: 2026-06-01)",
             "VITIVINICOLA INVINA LTDA (prom: 2026-05-28, fact: 2026-05-29)"
@@ -2543,15 +2540,15 @@
   "riesgo": {
     "cubierto": 0,
     "cubierto_count": 0,
-    "no_cubierto": 644286164,
-    "no_cubierto_count": 236,
+    "no_cubierto": 651767366,
+    "no_cubierto_count": 239,
     "pct_monto": 100.0,
     "pct_count": 100.0
   },
   "churn": {
     "eligible_clients": 161,
-    "churned_count": 60,
-    "pct": 37.3,
+    "churned_count": 59,
+    "pct": 36.6,
     "churned": [
       {
         "name": "CRISTIAN HUGO FUENZALIDA MEZA",
@@ -2882,15 +2879,15 @@
       },
       {
         "month": "May 2026",
-        "pct": 82.8,
-        "new_churn": 24,
-        "active_start": 29
+        "pct": 82.1,
+        "new_churn": 23,
+        "active_start": 28
       },
       {
         "month": "Jun 2026",
-        "pct": 80.2,
+        "pct": 79.4,
         "new_churn": 81,
-        "active_start": 101
+        "active_start": 102
       }
     ]
   },
@@ -3109,7 +3106,7 @@
         "dso": 35.3
       }
     ],
-    "cxc_hoy": 1087839684
+    "cxc_hoy": 1083035886
   },
   "gerencia_goals": {
     "margen_contado_meta": 0.085,
