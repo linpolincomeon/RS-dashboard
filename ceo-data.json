@@ -1,32 +1,32 @@
 {
-  "updated": "2026-06-01T00:18:15.767689",
+  "updated": "2026-06-01T16:49:59.700021",
   "weeks": [
     {
       "label": "28may-03jun",
       "start": "2026-05-28",
       "end": "2026-06-03",
-      "ventas": 119272724,
-      "neto": 91922616,
-      "litros": 82615,
-      "litros_retail": 60141,
-      "litros_volumen": 22474,
-      "precio_neto": 1113,
-      "precio_bruto": 1444,
-      "margin": 0.08103,
-      "margin_retail": 0.0907,
-      "margin_volumen": 0.05394,
-      "facturas": 49,
-      "nc": 0,
-      "clientes": 49,
-      "recaud": 145955867,
+      "ventas": 141223080,
+      "neto": 108805454,
+      "litros": 97546,
+      "litros_retail": 72192,
+      "litros_volumen": 25354,
+      "precio_neto": 1115,
+      "precio_bruto": 1446,
+      "margin": 0.08321,
+      "margin_retail": 0.09205,
+      "margin_volumen": 0.06688,
+      "facturas": 61,
+      "nc": 2,
+      "clientes": 59,
+      "recaud": 176069667,
       "cheques": 39293820,
-      "transf": 105428501,
+      "transf": 135542301,
       "factoring": 1233546,
-      "compras_odoo": 99833021,
+      "compras_odoo": 133123592,
       "cheq_cartera_saldo": 0,
       "cheq_recibidos": 0,
-      "facturas_contado": 14,
-      "facturas_credito": 35,
+      "facturas_contado": 17,
+      "facturas_credito": 44,
       "margin_by_term": {
         "Prepago": {
           "margin": 0.1048,
@@ -35,9 +35,9 @@
           "days": 0
         },
         "1 Día": {
-          "margin": 0.06021,
-          "normalizado": 0.06988,
-          "count": 13,
+          "margin": 0.06221,
+          "normalizado": 0.07188,
+          "count": 16,
           "days": 1
         },
         "7 Días": {
@@ -47,33 +47,33 @@
           "days": 7
         },
         "15 Días": {
-          "margin": 0.09501,
-          "normalizado": 0.10001,
-          "count": 3,
+          "margin": 0.08164,
+          "normalizado": 0.08664,
+          "count": 5,
           "days": 15
         },
         "30 Días": {
-          "margin": 0.09514,
-          "normalizado": 0.09514,
-          "count": 26,
+          "margin": 0.09727,
+          "normalizado": 0.09727,
+          "count": 31,
           "days": 30
         },
         "45 Días": {
-          "margin": 0.07178,
-          "normalizado": 0.06678,
-          "count": 2,
+          "margin": 0.0796,
+          "normalizado": 0.0746,
+          "count": 3,
           "days": 45
         },
         "60 Días": {
-          "margin": 0.10962,
-          "normalizado": 0.09962,
-          "count": 1,
+          "margin": 0.10307,
+          "normalizado": 0.09307,
+          "count": 2,
           "days": 60
         }
       },
-      "cotiz_canceladas": 2,
+      "cotiz_canceladas": 4,
       "visitas": 79,
-      "clientes_nuevos": 7,
+      "clientes_nuevos": 8,
       "ppto": 213480,
       "ppto_retail": 153706,
       "ppto_volumen": 59774,
@@ -1266,8 +1266,8 @@
     {
       "date": "01jun",
       "day": "Lun",
-      "litros": 0,
-      "neto": 0
+      "litros": 29631,
+      "neto": 33482579
     },
     {
       "date": "29may",
@@ -1362,8 +1362,12 @@
   ],
   "banks": [
     {
+      "name": "SANTANDER",
+      "balance": 10245977
+    },
+    {
       "name": "DE CHILE",
-      "balance": 78550597
+      "balance": 8886417
     },
     {
       "name": "ESTADO",
@@ -1382,24 +1386,20 @@
       "balance": 807071
     },
     {
-      "name": "SANTANDER",
-      "balance": 415977
-    },
-    {
       "name": "DE CREDITO",
       "balance": -1727275
     }
   ],
-  "total_cash": 91573697,
+  "total_cash": 31739517,
   "receivables": {
-    "open_invoices": 238,
-    "total_due": 654607899,
-    "current": 527630289,
-    "overdue": 126977610,
-    "pct_overdue": 19.4,
+    "open_invoices": 236,
+    "total_due": 644286164,
+    "current": 548923453,
+    "overdue": 95362711,
+    "pct_overdue": 14.8,
     "aging": {
-      "0-30": 114136827,
-      "31-60": 3075220,
+      "0-30": 82522928,
+      "31-60": 3074220,
       "61-90": 0,
       "90+": 9765563
     },
@@ -1414,23 +1414,19 @@
       },
       {
         "name": "MAQUINARIAS Y ARIDOS SAN PEDRO SPA.",
-        "amount": 24981118
+        "amount": 29214718
+      },
+      {
+        "name": "PATRICIO VISCAY ALBORNOZ",
+        "amount": 23080584
       },
       {
         "name": "Servicios de construcción y maquinarias Talmaqq Ltda.",
         "amount": 22690001
       },
       {
-        "name": "TRANSPORTES SAN MARCELO SPA",
-        "amount": 21570000
-      },
-      {
         "name": "EL PARRON SPA",
         "amount": 21300300
-      },
-      {
-        "name": "PATRICIO VISCAY ALBORNOZ",
-        "amount": 20456184
       },
       {
         "name": "TRANSPORTE SANTA ELENITA SPA",
@@ -1483,6 +1479,10 @@
       {
         "name": "VICTOR FAVIO VILCHES MARDONES",
         "amount": 7752000
+      },
+      {
+        "name": "TRANSPORTES SAN MARCELO SPA",
+        "amount": 7740000
       }
     ]
   },
@@ -1498,18 +1498,24 @@
           "late_clients": []
         },
         "Curico": {
-          "total": 8,
-          "on_time": 8,
-          "late": 0,
-          "pct": 100.0,
-          "late_clients": []
+          "total": 13,
+          "on_time": 10,
+          "late": 3,
+          "pct": 76.92,
+          "late_clients": [
+            "TERRAMATER S A (prom: 2026-06-01, fact: sin factura)",
+            "VIÑA VALDIVIESO LTDA. (prom: 2026-06-01, fact: sin factura)",
+            "SOCIEDAD FORESTAL Y AGRICOLA LAS PITRAS DE PAULA LIMITADA (prom: 2026-06-01, fact: sin factura)"
+          ]
         },
         "Rancagua": {
-          "total": 9,
+          "total": 11,
           "on_time": 5,
-          "late": 4,
-          "pct": 55.56,
+          "late": 6,
+          "pct": 45.45,
           "late_clients": [
+            "ALEJANDRO GARNHAM POBLETE (prom: 2026-06-01, fact: sin factura)",
+            "CBARRIOS CONSTRUCTORA SPA (prom: 2026-06-01, fact: sin factura)",
             "AGRICOLA TRICAHUE LIMITADA (prom: 2026-05-28, fact: 2026-05-29)",
             "CRISTIAN FELIPE MEZA VANNINI (prom: 2026-05-28, fact: 2026-05-29)",
             "AGRICOLA OMEGA TRES LIMITADA (prom: 2026-05-28, fact: 2026-05-29)",
@@ -1517,26 +1523,28 @@
           ]
         },
         "San Fernando": {
-          "total": 8,
-          "on_time": 7,
+          "total": 9,
+          "on_time": 8,
           "late": 1,
-          "pct": 87.5,
+          "pct": 88.89,
           "late_clients": [
             "ALIMENTOS Y FRUTOS S.A. (prom: 2026-05-28, fact: 2026-05-27)"
           ]
         },
         "Talca": {
-          "total": 17,
-          "on_time": 16,
-          "late": 1,
-          "pct": 94.12,
+          "total": 22,
+          "on_time": 19,
+          "late": 3,
+          "pct": 86.36,
           "late_clients": [
+            "GUSTAVO EGALDO MENDEZ HEVIA MAQUINARIAS SPA (prom: 2026-05-29, fact: 2026-06-01)",
+            "JULIO ENRIQUE RUBILAR ROMERO (prom: 2026-05-29, fact: 2026-06-01)",
             "VITIVINICOLA INVINA LTDA (prom: 2026-05-28, fact: 2026-05-29)"
           ]
         },
         "VI Costa": {
-          "total": 3,
-          "on_time": 3,
+          "total": 4,
+          "on_time": 4,
           "late": 0,
           "pct": 100.0,
           "late_clients": []
@@ -1701,8 +1709,8 @@
           ]
         },
         "Región Metropolitana": {
-          "total": 1,
-          "on_time": 1,
+          "total": 2,
+          "on_time": 2,
           "late": 0,
           "pct": 100.0,
           "late_clients": []
@@ -2535,15 +2543,15 @@
   "riesgo": {
     "cubierto": 0,
     "cubierto_count": 0,
-    "no_cubierto": 654607899,
-    "no_cubierto_count": 238,
+    "no_cubierto": 644286164,
+    "no_cubierto_count": 236,
     "pct_monto": 100.0,
     "pct_count": 100.0
   },
   "churn": {
     "eligible_clients": 161,
-    "churned_count": 62,
-    "pct": 38.5,
+    "churned_count": 60,
+    "pct": 37.3,
     "churned": [
       {
         "name": "CRISTIAN HUGO FUENZALIDA MEZA",
@@ -2880,9 +2888,9 @@
       },
       {
         "month": "Jun 2026",
-        "pct": 81.8,
+        "pct": 80.2,
         "new_churn": 81,
-        "active_start": 99
+        "active_start": 101
       }
     ]
   },
@@ -3012,11 +3020,11 @@
         "month": "2026-05",
         "label": "May 2026",
         "budget": 10055583,
-        "actual": 14588818,
-        "compliance_pct": 145.1,
+        "actual": 14968490,
+        "compliance_pct": 148.9,
         "categories": {
-          "Petróleo": 9271373,
-          "Mantención y Reparación": 1367592,
+          "Petróleo": 9501045,
+          "Mantención y Reparación": 1517592,
           "Gastos Traslados (TAG)": 2160827,
           "Seguros": 676203,
           "Gastos Vehículos": 364815,
@@ -3084,24 +3092,24 @@
       },
       {
         "month": "2026-04",
-        "cxc": 1039801354,
-        "cxc_acc": 1039801354,
+        "cxc": 1039800354,
+        "cxc_acc": 1039800354,
         "cheques": 0,
-        "avg_cxc_3m": 884440932,
+        "avg_cxc_3m": 884440599,
         "net_sales": 954233879,
         "dso": 27.8
       },
       {
         "month": "2026-05",
-        "cxc": 1117307660,
-        "cxc_acc": 1117307660,
+        "cxc": 1086839127,
+        "cxc_acc": 1086839127,
         "cheques": 0,
-        "avg_cxc_3m": 999554765,
+        "avg_cxc_3m": 989398254,
         "net_sales": 840187676,
-        "dso": 35.7
+        "dso": 35.3
       }
     ],
-    "cxc_hoy": 1117307660
+    "cxc_hoy": 1087839684
   },
   "gerencia_goals": {
     "margen_contado_meta": 0.085,
