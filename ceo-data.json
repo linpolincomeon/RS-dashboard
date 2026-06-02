@@ -1,23 +1,23 @@
 {
-  "updated": "2026-06-02T18:55:00.007758",
+  "updated": "2026-06-02T22:02:47.498872",
   "weeks": [
     {
       "label": "28may-03jun",
       "start": "2026-05-28",
       "end": "2026-06-03",
-      "ventas": 185821571,
-      "neto": 143080767,
-      "litros": 128139,
-      "litros_retail": 101137,
+      "ventas": 193686071,
+      "neto": 149134798,
+      "litros": 133439,
+      "litros_retail": 106437,
       "litros_volumen": 27002,
-      "precio_neto": 1117,
-      "precio_bruto": 1449,
-      "margin": 0.08473,
-      "margin_retail": 0.09157,
+      "precio_neto": 1118,
+      "precio_bruto": 1450,
+      "margin": 0.08542,
+      "margin_retail": 0.09218,
       "margin_volumen": 0.06776,
-      "facturas": 80,
+      "facturas": 85,
       "nc": 2,
-      "clientes": 74,
+      "clientes": 78,
       "recaud": 300879836,
       "cheques": 39293820,
       "transf": 202635777,
@@ -26,7 +26,7 @@
       "cheq_cartera_saldo": 0,
       "cheq_recibidos": 0,
       "facturas_contado": 18,
-      "facturas_credito": 62,
+      "facturas_credito": 67,
       "margin_by_term": {
         "Prepago": {
           "margin": 0.1048,
@@ -47,15 +47,15 @@
           "days": 7
         },
         "15 Días": {
-          "margin": 0.08316,
-          "normalizado": 0.08816,
-          "count": 6,
+          "margin": 0.08555,
+          "normalizado": 0.09055,
+          "count": 7,
           "days": 15
         },
         "30 Días": {
-          "margin": 0.09568,
-          "normalizado": 0.09568,
-          "count": 45,
+          "margin": 0.09581,
+          "normalizado": 0.09581,
+          "count": 49,
           "days": 30
         },
         "45 Días": {
@@ -72,7 +72,7 @@
         }
       },
       "cotiz_canceladas": 6,
-      "visitas": 78,
+      "visitas": 77,
       "clientes_nuevos": 9,
       "ppto": 213480,
       "ppto_retail": 153706,
@@ -1266,8 +1266,8 @@
     {
       "date": "02jun",
       "day": "Mar",
-      "litros": 20093,
-      "neto": 22689472
+      "litros": 25393,
+      "neto": 28743503
     },
     {
       "date": "01jun",
@@ -1392,11 +1392,11 @@
   ],
   "total_cash": 48151744,
   "receivables": {
-    "open_invoices": 218,
-    "total_due": 593891759,
-    "current": 524447047,
+    "open_invoices": 223,
+    "total_due": 601756259,
+    "current": 532311547,
     "overdue": 69444712,
-    "pct_overdue": 11.7,
+    "pct_overdue": 11.5,
     "aging": {
       "0-30": 55792429,
       "31-60": 3886720,
@@ -1509,15 +1509,11 @@
         },
         "Rancagua": {
           "total": 17,
-          "on_time": 8,
-          "late": 9,
-          "pct": 47.06,
+          "on_time": 12,
+          "late": 5,
+          "pct": 70.59,
           "late_clients": [
-            "AGRICOLA EUGENIO LIRA ESPINOZA E.I.R.L. (prom: 2026-06-02, fact: sin factura)",
-            "CMSF SPA (prom: 2026-06-02, fact: sin factura)",
             "INVERSIONES LOS CINCO SPA (prom: 2026-06-02, fact: sin factura)",
-            "RECSOL S.A (prom: 2026-06-02, fact: sin factura)",
-            "CARLOS SOTO CORREA (prom: 2026-06-02, fact: sin factura)",
             "AGRICOLA TRICAHUE LIMITADA (prom: 2026-05-28, fact: 2026-05-29)",
             "CRISTIAN FELIPE MEZA VANNINI (prom: 2026-05-28, fact: 2026-05-29)",
             "AGRICOLA OMEGA TRES LIMITADA (prom: 2026-05-28, fact: 2026-05-29)",
@@ -1541,7 +1537,7 @@
           "late_clients": [
             "SERVICIOS AGRICOLAS HECTOR H. MAUREIRA HERNANDEZ EIRL (prom: 2026-06-01, fact: 2026-06-02)",
             "EMPRESAS TUCAPEL S A (prom: 2026-06-01, fact: 2026-06-02)",
-            "JUAN VILLAR ESPINOZA SPA (prom: 2026-06-01, fact: sin factura)",
+            "JUAN VILLAR ESPINOZA SPA (prom: 2026-06-01, fact: 2026-06-02)",
             "GUSTAVO EGALDO MENDEZ HEVIA MAQUINARIAS SPA (prom: 2026-05-29, fact: 2026-06-01)",
             "JULIO ENRIQUE RUBILAR ROMERO (prom: 2026-05-29, fact: 2026-06-01)",
             "VITIVINICOLA INVINA LTDA (prom: 2026-05-28, fact: 2026-05-29)"
@@ -2550,15 +2546,15 @@
   "riesgo": {
     "cubierto": 0,
     "cubierto_count": 0,
-    "no_cubierto": 593891759,
-    "no_cubierto_count": 218,
+    "no_cubierto": 601756259,
+    "no_cubierto_count": 223,
     "pct_monto": 100.0,
     "pct_count": 100.0
   },
   "churn": {
-    "eligible_clients": 161,
+    "eligible_clients": 162,
     "churned_count": 59,
-    "pct": 36.6,
+    "pct": 36.4,
     "churned": [
       {
         "name": "CRISTIAN HUGO FUENZALIDA MEZA",
@@ -2895,9 +2891,9 @@
       },
       {
         "month": "Jun 2026",
-        "pct": 78.8,
-        "new_churn": 78,
-        "active_start": 99
+        "pct": 78.1,
+        "new_churn": 75,
+        "active_start": 96
       }
     ]
   },
@@ -3116,7 +3112,7 @@
         "dso": 35.3
       }
     ],
-    "cxc_hoy": 1083842176
+    "cxc_hoy": 1091706676
   },
   "gerencia_goals": {
     "margen_contado_meta": 0.085,
