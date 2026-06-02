@@ -1,32 +1,32 @@
 {
-  "updated": "2026-06-02T15:07:17.621433",
+  "updated": "2026-06-02T18:55:00.007758",
   "weeks": [
     {
       "label": "28may-03jun",
       "start": "2026-05-28",
       "end": "2026-06-03",
-      "ventas": 170753320,
-      "neto": 131501787,
-      "litros": 117789,
-      "litros_retail": 90787,
+      "ventas": 185821571,
+      "neto": 143080767,
+      "litros": 128139,
+      "litros_retail": 101137,
       "litros_volumen": 27002,
-      "precio_neto": 1116,
-      "precio_bruto": 1448,
-      "margin": 0.08441,
-      "margin_retail": 0.09188,
+      "precio_neto": 1117,
+      "precio_bruto": 1449,
+      "margin": 0.08473,
+      "margin_retail": 0.09157,
       "margin_volumen": 0.06776,
-      "facturas": 73,
+      "facturas": 80,
       "nc": 2,
-      "clientes": 68,
-      "recaud": 268314760,
+      "clientes": 74,
+      "recaud": 300879836,
       "cheques": 39293820,
-      "transf": 170070701,
+      "transf": 202635777,
       "factoring": 58950239,
       "compras_odoo": 213059783,
       "cheq_cartera_saldo": 0,
       "cheq_recibidos": 0,
       "facturas_contado": 18,
-      "facturas_credito": 55,
+      "facturas_credito": 62,
       "margin_by_term": {
         "Prepago": {
           "margin": 0.1048,
@@ -41,9 +41,9 @@
           "days": 1
         },
         "7 Días": {
-          "margin": 0.08665,
-          "normalizado": 0.09431,
-          "count": 3,
+          "margin": 0.08062,
+          "normalizado": 0.08829,
+          "count": 4,
           "days": 7
         },
         "15 Días": {
@@ -53,15 +53,15 @@
           "days": 15
         },
         "30 Días": {
-          "margin": 0.09559,
-          "normalizado": 0.09559,
-          "count": 40,
+          "margin": 0.09568,
+          "normalizado": 0.09568,
+          "count": 45,
           "days": 30
         },
         "45 Días": {
-          "margin": 0.08135,
-          "normalizado": 0.07635,
-          "count": 4,
+          "margin": 0.08358,
+          "normalizado": 0.07858,
+          "count": 5,
           "days": 45
         },
         "60 Días": {
@@ -1266,8 +1266,8 @@
     {
       "date": "02jun",
       "day": "Mar",
-      "litros": 9743,
-      "neto": 11110492
+      "litros": 20093,
+      "neto": 22689472
     },
     {
       "date": "01jun",
@@ -1363,7 +1363,7 @@
   "banks": [
     {
       "name": "DE CHILE",
-      "balance": 25883454
+      "balance": 30298644
     },
     {
       "name": "ITAU",
@@ -1390,15 +1390,15 @@
       "balance": -1727275
     }
   ],
-  "total_cash": 43736554,
+  "total_cash": 48151744,
   "receivables": {
-    "open_invoices": 243,
-    "total_due": 662340905,
-    "current": 576292193,
-    "overdue": 86048712,
-    "pct_overdue": 13.0,
+    "open_invoices": 218,
+    "total_due": 593891759,
+    "current": 524447047,
+    "overdue": 69444712,
+    "pct_overdue": 11.7,
     "aging": {
-      "0-30": 72396429,
+      "0-30": 55792429,
       "31-60": 3886720,
       "61-90": 0,
       "90+": 9765563
@@ -1457,14 +1457,6 @@
         "amount": 10574214
       },
       {
-        "name": "EMPRESAS TUCAPEL S A",
-        "amount": 10102061
-      },
-      {
-        "name": "SOC AGRICOLA CUNCULEN LTDA",
-        "amount": 9424999
-      },
-      {
         "name": "CIA AGRICOLA Y FORESTAL EL ALAMO LIMITADA",
         "amount": 9024000
       },
@@ -1483,6 +1475,14 @@
       {
         "name": "VICTOR FAVIO VILCHES MARDONES",
         "amount": 7752000
+      },
+      {
+        "name": "TRANSPORTES SAN MARCELO SPA",
+        "amount": 7740000
+      },
+      {
+        "name": "INGENERIA Y CONSTRUCCIONES FEBLANCA SPA",
+        "amount": 7496501
       }
     ]
   },
@@ -1492,12 +1492,10 @@
       "zones": {
         "Chillan": {
           "total": 4,
-          "on_time": 3,
-          "late": 1,
-          "pct": 75.0,
-          "late_clients": [
-            "INGENERIA Y CONSTRUCCIONES FEBLANCA SPA (prom: 2026-06-02, fact: sin factura)"
-          ]
+          "on_time": 4,
+          "late": 0,
+          "pct": 100.0,
+          "late_clients": []
         },
         "Curico": {
           "total": 15,
@@ -1505,18 +1503,19 @@
           "late": 2,
           "pct": 86.67,
           "late_clients": [
-            "INVERSIONES TAROBA LIMITADA (prom: 2026-06-01, fact: sin factura)",
+            "INVERSIONES TAROBA LIMITADA (prom: 2026-06-01, fact: 2026-06-02)",
             "SOCIEDAD FORESTAL Y AGRICOLA LAS PITRAS DE PAULA LIMITADA (prom: 2026-06-01, fact: 2026-06-02)"
           ]
         },
         "Rancagua": {
-          "total": 16,
+          "total": 17,
           "on_time": 8,
-          "late": 8,
-          "pct": 50.0,
+          "late": 9,
+          "pct": 47.06,
           "late_clients": [
+            "AGRICOLA EUGENIO LIRA ESPINOZA E.I.R.L. (prom: 2026-06-02, fact: sin factura)",
             "CMSF SPA (prom: 2026-06-02, fact: sin factura)",
-            "INVERSIONES LOS CINCO SPA (prom: 2026-06-01, fact: sin factura)",
+            "INVERSIONES LOS CINCO SPA (prom: 2026-06-02, fact: sin factura)",
             "RECSOL S.A (prom: 2026-06-02, fact: sin factura)",
             "CARLOS SOTO CORREA (prom: 2026-06-02, fact: sin factura)",
             "AGRICOLA TRICAHUE LIMITADA (prom: 2026-05-28, fact: 2026-05-29)",
@@ -1527,22 +1526,20 @@
         },
         "San Fernando": {
           "total": 11,
-          "on_time": 9,
-          "late": 2,
-          "pct": 81.82,
+          "on_time": 10,
+          "late": 1,
+          "pct": 90.91,
           "late_clients": [
-            "SOCIEDAD COMERCIAL LUIS PARRAGUEZ G E HIJOS LTDA (prom: 2026-06-02, fact: sin factura)",
             "ALIMENTOS Y FRUTOS S.A. (prom: 2026-05-28, fact: 2026-05-27)"
           ]
         },
         "Talca": {
           "total": 29,
-          "on_time": 22,
-          "late": 7,
-          "pct": 75.86,
+          "on_time": 23,
+          "late": 6,
+          "pct": 79.31,
           "late_clients": [
-            "MARGARITA MARIA ALARCON VERGARA (prom: 2026-06-02, fact: sin factura)",
-            "SERVICIOS AGRICOLAS HECTOR H. MAUREIRA HERNANDEZ EIRL (prom: 2026-06-01, fact: sin factura)",
+            "SERVICIOS AGRICOLAS HECTOR H. MAUREIRA HERNANDEZ EIRL (prom: 2026-06-01, fact: 2026-06-02)",
             "EMPRESAS TUCAPEL S A (prom: 2026-06-01, fact: 2026-06-02)",
             "JUAN VILLAR ESPINOZA SPA (prom: 2026-06-01, fact: sin factura)",
             "GUSTAVO EGALDO MENDEZ HEVIA MAQUINARIAS SPA (prom: 2026-05-29, fact: 2026-06-01)",
@@ -1551,12 +1548,12 @@
           ]
         },
         "VI Costa": {
-          "total": 5,
-          "on_time": 4,
+          "total": 6,
+          "on_time": 5,
           "late": 1,
-          "pct": 80.0,
+          "pct": 83.33,
           "late_clients": [
-            "AGRICOLA LOS SIETE HERMANOS SPA (prom: 2026-06-02, fact: sin factura)"
+            "AGRICOLA SANTA ANA DEL HUIQUE    SPA (prom: 2026-06-01, fact: 2026-06-02)"
           ]
         }
       }
@@ -2553,15 +2550,15 @@
   "riesgo": {
     "cubierto": 0,
     "cubierto_count": 0,
-    "no_cubierto": 662340905,
-    "no_cubierto_count": 243,
+    "no_cubierto": 593891759,
+    "no_cubierto_count": 218,
     "pct_monto": 100.0,
     "pct_count": 100.0
   },
   "churn": {
     "eligible_clients": 161,
-    "churned_count": 60,
-    "pct": 37.3,
+    "churned_count": 59,
+    "pct": 36.6,
     "churned": [
       {
         "name": "CRISTIAN HUGO FUENZALIDA MEZA",
@@ -2892,15 +2889,15 @@
       },
       {
         "month": "May 2026",
-        "pct": 82.1,
-        "new_churn": 23,
-        "active_start": 28
+        "pct": 81.5,
+        "new_churn": 22,
+        "active_start": 27
       },
       {
         "month": "Jun 2026",
-        "pct": 79.0,
-        "new_churn": 79,
-        "active_start": 100
+        "pct": 78.8,
+        "new_churn": 78,
+        "active_start": 99
       }
     ]
   },
@@ -3119,7 +3116,7 @@
         "dso": 35.3
       }
     ],
-    "cxc_hoy": 1093609425
+    "cxc_hoy": 1083842176
   },
   "gerencia_goals": {
     "margen_contado_meta": 0.085,
