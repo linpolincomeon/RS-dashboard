@@ -20,6 +20,7 @@
     --verde: #2EAA5A;
     --naranja: #E07820;
     --violeta: #8B5CF6;
+    --cyan: #2EBFD4;
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
@@ -123,6 +124,9 @@
   .camion-btn.active .placa { color: var(--amarillo); }
   .camion-btn.active .nombre { color: #AA8800; }
   .camion-btn:active { transform: scale(0.97); }
+  .camion-btn-small { padding: 10px 8px; }
+  .camion-btn-small .placa { font-size: 18px; }
+  .camion-btn-small .nombre { font-size: 10px; }
 
   /* TIPO MOVIMIENTO */
   .tipo-grid {
@@ -150,11 +154,32 @@
   .tipo-btn .tipo-desc { font-size: 11px; font-weight: 400; color: var(--blanco-suave); display: block; margin-top: 1px; font-family: 'Barlow', sans-serif; }
   .tipo-btn:active { transform: scale(0.98); }
 
-  .tipo-btn[data-tipo="inicio"].active   { border-color: var(--violeta); background: #1A1030; }
-  .tipo-btn[data-tipo="carga"].active    { border-color: var(--azul);    background: #0A1830; }
-  .tipo-btn[data-tipo="venta"].active    { border-color: var(--naranja);  background: #201008; }
-  .tipo-btn[data-tipo="traslado"].active { border-color: #CCA000;         background: #1E1800; }
-  .tipo-btn[data-tipo="cierre"].active   { border-color: var(--verde);    background: #081808; }
+  .tipo-btn[data-tipo="inicio"].active         { border-color: var(--violeta); background: #1A1030; }
+  .tipo-btn[data-tipo="carga"].active          { border-color: var(--azul);    background: #0A1830; }
+  .tipo-btn[data-tipo="venta"].active          { border-color: var(--naranja); background: #201008; }
+  .tipo-btn[data-tipo="traslado_sale"].active  { border-color: #CCA000;        background: #1E1800; }
+  .tipo-btn[data-tipo="traslado_entra"].active { border-color: var(--cyan);    background: #08202A; }
+  .tipo-btn[data-tipo="cierre"].active         { border-color: var(--verde);   background: #081808; }
+
+  /* TRASLADO FIELDS (selector de otro camión, aparece solo en traslados) */
+  .traslado-fields {
+    display: none;
+    margin-top: 16px;
+    padding: 14px;
+    background: #1A1500;
+    border: 1px dashed #CCA000;
+    border-radius: 4px;
+  }
+  .traslado-fields.visible { display: block; }
+  .traslado-titulo {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    color: var(--amarillo);
+    margin-bottom: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
 
   /* INPUTS */
   .input-group { margin-top: 8px; }
@@ -384,11 +409,18 @@
         <span class="tipo-desc">Despacho a cliente con factura</span>
       </div>
     </button>
-    <button class="tipo-btn" data-tipo="traslado" onclick="selTipo(this)">
+    <button class="tipo-btn" data-tipo="traslado_sale" onclick="selTipo(this)">
       <span class="icono">🟡</span>
       <div>
-        TRASLADO
-        <span class="tipo-desc">Paso litros a otro camión</span>
+        TRASLADO −
+        <span class="tipo-desc">ENTREGO litros a otro camión (resta)</span>
+      </div>
+    </button>
+    <button class="tipo-btn" data-tipo="traslado_entra" onclick="selTipo(this)">
+      <span class="icono">🟢</span>
+      <div>
+        TRASLADO +
+        <span class="tipo-desc">RECIBO litros de otro camión (suma)</span>
       </div>
     </button>
     <button class="tipo-btn" data-tipo="cierre" onclick="selTipo(this)">
@@ -400,10 +432,25 @@
     </button>
   </div>
 
+
+
+  <!-- OTRO CAMIÓN (solo se muestra en traslados) -->
+  <div class="traslado-fields" id="traslado-fields">
+    <div class="traslado-titulo" id="traslado-titulo">¿A qué camión?</div>
+    <div class="camion-grid">
+      <button class="camion-btn camion-btn-small" data-otro="Mario PY" onclick="selOtroCamion(this)"><span class="placa">PY</span><span class="nombre">Mario</span></button>
+      <button class="camion-btn camion-btn-small" data-otro="Roberto SH" onclick="selOtroCamion(this)"><span class="placa">SH</span><span class="nombre">Roberto</span></button>
+      <button class="camion-btn camion-btn-small" data-otro="Nino HH" onclick="selOtroCamion(this)"><span class="placa">HH</span><span class="nombre">Nino</span></button>
+      <button class="camion-btn camion-btn-small" data-otro="Nino VD" onclick="selOtroCamion(this)"><span class="placa">VD</span><span class="nombre">Nino</span></button>
+      <button class="camion-btn camion-btn-small" data-otro="Tato PH" onclick="selOtroCamion(this)"><span class="placa">PH</span><span class="nombre">Tato</span></button>
+      <button class="camion-btn camion-btn-small" data-otro="Jose Luis TJ" onclick="selOtroCamion(this)"><span class="placa">TJ</span><span class="nombre">Jose Luis</span></button>
+      <button class="camion-btn camion-btn-small" data-otro="Jaime HH" onclick="selOtroCamion(this)"><span class="placa">HH</span><span class="nombre">Jaime / Patricio</span></button>
+    </div>
+  </div>
+
   <!-- LITROS -->
   <div class="section-label">3. Litros</div>
   <div class="input-group">
-    <!-- type=tel + pattern: muestra teclado numérico SIN auto-formato del navegador -->
     <input type="tel" id="litros" placeholder="0" inputmode="numeric" pattern="[0-9]*" maxlength="6"
            oninput="limpiarLitros(this); actualizarPreview()">
   </div>
@@ -418,9 +465,9 @@
       </div>
     </div>
     <div>
-      <div class="section-label">5. Cliente</div>
+      <div class="section-label">5. Cliente (opcional)</div>
       <div class="input-group">
-        <input type="text" id="cliente" class="input-small" placeholder="Nombre del cliente"
+        <input type="text" id="cliente" class="input-small" placeholder="Nombre cliente (opcional)"
                oninput="actualizarPreview()">
       </div>
     </div>
@@ -458,16 +505,15 @@
 <script>
   let camionSel = null;
   let tipoSel = null;
+  let otroCamionSel = null;
   const WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbyEEI4ujT7TVXhYMJPWtDskgvpDO-f5ZNJCPnmM4me11u2PSkiu9LmB8pPFzJI9xWak/exec';
 
   function pad(n){ return n.toString().padStart(2,'0'); }
 
-  // CRÍTICO: limpia cualquier caracter no-numérico para evitar bugs de formato
   function limpiarLitros(input){
     input.value = input.value.replace(/\D/g, '');
   }
 
-  // Formato visual SOLO para mostrar (no para guardar)
   function formatearMiles(n){
     return Number(n).toLocaleString('es-CL').replace(/,/g, '.');
   }
@@ -486,9 +532,21 @@
   setInterval(updateTime, 1000);
 
   function selCamion(btn){
-    document.querySelectorAll('.camion-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.camion-btn[data-camion]').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
     camionSel = btn.dataset.camion;
+    // Ocultar el camión seleccionado del selector "otro camión"
+    document.querySelectorAll('.camion-btn[data-otro]').forEach(b => {
+      b.style.display = (b.dataset.otro === camionSel) ? 'none' : '';
+    });
+    actualizarPreview();
+    checkSubmit();
+  }
+
+  function selOtroCamion(btn){
+    document.querySelectorAll('.camion-btn[data-otro]').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    otroCamionSel = btn.dataset.otro;
     actualizarPreview();
     checkSubmit();
   }
@@ -499,12 +557,28 @@
     tipoSel = btn.dataset.tipo;
 
     const extra = document.getElementById('extra-fields');
+    const traslado = document.getElementById('traslado-fields');
+    const trasladoTitulo = document.getElementById('traslado-titulo');
     const obsLabel = document.getElementById('obs-label');
+
+    // Reset campos contextuales
+    extra.classList.remove('visible');
+    traslado.classList.remove('visible');
+    otroCamionSel = null;
+    document.querySelectorAll('.camion-btn[data-otro]').forEach(b => b.classList.remove('active'));
+
     if(tipoSel === 'venta'){
       extra.classList.add('visible');
       obsLabel.textContent = '6. Observación (opcional)';
+    } else if(tipoSel === 'traslado_sale'){
+      traslado.classList.add('visible');
+      trasladoTitulo.textContent = '¿A qué camión ENTREGAS?';
+      obsLabel.textContent = '5. Observación (opcional)';
+    } else if(tipoSel === 'traslado_entra'){
+      traslado.classList.add('visible');
+      trasladoTitulo.textContent = '¿De qué camión RECIBES?';
+      obsLabel.textContent = '5. Observación (opcional)';
     } else {
-      extra.classList.remove('visible');
       obsLabel.textContent = '4. Observación (opcional)';
       document.getElementById('factura').value = '';
       document.getElementById('cliente').value = '';
@@ -525,16 +599,20 @@
 
     const tipoTexto = {
       inicio: '🟣 INICIO DÍA', carga: '🔵 CARGA ENAP',
-      venta: '🟠 VENTA', traslado: '🟡 TRASLADO', cierre: '🟢 CIERRE DÍA'
+      venta: '🟠 VENTA',
+      traslado_sale: '🟡 TRASLADO − (entrego)',
+      traslado_entra: '🟢 TRASLADO + (recibo)',
+      cierre: '🟢 CIERRE DÍA'
     }[tipoSel];
 
     let html = `<span>${camionSel}</span> · ${tipoTexto}<br>`;
-    // Litros visual con separador de miles (1.000, 15.000) - solo para mostrar
     html += `Litros: <span>${formatearMiles(litros)}</span>`;
     if(tipoSel === 'venta'){
       if(factura) html += `<br>Fact: <span>${factura}</span>`;
       if(cliente) html += `<br>Cliente: <span>${cliente}</span>`;
     }
+    if(tipoSel === 'traslado_sale' && otroCamionSel) html += `<br>A: <span>${otroCamionSel}</span>`;
+    if(tipoSel === 'traslado_entra' && otroCamionSel) html += `<br>De: <span>${otroCamionSel}</span>`;
     if(obs) html += `<br>Obs: ${obs}`;
 
     content.innerHTML = html;
@@ -545,7 +623,9 @@
   function checkSubmit(){
     const litros = document.getElementById('litros').value;
     const btn = document.getElementById('submit-btn');
-    btn.disabled = !(camionSel && tipoSel && litros && parseInt(litros, 10) > 0);
+    // Si es traslado, requiere también otro camión seleccionado
+    const trasladoOK = (tipoSel !== 'traslado_sale' && tipoSel !== 'traslado_entra') || otroCamionSel;
+    btn.disabled = !(camionSel && tipoSel && litros && parseInt(litros, 10) > 0 && trasladoOK);
   }
 
   function enviar(){
@@ -554,46 +634,54 @@
     btn.textContent = 'ENVIANDO...';
 
     const now = new Date();
-    // CRÍTICO: parseInt sin formato, valor crudo del input ya limpio
-    const litrosRaw = document.getElementById('litros').value;
-    const litrosInt = parseInt(litrosRaw, 10);
+    const litrosInt = parseInt(document.getElementById('litros').value, 10);
+
+    // Mapear tipo interno -> nombre en el Sheet
+    const tipoGuardar = {
+      inicio: 'INICIO', carga: 'CARGA', venta: 'VENTA',
+      traslado_sale: 'TRASLADO ENVIADO',
+      traslado_entra: 'TRASLADO RECIBIDO',
+      cierre: 'CIERRE'
+    }[tipoSel];
+
+    // Si es traslado, anteponer destino/origen a la observación
+    let obs = document.getElementById('observacion').value || '';
+    if(tipoSel === 'traslado_sale' && otroCamionSel)  obs = `→ ${otroCamionSel}` + (obs ? ' | ' + obs : '');
+    if(tipoSel === 'traslado_entra' && otroCamionSel) obs = `← ${otroCamionSel}` + (obs ? ' | ' + obs : '');
 
     const data = {
       timestamp: now.toISOString(),
       fecha: pad(now.getDate()) + '/' + pad(now.getMonth()+1) + '/' + now.getFullYear(),
       hora: pad(now.getHours()) + ':' + pad(now.getMinutes()),
       camion: camionSel,
-      tipo: tipoSel.toUpperCase(),
+      tipo: tipoGuardar,
       litros: litrosInt,
       factura: document.getElementById('factura').value || '',
       cliente: document.getElementById('cliente').value || '',
-      observacion: document.getElementById('observacion').value || ''
+      observacion: obs
     };
 
-    // Envío con fetch + no-cors + text/plain (compatible con Apps Script doPost)
     fetch(WEBHOOK_URL, {
       method: 'POST',
       mode: 'no-cors',
       headers: {'Content-Type': 'text/plain;charset=utf-8'},
       body: JSON.stringify(data)
-    }).then(() => {
-      mostrarExito(data);
-    }).catch((err) => {
-      // Con no-cors el .catch raramente se dispara, pero por si acaso
-      console.error('Error envío:', err);
-      mostrarExito(data);
-    });
+    }).then(() => mostrarExito(data))
+      .catch(() => mostrarExito(data));
   }
 
   function mostrarExito(data){
     document.getElementById('main-form').style.display = 'none';
     const tipoTexto = {
-      'INICIO': '🟣 INICIO DÍA', 'CARGA': '🔵 CARGA ENAP',
-      'VENTA': '🟠 VENTA', 'TRASLADO': '🟡 TRASLADO', 'CIERRE': '🟢 CIERRE DÍA'
+      'INICIO': '🟣 INICIO DÍA', 'CARGA': '🔵 CARGA ENAP', 'VENTA': '🟠 VENTA',
+      'TRASLADO ENVIADO': '🟡 TRASLADO − (entregué)',
+      'TRASLADO RECIBIDO': '🟢 TRASLADO + (recibí)',
+      'CIERRE': '🟢 CIERRE DÍA'
     }[data.tipo] || data.tipo;
     let detalle = `Camión: ${data.camion}\nTipo: ${tipoTexto}\nLitros: ${formatearMiles(data.litros)}\nHora: ${data.hora}`;
     if(data.factura) detalle += `\nFactura: ${data.factura}`;
     if(data.cliente) detalle += `\nCliente: ${data.cliente}`;
+    if(data.observacion) detalle += `\nObs: ${data.observacion}`;
     document.getElementById('success-detail').style.whiteSpace = 'pre-line';
     document.getElementById('success-detail').textContent = detalle;
     document.getElementById('success-screen').classList.add('visible');
@@ -603,17 +691,20 @@
     document.getElementById('main-form').style.display = 'block';
     document.getElementById('success-screen').classList.remove('visible');
     document.querySelectorAll('.camion-btn, .tipo-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.camion-btn[data-otro]').forEach(b => b.style.display = '');
     document.getElementById('litros').value = '';
     document.getElementById('factura').value = '';
     document.getElementById('cliente').value = '';
     document.getElementById('observacion').value = '';
     document.getElementById('extra-fields').classList.remove('visible');
+    document.getElementById('traslado-fields').classList.remove('visible');
     document.getElementById('preview-box').classList.remove('visible');
     document.getElementById('submit-btn').disabled = true;
     document.getElementById('submit-btn').textContent = 'ENVIAR REPORTE';
     document.getElementById('obs-label').textContent = '4. Observación (opcional)';
     camionSel = null;
     tipoSel = null;
+    otroCamionSel = null;
     window.scrollTo(0,0);
   }
 </script>
