@@ -1,43 +1,43 @@
 {
-  "updated": "2026-06-03T15:59:03.877964",
+  "updated": "2026-06-03T22:07:56.262940",
   "weeks": [
     {
       "label": "28may-03jun",
       "start": "2026-05-28",
       "end": "2026-06-03",
-      "ventas": 208505221,
-      "neto": 160504450,
-      "litros": 143789,
-      "litros_retail": 111037,
+      "ventas": 235306523,
+      "neto": 181058607,
+      "litros": 162589,
+      "litros_retail": 129837,
       "litros_volumen": 32752,
-      "precio_neto": 1116,
-      "precio_bruto": 1449,
-      "margin": 0.08459,
-      "margin_retail": 0.09258,
+      "precio_neto": 1114,
+      "precio_bruto": 1446,
+      "margin": 0.08287,
+      "margin_retail": 0.08912,
       "margin_volumen": 0.06535,
-      "facturas": 92,
+      "facturas": 101,
       "nc": 2,
-      "clientes": 84,
-      "recaud": 316997686,
-      "cheques": 43150270,
-      "transf": 214897177,
+      "clientes": 91,
+      "recaud": 336265824,
+      "cheques": 44768269,
+      "transf": 232547316,
       "factoring": 58950239,
       "compras_odoo": 252981125,
       "cheq_cartera_saldo": 0,
       "cheq_recibidos": 21153479,
-      "facturas_contado": 19,
-      "facturas_credito": 73,
+      "facturas_contado": 22,
+      "facturas_credito": 79,
       "margin_by_term": {
         "Prepago": {
-          "margin": 0.1048,
-          "normalizado": 0.1148,
-          "count": 1,
+          "margin": 0.07961,
+          "normalizado": 0.08961,
+          "count": 3,
           "days": 0
         },
         "1 Día": {
           "margin": 0.0642,
           "normalizado": 0.07387,
-          "count": 18,
+          "count": 19,
           "days": 1
         },
         "7 Días": {
@@ -53,9 +53,9 @@
           "days": 15
         },
         "30 Días": {
-          "margin": 0.09574,
-          "normalizado": 0.09574,
-          "count": 53,
+          "margin": 0.09072,
+          "normalizado": 0.09072,
+          "count": 59,
           "days": 30
         },
         "45 Días": {
@@ -71,9 +71,9 @@
           "days": 60
         }
       },
-      "cotiz_canceladas": 6,
-      "visitas": 78,
-      "clientes_nuevos": 10,
+      "cotiz_canceladas": 8,
+      "visitas": 84,
+      "clientes_nuevos": 11,
       "ppto": 213480,
       "ppto_retail": 153706,
       "ppto_volumen": 59774,
@@ -1266,8 +1266,8 @@
     {
       "date": "03jun",
       "day": "Mié",
-      "litros": 9550,
-      "neto": 10457092
+      "litros": 28350,
+      "neto": 31011249
     },
     {
       "date": "02jun",
@@ -1362,12 +1362,12 @@
   ],
   "banks": [
     {
-      "name": "ITAU",
-      "balance": 8387999
+      "name": "DE CHILE",
+      "balance": 15910882
     },
     {
-      "name": "DE CHILE",
-      "balance": 7277841
+      "name": "ITAU",
+      "balance": 8387999
     },
     {
       "name": "ESTADO",
@@ -1390,16 +1390,16 @@
       "balance": -1727275
     }
   ],
-  "total_cash": 31130941,
+  "total_cash": 39763982,
   "receivables": {
-    "open_invoices": 222,
-    "total_due": 589267480,
-    "current": 525100938,
-    "overdue": 64166542,
-    "pct_overdue": 10.9,
+    "open_invoices": 221,
+    "total_due": 595363644,
+    "current": 547367801,
+    "overdue": 47995843,
+    "pct_overdue": 8.1,
     "aging": {
-      "0-30": 50514259,
-      "31-60": 3886720,
+      "0-30": 37316560,
+      "31-60": 913720,
       "61-90": 0,
       "90+": 9765563
     },
@@ -1410,7 +1410,7 @@
       },
       {
         "name": "JOSE RODRIGO ORMAZABAL VIDAL",
-        "amount": 40659004
+        "amount": 36027004
       },
       {
         "name": "PATRICIO VISCAY ALBORNOZ",
@@ -1453,6 +1453,10 @@
         "amount": 10574214
       },
       {
+        "name": "INVERSIONES SANTA BERTINA",
+        "amount": 9926000
+      },
+      {
         "name": "CIA AGRICOLA Y FORESTAL EL ALAMO LIMITADA",
         "amount": 9024000
       },
@@ -1461,20 +1465,16 @@
         "amount": 8293000
       },
       {
-        "name": "MAQUINARIAS Y ARIDOS SAN PEDRO SPA.",
-        "amount": 8061239
-      },
-      {
         "name": "ARIDOS LO VALDIVIA LIMITADA",
         "amount": 8009750
       },
       {
-        "name": "VALENZUELA LEIVA MAX",
-        "amount": 7895000
+        "name": "MAQUINARIAS Y ARIDOS SAN PEDRO SPA.",
+        "amount": 7996799
       },
       {
-        "name": "VICTOR FAVIO VILCHES MARDONES",
-        "amount": 7752000
+        "name": "VALENZUELA LEIVA MAX",
+        "amount": 7895000
       },
       {
         "name": "TRANSPORTES SAN MARCELO SPA",
@@ -1491,31 +1491,28 @@
       "label": "28may-03jun",
       "zones": {
         "Chillan": {
-          "total": 4,
-          "on_time": 4,
+          "total": 6,
+          "on_time": 6,
           "late": 0,
           "pct": 100.0,
           "late_clients": []
         },
         "Curico": {
-          "total": 18,
-          "on_time": 15,
-          "late": 3,
-          "pct": 83.33,
+          "total": 19,
+          "on_time": 17,
+          "late": 2,
+          "pct": 89.47,
           "late_clients": [
-            "INVERSIONES SANTA BERTINA (prom: 2026-06-03, fact: sin factura)",
             "INVERSIONES TAROBA LIMITADA (prom: 2026-06-01, fact: 2026-06-02)",
             "SOCIEDAD FORESTAL Y AGRICOLA LAS PITRAS DE PAULA LIMITADA (prom: 2026-06-01, fact: 2026-06-02)"
           ]
         },
         "Rancagua": {
           "total": 20,
-          "on_time": 14,
-          "late": 6,
-          "pct": 70.0,
+          "on_time": 16,
+          "late": 4,
+          "pct": 80.0,
           "late_clients": [
-            "CARLOS SOTO CORREA (prom: 2026-06-03, fact: sin factura)",
-            "FERNANDO ROMERO ORTIZ (prom: 2026-06-03, fact: sin factura)",
             "AGRICOLA TRICAHUE LIMITADA (prom: 2026-05-28, fact: 2026-05-29)",
             "CRISTIAN FELIPE MEZA VANNINI (prom: 2026-05-28, fact: 2026-05-29)",
             "AGRICOLA OMEGA TRES LIMITADA (prom: 2026-05-28, fact: 2026-05-29)",
@@ -1524,13 +1521,10 @@
         },
         "San Fernando": {
           "total": 15,
-          "on_time": 11,
-          "late": 4,
-          "pct": 73.33,
+          "on_time": 14,
+          "late": 1,
+          "pct": 93.33,
           "late_clients": [
-            "LA FEÑA SPA (prom: 2026-06-03, fact: sin factura)",
-            "LUIS ANTONIO REYES FUENTES (prom: 2026-06-03, fact: sin factura)",
-            "ALIMENTOS Y FRUTOS S.A. (prom: 2026-06-03, fact: sin factura)",
             "ALIMENTOS Y FRUTOS S.A. (prom: 2026-05-28, fact: 2026-05-27)"
           ]
         },
@@ -2551,15 +2545,15 @@
   "riesgo": {
     "cubierto": 0,
     "cubierto_count": 0,
-    "no_cubierto": 589267480,
-    "no_cubierto_count": 222,
+    "no_cubierto": 595363644,
+    "no_cubierto_count": 221,
     "pct_monto": 100.0,
     "pct_count": 100.0
   },
   "churn": {
-    "eligible_clients": 162,
+    "eligible_clients": 163,
     "churned_count": 59,
-    "pct": 36.4,
+    "pct": 36.2,
     "churned": [
       {
         "name": "CRISTIAN HUGO FUENZALIDA MEZA",
@@ -2896,9 +2890,9 @@
       },
       {
         "month": "Jun 2026",
-        "pct": 77.2,
-        "new_churn": 71,
-        "active_start": 92
+        "pct": 76.1,
+        "new_churn": 67,
+        "active_start": 88
       }
     ]
   },
@@ -3109,15 +3103,15 @@
       },
       {
         "month": "2026-05",
-        "cxc": 1086839127,
-        "cxc_acc": 1086839127,
+        "cxc": 1083753586,
+        "cxc_acc": 1083753586,
         "cheques": 0,
-        "avg_cxc_3m": 989398254,
+        "avg_cxc_3m": 988369740,
         "net_sales": 840187676,
         "dso": 35.3
       }
     ],
-    "cxc_hoy": 1060720996
+    "cxc_hoy": 1041631643
   },
   "gerencia_goals": {
     "margen_contado_meta": 0.085,
