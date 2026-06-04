@@ -1,38 +1,56 @@
 {
-  "updated": "2026-06-04T14:13:20.161904",
+  "updated": "2026-06-04T17:53:52.251350",
   "weeks": [
     {
       "label": "04jun-10jun",
       "start": "2026-06-04",
       "end": "2026-06-10",
-      "ventas": 5441485,
-      "neto": 4099618,
-      "litros": 3745,
-      "litros_retail": 2500,
+      "ventas": 27173834,
+      "neto": 20084406,
+      "litros": 18695,
+      "litros_retail": 17450,
       "litros_volumen": 1245,
-      "precio_neto": 1095,
-      "precio_bruto": 1453,
-      "margin": 0.08878,
-      "margin_retail": 0.08878,
+      "precio_neto": 1074,
+      "precio_bruto": 1454,
+      "margin": 0.08557,
+      "margin_retail": 0.08535,
       "margin_volumen": 0.08878,
-      "facturas": 2,
+      "facturas": 11,
       "nc": 0,
-      "clientes": 2,
+      "clientes": 11,
       "recaud": 17628051,
       "cheques": 0,
       "transf": 17628051,
       "factoring": 0,
       "compras_odoo": 0,
       "cheq_cartera_saldo": 0,
-      "cheq_recibidos": 0,
-      "facturas_contado": 0,
-      "facturas_credito": 2,
+      "cheq_recibidos": 5270260,
+      "facturas_contado": 2,
+      "facturas_credito": 9,
       "margin_by_term": {
-        "30 Días": {
-          "margin": 0.08878,
-          "normalizado": 0.08878,
+        "1 Día": {
+          "margin": 0.07369,
+          "normalizado": 0.08335,
           "count": 2,
+          "days": 1
+        },
+        "7 Días": {
+          "margin": 0.06099,
+          "normalizado": 0.06866,
+          "count": 1,
+          "days": 7
+        },
+        "30 Días": {
+          "margin": 0.0954,
+          "normalizado": 0.0954,
+          "count": 6,
           "days": 30
+        },
+        "45 Días": {
+          "margin": 0.10748,
+          "normalizado": 0.10248,
+          "count": 2,
+          "days": 45
         }
       },
       "cotiz_canceladas": 0,
@@ -1224,8 +1242,8 @@
     {
       "date": "04jun",
       "day": "Jue",
-      "litros": 3745,
-      "neto": 4099618
+      "litros": 18695,
+      "neto": 20084406
     },
     {
       "date": "03jun",
@@ -1345,18 +1363,18 @@
     },
     {
       "name": "DE CREDITO",
-      "balance": -1727275
+      "balance": -1627884
     }
   ],
-  "total_cash": 53606464,
+  "total_cash": 53705855,
   "receivables": {
-    "open_invoices": 217,
-    "total_due": 587919078,
-    "current": 514055171,
-    "overdue": 73863907,
-    "pct_overdue": 12.6,
+    "open_invoices": 223,
+    "total_due": 604381167,
+    "current": 531931520,
+    "overdue": 72449647,
+    "pct_overdue": 12.0,
     "aging": {
-      "0-30": 63184624,
+      "0-30": 61770364,
       "31-60": 913720,
       "61-90": 0,
       "90+": 9765563
@@ -1435,12 +1453,12 @@
         "amount": 7740000
       },
       {
-        "name": "AGRICOLA MANTOS VERDES LIMITADA",
-        "amount": 7381699
+        "name": "INGENERIA Y CONSTRUCCIONES FEBLANCA SPA",
+        "amount": 7430501
       },
       {
-        "name": "EDUARDO ALEJANDRO CABRERA FAUNDEZ",
-        "amount": 7310001
+        "name": "AGRICOLA MANTOS VERDES LIMITADA",
+        "amount": 7381699
       }
     ]
   },
@@ -1450,54 +1468,51 @@
       "zones": {
         "Chillan": {
           "total": 3,
-          "on_time": 0,
-          "late": 3,
-          "pct": 0.0,
+          "on_time": 1,
+          "late": 2,
+          "pct": 33.33,
           "late_clients": [
-            "INGENERIA Y CONSTRUCCIONES FEBLANCA SPA (prom: 2026-06-04, fact: sin factura)",
             "VALENTIN GONZALO HERNANDEZ ESPINOZA (prom: 2026-06-04, fact: sin factura)",
             "PATRICIO IVAN HERNANDEZ ESPINOZA (prom: 2026-06-04, fact: sin factura)"
           ]
         },
         "Curico": {
-          "total": 1,
-          "on_time": 0,
-          "late": 1,
-          "pct": 0.0,
-          "late_clients": [
-            "AURORA AUSTRALIS SA (prom: 2026-06-04, fact: sin factura)"
-          ]
-        },
-        "Rancagua": {
-          "total": 4,
-          "on_time": 0,
-          "late": 4,
-          "pct": 0.0,
-          "late_clients": [
-            "SEMILLAS TUNICHE LTDA (prom: 2026-06-04, fact: sin factura)",
-            "MAESTRANZA Y SERVICIOS INTEGRALES METALMECANICOS CACHAPOAL S A (prom: 2026-06-04, fact: sin factura)",
-            "AGRICOLA LOS ALPES LTDA (prom: 2026-06-04, fact: sin factura)",
-            "ALEX PRADO FRUTAS Y TRANSPORTES SPA (prom: 2026-06-04, fact: sin factura)"
-          ]
-        },
-        "San Fernando": {
           "total": 2,
           "on_time": 0,
           "late": 2,
           "pct": 0.0,
           "late_clients": [
-            "LABRA E HIJAS SPA (prom: 2026-06-04, fact: sin factura)",
-            "SERVICIOS DE MAQUINARIA SUSANA DEL C. FUENZALIDA V. EIRL (prom: 2026-06-04, fact: sin factura)"
+            "AGRICOLA EL MILAGRO LTDA. (prom: 2026-06-04, fact: sin factura)",
+            "AURORA AUSTRALIS SA (prom: 2026-06-04, fact: sin factura)"
+          ]
+        },
+        "Rancagua": {
+          "total": 4,
+          "on_time": 3,
+          "late": 1,
+          "pct": 75.0,
+          "late_clients": [
+            "MAESTRANZA Y SERVICIOS INTEGRALES METALMECANICOS CACHAPOAL S A (prom: 2026-06-04, fact: sin factura)"
+          ]
+        },
+        "San Fernando": {
+          "total": 3,
+          "on_time": 1,
+          "late": 2,
+          "pct": 33.33,
+          "late_clients": [
+            "SGB SPA (prom: 2026-06-04, fact: sin factura)",
+            "LABRA E HIJAS SPA (prom: 2026-06-04, fact: sin factura)"
           ]
         },
         "Talca": {
-          "total": 5,
-          "on_time": 2,
+          "total": 8,
+          "on_time": 5,
           "late": 3,
-          "pct": 40.0,
+          "pct": 62.5,
           "late_clients": [
-            "HECTOR RODRIGO TRONCOSO ZAPATA (prom: 2026-06-04, fact: sin factura)",
-            "SERVICIOS REVIVA SPA (prom: 2026-06-04, fact: sin factura)",
+            "CONSTRUCTORA LO BLANCO SPA (prom: 2026-06-04, fact: sin factura)",
+            "CIA AGRICOLA Y FORESTAL EL ALAMO LIMITADA (prom: 2026-06-04, fact: sin factura)",
             "SOC AGRICOLA SANTA TERESA SPA (prom: 2026-06-04, fact: sin factura)"
           ]
         },
@@ -1552,7 +1567,7 @@
           "late": 2,
           "pct": 87.5,
           "late_clients": [
-            "LA FEÑA SPA (prom: 2026-06-03, fact: sin factura)",
+            "LA FEÑA SPA (prom: 2026-06-03, fact: 2026-06-04)",
             "ALIMENTOS Y FRUTOS S.A. (prom: 2026-05-28, fact: 2026-05-27)"
           ]
         },
@@ -2499,15 +2514,15 @@
   "riesgo": {
     "cubierto": 0,
     "cubierto_count": 0,
-    "no_cubierto": 587919078,
-    "no_cubierto_count": 217,
+    "no_cubierto": 604381167,
+    "no_cubierto_count": 223,
     "pct_monto": 100.0,
     "pct_count": 100.0
   },
   "churn": {
     "eligible_clients": 159,
-    "churned_count": 62,
-    "pct": 39.0,
+    "churned_count": 59,
+    "pct": 37.1,
     "churned": [
       {
         "name": "CRISTIAN HUGO FUENZALIDA MEZA",
@@ -2790,16 +2805,6 @@
         "new_this_week": false
       },
       {
-        "name": "HECTOR RODRIGO TRONCOSO ZAPATA",
-        "freq": "Irregular (Promedio: 20 días)",
-        "freq_days": 20,
-        "last_invoice": "2026-03-24",
-        "days_since": 72,
-        "threshold": 40,
-        "invoices_8m": 8,
-        "new_this_week": false
-      },
-      {
         "name": "AGRICOLA MANUEL BARRERA E.I.R.L.",
         "freq": "Irregular (Promedio: 20 días)",
         "freq_days": 20,
@@ -2807,6 +2812,16 @@
         "days_since": 72,
         "threshold": 40,
         "invoices_8m": 11,
+        "new_this_week": false
+      },
+      {
+        "name": "AGRICOLA SANTA MARINA LIMITADA",
+        "freq": "Bimensual (Quincenal)",
+        "freq_days": 15,
+        "last_invoice": "2026-03-25",
+        "days_since": 71,
+        "threshold": 30,
+        "invoices_8m": 12,
         "new_this_week": false
       }
     ],
@@ -2832,21 +2847,21 @@
       },
       {
         "month": "Apr 2026",
-        "pct": 69.6,
+        "pct": 72.7,
         "new_churn": 16,
-        "active_start": 23
+        "active_start": 22
       },
       {
         "month": "May 2026",
-        "pct": 84.0,
-        "new_churn": 21,
-        "active_start": 25
+        "pct": 82.6,
+        "new_churn": 19,
+        "active_start": 23
       },
       {
         "month": "Jun 2026",
-        "pct": 76.5,
-        "new_churn": 65,
-        "active_start": 85
+        "pct": 75.0,
+        "new_churn": 60,
+        "active_start": 80
       }
     ]
   },
@@ -2993,14 +3008,14 @@
         "month": "2026-06",
         "label": "Jun 2026",
         "budget": 16920204,
-        "actual": 1317768,
-        "compliance_pct": 7.8,
+        "actual": 1457600,
+        "compliance_pct": 8.6,
         "categories": {
           "Petróleo": 0,
           "Mantención y Reparación": 1280000,
           "Gastos Traslados (TAG)": 0,
           "Seguros": 0,
-          "Gastos Vehículos": 37768,
+          "Gastos Vehículos": 177600,
           "Arriendo": 0,
           "EPP": 0,
           "Mantenciones Varias": 0
@@ -3057,15 +3072,15 @@
       },
       {
         "month": "2026-05",
-        "cxc": 1083753586,
-        "cxc_acc": 1083753586,
+        "cxc": 1065851088,
+        "cxc_acc": 1065851088,
         "cheques": 0,
-        "avg_cxc_3m": 988369740,
+        "avg_cxc_3m": 982402241,
         "net_sales": 840187676,
-        "dso": 35.3
+        "dso": 35.1
       }
     ],
-    "cxc_hoy": 1031214077
+    "cxc_hoy": 1018267408
   },
   "gerencia_goals": {
     "margen_contado_meta": 0.085,
