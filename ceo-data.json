@@ -1,37 +1,37 @@
 {
-  "updated": "2026-06-04T17:53:52.251350",
+  "updated": "2026-06-04T21:05:41.629011",
   "weeks": [
     {
       "label": "04jun-10jun",
       "start": "2026-06-04",
       "end": "2026-06-10",
-      "ventas": 27173834,
-      "neto": 20084406,
-      "litros": 18695,
-      "litros_retail": 17450,
-      "litros_volumen": 1245,
-      "precio_neto": 1074,
-      "precio_bruto": 1454,
-      "margin": 0.08557,
-      "margin_retail": 0.08535,
-      "margin_volumen": 0.08878,
-      "facturas": 11,
-      "nc": 0,
-      "clientes": 11,
-      "recaud": 17628051,
+      "ventas": 66392957,
+      "neto": 49195637,
+      "litros": 46234,
+      "litros_retail": 28989,
+      "litros_volumen": 17245,
+      "precio_neto": 1064,
+      "precio_bruto": 1437,
+      "margin": 0.07643,
+      "margin_retail": 0.08083,
+      "margin_volumen": 0.06883,
+      "facturas": 22,
+      "nc": 1,
+      "clientes": 22,
+      "recaud": 44307945,
       "cheques": 0,
-      "transf": 17628051,
+      "transf": 44307945,
       "factoring": 0,
       "compras_odoo": 0,
       "cheq_cartera_saldo": 0,
       "cheq_recibidos": 5270260,
-      "facturas_contado": 2,
-      "facturas_credito": 9,
+      "facturas_contado": 3,
+      "facturas_credito": 19,
       "margin_by_term": {
         "1 Día": {
-          "margin": 0.07369,
-          "normalizado": 0.08335,
-          "count": 2,
+          "margin": 0.07487,
+          "normalizado": 0.08454,
+          "count": 3,
           "days": 1
         },
         "7 Días": {
@@ -41,9 +41,9 @@
           "days": 7
         },
         "30 Días": {
-          "margin": 0.0954,
-          "normalizado": 0.0954,
-          "count": 6,
+          "margin": 0.07484,
+          "normalizado": 0.07484,
+          "count": 16,
           "days": 30
         },
         "45 Días": {
@@ -53,7 +53,7 @@
           "days": 45
         }
       },
-      "cotiz_canceladas": 0,
+      "cotiz_canceladas": 1,
       "visitas": 0,
       "clientes_nuevos": 0,
       "ppto": 178726,
@@ -1242,8 +1242,8 @@
     {
       "date": "04jun",
       "day": "Jue",
-      "litros": 18695,
-      "neto": 20084406
+      "litros": 46235,
+      "neto": 49222273
     },
     {
       "date": "03jun",
@@ -1339,7 +1339,7 @@
   "banks": [
     {
       "name": "DE CHILE",
-      "balance": 29753364
+      "balance": 26908134
     },
     {
       "name": "ITAU",
@@ -1366,15 +1366,15 @@
       "balance": -1627884
     }
   ],
-  "total_cash": 53705855,
+  "total_cash": 50860625,
   "receivables": {
-    "open_invoices": 223,
-    "total_due": 604381167,
-    "current": 531931520,
-    "overdue": 72449647,
-    "pct_overdue": 12.0,
+    "open_invoices": 228,
+    "total_due": 622525495,
+    "current": 557909848,
+    "overdue": 64615647,
+    "pct_overdue": 10.4,
     "aging": {
-      "0-30": 61770364,
+      "0-30": 53936364,
       "31-60": 913720,
       "61-90": 0,
       "90+": 9765563
@@ -1386,7 +1386,7 @@
       },
       {
         "name": "JOSE RODRIGO ORMAZABAL VIDAL",
-        "amount": 36027004
+        "amount": 31395004
       },
       {
         "name": "PATRICIO VISCAY ALBORNOZ",
@@ -1413,12 +1413,16 @@
         "amount": 18546502
       },
       {
+        "name": "CIA AGRICOLA Y FORESTAL EL ALAMO LIMITADA",
+        "amount": 17742001
+      },
+      {
         "name": "SOC. DE TRANSPORTES TRACMAVI LTDA.",
         "amount": 17193848
       },
       {
-        "name": "AGROSERVICIOS JR SPA",
-        "amount": 12402000
+        "name": "AURORA AUSTRALIS SA",
+        "amount": 13980000
       },
       {
         "name": "URAN ANTONIO LUNA DOMÍNGUEZ",
@@ -1433,8 +1437,8 @@
         "amount": 9926000
       },
       {
-        "name": "CIA AGRICOLA Y FORESTAL EL ALAMO LIMITADA",
-        "amount": 9024000
+        "name": "AGROSERVICIOS JR SPA",
+        "amount": 9200000
       },
       {
         "name": "AGRICOLA LOS BOLDOS SPA",
@@ -1455,10 +1459,6 @@
       {
         "name": "INGENERIA Y CONSTRUCCIONES FEBLANCA SPA",
         "amount": 7430501
-      },
-      {
-        "name": "AGRICOLA MANTOS VERDES LIMITADA",
-        "amount": 7381699
       }
     ]
   },
@@ -1468,62 +1468,45 @@
       "zones": {
         "Chillan": {
           "total": 3,
-          "on_time": 1,
-          "late": 2,
-          "pct": 33.33,
-          "late_clients": [
-            "VALENTIN GONZALO HERNANDEZ ESPINOZA (prom: 2026-06-04, fact: sin factura)",
-            "PATRICIO IVAN HERNANDEZ ESPINOZA (prom: 2026-06-04, fact: sin factura)"
-          ]
+          "on_time": 3,
+          "late": 0,
+          "pct": 100.0,
+          "late_clients": []
         },
         "Curico": {
-          "total": 2,
-          "on_time": 0,
-          "late": 2,
-          "pct": 0.0,
-          "late_clients": [
-            "AGRICOLA EL MILAGRO LTDA. (prom: 2026-06-04, fact: sin factura)",
-            "AURORA AUSTRALIS SA (prom: 2026-06-04, fact: sin factura)"
-          ]
+          "total": 1,
+          "on_time": 1,
+          "late": 0,
+          "pct": 100.0,
+          "late_clients": []
         },
         "Rancagua": {
           "total": 4,
-          "on_time": 3,
-          "late": 1,
-          "pct": 75.0,
-          "late_clients": [
-            "MAESTRANZA Y SERVICIOS INTEGRALES METALMECANICOS CACHAPOAL S A (prom: 2026-06-04, fact: sin factura)"
-          ]
+          "on_time": 4,
+          "late": 0,
+          "pct": 100.0,
+          "late_clients": []
         },
         "San Fernando": {
           "total": 3,
-          "on_time": 1,
-          "late": 2,
-          "pct": 33.33,
-          "late_clients": [
-            "SGB SPA (prom: 2026-06-04, fact: sin factura)",
-            "LABRA E HIJAS SPA (prom: 2026-06-04, fact: sin factura)"
-          ]
+          "on_time": 3,
+          "late": 0,
+          "pct": 100.0,
+          "late_clients": []
         },
         "Talca": {
-          "total": 8,
-          "on_time": 5,
-          "late": 3,
-          "pct": 62.5,
-          "late_clients": [
-            "CONSTRUCTORA LO BLANCO SPA (prom: 2026-06-04, fact: sin factura)",
-            "CIA AGRICOLA Y FORESTAL EL ALAMO LIMITADA (prom: 2026-06-04, fact: sin factura)",
-            "SOC AGRICOLA SANTA TERESA SPA (prom: 2026-06-04, fact: sin factura)"
-          ]
+          "total": 7,
+          "on_time": 7,
+          "late": 0,
+          "pct": 100.0,
+          "late_clients": []
         },
         "VI Costa": {
           "total": 1,
-          "on_time": 0,
-          "late": 1,
-          "pct": 0.0,
-          "late_clients": [
-            "CORNEJO MAQUINARIA C&C SPA (prom: 2026-06-04, fact: sin factura)"
-          ]
+          "on_time": 1,
+          "late": 0,
+          "pct": 100.0,
+          "late_clients": []
         }
       }
     },
@@ -1536,7 +1519,7 @@
           "late": 1,
           "pct": 85.71,
           "late_clients": [
-            "MARCELO OCTAVIO HERNANDEZ ESPINOZA (prom: 2026-06-03, fact: sin factura)"
+            "MARCELO OCTAVIO HERNANDEZ ESPINOZA (prom: 2026-06-03, fact: 2026-06-04)"
           ]
         },
         "Curico": {
@@ -2514,15 +2497,15 @@
   "riesgo": {
     "cubierto": 0,
     "cubierto_count": 0,
-    "no_cubierto": 604381167,
-    "no_cubierto_count": 223,
+    "no_cubierto": 622525495,
+    "no_cubierto_count": 228,
     "pct_monto": 100.0,
     "pct_count": 100.0
   },
   "churn": {
     "eligible_clients": 159,
-    "churned_count": 59,
-    "pct": 37.1,
+    "churned_count": 57,
+    "pct": 35.8,
     "churned": [
       {
         "name": "CRISTIAN HUGO FUENZALIDA MEZA",
@@ -2859,9 +2842,9 @@
       },
       {
         "month": "Jun 2026",
-        "pct": 75.0,
-        "new_churn": 60,
-        "active_start": 80
+        "pct": 74.0,
+        "new_churn": 57,
+        "active_start": 77
       }
     ]
   },
@@ -3072,15 +3055,15 @@
       },
       {
         "month": "2026-05",
-        "cxc": 1065851088,
-        "cxc_acc": 1065851088,
+        "cxc": 1059979789,
+        "cxc_acc": 1059979789,
         "cheques": 0,
-        "avg_cxc_3m": 982402241,
+        "avg_cxc_3m": 980445141,
         "net_sales": 840187676,
-        "dso": 35.1
+        "dso": 35.0
       }
     ],
-    "cxc_hoy": 1018267408
+    "cxc_hoy": 1035172437
   },
   "gerencia_goals": {
     "margen_contado_meta": 0.085,
