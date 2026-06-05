@@ -73,9 +73,9 @@ def norm_name(s):
 _CANONICAL_VENDORS = [
     ({"toro", "gonzalez", "sebastian", "enrique"}, "Toro González Sebastian Enrique"),
     ({"munoz", "encalada", "joaquin"}, "MUÑOZ ENCALADA JOAQUIN"),
+    ({"manuel", "santana"}, "Manuel Santana"),
     ({"comber", "sigall", "pauline"}, "Comber Sigall Pauline"),
     ({"aviles", "carolina"}, "Carolina Avilés"),
-    ({"jullian", "fernando"}, "Fernando Jullian"),
     ({"marquez", "marcela"}, "Marcela Márquez"),
     ({"bisquertt", "raul"}, "Raúl Bisquertt"),
     ({"boccardo", "mauro"}, "Mauro Boccardo"),
@@ -2716,8 +2716,8 @@ def main():
         window_start = today - timedelta(days=120)
         window_end = today - timedelta(days=60)
         _exec_names = [
-            "toro gonzález sebastian enrique", "muñoz encalada joaquin",
-            "carolina avilés", "fernando jullian", "marcela márquez", "raúl bisquertt", "rodrigo retamal",
+            "toro gonzález sebastian enrique", "muñoz encalada joaquin", "manuel santana",
+            "carolina avilés", "marcela márquez", "raúl bisquertt", "rodrigo retamal",
         ]
 
         # Get all invoices in the window (candidates for first invoice)
