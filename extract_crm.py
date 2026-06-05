@@ -486,7 +486,7 @@ def extract_funnel_data(models, uid):
         lead_detail = sr(models, uid, "crm.lead", [
             ["create_date", ">=", fdt_s(ws)],
             ["create_date", "<=", fdt_e(we)],
-        ], ["name", "partner_name", "user_id", "stage_id", "create_date"], limit=20)
+        ], ["name", "partner_name", "user_id", "stage_id", "create_date"], limit=2000)
 
         leads_by_user = defaultdict(int)
         lead_rows = []
