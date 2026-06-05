@@ -302,7 +302,7 @@ tr:hover td{background:#fafaf8}
             <tr><td class="bold">Litros Totales</td><td>Litros de Diesel B1 facturados en la semana/mes (facturas posteadas, descontando NC)</td><td>account.move.line</td></tr>
             <tr><td class="bold">Litros Ejecutivos</td><td>Litros vendidos por Toro y Muñoz</td><td>invoice_user_id</td></tr>
             <tr><td class="bold">Litros Fidelización</td><td>Litros vendidos por equipo CS (Comber, Mauro, TomEnergy) + otros</td><td>invoice_user_id</td></tr>
-            <tr><td class="bold">Litros Freelancer</td><td>Litros vendidos por Avilés, Jullian, Márquez, Bisquertt</td><td>invoice_user_id</td></tr>
+            <tr><td class="bold">Litros Freelancer</td><td>Litros vendidos por Avilés, Márquez, Bisquertt</td><td>invoice_user_id</td></tr>
             <tr style="border-top:2px solid #e5e4df"><td class="bold">Leads</td><td>Oportunidades CREADAS esa semana en CRM (create_date dentro de la semana). No incluye leads existentes con actividad.</td><td>crm.lead create_date</td></tr>
             <tr><td class="bold">Cotizaciones</td><td>Cotizaciones (sale.order) creadas esa semana en cualquier estado (borrador, enviada o confirmada). Incluye las que ya pasaron a pedido.</td><td>sale.order create_date</td></tr>
             <tr><td class="bold">Nuevos Clientes</td><td>Clientes cuya PRIMERA factura de Diesel B1 fue esta semana/mes. No cuenta facturas por intereses o servicios.</td><td>account.move + product_id=14</td></tr>
@@ -338,10 +338,10 @@ let chartWeekly = null;
 const norm = s => s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').split(/\s+/).filter(Boolean).sort().join(' ');
 
 const ALLOWED_VENDORS = [
-  'toro gonzález sebastian enrique','muñoz encalada joaquin'
+  'toro gonzález sebastian enrique','muñoz encalada joaquin','manuel santana'
 ];
 const FREELANCERS = [
-  'carolina avilés','fernando jullian','marcela márquez','raúl bisquertt','rodrigo retamal'
+  'carolina avilés','marcela márquez','raúl bisquertt','rodrigo retamal'
 ];
 const CS_TEAM = ['comber sigall pauline','mauro boccardo','tomenergy'];
 const _aN = ALLOWED_VENDORS.map(n => norm(n).split(' '));
@@ -720,8 +720,8 @@ function renderVendedores() {
 const EJECUTIVOS = [
   { key: 'toro', name: 'Toro', fullName: 'toro gonzález sebastian enrique' },
   { key: 'munoz', name: 'Muñoz', fullName: 'muñoz encalada joaquin' },
+  { key: 'santana', name: 'Santana', fullName: 'manuel santana' },
   { key: 'aviles', name: 'Avilés', fullName: 'carolina avilés', freelancer: true },
-  { key: 'jullian', name: 'Jullian', fullName: 'fernando jullian', freelancer: true },
   { key: 'marquez', name: 'Márquez', fullName: 'marcela márquez', freelancer: true },
   { key: 'bisquertt', name: 'Bisquertt', fullName: 'raúl bisquertt', freelancer: true },
   { key: 'retamal', name: 'Retamal', fullName: 'rodrigo retamal', freelancer: true }
@@ -1154,7 +1154,7 @@ function renderVentas() {
   let litrosEjecutivos = 0;
   for (const [u, v] of Object.entries(lbuSrc)) { if (isAllowed(u)) litrosEjecutivos += v; }
 
-  // 3. Litros Freelancer (Avilés, Jullian, Márquez, Bisquertt)
+  // 3. Litros Freelancer (Avilés, Márquez, Bisquertt)
   let litrosFreelancer = 0;
   for (const [u, v] of Object.entries(lbuSrc)) { if (isFreelancer(u)) litrosFreelancer += v; }
 
@@ -1222,7 +1222,7 @@ function renderVentas() {
     kh += mkKpi('c-red', 'Litros Totales', fL(wkLitros), wkPct + '% de meta ' + fL(wkBudget), wkLitros, wkBudget || 1);
   }
   kh += mkKpi('c-blue', 'Litros Ejecutivos', fL(litrosEjecutivos), 'Toro + Muñoz + Ron', null, null);
-  kh += mkKpi('c-yellow', 'Litros Freelancer', fL(litrosFreelancer), 'Avilés, Jullian, Márquez, Bisquertt', null, null);
+  kh += mkKpi('c-yellow', 'Litros Freelancer', fL(litrosFreelancer), 'Avilés, Márquez, Bisquertt', null, null);
   kh += mkKpi('c-green', 'Litros Fidelización', fL(litrosFidelizacion), 'CS + otros', null, null);
   kh += mkKpi('c-red', 'Leads', wLeads, 'Meta: ' + leadsGoal, wLeads, leadsGoal);
   kh += mkKpi('c-yellow', 'Cotizaciones', wCotiz, 'Meta: ' + cotizGoal, wCotiz, cotizGoal);
