@@ -981,7 +981,7 @@ function renderRiesgo(){
         h+=`<span>${band.label} — ${clients.length} clientes</span>`;
         h+=`<span style="font-weight:500;font-size:11px">Bomba esperada: ${band.targetBomba}${avgB!=null?' · Promedio actual: B'+(avgB>=0?'+':'')+avgB:''} · ${needCount} requieren ajuste</span>`;
         h+='</div>';
-        h+='<div class="table-scroll" style="max-height:350px;border-radius:0 0 8px 8px;margin-bottom:0"><table><thead><tr><th>Cliente</th><th>Zona</th><th>Score</th><th>Actual</th><th style="text-align:center">Excep. mín</th><th class="r">Plazo</th><th class="r">Paga en</th><th class="r">Atraso</th><th class="r">+Mora</th><th class="r">+Margen</th><th class="r">+Flag</th><th class="r">L/mes</th><th style="text-align:center">Sugerencia</th></tr></thead><tbody>';
+        h+='<div class="table-scroll" style="max-height:350px;border-radius:0 0 8px 8px;margin-bottom:0"><table><thead><tr><th>Cliente</th><th>Zona</th><th>Ejecutivo</th><th>Score</th><th>Actual</th><th style="text-align:center">Excep. mín</th><th class="r">Plazo</th><th class="r">Paga en</th><th class="r">Atraso</th><th class="r">+Mora</th><th class="r">+Margen</th><th class="r">+Flag</th><th class="r">L/mes</th><th style="text-align:center">Sugerencia</th></tr></thead><tbody>';
         clients.forEach(c=>{
             const lv=c.risk_level||riskLevel(c.risk_score);
             const diffCls=c._diff>15?'bad':c._diff>0?'':'ok';
@@ -1020,7 +1020,7 @@ function renderRiesgo(){
                     sugHtml=`<span style="color:var(--red);font-weight:700">+${c._adj}</span>`;
                 }
             }
-            h+=`<tr><td class="hi">${c.name}</td><td style="font-size:11px;color:var(--text2)">${zonaShort}</td><td>${scoreBadge(c.risk_score,lv)}</td><td style="font-size:11px;white-space:nowrap">${actLabel}</td><td style="text-align:center">${excepHtml}</td><td class="r">${c.plazo_pago_dias}d</td><td class="r ${diffCls}">${c.avg_payment_days}d</td><td class="r ${diffCls}">${c._diff>0?'+':''}${c._diff}d</td>`;
+            h+=`<tr><td class="hi">${c.name}</td><td style="font-size:11px;color:var(--text2)">${zonaShort}</td><td style="font-size:11px;color:var(--text2)">${c.vendedor||'—'}</td><td>${scoreBadge(c.risk_score,lv)}</td><td style="font-size:11px;white-space:nowrap">${actLabel}</td><td style="text-align:center">${excepHtml}</td><td class="r">${c.plazo_pago_dias}d</td><td class="r ${diffCls}">${c.avg_payment_days}d</td><td class="r ${diffCls}">${c._diff>0?'+':''}${c._diff}d</td>`;
             h+=`<td class="r" style="color:${c._adjMora?'var(--red)':'var(--text3)'}">${c._adjMora||'—'}</td>`;
             h+=`<td class="r" style="color:${c._adjMargen?'var(--amber)':'var(--text3)'}">${c._adjMargen||'—'}</td>`;
             h+=`<td class="r" style="color:${c._adjFlag?'var(--red)':'var(--text3)'}">${c._adjFlag||'—'}</td>`;
