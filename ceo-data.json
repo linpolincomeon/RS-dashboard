@@ -1,32 +1,32 @@
 {
-  "updated": "2026-06-05T17:27:43.983922",
+  "updated": "2026-06-05T20:56:39.603920",
   "weeks": [
     {
       "label": "04jun-10jun",
       "start": "2026-06-04",
       "end": "2026-06-10",
-      "ventas": 94545361,
-      "neto": 69638011,
-      "litros": 65802,
-      "litros_retail": 47507,
-      "litros_volumen": 18295,
-      "precio_neto": 1058,
-      "precio_bruto": 1439,
-      "margin": 0.07644,
-      "margin_retail": 0.07892,
-      "margin_volumen": 0.07293,
-      "facturas": 35,
+      "ventas": 106442712,
+      "neto": 78218208,
+      "litros": 74152,
+      "litros_retail": 52857,
+      "litros_volumen": 21295,
+      "precio_neto": 1055,
+      "precio_bruto": 1438,
+      "margin": 0.07566,
+      "margin_retail": 0.0796,
+      "margin_volumen": 0.06994,
+      "facturas": 40,
       "nc": 3,
-      "clientes": 34,
-      "recaud": 65953540,
-      "cheques": 0,
-      "transf": 65953540,
-      "factoring": 0,
+      "clientes": 38,
+      "recaud": 152399722,
+      "cheques": 12969580,
+      "transf": 84505093,
+      "factoring": 54925049,
       "compras_odoo": 59994135,
       "cheq_cartera_saldo": 0,
       "cheq_recibidos": 5270260,
       "facturas_contado": 7,
-      "facturas_credito": 28,
+      "facturas_credito": 33,
       "margin_by_term": {
         "1 Día": {
           "margin": 0.07737,
@@ -35,15 +35,15 @@
           "days": 1
         },
         "7 Días": {
-          "margin": 0.05305,
-          "normalizado": 0.06072,
-          "count": 2,
+          "margin": 0.04088,
+          "normalizado": 0.04855,
+          "count": 3,
           "days": 7
         },
         "30 Días": {
-          "margin": 0.07748,
-          "normalizado": 0.07748,
-          "count": 20,
+          "margin": 0.07918,
+          "normalizado": 0.07918,
+          "count": 23,
           "days": 30
         },
         "45 Días": {
@@ -53,14 +53,14 @@
           "days": 45
         },
         "60 Días": {
-          "margin": 0.06822,
-          "normalizado": 0.05822,
-          "count": 4,
+          "margin": 0.06765,
+          "normalizado": 0.05765,
+          "count": 5,
           "days": 60
         }
       },
       "cotiz_canceladas": 2,
-      "visitas": 84,
+      "visitas": 85,
       "clientes_nuevos": 3,
       "ppto": 178726,
       "ppto_retail": 125108,
@@ -1248,8 +1248,8 @@
     {
       "date": "05jun",
       "day": "Vie",
-      "litros": 19268,
-      "neto": 20103603
+      "litros": 27618,
+      "neto": 28683800
     },
     {
       "date": "04jun",
@@ -1345,7 +1345,11 @@
   "banks": [
     {
       "name": "DE CHILE",
-      "balance": 14654467
+      "balance": 55098052
+    },
+    {
+      "name": "SANTANDER",
+      "balance": 20245977
     },
     {
       "name": "ESTADO",
@@ -1364,24 +1368,20 @@
       "balance": 2955041
     },
     {
-      "name": "SANTANDER",
-      "balance": 245977
-    },
-    {
       "name": "DE CREDITO",
       "balance": -1627884
     }
   ],
-  "total_cash": 33174000,
+  "total_cash": 93617585,
   "receivables": {
-    "open_invoices": 236,
-    "total_due": 639129099,
-    "current": 553568351,
-    "overdue": 85560748,
-    "pct_overdue": 13.4,
+    "open_invoices": 228,
+    "total_due": 635163697,
+    "current": 557684901,
+    "overdue": 77478796,
+    "pct_overdue": 12.2,
     "aging": {
-      "0-30": 74881465,
-      "31-60": 913720,
+      "0-30": 67612013,
+      "31-60": 101220,
       "61-90": 0,
       "90+": 9765563
     },
@@ -1480,50 +1480,44 @@
           "late_clients": []
         },
         "Curico": {
-          "total": 2,
-          "on_time": 1,
+          "total": 3,
+          "on_time": 2,
           "late": 1,
-          "pct": 50.0,
+          "pct": 66.67,
           "late_clients": [
             "AGRICOLA EL MILAGRO LTDA. (prom: 2026-06-04, fact: 2026-06-05)"
           ]
         },
         "Rancagua": {
-          "total": 10,
-          "on_time": 6,
-          "late": 4,
-          "pct": 60.0,
+          "total": 9,
+          "on_time": 7,
+          "late": 2,
+          "pct": 77.78,
           "late_clients": [
-            "SAMUEL BUDINICH SPA (prom: 2026-06-05, fact: sin factura)",
             "AGRICOLA TRICAHUE LIMITADA (prom: 2026-06-05, fact: sin factura)",
-            "AGRICOLA EL CABRINO LIMITADA (prom: 2026-06-05, fact: sin factura)",
             "TRANSPORTE SANTA ELENITA SPA (prom: 2026-06-05, fact: sin factura)"
           ]
         },
         "San Fernando": {
           "total": 5,
-          "on_time": 4,
-          "late": 1,
-          "pct": 80.0,
-          "late_clients": [
-            "AGRICOLA FRUTOS DE MANANTIALES LIMITADA (prom: 2026-06-05, fact: sin factura)"
-          ]
+          "on_time": 5,
+          "late": 0,
+          "pct": 100.0,
+          "late_clients": []
         },
         "Talca": {
-          "total": 11,
-          "on_time": 11,
+          "total": 12,
+          "on_time": 12,
           "late": 0,
           "pct": 100.0,
           "late_clients": []
         },
         "VI Costa": {
           "total": 5,
-          "on_time": 4,
-          "late": 1,
-          "pct": 80.0,
-          "late_clients": [
-            "VITIVINICOLA LAS VERTIENTES LIMITADA (prom: 2026-06-05, fact: sin factura)"
-          ]
+          "on_time": 5,
+          "late": 0,
+          "pct": 100.0,
+          "late_clients": []
         }
       }
     },
@@ -2514,8 +2508,8 @@
   "riesgo": {
     "cubierto": 0,
     "cubierto_count": 0,
-    "no_cubierto": 639129099,
-    "no_cubierto_count": 236,
+    "no_cubierto": 635163697,
+    "no_cubierto_count": 228,
     "pct_monto": 100.0,
     "pct_count": 100.0
   },
@@ -2859,9 +2853,9 @@
       },
       {
         "month": "Jun 2026",
-        "pct": 72.2,
-        "new_churn": 52,
-        "active_start": 72
+        "pct": 71.8,
+        "new_churn": 51,
+        "active_start": 71
       }
     ]
   },
@@ -3080,7 +3074,7 @@
         "dso": 35.0
       }
     ],
-    "cxc_hoy": 1047144041
+    "cxc_hoy": 1047240039
   },
   "gerencia_goals": {
     "margen_contado_meta": 0.085,
