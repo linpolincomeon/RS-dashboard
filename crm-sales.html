@@ -1051,10 +1051,11 @@ function renderEjecutivos() {
   if (execStale.length) {
     h += '<div class="sec"><div class="sec-h collapsible-trigger" onclick="this.parentElement.parentElement.querySelector(\'.collapsible-body\').style.display=this.parentElement.parentElement.querySelector(\'.collapsible-body\').style.display===\'none\'?\'block\':\'none\';this.querySelector(\'.chevron\').textContent=this.parentElement.parentElement.querySelector(\'.collapsible-body\').style.display===\'none\'?\'▸\':\'▾\'">';
     h += '<h2><span class="chevron">▾</span> Necesitan Atención (8–90d)</h2><span style="font-size:12px;color:var(--dim)">' + execStale.length + ' opp</span></div>';
-    h += '<div class="sec-b collapsible-body" style="padding:0;overflow-x:auto"><table><thead><tr><th>Cliente</th><th>Etapa</th><th>' + vL_exec + '</th><th>Días</th><th>Acción</th></tr></thead><tbody>';
+    h += '<div class="sec-b collapsible-body" style="padding:0;overflow-x:auto"><table><thead><tr><th>Cliente</th><th>Etapa</th><th>' + vL_exec + '</th><th>Días</th><th>Actividad</th></tr></thead><tbody>';
     execStale.forEach(p => {
       const dc = p.days_in_stage > 30 ? 'color:var(--red);font-weight:700' : p.days_in_stage > 14 ? 'color:var(--red);font-weight:600' : 'color:var(--yellow)';
-      h += `<tr><td class="bold">${H(p.name)}</td><td>${stageTag(p.stage, p.stage_class)}</td><td class="bold">${fV_exec(p.value)}</td><td style="${dc}">${p.days_in_stage}d</td><td style="color:var(--yellow)">${p.action || 'Contactar'}</td></tr>`;
+      const actDesc = p._activity ? H((p._activity.type || '') + ': ' + (p._activity.desc || '')) : (p.last_note ? H(p.last_note) : '<span style="color:var(--dim)">—</span>');
+      h += `<tr><td class="bold">${H(p.name)}</td><td>${stageTag(p.stage, p.stage_class)}</td><td class="bold">${fV_exec(p.value)}</td><td style="${dc}">${p.days_in_stage}d</td><td style="max-width:300px;white-space:normal;font-size:12px">${actDesc}</td></tr>`;
     });
     h += '</tbody></table></div></div>';
   }
