@@ -1,23 +1,23 @@
 {
-  "updated": "2026-06-05T14:00:35.268088",
+  "updated": "2026-06-05T17:27:43.983922",
   "weeks": [
     {
       "label": "04jun-10jun",
       "start": "2026-06-04",
       "end": "2026-06-10",
-      "ventas": 70326857,
-      "neto": 52067465,
-      "litros": 48934,
-      "litros_retail": 31389,
-      "litros_volumen": 17545,
-      "precio_neto": 1064,
-      "precio_bruto": 1440,
-      "margin": 0.07755,
-      "margin_retail": 0.08166,
-      "margin_volumen": 0.07359,
-      "facturas": 25,
+      "ventas": 94545361,
+      "neto": 69638011,
+      "litros": 65802,
+      "litros_retail": 47507,
+      "litros_volumen": 18295,
+      "precio_neto": 1058,
+      "precio_bruto": 1439,
+      "margin": 0.07644,
+      "margin_retail": 0.07892,
+      "margin_volumen": 0.07293,
+      "facturas": 35,
       "nc": 3,
-      "clientes": 24,
+      "clientes": 34,
       "recaud": 65953540,
       "cheques": 0,
       "transf": 65953540,
@@ -25,25 +25,25 @@
       "compras_odoo": 59994135,
       "cheq_cartera_saldo": 0,
       "cheq_recibidos": 5270260,
-      "facturas_contado": 5,
-      "facturas_credito": 20,
+      "facturas_contado": 7,
+      "facturas_credito": 28,
       "margin_by_term": {
         "1 Día": {
-          "margin": 0.0773,
-          "normalizado": 0.08696,
-          "count": 5,
+          "margin": 0.07737,
+          "normalizado": 0.08704,
+          "count": 7,
           "days": 1
         },
         "7 Días": {
-          "margin": 0.06099,
-          "normalizado": 0.06866,
-          "count": 1,
+          "margin": 0.05305,
+          "normalizado": 0.06072,
+          "count": 2,
           "days": 7
         },
         "30 Días": {
-          "margin": 0.07484,
-          "normalizado": 0.07484,
-          "count": 16,
+          "margin": 0.07748,
+          "normalizado": 0.07748,
+          "count": 20,
           "days": 30
         },
         "45 Días": {
@@ -53,15 +53,15 @@
           "days": 45
         },
         "60 Días": {
-          "margin": 0.09191,
-          "normalizado": 0.08191,
-          "count": 1,
+          "margin": 0.06822,
+          "normalizado": 0.05822,
+          "count": 4,
           "days": 60
         }
       },
-      "cotiz_canceladas": 1,
+      "cotiz_canceladas": 2,
       "visitas": 84,
-      "clientes_nuevos": 0,
+      "clientes_nuevos": 3,
       "ppto": 178726,
       "ppto_retail": 125108,
       "ppto_volumen": 53618,
@@ -1248,8 +1248,8 @@
     {
       "date": "05jun",
       "day": "Vie",
-      "litros": 2400,
-      "neto": 2533057
+      "litros": 19268,
+      "neto": 20103603
     },
     {
       "date": "04jun",
@@ -1344,6 +1344,10 @@
   ],
   "banks": [
     {
+      "name": "DE CHILE",
+      "balance": 14654467
+    },
+    {
       "name": "ESTADO",
       "balance": 6848151
     },
@@ -1360,10 +1364,6 @@
       "balance": 2955041
     },
     {
-      "name": "DE CHILE",
-      "balance": 811484
-    },
-    {
       "name": "SANTANDER",
       "balance": 245977
     },
@@ -1372,13 +1372,13 @@
       "balance": -1627884
     }
   ],
-  "total_cash": 19331017,
+  "total_cash": 33174000,
   "receivables": {
-    "open_invoices": 227,
-    "total_due": 622195595,
-    "current": 536634847,
+    "open_invoices": 236,
+    "total_due": 639129099,
+    "current": 553568351,
     "overdue": 85560748,
-    "pct_overdue": 13.8,
+    "pct_overdue": 13.4,
     "aging": {
       "0-30": 74881465,
       "31-60": 913720,
@@ -1459,12 +1459,12 @@
         "amount": 7895000
       },
       {
-        "name": "TRANSPORTES SAN MARCELO SPA",
-        "amount": 7740000
+        "name": "ANDES SOLAR SA",
+        "amount": 7825004
       },
       {
-        "name": "INGENERIA Y CONSTRUCCIONES FEBLANCA SPA",
-        "amount": 7430501
+        "name": "TRANSPORTES SAN MARCELO SPA",
+        "amount": 7740000
       }
     ]
   },
@@ -1485,51 +1485,43 @@
           "late": 1,
           "pct": 50.0,
           "late_clients": [
-            "AGRICOLA EL MILAGRO LTDA. (prom: 2026-06-04, fact: sin factura)"
+            "AGRICOLA EL MILAGRO LTDA. (prom: 2026-06-04, fact: 2026-06-05)"
           ]
         },
         "Rancagua": {
-          "total": 9,
-          "on_time": 4,
-          "late": 5,
-          "pct": 44.44,
+          "total": 10,
+          "on_time": 6,
+          "late": 4,
+          "pct": 60.0,
           "late_clients": [
+            "SAMUEL BUDINICH SPA (prom: 2026-06-05, fact: sin factura)",
             "AGRICOLA TRICAHUE LIMITADA (prom: 2026-06-05, fact: sin factura)",
             "AGRICOLA EL CABRINO LIMITADA (prom: 2026-06-05, fact: sin factura)",
-            "SOCIEDAD DE TRANSPORTES DON CARLOS LIMITADA (prom: 2026-06-05, fact: sin factura)",
-            "SOCIEDAD TRANSPORTES SANCHEZ JERIA LIMITADA (prom: 2026-06-05, fact: sin factura)",
             "TRANSPORTE SANTA ELENITA SPA (prom: 2026-06-05, fact: sin factura)"
           ]
         },
         "San Fernando": {
-          "total": 4,
-          "on_time": 3,
+          "total": 5,
+          "on_time": 4,
           "late": 1,
-          "pct": 75.0,
+          "pct": 80.0,
           "late_clients": [
-            "RODRIGO VALDERRAMA LABRA (prom: 2026-06-05, fact: sin factura)"
+            "AGRICOLA FRUTOS DE MANANTIALES LIMITADA (prom: 2026-06-05, fact: sin factura)"
           ]
         },
         "Talca": {
           "total": 11,
-          "on_time": 8,
-          "late": 3,
-          "pct": 72.73,
-          "late_clients": [
-            "AGRICOLA SANTA MARINA LIMITADA (prom: 2026-06-05, fact: sin factura)",
-            "BOMBAS DE HORMIGON G&P SPA (prom: 2026-06-05, fact: sin factura)",
-            "ANDES SOLAR SA (prom: 2026-06-05, fact: sin factura)"
-          ]
+          "on_time": 11,
+          "late": 0,
+          "pct": 100.0,
+          "late_clients": []
         },
         "VI Costa": {
           "total": 5,
-          "on_time": 1,
-          "late": 4,
-          "pct": 20.0,
+          "on_time": 4,
+          "late": 1,
+          "pct": 80.0,
           "late_clients": [
-            "ARIDOS LO VALDIVIA LIMITADA (prom: 2026-06-05, fact: sin factura)",
-            "AGRICOLA Y PRESTACION DE SERVICIOS EL HUIQUE SPA (prom: 2026-06-05, fact: sin factura)",
-            "AGRICOLA TINGUIRIRICA LIMITADA (prom: 2026-06-05, fact: sin factura)",
             "VITIVINICOLA LAS VERTIENTES LIMITADA (prom: 2026-06-05, fact: sin factura)"
           ]
         }
@@ -2522,15 +2514,15 @@
   "riesgo": {
     "cubierto": 0,
     "cubierto_count": 0,
-    "no_cubierto": 622195595,
-    "no_cubierto_count": 227,
+    "no_cubierto": 639129099,
+    "no_cubierto_count": 236,
     "pct_monto": 100.0,
     "pct_count": 100.0
   },
   "churn": {
     "eligible_clients": 157,
-    "churned_count": 58,
-    "pct": 36.9,
+    "churned_count": 56,
+    "pct": 35.7,
     "churned": [
       {
         "name": "CRISTIAN HUGO FUENZALIDA MEZA",
@@ -2823,13 +2815,13 @@
         "new_this_week": false
       },
       {
-        "name": "AGRICOLA SANTA MARINA LIMITADA",
-        "freq": "Bimensual (Quincenal)",
+        "name": "SOUTH PACIFIC SERVICIOS SPA.",
+        "freq": "Irregular / Poca data",
         "freq_days": 15,
         "last_invoice": "2026-03-25",
         "days_since": 72,
         "threshold": 30,
-        "invoices_8m": 12,
+        "invoices_8m": 8,
         "new_this_week": false
       }
     ],
@@ -2855,21 +2847,21 @@
       },
       {
         "month": "Apr 2026",
-        "pct": 72.7,
-        "new_churn": 16,
-        "active_start": 22
+        "pct": 71.4,
+        "new_churn": 15,
+        "active_start": 21
       },
       {
         "month": "May 2026",
-        "pct": 82.6,
-        "new_churn": 19,
-        "active_start": 23
+        "pct": 81.8,
+        "new_churn": 18,
+        "active_start": 22
       },
       {
         "month": "Jun 2026",
-        "pct": 73.3,
-        "new_churn": 55,
-        "active_start": 75
+        "pct": 72.2,
+        "new_churn": 52,
+        "active_start": 72
       }
     ]
   },
@@ -3016,10 +3008,10 @@
         "month": "2026-06",
         "label": "Jun 2026",
         "budget": 16920204,
-        "actual": 1691907,
-        "compliance_pct": 10.0,
+        "actual": 5652879,
+        "compliance_pct": 33.4,
         "categories": {
-          "Petróleo": 0,
+          "Petróleo": 3960972,
           "Mantención y Reparación": 1280000,
           "Gastos Traslados (TAG)": 0,
           "Seguros": 0,
@@ -3088,7 +3080,7 @@
         "dso": 35.0
       }
     ],
-    "cxc_hoy": 1030210537
+    "cxc_hoy": 1047144041
   },
   "gerencia_goals": {
     "margen_contado_meta": 0.085,
