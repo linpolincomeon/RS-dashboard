@@ -1,23 +1,23 @@
 {
-  "updated": "2026-06-06T12:17:30.992653",
+  "updated": "2026-06-06T16:20:18.749896",
   "weeks": [
     {
       "label": "04jun-10jun",
       "start": "2026-06-04",
       "end": "2026-06-10",
-      "ventas": 109475712,
-      "neto": 80427408,
-      "litros": 76152,
-      "litros_retail": 54857,
+      "ventas": 110208712,
+      "neto": 80958490,
+      "litros": 76652,
+      "litros_retail": 55357,
       "litros_volumen": 21295,
       "precio_neto": 1056,
       "precio_bruto": 1440,
-      "margin": 0.07666,
-      "margin_retail": 0.08112,
+      "margin": 0.07677,
+      "margin_retail": 0.08126,
       "margin_volumen": 0.06994,
-      "facturas": 42,
+      "facturas": 43,
       "nc": 3,
-      "clientes": 40,
+      "clientes": 41,
       "recaud": 152399722,
       "cheques": 12969580,
       "transf": 84505093,
@@ -26,7 +26,7 @@
       "cheq_cartera_saldo": 0,
       "cheq_recibidos": 5270260,
       "facturas_contado": 7,
-      "facturas_credito": 35,
+      "facturas_credito": 36,
       "margin_by_term": {
         "1 Día": {
           "margin": 0.07737,
@@ -35,9 +35,9 @@
           "days": 1
         },
         "7 Días": {
-          "margin": 0.04088,
-          "normalizado": 0.04855,
-          "count": 3,
+          "margin": 0.04655,
+          "normalizado": 0.05422,
+          "count": 4,
           "days": 7
         },
         "30 Días": {
@@ -1374,9 +1374,9 @@
   ],
   "total_cash": 93617585,
   "receivables": {
-    "open_invoices": 230,
-    "total_due": 638196697,
-    "current": 536734401,
+    "open_invoices": 231,
+    "total_due": 638929697,
+    "current": 537467401,
     "overdue": 101462296,
     "pct_overdue": 15.9,
     "aging": {
@@ -1504,12 +1504,10 @@
         },
         "Talca": {
           "total": 13,
-          "on_time": 12,
-          "late": 1,
-          "pct": 92.31,
-          "late_clients": [
-            "Juan Paulo Soto Garces (prom: 2026-06-06, fact: sin factura)"
-          ]
+          "on_time": 13,
+          "late": 0,
+          "pct": 100.0,
+          "late_clients": []
         },
         "VI Costa": {
           "total": 5,
@@ -2507,8 +2505,8 @@
   "riesgo": {
     "cubierto": 0,
     "cubierto_count": 0,
-    "no_cubierto": 638196697,
-    "no_cubierto_count": 230,
+    "no_cubierto": 638929697,
+    "no_cubierto_count": 231,
     "pct_monto": 100.0,
     "pct_count": 100.0
   },
@@ -3073,7 +3071,7 @@
         "dso": 35.0
       }
     ],
-    "cxc_hoy": 1050273039
+    "cxc_hoy": 1051006039
   },
   "gerencia_goals": {
     "margen_contado_meta": 0.085,
