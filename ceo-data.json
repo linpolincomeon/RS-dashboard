@@ -1,49 +1,49 @@
 {
-  "updated": "2026-06-08T18:11:19.861212",
+  "updated": "2026-06-08T21:19:56.279140",
   "weeks": [
     {
       "label": "04jun-10jun",
       "start": "2026-06-04",
       "end": "2026-06-10",
-      "ventas": 135476691,
-      "neto": 99197440,
-      "litros": 94291,
-      "litros_retail": 70546,
+      "ventas": 146624802,
+      "neto": 107328471,
+      "litros": 101881,
+      "litros_retail": 78136,
       "litros_volumen": 23745,
-      "precio_neto": 1052,
-      "precio_bruto": 1440,
-      "margin": 0.07719,
-      "margin_retail": 0.08017,
+      "precio_neto": 1053,
+      "precio_bruto": 1442,
+      "margin": 0.07816,
+      "margin_retail": 0.08133,
       "margin_volumen": 0.0718,
-      "facturas": 56,
+      "facturas": 64,
       "nc": 4,
-      "clientes": 52,
-      "recaud": 180104320,
+      "clientes": 59,
+      "recaud": 196717521,
       "cheques": 12969580,
-      "transf": 112209691,
+      "transf": 128822892,
       "factoring": 54925049,
       "compras_odoo": 126766173,
       "cheq_cartera_saldo": 0,
       "cheq_recibidos": 5270260,
-      "facturas_contado": 10,
-      "facturas_credito": 46,
+      "facturas_contado": 11,
+      "facturas_credito": 53,
       "margin_by_term": {
         "1 Día": {
-          "margin": 0.07467,
-          "normalizado": 0.08434,
-          "count": 10,
+          "margin": 0.074,
+          "normalizado": 0.08367,
+          "count": 11,
           "days": 1
         },
         "7 Días": {
-          "margin": 0.0498,
-          "normalizado": 0.05747,
-          "count": 5,
+          "margin": 0.05922,
+          "normalizado": 0.06688,
+          "count": 6,
           "days": 7
         },
         "30 Días": {
-          "margin": 0.08107,
-          "normalizado": 0.08107,
-          "count": 30,
+          "margin": 0.08287,
+          "normalizado": 0.08287,
+          "count": 35,
           "days": 30
         },
         "45 Días": {
@@ -53,13 +53,13 @@
           "days": 45
         },
         "60 Días": {
-          "margin": 0.07114,
-          "normalizado": 0.06114,
-          "count": 7,
+          "margin": 0.07074,
+          "normalizado": 0.06074,
+          "count": 8,
           "days": 60
         }
       },
-      "cotiz_canceladas": 4,
+      "cotiz_canceladas": 5,
       "visitas": 86,
       "clientes_nuevos": 4,
       "ppto": 178726,
@@ -1248,8 +1248,8 @@
     {
       "date": "08jun",
       "day": "Lun",
-      "litros": 17640,
-      "neto": 18339699
+      "litros": 25230,
+      "neto": 26470730
     },
     {
       "date": "05jun",
@@ -1345,7 +1345,7 @@
   "banks": [
     {
       "name": "DE CHILE",
-      "balance": 18716693
+      "balance": 34703235
     },
     {
       "name": "SANTANDER",
@@ -1372,15 +1372,15 @@
       "balance": -1627884
     }
   ],
-  "total_cash": 41560138,
+  "total_cash": 57546680,
   "receivables": {
-    "open_invoices": 210,
-    "total_due": 587976396,
-    "current": 465734726,
-    "overdue": 122241670,
-    "pct_overdue": 20.8,
+    "open_invoices": 213,
+    "total_due": 582139498,
+    "current": 468420028,
+    "overdue": 113719470,
+    "pct_overdue": 19.5,
     "aging": {
-      "0-30": 111528887,
+      "0-30": 103006687,
       "31-60": 947220,
       "61-90": 0,
       "90+": 9765563
@@ -1435,16 +1435,12 @@
         "amount": 11598299
       },
       {
-        "name": "URAN ANTONIO LUNA DOMÍNGUEZ",
-        "amount": 11424000
-      },
-      {
-        "name": "ALFREDO ALFONSO OPAZO MUÑOZ",
-        "amount": 10574214
-      },
-      {
         "name": "AGROSERVICIOS JR SPA",
         "amount": 9200000
+      },
+      {
+        "name": "AGRICOLA EL CABRINO LIMITADA",
+        "amount": 8751000
       },
       {
         "name": "INGENERIA Y CONSTRUCCIONES FEBLANCA SPA",
@@ -1461,6 +1457,10 @@
       {
         "name": "ANDES SOLAR SA",
         "amount": 7825004
+      },
+      {
+        "name": "CARLOS SOTO CORREA",
+        "amount": 7720500
       },
       {
         "name": "AGRICOLA MANTOS VERDES LIMITADA",
@@ -1480,35 +1480,30 @@
           "late_clients": []
         },
         "Curico": {
-          "total": 8,
-          "on_time": 6,
+          "total": 9,
+          "on_time": 7,
           "late": 2,
-          "pct": 75.0,
+          "pct": 77.78,
           "late_clients": [
-            "AGROELITE LIMITADA (prom: 2026-06-08, fact: sin factura)",
+            "MOVIMIENTO DE TIERRA JOSE RODRIGO ORMAZABAL VIDAL (prom: 2026-06-08, fact: sin factura)",
             "AGRICOLA EL MILAGRO LTDA. (prom: 2026-06-04, fact: 2026-06-05)"
           ]
         },
         "Rancagua": {
           "total": 15,
-          "on_time": 9,
-          "late": 6,
-          "pct": 60.0,
-          "late_clients": [
-            "AGRICOLA EL CABRINO LIMITADA (prom: 2026-06-08, fact: sin factura)",
-            "AGRICOLA OMEGA TRES LIMITADA (prom: 2026-06-08, fact: sin factura)",
-            "AGRICOLA EUGENIO LIRA ESPINOZA E.I.R.L. (prom: 2026-06-08, fact: sin factura)",
-            "CARLOS SOTO CORREA (prom: 2026-06-08, fact: sin factura)",
-            "SAMUEL BUDINICH SPA (prom: 2026-06-08, fact: sin factura)",
-            "CBARRIOS CONSTRUCTORA SPA (prom: 2026-06-08, fact: sin factura)"
-          ]
-        },
-        "San Fernando": {
-          "total": 5,
-          "on_time": 5,
+          "on_time": 15,
           "late": 0,
           "pct": 100.0,
           "late_clients": []
+        },
+        "San Fernando": {
+          "total": 6,
+          "on_time": 5,
+          "late": 1,
+          "pct": 83.33,
+          "late_clients": [
+            "DOÑA YOLANDA TRANSPORTE DE CARGA POR CARRETERA CRISTIAN SILVA EIRL (prom: 2026-06-08, fact: sin factura)"
+          ]
         },
         "Talca": {
           "total": 19,
@@ -1519,12 +1514,10 @@
         },
         "VI Costa": {
           "total": 8,
-          "on_time": 7,
-          "late": 1,
-          "pct": 87.5,
-          "late_clients": [
-            "APICOLA PATRICIA SUSANA BUSTOS ARCE EIRL. (prom: 2026-06-08, fact: sin factura)"
-          ]
+          "on_time": 8,
+          "late": 0,
+          "pct": 100.0,
+          "late_clients": []
         }
       }
     },
@@ -2515,15 +2508,15 @@
   "riesgo": {
     "cubierto": 0,
     "cubierto_count": 0,
-    "no_cubierto": 587976396,
-    "no_cubierto_count": 210,
+    "no_cubierto": 582139498,
+    "no_cubierto_count": 213,
     "pct_monto": 100.0,
     "pct_count": 100.0
   },
   "churn": {
     "eligible_clients": 155,
-    "churned_count": 58,
-    "pct": 37.4,
+    "churned_count": 57,
+    "pct": 36.8,
     "churned": [
       {
         "name": "CRISTIAN HUGO FUENZALIDA MEZA",
@@ -2860,9 +2853,9 @@
       },
       {
         "month": "Jun 2026",
-        "pct": 68.3,
-        "new_churn": 43,
-        "active_start": 63
+        "pct": 67.2,
+        "new_churn": 41,
+        "active_start": 61
       }
     ]
   },
@@ -3073,15 +3066,15 @@
       },
       {
         "month": "2026-05",
-        "cxc": 1059979789,
-        "cxc_acc": 1059979789,
+        "cxc": 1060636981,
+        "cxc_acc": 1060636981,
         "cheques": 0,
-        "avg_cxc_3m": 980445141,
+        "avg_cxc_3m": 980664205,
         "net_sales": 840187676,
         "dso": 35.0
       }
     ],
-    "cxc_hoy": 1025177326
+    "cxc_hoy": 1026611428
   },
   "gerencia_goals": {
     "margen_contado_meta": 0.085,
