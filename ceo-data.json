@@ -1,5 +1,5 @@
 {
-  "updated": "2026-06-07T20:25:53.198211",
+  "updated": "2026-06-08T00:24:03.883894",
   "weeks": [
     {
       "label": "04jun-10jun",
@@ -1246,6 +1246,12 @@
   ],
   "daily": [
     {
+      "date": "08jun",
+      "day": "Lun",
+      "litros": 0,
+      "neto": 0
+    },
+    {
       "date": "05jun",
       "day": "Vie",
       "litros": 29618,
@@ -1334,12 +1340,6 @@
       "day": "Lun",
       "litros": 39100,
       "neto": 45749186
-    },
-    {
-      "date": "15may",
-      "day": "Vie",
-      "litros": 28786,
-      "neto": 33545692
     }
   ],
   "banks": [
@@ -1376,11 +1376,11 @@
   "receivables": {
     "open_invoices": 231,
     "total_due": 638929697,
-    "current": 500282729,
-    "overdue": 138646968,
-    "pct_overdue": 21.7,
+    "current": 497684029,
+    "overdue": 141245668,
+    "pct_overdue": 22.1,
     "aging": {
-      "0-30": 127934185,
+      "0-30": 130532885,
       "31-60": 947220,
       "61-90": 0,
       "90+": 9765563
@@ -1473,27 +1473,34 @@
       "label": "04jun-10jun",
       "zones": {
         "Chillan": {
-          "total": 3,
+          "total": 4,
           "on_time": 3,
-          "late": 0,
-          "pct": 100.0,
-          "late_clients": []
+          "late": 1,
+          "pct": 75.0,
+          "late_clients": [
+            "INGENERIA Y CONSTRUCCIONES FEBLANCA SPA (prom: 2026-06-08, fact: sin factura)"
+          ]
         },
         "Curico": {
-          "total": 3,
+          "total": 5,
           "on_time": 2,
-          "late": 1,
-          "pct": 66.67,
+          "late": 3,
+          "pct": 40.0,
           "late_clients": [
+            "AGROELITE LIMITADA (prom: 2026-06-08, fact: sin factura)",
+            "SERGIO IGNACIO VERGARA HERNANDEZ (prom: 2026-06-08, fact: sin factura)",
             "AGRICOLA EL MILAGRO LTDA. (prom: 2026-06-04, fact: 2026-06-05)"
           ]
         },
         "Rancagua": {
-          "total": 9,
+          "total": 11,
           "on_time": 9,
-          "late": 0,
-          "pct": 100.0,
-          "late_clients": []
+          "late": 2,
+          "pct": 81.82,
+          "late_clients": [
+            "SAMUEL BUDINICH SPA (prom: 2026-06-08, fact: sin factura)",
+            "CBARRIOS CONSTRUCTORA SPA (prom: 2026-06-08, fact: sin factura)"
+          ]
         },
         "San Fernando": {
           "total": 5,
@@ -1503,18 +1510,22 @@
           "late_clients": []
         },
         "Talca": {
-          "total": 13,
+          "total": 14,
           "on_time": 13,
-          "late": 0,
-          "pct": 100.0,
-          "late_clients": []
+          "late": 1,
+          "pct": 92.86,
+          "late_clients": [
+            "MAQUINARIAS Y ARIDOS SAN PEDRO SPA. (prom: 2026-06-08, fact: sin factura)"
+          ]
         },
         "VI Costa": {
-          "total": 5,
+          "total": 6,
           "on_time": 5,
-          "late": 0,
-          "pct": 100.0,
-          "late_clients": []
+          "late": 1,
+          "pct": 83.33,
+          "late_clients": [
+            "AGRÍCOLA EL CÓNDOR DE APALTA LIMITADA (prom: 2026-06-08, fact: sin factura)"
+          ]
         }
       }
     },
@@ -2511,16 +2522,16 @@
     "pct_count": 100.0
   },
   "churn": {
-    "eligible_clients": 155,
-    "churned_count": 60,
-    "pct": 38.7,
+    "eligible_clients": 154,
+    "churned_count": 59,
+    "pct": 38.3,
     "churned": [
       {
         "name": "CRISTIAN HUGO FUENZALIDA MEZA",
         "freq": "Irregular (Promedio: 4 días)",
         "freq_days": 4,
         "last_invoice": "2025-12-17",
-        "days_since": 172,
+        "days_since": 173,
         "threshold": 8,
         "invoices_8m": 11,
         "new_this_week": false
@@ -2530,7 +2541,7 @@
         "freq": "Semanal",
         "freq_days": 7,
         "last_invoice": "2026-01-05",
-        "days_since": 153,
+        "days_since": 154,
         "threshold": 14,
         "invoices_8m": 8,
         "new_this_week": false
@@ -2540,7 +2551,7 @@
         "freq": "Irregular (Promedio: 10 días)",
         "freq_days": 10,
         "last_invoice": "2026-01-05",
-        "days_since": 153,
+        "days_since": 154,
         "threshold": 20,
         "invoices_8m": 9,
         "new_this_week": false
@@ -2550,7 +2561,7 @@
         "freq": "Semanal",
         "freq_days": 7,
         "last_invoice": "2026-02-06",
-        "days_since": 121,
+        "days_since": 122,
         "threshold": 14,
         "invoices_8m": 13,
         "new_this_week": false
@@ -2560,7 +2571,7 @@
         "freq": "Bimensual (Quincenal)",
         "freq_days": 15,
         "last_invoice": "2026-02-16",
-        "days_since": 111,
+        "days_since": 112,
         "threshold": 30,
         "invoices_8m": 8,
         "new_this_week": false
@@ -2570,7 +2581,7 @@
         "freq": "Irregular (Promedio: 9 días)",
         "freq_days": 9,
         "last_invoice": "2026-02-24",
-        "days_since": 103,
+        "days_since": 104,
         "threshold": 18,
         "invoices_8m": 14,
         "new_this_week": false
@@ -2580,7 +2591,7 @@
         "freq": "Bimensual (Quincenal)",
         "freq_days": 15,
         "last_invoice": "2026-03-02",
-        "days_since": 97,
+        "days_since": 98,
         "threshold": 30,
         "invoices_8m": 8,
         "new_this_week": false
@@ -2590,7 +2601,7 @@
         "freq": "Irregular (Promedio: 19 días)",
         "freq_days": 19,
         "last_invoice": "2026-03-04",
-        "days_since": 95,
+        "days_since": 96,
         "threshold": 38,
         "invoices_8m": 11,
         "new_this_week": false
@@ -2600,7 +2611,7 @@
         "freq": "Bimensual (Quincenal)",
         "freq_days": 15,
         "last_invoice": "2026-03-06",
-        "days_since": 93,
+        "days_since": 94,
         "threshold": 30,
         "invoices_8m": 12,
         "new_this_week": false
@@ -2610,7 +2621,7 @@
         "freq": "Bimensual (Quincenal)",
         "freq_days": 15,
         "last_invoice": "2026-03-09",
-        "days_since": 90,
+        "days_since": 91,
         "threshold": 30,
         "invoices_8m": 8,
         "new_this_week": false
@@ -2620,7 +2631,7 @@
         "freq": "Bimensual (Quincenal)",
         "freq_days": 15,
         "last_invoice": "2026-03-09",
-        "days_since": 90,
+        "days_since": 91,
         "threshold": 30,
         "invoices_8m": 8,
         "new_this_week": false
@@ -2630,7 +2641,7 @@
         "freq": "Mensual",
         "freq_days": 30,
         "last_invoice": "2026-03-11",
-        "days_since": 88,
+        "days_since": 89,
         "threshold": 60,
         "invoices_8m": 9,
         "new_this_week": false
@@ -2640,7 +2651,7 @@
         "freq": "Diaria",
         "freq_days": 1,
         "last_invoice": "2026-03-12",
-        "days_since": 87,
+        "days_since": 88,
         "threshold": 2,
         "invoices_8m": 180,
         "new_this_week": false
@@ -2650,7 +2661,7 @@
         "freq": "Bimensual (Quincenal)",
         "freq_days": 15,
         "last_invoice": "2026-03-12",
-        "days_since": 87,
+        "days_since": 88,
         "threshold": 30,
         "invoices_8m": 11,
         "new_this_week": false
@@ -2660,7 +2671,7 @@
         "freq": "Irregular (Promedio: 26 días)",
         "freq_days": 26,
         "last_invoice": "2026-03-12",
-        "days_since": 87,
+        "days_since": 88,
         "threshold": 52,
         "invoices_8m": 8,
         "new_this_week": false
@@ -2670,9 +2681,9 @@
         "freq": "Mensual",
         "freq_days": 30,
         "last_invoice": "2026-03-12",
-        "days_since": 87,
+        "days_since": 88,
         "threshold": 60,
-        "invoices_8m": 9,
+        "invoices_8m": 8,
         "new_this_week": false
       },
       {
@@ -2680,7 +2691,7 @@
         "freq": "Diaria",
         "freq_days": 1,
         "last_invoice": "2026-03-12",
-        "days_since": 87,
+        "days_since": 88,
         "threshold": 2,
         "invoices_8m": 14,
         "new_this_week": false
@@ -2690,7 +2701,7 @@
         "freq": "Irregular (Promedio: 9 días)",
         "freq_days": 9,
         "last_invoice": "2026-03-16",
-        "days_since": 83,
+        "days_since": 84,
         "threshold": 18,
         "invoices_8m": 15,
         "new_this_week": false
@@ -2700,9 +2711,9 @@
         "freq": "Irregular (Promedio: 3 días)",
         "freq_days": 3,
         "last_invoice": "2026-03-16",
-        "days_since": 83,
+        "days_since": 84,
         "threshold": 6,
-        "invoices_8m": 46,
+        "invoices_8m": 45,
         "new_this_week": false
       },
       {
@@ -2710,7 +2721,7 @@
         "freq": "Irregular / Poca data",
         "freq_days": 15,
         "last_invoice": "2026-03-16",
-        "days_since": 83,
+        "days_since": 84,
         "threshold": 30,
         "invoices_8m": 9,
         "new_this_week": false
@@ -2720,9 +2731,9 @@
         "freq": "Semanal",
         "freq_days": 7,
         "last_invoice": "2026-03-17",
-        "days_since": 82,
+        "days_since": 83,
         "threshold": 14,
-        "invoices_8m": 18,
+        "invoices_8m": 17,
         "new_this_week": false
       },
       {
@@ -2730,7 +2741,7 @@
         "freq": "Irregular (Promedio: 13 días)",
         "freq_days": 13,
         "last_invoice": "2026-03-18",
-        "days_since": 81,
+        "days_since": 82,
         "threshold": 26,
         "invoices_8m": 11,
         "new_this_week": false
@@ -2740,7 +2751,7 @@
         "freq": "Semanal",
         "freq_days": 7,
         "last_invoice": "2026-03-18",
-        "days_since": 81,
+        "days_since": 82,
         "threshold": 14,
         "invoices_8m": 12,
         "new_this_week": false
@@ -2750,7 +2761,7 @@
         "freq": "Irregular (Promedio: 12 días)",
         "freq_days": 12,
         "last_invoice": "2026-03-19",
-        "days_since": 80,
+        "days_since": 81,
         "threshold": 24,
         "invoices_8m": 10,
         "new_this_week": false
@@ -2760,7 +2771,7 @@
         "freq": "Irregular (Promedio: 10 días)",
         "freq_days": 10,
         "last_invoice": "2026-03-20",
-        "days_since": 79,
+        "days_since": 80,
         "threshold": 20,
         "invoices_8m": 8,
         "new_this_week": false
@@ -2770,7 +2781,7 @@
         "freq": "Irregular (Promedio: 28 días)",
         "freq_days": 28,
         "last_invoice": "2026-03-23",
-        "days_since": 76,
+        "days_since": 77,
         "threshold": 56,
         "invoices_8m": 11,
         "new_this_week": false
@@ -2780,7 +2791,7 @@
         "freq": "Bimensual (Quincenal)",
         "freq_days": 15,
         "last_invoice": "2026-03-24",
-        "days_since": 75,
+        "days_since": 76,
         "threshold": 30,
         "invoices_8m": 11,
         "new_this_week": false
@@ -2790,7 +2801,7 @@
         "freq": "Irregular (Promedio: 36 días)",
         "freq_days": 36,
         "last_invoice": "2026-03-24",
-        "days_since": 75,
+        "days_since": 76,
         "threshold": 72,
         "invoices_8m": 8,
         "new_this_week": true
@@ -2800,7 +2811,7 @@
         "freq": "Irregular (Promedio: 20 días)",
         "freq_days": 20,
         "last_invoice": "2026-03-24",
-        "days_since": 75,
+        "days_since": 76,
         "threshold": 40,
         "invoices_8m": 11,
         "new_this_week": false
@@ -2810,7 +2821,7 @@
         "freq": "Irregular / Poca data",
         "freq_days": 15,
         "last_invoice": "2026-03-25",
-        "days_since": 74,
+        "days_since": 75,
         "threshold": 30,
         "invoices_8m": 8,
         "new_this_week": false
@@ -2850,15 +2861,15 @@
       },
       {
         "month": "Jun 2026",
-        "pct": 70.6,
-        "new_churn": 48,
-        "active_start": 68
+        "pct": 70.1,
+        "new_churn": 47,
+        "active_start": 67
       }
     ]
   },
   "enap": {
     "month": "2026-06",
-    "days_elapsed": 7,
+    "days_elapsed": 8,
     "days_in_month": 30,
     "suppliers": {
       "enap": {
@@ -2868,8 +2879,8 @@
         "target_total": 428073,
         "mtd_litros": 75223,
         "compliance_pct": 17.6,
-        "projected": 322384,
-        "projected_pct": 75.3,
+        "projected": 282086,
+        "projected_pct": 65.9,
         "plants": {
           "Maipu": {
             "target": 153229
@@ -2890,8 +2901,8 @@
         "target_total": 313423,
         "mtd_litros": 60000,
         "compliance_pct": 19.1,
-        "projected": 257143,
-        "projected_pct": 82.0,
+        "projected": 225000,
+        "projected_pct": 71.8,
         "plants": {
           "Maipu": {
             "target": 0
@@ -2905,8 +2916,8 @@
     "total_target": 741496,
     "total_mtd": 135223,
     "total_compliance_pct": 18.2,
-    "total_projected": 579527,
-    "total_projected_pct": 78.2
+    "total_projected": 507086,
+    "total_projected_pct": 68.4
   },
   "operaciones": {
     "months": [
@@ -3071,7 +3082,7 @@
         "dso": 35.0
       }
     ],
-    "cxc_hoy": 1051006039
+    "cxc_hoy": 1046944639
   },
   "gerencia_goals": {
     "margen_contado_meta": 0.085,
