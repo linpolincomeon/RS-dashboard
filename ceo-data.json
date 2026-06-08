@@ -1,55 +1,55 @@
 {
-  "updated": "2026-06-08T00:24:03.883894",
+  "updated": "2026-06-08T14:56:38.189508",
   "weeks": [
     {
       "label": "04jun-10jun",
       "start": "2026-06-04",
       "end": "2026-06-10",
-      "ventas": 110208712,
-      "neto": 80958490,
-      "litros": 76652,
-      "litros_retail": 55357,
-      "litros_volumen": 21295,
-      "precio_neto": 1056,
-      "precio_bruto": 1440,
-      "margin": 0.07677,
-      "margin_retail": 0.08126,
-      "margin_volumen": 0.06994,
-      "facturas": 43,
+      "ventas": 121291412,
+      "neto": 88972945,
+      "litros": 84302,
+      "litros_retail": 60557,
+      "litros_volumen": 23745,
+      "precio_neto": 1055,
+      "precio_bruto": 1441,
+      "margin": 0.07743,
+      "margin_retail": 0.08105,
+      "margin_volumen": 0.0718,
+      "facturas": 49,
       "nc": 3,
-      "clientes": 41,
-      "recaud": 152399722,
+      "clientes": 46,
+      "recaud": 180104320,
       "cheques": 12969580,
-      "transf": 84505093,
+      "transf": 112209691,
       "factoring": 54925049,
-      "compras_odoo": 59994135,
+      "compras_odoo": 126766173,
       "cheq_cartera_saldo": 0,
       "cheq_recibidos": 5270260,
-      "facturas_contado": 7,
-      "facturas_credito": 36,
+      "facturas_contado": 8,
+      "facturas_credito": 41,
       "margin_by_term": {
         "1 Día": {
-          "margin": 0.07737,
-          "normalizado": 0.08704,
-          "count": 7,
+          "margin": 0.07698,
+          "normalizado": 0.08664,
+          "count": 8,
           "days": 1
         },
         "7 Días": {
-          "margin": 0.04655,
-          "normalizado": 0.05422,
-          "count": 4,
+          "margin": 0.0498,
+          "normalizado": 0.05747,
+          "count": 5,
           "days": 7
         },
         "30 Días": {
-          "margin": 0.08013,
-          "normalizado": 0.08013,
-          "count": 24,
+          "margin": 0.08088,
+          "normalizado": 0.08088,
+          "count": 27,
           "days": 30
         },
         "45 Días": {
-          "margin": 0.10748,
-          "normalizado": 0.10248,
-          "count": 2,
+          "margin": 0.10355,
+          "normalizado": 0.09855,
+          "count": 3,
           "days": 45
         },
         "60 Días": {
@@ -59,9 +59,9 @@
           "days": 60
         }
       },
-      "cotiz_canceladas": 3,
+      "cotiz_canceladas": 4,
       "visitas": 85,
-      "clientes_nuevos": 3,
+      "clientes_nuevos": 4,
       "ppto": 178726,
       "ppto_retail": 125108,
       "ppto_volumen": 53618,
@@ -1248,8 +1248,8 @@
     {
       "date": "08jun",
       "day": "Lun",
-      "litros": 0,
-      "neto": 0
+      "litros": 7650,
+      "neto": 8014455
     },
     {
       "date": "05jun",
@@ -1344,12 +1344,12 @@
   ],
   "banks": [
     {
-      "name": "DE CHILE",
-      "balance": 55098052
-    },
-    {
       "name": "SANTANDER",
       "balance": 20245977
+    },
+    {
+      "name": "DE CHILE",
+      "balance": 18716693
     },
     {
       "name": "ESTADO",
@@ -1372,15 +1372,15 @@
       "balance": -1627884
     }
   ],
-  "total_cash": 93617585,
+  "total_cash": 57236226,
   "receivables": {
-    "open_invoices": 231,
-    "total_due": 638929697,
-    "current": 497684029,
-    "overdue": 141245668,
-    "pct_overdue": 22.1,
+    "open_invoices": 230,
+    "total_due": 637417398,
+    "current": 507315729,
+    "overdue": 130101669,
+    "pct_overdue": 20.4,
     "aging": {
-      "0-30": 130532885,
+      "0-30": 119388886,
       "31-60": 947220,
       "61-90": 0,
       "90+": 9765563
@@ -1392,7 +1392,7 @@
       },
       {
         "name": "JOSE RODRIGO ORMAZABAL VIDAL",
-        "amount": 31395004
+        "amount": 26763004
       },
       {
         "name": "PATRICIO VISCAY ALBORNOZ",
@@ -1431,6 +1431,10 @@
         "amount": 13980000
       },
       {
+        "name": "MAQUINARIAS Y ARIDOS SAN PEDRO SPA.",
+        "amount": 11598299
+      },
+      {
         "name": "URAN ANTONIO LUNA DOMÍNGUEZ",
         "amount": 11424000
       },
@@ -1447,12 +1451,12 @@
         "amount": 9200000
       },
       {
-        "name": "AGRICOLA LOS BOLDOS SPA",
-        "amount": 8293000
+        "name": "INGENERIA Y CONSTRUCCIONES FEBLANCA SPA",
+        "amount": 8733001
       },
       {
-        "name": "MAQUINARIAS Y ARIDOS SAN PEDRO SPA.",
-        "amount": 7996799
+        "name": "AGRICOLA LOS BOLDOS SPA",
+        "amount": 8293000
       },
       {
         "name": "VALENZUELA LEIVA MAX",
@@ -1461,10 +1465,6 @@
       {
         "name": "ANDES SOLAR SA",
         "amount": 7825004
-      },
-      {
-        "name": "TRANSPORTES SAN MARCELO SPA",
-        "amount": 7740000
       }
     ]
   },
@@ -1474,30 +1474,33 @@
       "zones": {
         "Chillan": {
           "total": 4,
-          "on_time": 3,
-          "late": 1,
-          "pct": 75.0,
-          "late_clients": [
-            "INGENERIA Y CONSTRUCCIONES FEBLANCA SPA (prom: 2026-06-08, fact: sin factura)"
-          ]
+          "on_time": 4,
+          "late": 0,
+          "pct": 100.0,
+          "late_clients": []
         },
         "Curico": {
-          "total": 5,
-          "on_time": 2,
-          "late": 3,
-          "pct": 40.0,
+          "total": 8,
+          "on_time": 3,
+          "late": 5,
+          "pct": 37.5,
           "late_clients": [
+            "AGRICOLA DON CARLOS SPA (prom: 2026-06-08, fact: sin factura)",
+            "ARESTI CHILE WINE SA (prom: 2026-06-08, fact: sin factura)",
+            "PRESTADORA DE SERVICIOS & ARRIENDO DE MAQUINARIA AGRICOLA JJR LIMITADA (prom: 2026-06-08, fact: sin factura)",
             "AGROELITE LIMITADA (prom: 2026-06-08, fact: sin factura)",
-            "SERGIO IGNACIO VERGARA HERNANDEZ (prom: 2026-06-08, fact: sin factura)",
             "AGRICOLA EL MILAGRO LTDA. (prom: 2026-06-04, fact: 2026-06-05)"
           ]
         },
         "Rancagua": {
-          "total": 11,
+          "total": 14,
           "on_time": 9,
-          "late": 2,
-          "pct": 81.82,
+          "late": 5,
+          "pct": 64.29,
           "late_clients": [
+            "AGRICOLA OMEGA TRES LIMITADA (prom: 2026-06-08, fact: sin factura)",
+            "AGRICOLA EUGENIO LIRA ESPINOZA E.I.R.L. (prom: 2026-06-08, fact: sin factura)",
+            "CARLOS SOTO CORREA (prom: 2026-06-08, fact: sin factura)",
             "SAMUEL BUDINICH SPA (prom: 2026-06-08, fact: sin factura)",
             "CBARRIOS CONSTRUCTORA SPA (prom: 2026-06-08, fact: sin factura)"
           ]
@@ -1510,21 +1513,22 @@
           "late_clients": []
         },
         "Talca": {
-          "total": 14,
-          "on_time": 13,
+          "total": 17,
+          "on_time": 16,
           "late": 1,
-          "pct": 92.86,
+          "pct": 94.12,
           "late_clients": [
-            "MAQUINARIAS Y ARIDOS SAN PEDRO SPA. (prom: 2026-06-08, fact: sin factura)"
+            "JUAN PABLO ARMANDO CANCINO CORVALAN (prom: 2026-06-08, fact: sin factura)"
           ]
         },
         "VI Costa": {
-          "total": 6,
-          "on_time": 5,
-          "late": 1,
-          "pct": 83.33,
+          "total": 8,
+          "on_time": 6,
+          "late": 2,
+          "pct": 75.0,
           "late_clients": [
-            "AGRÍCOLA EL CÓNDOR DE APALTA LIMITADA (prom: 2026-06-08, fact: sin factura)"
+            "APICOLA PATRICIA SUSANA BUSTOS ARCE EIRL. (prom: 2026-06-08, fact: sin factura)",
+            "AGRICOLA LO BELTRAN LIMITADA (prom: 2026-06-08, fact: sin factura)"
           ]
         }
       }
@@ -1983,7 +1987,7 @@
           "late_clients": [
             "TRANSPORTES GERMAN MIRANDA EIRL (prom: 2026-04-15, fact: 2026-04-17)",
             "ARIDOS LO VALDIVIA LIMITADA (prom: 2026-04-15, fact: 2026-04-16)",
-            "AGRICOLA LOS CAMPOS S.A. - 2 (prom: 2026-04-10, fact: 2026-04-09)"
+            "AGRICOLA LOS CAMPOS S.A. - 2 RESTRUCTURACION pasa a Sociedad Agrícola Triple A S.A (prom: 2026-04-10, fact: 2026-04-09)"
           ]
         },
         "Rancagua": {
@@ -2179,7 +2183,7 @@
           "pct": 72.73,
           "late_clients": [
             "AGRICOLA EL MILAGRO LTDA. (prom: 2026-03-25, fact: 2026-03-26)",
-            "AGRICOLA LOS CAMPOS S.A. - 2 (prom: 2026-03-25, fact: 2026-03-26)",
+            "AGRICOLA LOS CAMPOS S.A. - 2 RESTRUCTURACION pasa a Sociedad Agrícola Triple A S.A (prom: 2026-03-25, fact: 2026-03-26)",
             "LUIS ENRIQUE VASQUEZ TORREALBA (prom: 2026-03-25, fact: 2026-03-26)",
             "AGRICOLA LA HACIENDA LTDA (prom: 2026-03-25, fact: 2026-03-26)",
             "SOCIEDAD DE MAESTRANZA FIGUEROA Y CIA LIMITADA (prom: 2026-03-24, fact: 2026-03-25)",
@@ -2516,15 +2520,15 @@
   "riesgo": {
     "cubierto": 0,
     "cubierto_count": 0,
-    "no_cubierto": 638929697,
-    "no_cubierto_count": 231,
+    "no_cubierto": 637417398,
+    "no_cubierto_count": 230,
     "pct_monto": 100.0,
     "pct_count": 100.0
   },
   "churn": {
-    "eligible_clients": 154,
-    "churned_count": 59,
-    "pct": 38.3,
+    "eligible_clients": 155,
+    "churned_count": 58,
+    "pct": 37.4,
     "churned": [
       {
         "name": "CRISTIAN HUGO FUENZALIDA MEZA",
@@ -2861,9 +2865,9 @@
       },
       {
         "month": "Jun 2026",
-        "pct": 70.1,
-        "new_churn": 47,
-        "active_start": 67
+        "pct": 69.2,
+        "new_churn": 45,
+        "active_start": 65
       }
     ]
   },
@@ -2877,10 +2881,10 @@
           "5667"
         ],
         "target_total": 428073,
-        "mtd_litros": 75223,
-        "compliance_pct": 17.6,
-        "projected": 282086,
-        "projected_pct": 65.9,
+        "mtd_litros": 110363,
+        "compliance_pct": 25.8,
+        "projected": 413861,
+        "projected_pct": 96.7,
         "plants": {
           "Maipu": {
             "target": 153229
@@ -2899,10 +2903,10 @@
           "15293"
         ],
         "target_total": 313423,
-        "mtd_litros": 60000,
-        "compliance_pct": 19.1,
-        "projected": 225000,
-        "projected_pct": 71.8,
+        "mtd_litros": 75000,
+        "compliance_pct": 23.9,
+        "projected": 281250,
+        "projected_pct": 89.7,
         "plants": {
           "Maipu": {
             "target": 0
@@ -2914,10 +2918,10 @@
       }
     },
     "total_target": 741496,
-    "total_mtd": 135223,
-    "total_compliance_pct": 18.2,
-    "total_projected": 507086,
-    "total_projected_pct": 68.4
+    "total_mtd": 185363,
+    "total_compliance_pct": 25.0,
+    "total_projected": 695111,
+    "total_projected_pct": 93.7
   },
   "operaciones": {
     "months": [
@@ -3010,12 +3014,12 @@
         "month": "2026-06",
         "label": "Jun 2026",
         "budget": 16920204,
-        "actual": 5652879,
-        "compliance_pct": 33.4,
+        "actual": 6457839,
+        "compliance_pct": 38.2,
         "categories": {
           "Petróleo": 3960972,
-          "Mantención y Reparación": 1280000,
-          "Gastos Traslados (TAG)": 0,
+          "Mantención y Reparación": 1351218,
+          "Gastos Traslados (TAG)": 733742,
           "Seguros": 0,
           "Gastos Vehículos": 411907,
           "Arriendo": 0,
@@ -3082,7 +3086,7 @@
         "dso": 35.0
       }
     ],
-    "cxc_hoy": 1046944639
+    "cxc_hoy": 1045432340
   },
   "gerencia_goals": {
     "margen_contado_meta": 0.085,
