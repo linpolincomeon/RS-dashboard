@@ -1,5 +1,5 @@
 {
-  "updated": "2026-06-09T00:17:38.479180",
+  "updated": "2026-06-09T13:51:10.949126",
   "weeks": [
     {
       "label": "04jun-10jun",
@@ -18,9 +18,9 @@
       "facturas": 66,
       "nc": 4,
       "clientes": 61,
-      "recaud": 196717521,
+      "recaud": 205988520,
       "cheques": 12969580,
-      "transf": 128822892,
+      "transf": 138093891,
       "factoring": 54925049,
       "compras_odoo": 126766173,
       "cheq_cartera_saldo": 0,
@@ -1345,7 +1345,7 @@
   "banks": [
     {
       "name": "DE CHILE",
-      "balance": 34703235
+      "balance": 15424235
     },
     {
       "name": "SANTANDER",
@@ -1353,7 +1353,7 @@
     },
     {
       "name": "ESTADO",
-      "balance": 6848151
+      "balance": 5431118
     },
     {
       "name": "BCI",
@@ -1372,15 +1372,15 @@
       "balance": -1627884
     }
   ],
-  "total_cash": 57546680,
+  "total_cash": 36850647,
   "receivables": {
-    "open_invoices": 215,
-    "total_due": 587437398,
-    "current": 473717928,
-    "overdue": 113719470,
+    "open_invoices": 212,
+    "total_due": 581575398,
+    "current": 468562428,
+    "overdue": 113012970,
     "pct_overdue": 19.4,
     "aging": {
-      "0-30": 103006687,
+      "0-30": 102300187,
       "31-60": 947220,
       "61-90": 0,
       "90+": 9765563
@@ -1480,11 +1480,12 @@
           "late_clients": []
         },
         "Curico": {
-          "total": 13,
+          "total": 14,
           "on_time": 8,
-          "late": 5,
-          "pct": 61.54,
+          "late": 6,
+          "pct": 57.14,
           "late_clients": [
+            "BEPATAGONIA MAQUINARIA S.A. (prom: 2026-06-09, fact: sin factura)",
             "CENTRAL FRUTICOLA LONTUÉ SPA (prom: 2026-06-09, fact: sin factura)",
             "AGRIZANO S A (prom: 2026-06-09, fact: sin factura)",
             "AGROINDUSTRIAL SIRACUSA S A (prom: 2026-06-09, fact: sin factura)",
@@ -1493,11 +1494,12 @@
           ]
         },
         "Rancagua": {
-          "total": 18,
+          "total": 19,
           "on_time": 15,
-          "late": 3,
-          "pct": 83.33,
+          "late": 4,
+          "pct": 78.95,
           "late_clients": [
+            "EMILIO BENITO MAURO ZUNIGA (prom: 2026-06-09, fact: sin factura)",
             "INVERSIONES VB SPA (prom: 2026-06-09, fact: sin factura)",
             "GUSTAVO ESPINOZA ZAMORA (prom: 2026-06-09, fact: sin factura)",
             "INVERSIONES LOS CINCO SPA (prom: 2026-06-09, fact: sin factura)"
@@ -1511,18 +1513,22 @@
           "late_clients": []
         },
         "Talca": {
-          "total": 19,
+          "total": 20,
           "on_time": 19,
-          "late": 0,
-          "pct": 100.0,
-          "late_clients": []
+          "late": 1,
+          "pct": 95.0,
+          "late_clients": [
+            "EMPRESAS TUCAPEL S A (prom: 2026-06-09, fact: sin factura)"
+          ]
         },
         "VI Costa": {
-          "total": 8,
+          "total": 9,
           "on_time": 8,
-          "late": 0,
-          "pct": 100.0,
-          "late_clients": []
+          "late": 1,
+          "pct": 88.89,
+          "late_clients": [
+            "AGRICOLA LA PALMA S A (prom: 2026-06-09, fact: sin factura)"
+          ]
         }
       }
     },
@@ -2513,8 +2519,8 @@
   "riesgo": {
     "cubierto": 0,
     "cubierto_count": 0,
-    "no_cubierto": 587437398,
-    "no_cubierto_count": 215,
+    "no_cubierto": 581575398,
+    "no_cubierto_count": 212,
     "pct_monto": 100.0,
     "pct_count": 100.0
   },
@@ -3079,7 +3085,7 @@
         "dso": 35.0
       }
     ],
-    "cxc_hoy": 1024638328
+    "cxc_hoy": 1018776328
   },
   "gerencia_goals": {
     "margen_contado_meta": 0.085,
