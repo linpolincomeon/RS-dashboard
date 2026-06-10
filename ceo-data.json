@@ -1,23 +1,23 @@
 {
-  "updated": "2026-06-10T18:12:12.967967",
+  "updated": "2026-06-10T21:31:15.239198",
   "weeks": [
     {
       "label": "04jun-10jun",
       "start": "2026-06-04",
       "end": "2026-06-10",
-      "ventas": 221736159,
-      "neto": 161571701,
-      "litros": 154161,
-      "litros_retail": 111346,
-      "litros_volumen": 42815,
-      "precio_neto": 1048,
-      "precio_bruto": 1440,
-      "margin": 0.07751,
-      "margin_retail": 0.08274,
-      "margin_volumen": 0.06738,
-      "facturas": 95,
+      "ventas": 233592780,
+      "neto": 170100696,
+      "litros": 162611,
+      "litros_retail": 115576,
+      "litros_volumen": 47035,
+      "precio_neto": 1046,
+      "precio_bruto": 1438,
+      "margin": 0.0765,
+      "margin_retail": 0.0825,
+      "margin_volumen": 0.06522,
+      "facturas": 102,
       "nc": 4,
-      "clientes": 84,
+      "clientes": 90,
       "recaud": 278645359,
       "cheques": 13809580,
       "transf": 164761270,
@@ -25,9 +25,15 @@
       "compras_odoo": 186895145,
       "cheq_cartera_saldo": 0,
       "cheq_recibidos": 5270260,
-      "facturas_contado": 16,
-      "facturas_credito": 79,
+      "facturas_contado": 17,
+      "facturas_credito": 85,
       "margin_by_term": {
+        "Prepago": {
+          "margin": 0.12688,
+          "normalizado": 0.13688,
+          "count": 1,
+          "days": 0
+        },
         "1 Día": {
           "margin": 0.07229,
           "normalizado": 0.08196,
@@ -35,15 +41,15 @@
           "days": 1
         },
         "7 Días": {
-          "margin": 0.05722,
-          "normalizado": 0.06488,
-          "count": 8,
+          "margin": 0.05043,
+          "normalizado": 0.0581,
+          "count": 9,
           "days": 7
         },
         "30 Días": {
-          "margin": 0.08077,
-          "normalizado": 0.08077,
-          "count": 56,
+          "margin": 0.08043,
+          "normalizado": 0.08043,
+          "count": 61,
           "days": 30
         },
         "45 Días": {
@@ -59,8 +65,8 @@
           "days": 60
         }
       },
-      "cotiz_canceladas": 7,
-      "visitas": 86,
+      "cotiz_canceladas": 8,
+      "visitas": 93,
       "clientes_nuevos": 8,
       "ppto": 178726,
       "ppto_retail": 125108,
@@ -1248,8 +1254,8 @@
     {
       "date": "10jun",
       "day": "Mié",
-      "litros": 18420,
-      "neto": 19276900
+      "litros": 26870,
+      "neto": 27805895
     },
     {
       "date": "09jun",
@@ -1348,6 +1354,10 @@
       "balance": 21440423
     },
     {
+      "name": "ITAU",
+      "balance": 6303014
+    },
+    {
       "name": "ESTADO",
       "balance": 5431118
     },
@@ -1360,10 +1370,6 @@
       "balance": 3291177
     },
     {
-      "name": "ITAU",
-      "balance": 1303014
-    },
-    {
       "name": "SANTANDER",
       "balance": 900977
     },
@@ -1372,15 +1378,15 @@
       "balance": -1627884
     }
   ],
-  "total_cash": 35781835,
+  "total_cash": 40781835,
   "receivables": {
-    "open_invoices": 210,
-    "total_due": 576735086,
-    "current": 464686216,
-    "overdue": 112048870,
-    "pct_overdue": 19.4,
+    "open_invoices": 216,
+    "total_due": 587417307,
+    "current": 476542837,
+    "overdue": 110874470,
+    "pct_overdue": 18.9,
     "aging": {
-      "0-30": 101336087,
+      "0-30": 100161687,
       "31-60": 947220,
       "61-90": 0,
       "90+": 9765563
@@ -1439,6 +1445,10 @@
         "amount": 9072000
       },
       {
+        "name": "AGRICOLA LOS BOLDOS SPA",
+        "amount": 9046500
+      },
+      {
         "name": "MOVIMIENTO DE TIERRA JOSE RODRIGO ORMAZABAL VIDAL",
         "amount": 8793001
       },
@@ -1451,10 +1461,6 @@
         "amount": 8473500
       },
       {
-        "name": "AGRICOLA LOS BOLDOS SPA",
-        "amount": 8293000
-      },
-      {
         "name": "VALENZUELA LEIVA MAX",
         "amount": 7895000
       },
@@ -1463,8 +1469,8 @@
         "amount": 7825004
       },
       {
-        "name": "AGRICOLA MANTOS VERDES LIMITADA",
-        "amount": 7381699
+        "name": "ARIDOS LO VALDIVIA LIMITADA",
+        "amount": 7732998
       }
     ]
   },
@@ -1481,18 +1487,14 @@
         },
         "Curico": {
           "total": 27,
-          "on_time": 18,
-          "late": 9,
-          "pct": 66.67,
+          "on_time": 22,
+          "late": 5,
+          "pct": 81.48,
           "late_clients": [
             "EL ESTRIBILLO SPA (prom: 2026-06-10, fact: sin factura)",
             "PROVEAGRO SERVICIOS SPA (prom: 2026-06-10, fact: sin factura)",
             "TRANSPORTES MARGARETH MARTINEZ SCHNETTLER E.I.R.L (prom: 2026-06-10, fact: sin factura)",
             "TRANSPORTES Y CARGAS MARTINEZ DIAZ LIMITADA (prom: 2026-06-10, fact: sin factura)",
-            "GINO ALEJANDRO ALIAGA ALVAREZ (prom: 2026-06-10, fact: sin factura)",
-            "ARIDOS LO VALDIVIA LIMITADA (prom: 2026-06-10, fact: sin factura)",
-            "AGRÍCOLA LA HUERTA SPA (prom: 2026-06-10, fact: sin factura)",
-            "AGRICOLA PALQUIBUDIS SPA (prom: 2026-06-10, fact: sin factura)",
             "AGRICOLA EL MILAGRO LTDA. (prom: 2026-06-04, fact: 2026-06-05)"
           ]
         },
@@ -1506,22 +1508,18 @@
           ]
         },
         "San Fernando": {
-          "total": 9,
-          "on_time": 8,
-          "late": 1,
-          "pct": 88.89,
-          "late_clients": [
-            "AGRICOLA TORREVAL LIMITADA (prom: 2026-06-10, fact: sin factura)"
-          ]
+          "total": 10,
+          "on_time": 10,
+          "late": 0,
+          "pct": 100.0,
+          "late_clients": []
         },
         "Talca": {
           "total": 26,
-          "on_time": 25,
-          "late": 1,
-          "pct": 96.15,
-          "late_clients": [
-            "AGRICOLA LOS BOLDOS SPA (prom: 2026-06-10, fact: sin factura)"
-          ]
+          "on_time": 26,
+          "late": 0,
+          "pct": 100.0,
+          "late_clients": []
         },
         "VI Costa": {
           "total": 10,
@@ -2519,15 +2517,15 @@
   "riesgo": {
     "cubierto": 0,
     "cubierto_count": 0,
-    "no_cubierto": 576735086,
-    "no_cubierto_count": 210,
+    "no_cubierto": 587417307,
+    "no_cubierto_count": 216,
     "pct_monto": 100.0,
     "pct_count": 100.0
   },
   "churn": {
     "eligible_clients": 155,
-    "churned_count": 57,
-    "pct": 36.8,
+    "churned_count": 56,
+    "pct": 36.1,
     "churned": [
       {
         "name": "CRISTIAN HUGO FUENZALIDA MEZA",
@@ -2858,15 +2856,15 @@
       },
       {
         "month": "May 2026",
-        "pct": 81.8,
-        "new_churn": 18,
-        "active_start": 22
+        "pct": 81.0,
+        "new_churn": 17,
+        "active_start": 21
       },
       {
         "month": "Jun 2026",
-        "pct": 63.6,
-        "new_churn": 35,
-        "active_start": 55
+        "pct": 63.0,
+        "new_churn": 34,
+        "active_start": 54
       }
     ]
   },
@@ -3085,7 +3083,7 @@
         "dso": 34.8
       }
     ],
-    "cxc_hoy": 1007524632
+    "cxc_hoy": 1018206853
   },
   "gerencia_goals": {
     "margen_contado_meta": 0.085,
