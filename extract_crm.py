@@ -80,6 +80,10 @@ _CANONICAL_VENDORS = [
     ({"bisquertt", "raul"}, "Raúl Bisquertt"),
     ({"boccardo", "mauro"}, "Mauro Boccardo"),
     ({"retamal", "rodrigo"}, "Rodrigo Retamal"),
+    ({"manuel", "lopez"}, "Manuel López"),
+    ({"nicolas", "gonzalez"}, "Nicolás Gonzalez"),
+    ({"cristian", "jiroz"}, "Cristian Jiroz"),
+    ({"diego", "varas"}, "Diego Varas"),
 ]
 
 def canonical_vendedor(name):
@@ -1888,12 +1892,16 @@ def extract_recovery_clients(models, uid):
     # ── 6. Último lead CRM por partner (para vendedor = crm.lead.user_id) ──
     crm_leads = sr(models, uid, "crm.lead", [
         ["partner_id", "in", candidates],
-    ], ["partner_id", "stage_id", "user_id", "write_date"], limit=10000, order="write_date desc")
+    ], ["id", "partner_id", "stage_id", "user_id", "write_date"], limit=10000, order="write_date desc")
 
-    last_lead = {}  # pid -> {stage, exec, last_crm}
+    last_lead = {}        # pid -> {stage, exec, last_crm}
+    rec_lead_to_pid = {}  # lead_id -> pid (todas las oportunidades del cliente)
     for l in crm_leads:
         pid = safe_id(l.get("partner_id"))
-        if not pid or pid in last_lead:
+        if not pid:
+            continue
+        rec_lead_to_pid[l["id"]] = pid
+        if pid in last_lead:
             continue
         last_lead[pid] = {
             "stage": safe_name(l.get("stage_id")) if l.get("stage_id") else "",
@@ -1918,6 +1926,28 @@ def extract_recovery_clients(models, uid):
             "date": (m.get("date") or "")[:10],
             "author": safe_name(m.get("author_id")) if m.get("author_id") else "",
         }
+
+    # ── 7b. Notas escritas DENTRO de la oportunidad (crm.lead) — donde el ejecutivo
+    #        realmente escribe. Se queda con la más reciente entre nota-contacto y nota-lead.
+    if rec_lead_to_pid:
+        lead_msgs = sr(models, uid, "mail.message", [
+            ["res_id", "in", list(rec_lead_to_pid.keys())],
+            ["model", "=", "crm.lead"],
+            ["message_type", "in", ["comment", "note"]],
+        ], ["res_id", "body", "date", "author_id"], limit=10000, order="date desc")
+        for m in lead_msgs:
+            pid = rec_lead_to_pid.get(m.get("res_id"))
+            if not pid:
+                continue
+            body = strip_html(m.get("body", ""))[:150]
+            if not body:
+                continue
+            mdate = (m.get("date") or "")[:10]
+            existing = last_note.get(pid)
+            if existing and existing.get("date", "") >= mdate:
+                continue  # la nota del contacto es igual o más reciente
+            last_note[pid] = {"body": body, "date": mdate,
+                              "author": safe_name(m.get("author_id")) if m.get("author_id") else ""}
 
     # ── 8. Clasificar cada candidato: recoverable vs seasonal ──
     SPANISH_MONTHS = ["", "ene", "feb", "mar", "abr", "may", "jun",
