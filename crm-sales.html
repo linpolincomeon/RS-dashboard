@@ -1015,8 +1015,9 @@ function renderEjecutivos() {
   execFresh.forEach(p => {
     const key = (p.name || '').trim().toUpperCase();
     const act = actDetailByLead[key];
-    if (act && act.desc) p._activity = act;
-    else if (p.last_note) p._activity = {date: (p.last_update || '').slice(0, 10), desc: p.last_note, type: 'Nota'};
+    // Más reciente: la nota escrita gana sobre la actividad pendiente (deadline futuro)
+    if (p.last_note) p._activity = {date: (p.last_update || '').slice(0, 10), desc: p.last_note, type: 'Nota'};
+    else if (act && act.desc) p._activity = act;
   });
 
   // Split: movements within selected week vs needs attention (8-90d)
