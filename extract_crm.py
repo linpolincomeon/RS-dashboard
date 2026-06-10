@@ -1133,10 +1133,40 @@ def extract_sales_data(models, uid, custom_start=None, custom_end=None, label_ov
     print(f"  Detalle ejecutivo: {len(detail_by_user)} vendedores, {sum(len(v) for v in detail_by_user.values())} lineas")
     print(f"  Clientes nuevos: {new_cl_count}")
 
+    # Ruta (visitas): leads que ENTRARON a etapa "Ruta" durante el periodo (flujo, no snapshot).
+    # Fuente: mail.tracking.value (cambios de stage_id) — fechas reales, no date_last_stage_update (cron diario).
+    ruta_visitas = 0
+    ruta_visitas_by_user = defaultdict(int)
+    try:
+        rtv = sr(models, uid, "mail.tracking.value", [
+            ["field_id.name", "=", "stage_id"],
+            ["mail_message_id.model", "=", "crm.lead"],
+            ["new_value_char", "=", "Ruta"],
+            ["mail_message_id.date", ">=", fdt_s(m_start)],
+            ["mail_message_id.date", "<=", fdt_e(m_end)],
+        ], ["mail_message_id"], limit=20000)
+        _ruta_msg_ids = list({t["mail_message_id"][0] for t in rtv if t.get("mail_message_id")})
+        if _ruta_msg_ids:
+            _ruta_msgs = sr(models, uid, "mail.message", [["id", "in", _ruta_msg_ids]],
+                            ["id", "res_id"], limit=20000)
+            _ruta_lead_ids = list({m["res_id"] for m in _ruta_msgs if m.get("res_id")})
+            ruta_visitas = len(_ruta_lead_ids)
+            if _ruta_lead_ids:
+                _ruta_leads = sr(models, uid, "crm.lead", [["id", "in", _ruta_lead_ids]],
+                                 ["id", "user_id"], limit=20000)
+                for _l in _ruta_leads:
+                    _u = canonical_vendedor(safe_name(_l.get("user_id"))) if _l.get("user_id") else "Sin asignar"
+                    ruta_visitas_by_user[_u] += 1
+        print(f"  Ruta (visitas): {ruta_visitas} leads entraron a Ruta")
+    except Exception as _e:
+        print(f"  Ruta visitas skipped: {_e}")
+
     return {
         "month_label": lbl,
         "month_start": fmt(m_start),
         "month_end": fmt(m_end),
+        "ruta_visitas": ruta_visitas,
+        "ruta_visitas_by_user": merge_by_user(dict(ruta_visitas_by_user)),
         "totals": {
             "total_litros": round(total_litros),
             "total_venta_neta": round(total_venta),
