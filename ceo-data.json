@@ -1,32 +1,32 @@
 {
-  "updated": "2026-06-10T00:27:10.273378",
+  "updated": "2026-06-10T14:33:08.429227",
   "weeks": [
     {
       "label": "04jun-10jun",
       "start": "2026-06-04",
       "end": "2026-06-10",
-      "ventas": 195075332,
-      "neto": 142294801,
-      "litros": 135741,
-      "litros_retail": 92926,
+      "ventas": 201078161,
+      "neto": 146648233,
+      "litros": 139811,
+      "litros_retail": 96996,
       "litros_volumen": 42815,
-      "precio_neto": 1048,
-      "precio_bruto": 1439,
-      "margin": 0.07683,
-      "margin_retail": 0.08266,
+      "precio_neto": 1049,
+      "precio_bruto": 1440,
+      "margin": 0.07746,
+      "margin_retail": 0.08342,
       "margin_volumen": 0.06738,
-      "facturas": 81,
+      "facturas": 84,
       "nc": 4,
-      "clientes": 74,
-      "recaud": 209194899,
+      "clientes": 76,
+      "recaud": 275055659,
       "cheques": 12969580,
-      "transf": 141300270,
-      "factoring": 54925049,
-      "compras_odoo": 146625561,
+      "transf": 162011570,
+      "factoring": 100074509,
+      "compras_odoo": 186895145,
       "cheq_cartera_saldo": 0,
       "cheq_recibidos": 5270260,
       "facturas_contado": 15,
-      "facturas_credito": 66,
+      "facturas_credito": 69,
       "margin_by_term": {
         "1 Día": {
           "margin": 0.0715,
@@ -41,9 +41,9 @@
           "days": 7
         },
         "30 Días": {
-          "margin": 0.08083,
-          "normalizado": 0.08083,
-          "count": 45,
+          "margin": 0.08139,
+          "normalizado": 0.08139,
+          "count": 47,
           "days": 30
         },
         "45 Días": {
@@ -53,14 +53,14 @@
           "days": 45
         },
         "60 Días": {
-          "margin": 0.07471,
-          "normalizado": 0.06471,
-          "count": 10,
+          "margin": 0.0765,
+          "normalizado": 0.0665,
+          "count": 11,
           "days": 60
         }
       },
       "cotiz_canceladas": 5,
-      "visitas": 86,
+      "visitas": 87,
       "clientes_nuevos": 4,
       "ppto": 178726,
       "ppto_retail": 125108,
@@ -1248,8 +1248,8 @@
     {
       "date": "10jun",
       "day": "Mié",
-      "litros": 0,
-      "neto": 0
+      "litros": 4570,
+      "neto": 4901320
     },
     {
       "date": "09jun",
@@ -1344,6 +1344,10 @@
   ],
   "banks": [
     {
+      "name": "DE CHILE",
+      "balance": 48937531
+    },
+    {
       "name": "ESTADO",
       "balance": 5431118
     },
@@ -1364,23 +1368,19 @@
       "balance": 900977
     },
     {
-      "name": "DE CHILE",
-      "balance": 625908
-    },
-    {
       "name": "DE CREDITO",
       "balance": -1627884
     }
   ],
-  "total_cash": 14967320,
+  "total_cash": 63278943,
   "receivables": {
-    "open_invoices": 224,
-    "total_due": 615006649,
-    "current": 488899977,
-    "overdue": 126106672,
-    "pct_overdue": 20.5,
+    "open_invoices": 221,
+    "total_due": 601051177,
+    "current": 488270807,
+    "overdue": 112780370,
+    "pct_overdue": 18.8,
     "aging": {
-      "0-30": 115393889,
+      "0-30": 102067587,
       "31-60": 947220,
       "61-90": 0,
       "90+": 9765563
@@ -1403,12 +1403,12 @@
         "amount": 22690001
       },
       {
-        "name": "EL PARRON SPA",
-        "amount": 21735000
+        "name": "TRANSPORTE SANTA ELENITA SPA",
+        "amount": 22677569
       },
       {
-        "name": "TRANSPORTE SANTA ELENITA SPA",
-        "amount": 21204139
+        "name": "EL PARRON SPA",
+        "amount": 21735000
       },
       {
         "name": "SOC. DE TRANSPORTES TRACMAVI LTDA.",
@@ -1431,12 +1431,12 @@
         "amount": 13980000
       },
       {
-        "name": "AGROSERVICIOS JR SPA",
-        "amount": 12182000
-      },
-      {
         "name": "MAQUINARIAS Y ARIDOS SAN PEDRO SPA.",
         "amount": 11598299
+      },
+      {
+        "name": "AGROSERVICIOS JR SPA",
+        "amount": 9072000
       },
       {
         "name": "MOVIMIENTO DE TIERRA JOSE RODRIGO ORMAZABAL VIDAL",
@@ -1447,8 +1447,8 @@
         "amount": 8751000
       },
       {
-        "name": "INGENERIA Y CONSTRUCCIONES FEBLANCA SPA",
-        "amount": 8733001
+        "name": "CARLOS SOTO CORREA",
+        "amount": 8473500
       },
       {
         "name": "AGRICOLA LOS BOLDOS SPA",
@@ -1463,8 +1463,8 @@
         "amount": 7825004
       },
       {
-        "name": "CARLOS SOTO CORREA",
-        "amount": 7720500
+        "name": "AGRICOLA MANTOS VERDES LIMITADA",
+        "amount": 7381699
       }
     ]
   },
@@ -1480,12 +1480,14 @@
           "late_clients": []
         },
         "Curico": {
-          "total": 20,
-          "on_time": 13,
-          "late": 7,
-          "pct": 65.0,
+          "total": 23,
+          "on_time": 14,
+          "late": 9,
+          "pct": 60.87,
           "late_clients": [
-            "AGRICOLA LA CAMPANA SPA (prom: 2026-06-10, fact: sin factura)",
+            "AGRICOLA MIGUEL TORRES SPA (prom: 2026-06-10, fact: sin factura)",
+            "AGRICOLA MIGUEL TORRES SPA (prom: 2026-06-10, fact: sin factura)",
+            "GINO ALEJANDRO ALIAGA ALVAREZ (prom: 2026-06-10, fact: sin factura)",
             "ARIDOS LO VALDIVIA LIMITADA (prom: 2026-06-10, fact: sin factura)",
             "AGRÍCOLA LA HUERTA SPA (prom: 2026-06-10, fact: sin factura)",
             "AGRICOLA PALQUIBUDIS SPA (prom: 2026-06-10, fact: sin factura)",
@@ -1495,28 +1497,29 @@
           ]
         },
         "Rancagua": {
-          "total": 21,
-          "on_time": 18,
-          "late": 3,
-          "pct": 85.71,
+          "total": 22,
+          "on_time": 20,
+          "late": 2,
+          "pct": 90.91,
           "late_clients": [
-            "CARLOS SOTO CORREA (prom: 2026-06-10, fact: sin factura)",
             "AGROINVEST LOS GOMEROS SPA (prom: 2026-06-10, fact: sin factura)",
             "EMILIO BENITO MAURO ZUNIGA (prom: 2026-06-09, fact: sin factura)"
           ]
         },
         "San Fernando": {
-          "total": 7,
+          "total": 8,
           "on_time": 7,
-          "late": 0,
-          "pct": 100.0,
-          "late_clients": []
+          "late": 1,
+          "pct": 87.5,
+          "late_clients": [
+            "ALIMENTOS Y FRUTOS S.A. (prom: 2026-06-10, fact: sin factura)"
+          ]
         },
         "Talca": {
-          "total": 24,
-          "on_time": 22,
+          "total": 25,
+          "on_time": 23,
           "late": 2,
-          "pct": 91.67,
+          "pct": 92.0,
           "late_clients": [
             "CIA CHILENA DE FOSFOROS S A (prom: 2026-06-10, fact: sin factura)",
             "AGROMORANDE S A (prom: 2026-06-10, fact: sin factura)"
@@ -2518,15 +2521,15 @@
   "riesgo": {
     "cubierto": 0,
     "cubierto_count": 0,
-    "no_cubierto": 615006649,
-    "no_cubierto_count": 224,
+    "no_cubierto": 601051177,
+    "no_cubierto_count": 221,
     "pct_monto": 100.0,
     "pct_count": 100.0
   },
   "churn": {
     "eligible_clients": 155,
-    "churned_count": 59,
-    "pct": 38.1,
+    "churned_count": 58,
+    "pct": 37.4,
     "churned": [
       {
         "name": "CRISTIAN HUGO FUENZALIDA MEZA",
@@ -2539,7 +2542,7 @@
         "new_this_week": false
       },
       {
-        "name": "MOVIMIENTO DE TIERRA ERRAZURIZ SPA (DICOM)",
+        "name": "MOVIMIENTO DE TIERRA ERRAZURIZ SPA (SINIESTRADO)",
         "freq": "Semanal",
         "freq_days": 7,
         "last_invoice": "2026-01-05",
@@ -2863,9 +2866,9 @@
       },
       {
         "month": "Jun 2026",
-        "pct": 64.3,
-        "new_churn": 36,
-        "active_start": 56
+        "pct": 63.6,
+        "new_churn": 35,
+        "active_start": 55
       }
     ]
   },
@@ -2879,10 +2882,10 @@
           "5667"
         ],
         "target_total": 428073,
-        "mtd_litros": 110363,
-        "compliance_pct": 25.8,
-        "projected": 331089,
-        "projected_pct": 77.3,
+        "mtd_litros": 140527,
+        "compliance_pct": 32.8,
+        "projected": 421581,
+        "projected_pct": 98.5,
         "plants": {
           "Maipu": {
             "target": 153229
@@ -2916,10 +2919,10 @@
       }
     },
     "total_target": 741496,
-    "total_mtd": 200363,
-    "total_compliance_pct": 27.0,
-    "total_projected": 601089,
-    "total_projected_pct": 81.1
+    "total_mtd": 230527,
+    "total_compliance_pct": 31.1,
+    "total_projected": 691581,
+    "total_projected_pct": 93.3
   },
   "operaciones": {
     "months": [
@@ -3084,7 +3087,7 @@
         "dso": 35.0
       }
     ],
-    "cxc_hoy": 1052207579
+    "cxc_hoy": 1032281107
   },
   "gerencia_goals": {
     "margen_contado_meta": 0.085,
