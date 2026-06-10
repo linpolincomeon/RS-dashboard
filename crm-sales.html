@@ -341,7 +341,8 @@ const ALLOWED_VENDORS = [
   'toro gonzález sebastian enrique','muñoz encalada joaquin','manuel santana'
 ];
 const FREELANCERS = [
-  'carolina avilés','marcela márquez','raúl bisquertt','rodrigo retamal'
+  'carolina avilés','marcela márquez','raúl bisquertt','rodrigo retamal',
+  'manuel lópez','nicolás gonzalez','cristian jiroz','diego varas'
 ];
 const CS_TEAM = ['comber sigall pauline','mauro boccardo','tomenergy'];
 const _aN = ALLOWED_VENDORS.map(n => norm(n).split(' '));
@@ -724,7 +725,11 @@ const EJECUTIVOS = [
   { key: 'aviles', name: 'Avilés', fullName: 'carolina avilés', freelancer: true },
   { key: 'marquez', name: 'Márquez', fullName: 'marcela márquez', freelancer: true },
   { key: 'bisquertt', name: 'Bisquertt', fullName: 'raúl bisquertt', freelancer: true },
-  { key: 'retamal', name: 'Retamal', fullName: 'rodrigo retamal', freelancer: true }
+  { key: 'retamal', name: 'Retamal', fullName: 'rodrigo retamal', freelancer: true },
+  { key: 'lopez', name: 'López', fullName: 'manuel lópez', freelancer: true },
+  { key: 'gonzalez', name: 'Gonzalez', fullName: 'nicolás gonzalez', freelancer: true },
+  { key: 'jiroz', name: 'Jiroz', fullName: 'cristian jiroz', freelancer: true },
+  { key: 'varas', name: 'Varas', fullName: 'diego varas', freelancer: true }
 ];
 
 function getFreelancerNames() {
@@ -1815,11 +1820,14 @@ function renderMesVencido(){
   const ltGoal=CG.litros_mes||0;
   const mrGoal=CG.margen_retail||8.5,mvGoal=CG.margen_volumen||6;
   const mrA=TP.margin_retail_pct||0,mvA=TP.margin_volume_pct||0;
+  let litrosFreelancer=0;
+  for(const [u,v] of Object.entries(TP.litros_by_user||{})){ if(isFreelancer(u)) litrosFreelancer+=v; }
 
   let h='<div style="margin-bottom:16px"><h2 style="font-size:18px;font-weight:700">Cierre '+( VP.month_label||'Mes Anterior')+'</h2></div>';
 
   h+='<div class="kpi-row">';
   h+=mkKpi('c-red','Litros',fL(TP.total_litros||0),ltGoal?pct(TP.total_litros||0,ltGoal)+'% de meta '+fL(ltGoal):'',TP.total_litros||0,ltGoal||1);
+  h+=mkKpi('c-yellow','Litros Freelancer',fL(litrosFreelancer),'Suma freelancers del mes',null,null);
   h+=mkKpi('c-blue','Clientes Nuevos',(ncP.count||0),'primera factura del mes');
   h+=mkKpi(mrA>=mrGoal?'c-green':'c-red','Margen Retail',mrA+'%','Meta: '+mrGoal+'%',mrA,mrGoal);
   h+=mkKpi(mvA>=mvGoal?'c-green':'c-red','Margen Volumen',mvA+'%','Meta: '+mvGoal+'%',mvA,mvGoal);
