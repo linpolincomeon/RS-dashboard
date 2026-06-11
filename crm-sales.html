@@ -1430,7 +1430,8 @@ function renderFidelizacion() {
   const churnPct = summary.churn_pct || 0;
   const newlyLost = summary.newly_lost || 0;
   const prevMonthClients = summary.prev_month_clients || 1;
-  const churnDet = `${newlyLost} / ${prevMonthClients}`;
+  const churnLabel = summary.churn_label || '';
+  const churnDet = `${churnLabel ? churnLabel + ' · ' : ''}${newlyLost} / ${prevMonthClients}`;
   kh += mkKpi('c-red', '📉 Churn', churnPct.toFixed(1) + '%', churnDet, null, null);
 
   // Rescue rate: rescued / (dormant + rescued)
@@ -1444,7 +1445,7 @@ function renderFidelizacion() {
   // Explanation notes
   let notes = '<strong>Definiciones:</strong><br>';
   notes += '<strong>Perdidos:</strong> Clientes sin factura por más de 9 meses (etapa CRM: Perdido)<br>';
-  notes += '<strong>Churn:</strong> Clientes nuevos perdidos este mes / clientes activos mes anterior<br>';
+  notes += '<strong>Churn:</strong> Perdidos del mes (clientes que cruzan 9 meses sin comprar, excluyendo estacionales) ÷ Activos del mes anterior<br>';
   notes += '<strong>Rescate:</strong> Rescatados = durmientes que volvieron a facturar / (durmientes + rescatados)';
   document.getElementById('churnNotes').innerHTML = notes;
 
