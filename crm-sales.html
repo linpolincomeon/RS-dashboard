@@ -1158,7 +1158,7 @@ function renderVentas() {
   const wkBudget = !isAccum && wkData.label ? getWeeklyBudget(wkData.label) : 0;
   const wkPct = wkBudget > 0 ? Math.round((wkLitros / wkBudget) * 100) : 0;
 
-  // 2. Litros Ejecutivos (Toro + Muñoz + Ron)
+  // 2. Litros Ejecutivos (Toro + Muñoz + Santana)
   let litrosEjecutivos = 0;
   for (const [u, v] of Object.entries(lbuSrc)) { if (isAllowed(u)) litrosEjecutivos += v; }
 
@@ -1229,7 +1229,7 @@ function renderVentas() {
   } else {
     kh += mkKpi('c-red', 'Litros Totales', fL(wkLitros), wkPct + '% de meta ' + fL(wkBudget), wkLitros, wkBudget || 1);
   }
-  kh += mkKpi('c-blue', 'Litros Ejecutivos', fL(litrosEjecutivos), 'Toro + Muñoz + Ron', null, null);
+  kh += mkKpi('c-blue', 'Litros Ejecutivos', fL(litrosEjecutivos), 'Toro + Muñoz + Santana', null, null);
   kh += mkKpi('c-yellow', 'Litros Freelancer', fL(litrosFreelancer), 'Avilés, Márquez, Bisquertt', null, null);
   kh += mkKpi('c-green', 'Litros Fidelización', fL(litrosFidelizacion), 'CS + otros', null, null);
   kh += mkKpi('c-red', 'Leads', wLeads, 'Meta: ' + leadsGoal, wLeads, leadsGoal);
