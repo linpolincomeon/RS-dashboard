@@ -1584,6 +1584,40 @@ def extract_churn_data(models, uid):
                                 atype = a["activity_type_id"][1] if a.get("activity_type_id") else "Actividad"
                                 deadline = (a.get("date_deadline") or "")[:10]
                                 last_note_by_pid[pid2] = (f"{atype}: {summary[:120]}" if summary else f"{atype} pendiente") + (f" ({deadline})" if deadline else "")
+            # Fallback adicional: mensajes/actividades del CLIENTE (res.partner) y Notas internas (comment)
+            still_p = [p for p in extra_pids if p not in last_note_by_pid]
+            if still_p:
+                pmsgs = sr(models, uid, "mail.message", [
+                    ["model", "=", "res.partner"],
+                    ["res_id", "in", still_p],
+                    ["message_type", "in", ["comment", "note"]],
+                ], ["res_id", "body", "date"], limit=2000, order="date desc")
+                for m in pmsgs:
+                    pid2 = m.get("res_id")
+                    if pid2 and pid2 not in last_note_by_pid:
+                        body = strip_html(m.get("body") or "")
+                        if len(body) > 3 and not any(n in body.lower()[:80] for n in _noise):
+                            last_note_by_pid[pid2] = body[:150]
+                still_p = [p for p in extra_pids if p not in last_note_by_pid]
+                if still_p:
+                    pacts = sr(models, uid, "mail.activity", [
+                        ["res_model", "=", "res.partner"],
+                        ["res_id", "in", still_p],
+                    ], ["res_id", "summary", "activity_type_id"], limit=500)
+                    for a in pacts:
+                        pid2 = a.get("res_id")
+                        if pid2 and pid2 not in last_note_by_pid and a.get("summary"):
+                            atype = a["activity_type_id"][1] if a.get("activity_type_id") else "Actividad"
+                            last_note_by_pid[pid2] = f"{atype}: {a['summary'][:120]}"
+                still_p = [p for p in extra_pids if p not in last_note_by_pid]
+                if still_p:
+                    pcoms = sr(models, uid, "res.partner", [["id", "in", still_p]],
+                               ["id", "comment"], limit=5000)
+                    for p in pcoms:
+                        pid2 = p.get("id")
+                        cmt = strip_html(p.get("comment") or "")
+                        if pid2 and pid2 not in last_note_by_pid and cmt:
+                            last_note_by_pid[pid2] = cmt[:150]
             print(f"  Lost notes extended: {len([p for p in lost_pids if p in last_note_by_pid])}/{len(lost_pids)}")
         except Exception as e:
             print(f"  Lost notes extension skipped: {e}")
