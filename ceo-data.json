@@ -1,33 +1,58 @@
 {
-  "updated": "2026-06-11T01:38:10.940889",
+  "updated": "2026-06-11T14:55:24.172625",
   "weeks": [
     {
       "label": "11jun-17jun",
       "start": "2026-06-11",
       "end": "2026-06-17",
-      "ventas": 0,
-      "neto": 0,
-      "litros": 0,
-      "litros_retail": 0,
-      "litros_volumen": 0,
-      "precio_neto": 0,
-      "precio_bruto": 0,
-      "margin": 0,
-      "margin_retail": 0,
-      "margin_volumen": 0,
-      "facturas": 0,
+      "ventas": 9583400,
+      "neto": 6941286,
+      "litros": 6550,
+      "litros_retail": 3000,
+      "litros_volumen": 3550,
+      "precio_neto": 1060,
+      "precio_bruto": 1463,
+      "margin": 0.09219,
+      "margin_retail": 0.08771,
+      "margin_volumen": 0.09595,
+      "facturas": 6,
       "nc": 0,
-      "clientes": 0,
-      "recaud": 0,
+      "clientes": 6,
+      "recaud": 13397460,
       "cheques": 0,
-      "transf": 0,
-      "factoring": 0,
+      "transf": 12805860,
+      "factoring": 591600,
       "compras_odoo": 0,
       "cheq_cartera_saldo": 0,
       "cheq_recibidos": 0,
-      "facturas_contado": 0,
-      "facturas_credito": 0,
-      "margin_by_term": {},
+      "facturas_contado": 2,
+      "facturas_credito": 4,
+      "margin_by_term": {
+        "1 Día": {
+          "margin": 0.07927,
+          "normalizado": 0.08893,
+          "count": 2,
+          "days": 1
+        },
+        "15 Días": {
+          "margin": 0.06947,
+          "normalizado": 0.07447,
+          "count": 1,
+          "days": 15
+        },
+        "30 Días": {
+          "margin": 0.10043,
+          "normalizado": 0.10043,
+          "count": 2,
+          "days": 30
+        },
+        "45 Días": {
+          "margin": 0.09918,
+          "normalizado": 0.09418,
+          "count": 1,
+          "days": 45
+        }
+      },
       "cotiz_canceladas": 0,
       "visitas": 0,
       "clientes_nuevos": 0,
@@ -57,7 +82,7 @@
       "cheques": 13809580,
       "transf": 164761270,
       "factoring": 100074509,
-      "compras_odoo": 186895145,
+      "compras_odoo": 226761163,
       "cheq_cartera_saldo": 0,
       "cheq_recibidos": 5270260,
       "facturas_contado": 17,
@@ -1205,8 +1230,8 @@
     {
       "date": "11jun",
       "day": "Jue",
-      "litros": 0,
-      "neto": 0
+      "litros": 6550,
+      "neto": 6941286
     },
     {
       "date": "10jun",
@@ -1302,11 +1327,11 @@
   "banks": [
     {
       "name": "DE CHILE",
-      "balance": 21440423
+      "balance": 19972532
     },
     {
       "name": "ITAU",
-      "balance": 6303014
+      "balance": 11303014
     },
     {
       "name": "ESTADO",
@@ -1329,15 +1354,15 @@
       "balance": -1627884
     }
   ],
-  "total_cash": 40781835,
+  "total_cash": 44313944,
   "receivables": {
-    "open_invoices": 216,
-    "total_due": 587417307,
-    "current": 463093438,
-    "overdue": 124323869,
-    "pct_overdue": 21.2,
+    "open_invoices": 217,
+    "total_due": 586083407,
+    "current": 472676838,
+    "overdue": 113406569,
+    "pct_overdue": 19.3,
     "aging": {
-      "0-30": 113611086,
+      "0-30": 102693786,
       "31-60": 947220,
       "61-90": 0,
       "90+": 9765563
@@ -1352,10 +1377,6 @@
         "amount": 26763004
       },
       {
-        "name": "PATRICIO VISCAY ALBORNOZ",
-        "amount": 25121784
-      },
-      {
         "name": "Servicios de construcción y maquinarias Talmaqq Ltda.",
         "amount": 22690001
       },
@@ -1366,6 +1387,10 @@
       {
         "name": "EL PARRON SPA",
         "amount": 21735000
+      },
+      {
+        "name": "PATRICIO VISCAY ALBORNOZ",
+        "amount": 21605084
       },
       {
         "name": "CIA CHILENA DE FOSFOROS S A",
@@ -1384,12 +1409,12 @@
         "amount": 17742001
       },
       {
-        "name": "AURORA AUSTRALIS SA",
-        "amount": 13980000
+        "name": "MAQUINARIAS Y ARIDOS SAN PEDRO SPA.",
+        "amount": 15204699
       },
       {
-        "name": "MAQUINARIAS Y ARIDOS SAN PEDRO SPA.",
-        "amount": 11598299
+        "name": "AURORA AUSTRALIS SA",
+        "amount": 13980000
       },
       {
         "name": "AGROSERVICIOS JR SPA",
@@ -1416,12 +1441,12 @@
         "amount": 7895000
       },
       {
-        "name": "ANDES SOLAR SA",
-        "amount": 7825004
-      },
-      {
         "name": "ARIDOS LO VALDIVIA LIMITADA",
         "amount": 7732998
+      },
+      {
+        "name": "AGRICOLA MANTOS VERDES LIMITADA",
+        "amount": 7381699
       }
     ]
   },
@@ -1430,11 +1455,12 @@
       "label": "11jun-17jun",
       "zones": {
         "Curico": {
-          "total": 3,
+          "total": 4,
           "on_time": 0,
-          "late": 3,
+          "late": 4,
           "pct": 0.0,
           "late_clients": [
+            "AGRICOLA LOS AROMOS LTDA (prom: 2026-06-11, fact: sin factura)",
             "AGRICOLA LA HACIENDA LTDA (prom: 2026-06-11, fact: sin factura)",
             "MOVIMIENTO DE TIERRA JOSE RODRIGO ORMAZABAL VIDAL (prom: 2026-06-11, fact: sin factura)",
             "AGRICOLA LA PATAGUILLA LTDA (prom: 2026-06-11, fact: sin factura)"
@@ -1442,24 +1468,30 @@
         },
         "Rancagua": {
           "total": 2,
-          "on_time": 0,
-          "late": 2,
-          "pct": 0.0,
+          "on_time": 1,
+          "late": 1,
+          "pct": 50.0,
           "late_clients": [
-            "AGRICOLA SAN NICOLAS LTDA (prom: 2026-06-11, fact: sin factura)",
             "GABRIEL ANDRES DUQUE SANCHEZ (prom: 2026-06-11, fact: sin factura)"
           ]
         },
-        "Talca": {
+        "San Fernando": {
           "total": 3,
           "on_time": 0,
           "late": 3,
           "pct": 0.0,
           "late_clients": [
-            "EMPRESAS TUCAPEL S A (prom: 2026-06-11, fact: sin factura)",
-            "BOMBAS DE HORMIGON G&P SPA (prom: 2026-06-11, fact: sin factura)",
-            "MAQUINARIAS Y ARIDOS SAN PEDRO SPA. (prom: 2026-06-11, fact: sin factura)"
+            "JORGE ALFONSO CATALAN FIGUEROA (prom: 2026-06-11, fact: sin factura)",
+            "AGRICOLA TRICAHUE LIMITADA (prom: 2026-06-11, fact: sin factura)",
+            "NUEVO SUR SPA (prom: 2026-06-11, fact: sin factura)"
           ]
+        },
+        "Talca": {
+          "total": 3,
+          "on_time": 3,
+          "late": 0,
+          "pct": 100.0,
+          "late_clients": []
         },
         "VI Costa": {
           "total": 1,
@@ -1489,7 +1521,7 @@
           "pct": 81.48,
           "late_clients": [
             "TRANSPORTES Y CARGAS MARTINEZ DIAZ LIMITADA (prom: 2026-06-10, fact: sin factura)",
-            "PROVEAGRO SERVICIOS SPA (prom: 2026-06-10, fact: sin factura)",
+            "PROVEAGRO SERVICIOS SPA (prom: 2026-06-10, fact: 2026-06-11)",
             "EL ESTRIBILLO SPA (prom: 2026-06-10, fact: sin factura)",
             "TRANSPORTES MARGARETH MARTINEZ SCHNETTLER E.I.R.L (prom: 2026-06-10, fact: sin factura)",
             "AGRICOLA EL MILAGRO LTDA. (prom: 2026-06-04, fact: 2026-06-05)"
@@ -1510,7 +1542,7 @@
           "late": 1,
           "pct": 90.91,
           "late_clients": [
-            "LABRA E HIJAS SPA (prom: 2026-06-10, fact: sin factura)"
+            "LABRA E HIJAS SPA (prom: 2026-06-10, fact: 2026-06-11)"
           ]
         },
         "Talca": {
@@ -2449,15 +2481,15 @@
   "riesgo": {
     "cubierto": 0,
     "cubierto_count": 0,
-    "no_cubierto": 587417307,
-    "no_cubierto_count": 216,
+    "no_cubierto": 586083407,
+    "no_cubierto_count": 217,
     "pct_monto": 100.0,
     "pct_count": 100.0
   },
   "churn": {
-    "eligible_clients": 153,
+    "eligible_clients": 154,
     "churned_count": 57,
-    "pct": 37.3,
+    "pct": 37.0,
     "churned": [
       {
         "name": "CRISTIAN HUGO FUENZALIDA MEZA",
@@ -2794,9 +2826,9 @@
       },
       {
         "month": "Jun 2026",
-        "pct": 63.0,
+        "pct": 64.2,
         "new_churn": 34,
-        "active_start": 54
+        "active_start": 53
       }
     ]
   },
@@ -2810,10 +2842,10 @@
           "5667"
         ],
         "target_total": 428073,
-        "mtd_litros": 140527,
-        "compliance_pct": 32.8,
-        "projected": 383255,
-        "projected_pct": 89.5,
+        "mtd_litros": 155513,
+        "compliance_pct": 36.3,
+        "projected": 424126,
+        "projected_pct": 99.1,
         "plants": {
           "Maipu": {
             "target": 153229
@@ -2832,10 +2864,10 @@
           "15293"
         ],
         "target_total": 313423,
-        "mtd_litros": 90000,
-        "compliance_pct": 28.7,
-        "projected": 245455,
-        "projected_pct": 78.3,
+        "mtd_litros": 105000,
+        "compliance_pct": 33.5,
+        "projected": 286364,
+        "projected_pct": 91.4,
         "plants": {
           "Maipu": {
             "target": 0
@@ -2847,10 +2879,10 @@
       }
     },
     "total_target": 741496,
-    "total_mtd": 230527,
-    "total_compliance_pct": 31.1,
-    "total_projected": 628710,
-    "total_projected_pct": 84.8
+    "total_mtd": 260513,
+    "total_compliance_pct": 35.1,
+    "total_projected": 710490,
+    "total_projected_pct": 95.8
   },
   "operaciones": {
     "months": [
@@ -2943,12 +2975,12 @@
         "month": "2026-06",
         "label": "Jun 2026",
         "budget": 16920204,
-        "actual": 6599014,
+        "actual": 6602465,
         "compliance_pct": 39.0,
         "categories": {
           "Petróleo": 3960972,
           "Mantención y Reparación": 1310252,
-          "Gastos Traslados (TAG)": 915883,
+          "Gastos Traslados (TAG)": 919334,
           "Seguros": 0,
           "Gastos Vehículos": 411907,
           "Arriendo": 0,
@@ -3015,7 +3047,7 @@
         "dso": 34.8
       }
     ],
-    "cxc_hoy": 1018206853
+    "cxc_hoy": 1016872953
   },
   "gerencia_goals": {
     "margen_contado_meta": 0.085,
