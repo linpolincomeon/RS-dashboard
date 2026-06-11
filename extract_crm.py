@@ -1932,7 +1932,7 @@ def extract_recovery_clients(models, uid):
     for i in range(0, len(candidates), 200):
         partners_raw += sr(models, uid, "res.partner",
             [["id", "in", candidates[i:i+200]]],
-            ["id", "name", "delivery_zone_id", "is_volume_client", "phone", "user_id"],
+            ["id", "name", "delivery_zone_id", "is_volume_client", "phone", "user_id", "comment"],
             limit=5000)
     pmap = {p["id"]: p for p in partners_raw}
 
@@ -1995,6 +1995,29 @@ def extract_recovery_clients(models, uid):
                 continue  # la nota del contacto es igual o más reciente
             last_note[pid] = {"body": body, "date": mdate,
                               "author": safe_name(m.get("author_id")) if m.get("author_id") else ""}
+
+    # ── 7c. Gestión en Actividades planeadas (mail.activity) — el equipo escribe el
+    #        log de gestión en el resumen del To-Do, a menudo con plazo a futuro. ──
+    act_note = {}  # pid -> {body, author}
+    try:
+        act_rows = []
+        if rec_lead_to_pid:
+            act_rows += [("crm.lead", a) for a in sr(models, uid, "mail.activity",
+                [["res_model", "=", "crm.lead"], ["res_id", "in", list(rec_lead_to_pid.keys())]],
+                ["res_id", "summary", "note", "user_id"], limit=10000, order="id desc")]
+        act_rows += [("res.partner", a) for a in sr(models, uid, "mail.activity",
+            [["res_model", "=", "res.partner"], ["res_id", "in", candidates]],
+            ["res_id", "summary", "note", "user_id"], limit=10000, order="id desc")]
+        for _model, a in act_rows:
+            pid = rec_lead_to_pid.get(a.get("res_id")) if _model == "crm.lead" else a.get("res_id")
+            if not pid or pid in act_note:
+                continue
+            body = (a.get("summary") or "").strip() or strip_html(a.get("note") or "")
+            if body:
+                act_note[pid] = {"body": body[:150],
+                                 "author": safe_name(a.get("user_id")) if a.get("user_id") else "Actividad CRM"}
+    except Exception as _e:
+        print(f"  Recovery activities skipped: {_e}")
 
     # ── 8. Clasificar cada candidato: recoverable vs seasonal ──
     SPANISH_MONTHS = ["", "ene", "feb", "mar", "abr", "may", "jun",
@@ -2060,6 +2083,22 @@ def extract_recovery_clients(models, uid):
 
         note = last_note.get(pid, {})
         lead = last_lead.get(pid, {})
+        # Respaldo de notas: chatter → Actividad planeada (mail.activity) → Notas internas (comment)
+        _note_body = note.get("body", "")
+        _note_author = note.get("author", "")
+        _note_date = note.get("date", "")
+        if not _note_body:
+            _act = act_note.get(pid)
+            if _act and _act.get("body"):
+                _note_body = _act["body"]
+                _note_author = _act.get("author") or "Actividad CRM"
+                _note_date = ""
+        if not _note_body:
+            _cmt = strip_html(p.get("comment") or "")[:150]
+            if _cmt:
+                _note_body = _cmt
+                _note_author = "Notas internas"
+                _note_date = ""
 
         item = {
             "id": pid,
@@ -2073,9 +2112,9 @@ def extract_recovery_clients(models, uid):
             "caida_pct": caida_pct,
             "months_active_2025": months_count_2025,
             "months_pattern": [SPANISH_MONTHS[m] for m in months_active_2025],
-            "last_note": note.get("body", ""),
-            "note_date": note.get("date", ""),
-            "note_author": note.get("author", ""),
+            "last_note": _note_body,
+            "note_date": _note_date,
+            "note_author": _note_author,
             "crm_stage": lead.get("stage", ""),
             "crm_exec": lead.get("exec", ""),
             "crm_last": lead.get("last_crm", ""),
