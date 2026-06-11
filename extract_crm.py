@@ -1631,7 +1631,61 @@ def extract_churn_data(models, uid):
         c.pop("partner_id", None)
 
     active_count = len(curr_month_partners | prev_month_partners)
-    churn_pct = round((newly_lost / prev_month_clients) * 100, 1) if prev_month_clients > 0 else 0
+    # ── Churn correcto: basado en FACTURACIÓN (no en etapa CRM, que el cron re-estampa) ──
+    # Perdido(M) = cliente cuya última factura fue en el mes (M-9) → cruza los 9 meses en M,
+    #              EXCLUYENDO estacionales (clientes con brecha histórica >9 meses que volvieron).
+    # Actuales(M) = clientes distintos que facturaron ese mes calendario.
+    # Churn(M) = Perdidos(M) / Actuales(M-1).  M = último mes calendario cerrado.
+    def _ym(dstr):
+        try:
+            return int(dstr[:4]) * 12 + (int(dstr[5:7]) - 1)
+        except Exception:
+            return None
+
+    churn_label = ""
+    try:
+        _first_this = today.replace(day=1)
+        _last_closed = _first_this - timedelta(days=1)            # último día del mes cerrado
+        M = _last_closed.year * 12 + (_last_closed.month - 1)
+        M_prev = M - 1
+        M_lost_origin = M - 9                                     # última compra que cruza 9 meses en M
+
+        _hist_start = (_first_this - timedelta(days=930)).strftime("%Y-%m-01")
+        ch_inv = sr(models, uid, "account.move", [
+            ["move_type", "=", "out_invoice"],
+            ["state", "=", "posted"],
+            ["invoice_date", ">=", _hist_start],
+        ], ["partner_id", "invoice_date"], limit=100000, order="invoice_date asc")
+
+        months_by_pid = defaultdict(set)
+        for inv in ch_inv:
+            pid = safe_id(inv.get("partner_id"))
+            ym = _ym(inv.get("invoice_date") or "")
+            if pid and ym is not None:
+                months_by_pid[pid].add(ym)
+
+        actuales_prev = 0
+        newly_lost_inv = 0
+        seasonal_excl = 0
+        for pid, mset in months_by_pid.items():
+            if M_prev in mset:
+                actuales_prev += 1
+            if max(mset) == M_lost_origin:
+                sm = sorted(mset)
+                is_seasonal = any((sm[i + 1] - sm[i]) > 9 for i in range(len(sm) - 1))
+                if is_seasonal:
+                    seasonal_excl += 1
+                else:
+                    newly_lost_inv += 1
+
+        newly_lost = newly_lost_inv
+        prev_month_clients = actuales_prev
+        churn_pct = round((newly_lost_inv / actuales_prev) * 100, 1) if actuales_prev > 0 else 0
+        churn_label = f"{SPANISH_MONTHS[_last_closed.month]}-{_last_closed.strftime('%y')}"
+        print(f"  Churn {churn_label}: {newly_lost_inv} perdidos / {actuales_prev} actuales = {churn_pct}% (excl. {seasonal_excl} estacionales)")
+    except Exception as _e:
+        churn_pct = 0
+        print(f"  Churn calc (facturación) skipped: {_e}")
     total_rescued = len(rescued_dormant_list) + len(rescued_lost_list)
     # Denominator: dormant pool (actively rescuable) + those already rescued.
     # Perdidos (9+ months) are excluded because they're essentially unreachable and dilute the metric.
@@ -1655,6 +1709,7 @@ def extract_churn_data(models, uid):
             "rescued_lost": len(rescued_lost_list),
             "prev_month_clients": prev_month_clients,
             "churn_pct": churn_pct,
+            "churn_label": churn_label,
             "rescue_pct": rescue_pct,
         },
         "by_user": {
