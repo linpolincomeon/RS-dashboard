@@ -3025,11 +3025,11 @@ def main():
         "graduating": graduating,
         "vendor_goals": vendor_goals,
         "company_goals": {
-            "litros_mes": 1305689,
+            "litros_mes": 866750,
             "litros_cs_mes": 493505,
             "margen_retail": 8.5,
             "margen_volumen": 6.0,
-            "month": "mayo 2026",
+            "month": "junio 2026",
             "budget_monthly_2026": {
                 "1": 1065753, "2": 1090372, "3": 1135242, "4": 1305689,
                 "5": 1035293, "6": 866750, "7": 1107706, "8": 1084934,
