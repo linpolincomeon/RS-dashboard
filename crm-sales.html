@@ -808,7 +808,7 @@ function renderEjecutivos() {
   };
 
   // Build HTML
-  let h = '<div id="weekSelector" style="display:flex;gap:6px;margin-bottom:18px"></div>';
+  let h = '<div id="weekSelector" style="' + (execSubTab === 'semanal' ? 'display:flex;gap:6px;margin-bottom:18px' : 'display:none') + '"></div>';
 
   // Sub-tabs for each exec
   h += '<div class="tab-bar" style="margin-bottom:12px">';
@@ -1005,8 +1005,9 @@ function renderEjecutivos() {
 
   // Enrich with activities when available
   const allActs = D.activities || [];
+  const _todayStrE = new Date().toISOString().slice(0, 10);
   const actDetailByLead = {};
-  allActs.filter(a => matchesExec(a.who)).forEach(a => {
+  allActs.filter(a => matchesExec(a.who) && (a.date || '').slice(0, 10) <= _todayStrE).forEach(a => {
     const key = (a.lead || '').trim().toUpperCase();
     if (key && (!actDetailByLead[key] || (a.date || '') > (actDetailByLead[key].date || ''))) {
       actDetailByLead[key] = {date: a.date || '', desc: a.summary || '', type: a.type || 'To-Do'};
@@ -1571,11 +1572,13 @@ function renderFidelizacion() {
   });
 
   // Enrich dormant clients with CRM activity
+  const _todayStr = new Date().toISOString().slice(0, 10);
   allDormantDedup.forEach(c => {
     const cn = (c.name || '').trim().toUpperCase();
-    const acts = actByClient[cn] || [];
+    // Solo gestión ya ocurrida: excluir actividades con plazo a futuro (deadlines tipo 2027)
+    const acts = (actByClient[cn] || []).filter(a => (a.date || '').slice(0, 10) <= _todayStr);
     acts.sort((a, b) => (b.date || '').localeCompare(a.date || ''));
-    c._crmAct = acts[0] || null;  // most recent activity
+    c._crmAct = acts[0] || null;  // actividad pasada más reciente
   });
 
   // Sort: those with CRM activity first (by date desc), then by avg_monthly_litros desc
