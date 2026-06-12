@@ -216,7 +216,7 @@ tr:hover td{background:#fafaf8}
 
       <!-- Lost clients this month (below Churn KPI) -->
       <div class="sec"><div class="sec-h"><h2>📉 Clientes Perdidos Este Mes (precisión CRM)</h2></div><div class="sec-b" style="max-height:400px;overflow-y:auto">
-        <table><thead><tr><th>Cliente</th><th>Vendedor</th><th>Fecha</th><th>Estado Actual</th></tr></thead><tbody id="lostMonthBody"></tbody></table>
+        <table><thead><tr><th>Cliente</th><th>Vendedor</th><th>Fecha</th><th>Estado Actual</th><th>Última Nota</th></tr></thead><tbody id="lostMonthBody"></tbody></table>
         <div class="nodata" id="noLostMonth" style="display:none">Sin perdidos en el mes</div></div></div>
 
       <!-- Clientes En Riesgo Crediticio -->
@@ -1553,8 +1553,9 @@ function renderFidelizacion() {
     newlyLostPrecise.forEach(c => {
       const stageNow = c.stage_now || '';
       const recovered = stageNow && !stageNow.toLowerCase().includes('perdido');
+      const noteHtmlM = c.last_note ? '<span style="font-size:11px;color:var(--dim)">' + H(c.last_note) + '</span>' : '<span style="color:var(--dim)">—</span>';
       const tr = document.createElement('tr');
-      tr.innerHTML = '<td class="bold">' + H(c.name) + '</td><td>' + H(c.user || '—') + '</td><td>' + (c.date || '—') + '</td><td>' + (recovered ? '<span class="tag tag-g">Recuperado → ' + H(stageNow) + '</span>' : '<span class="tag tag-r">Perdido</span>') + '</td>';
+      tr.innerHTML = '<td class="bold">' + H(c.name) + '</td><td>' + H(c.user || '—') + '</td><td>' + (c.date || '—') + '</td><td>' + (recovered ? '<span class="tag tag-g">Recuperado → ' + H(stageNow) + '</span>' : '<span class="tag tag-r">Perdido</span>') + '</td><td style="max-width:260px;white-space:normal">' + noteHtmlM + '</td>';
       lmb.appendChild(tr);
     });
   }
