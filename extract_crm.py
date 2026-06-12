@@ -471,6 +471,10 @@ def extract_funnel_data(models, uid):
     print("\nExtracting funnel comercial...")
     weeks_data = []
 
+    # ¿Existe el campo de litros estimados en crm.lead?
+    _has_lead_litros = bool(sr(models, uid, "ir.model.fields",
+        [["model", "=", "crm.lead"], ["name", "=", "x_litros_estimados"]], ["id"], limit=1))
+
     # Pre-fetch ruta stage IDs for visit counting
     _stages = sr(models, uid, "crm.stage", [], ["id", "name"], limit=50)
     ruta_stage_ids = [s["id"] for s in _stages if classify_stage(s["name"]) == "ruta"]
@@ -487,10 +491,12 @@ def extract_funnel_data(models, uid):
             ["create_date", ">=", fdt_s(ws)],
             ["create_date", "<=", fdt_e(we)],
         ])
+        _lead_fields = ["name", "partner_name", "user_id", "stage_id", "create_date"]
+        if _has_lead_litros: _lead_fields.append("x_litros_estimados")
         lead_detail = sr(models, uid, "crm.lead", [
             ["create_date", ">=", fdt_s(ws)],
             ["create_date", "<=", fdt_e(we)],
-        ], ["name", "partner_name", "user_id", "stage_id", "create_date"], limit=2000)
+        ], _lead_fields, limit=2000)
 
         leads_by_user = defaultdict(int)
         lead_rows = []
@@ -503,6 +509,7 @@ def extract_funnel_data(models, uid):
                 "vendedor": u,
                 "etapa": safe_name(l.get("stage_id")),
                 "fecha": (l.get("create_date") or "")[:10],
+                "litros": int(l.get("x_litros_estimados") or 0),
             })
 
         # 2. Contactos efectivos
