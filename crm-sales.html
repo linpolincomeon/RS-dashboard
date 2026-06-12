@@ -994,6 +994,24 @@ function renderEjecutivos() {
   }
   h += '</tbody></table></div></div>';
 
+  // ── Leads de la Semana (detalle del KPI "Leads": contactos en etapa Oportunidad) ──
+  let execLeadsDetail = [];
+  if (isExecAccum) {
+    fwE.forEach(w => { execLeadsDetail = execLeadsDetail.concat((w.stages?.leads?.detail || []).filter(x => matchesExec(x.vendedor))); });
+  } else {
+    execLeadsDetail = (st.leads?.detail || []).filter(x => matchesExec(x.vendedor));
+  }
+  h += '<div class="sec"><div class="sec-h"><h2>🎯 Leads de la Semana</h2><span style="font-size:12px;color:var(--dim)">' + execLeadsDetail.length + '</span></div><div class="sec-b" style="padding:0;max-height:400px;overflow-y:auto"><table>';
+  h += '<thead><tr><th>Cliente</th><th>Etapa</th><th>Fecha</th></tr></thead><tbody>';
+  if (execLeadsDetail.length === 0) {
+    h += '<tr><td colspan="3" style="text-align:center;color:var(--dim);padding:20px">Sin leads esta semana</td></tr>';
+  } else {
+    execLeadsDetail.sort((a, b) => (b.fecha || '').localeCompare(a.fecha || '')).forEach(x => {
+      h += `<tr><td class="bold">${H(x.empresa || x.name)}</td><td>${H(x.etapa || '')}</td><td style="white-space:nowrap">${x.fecha || '—'}</td></tr>`;
+    });
+  }
+  h += '</tbody></table></div></div>';
+
   // ── Pipeline del Ejecutivo — como el weekly: muestra TODO el pipeline activo ──
   const isL = D.has_litros;
   const fV_exec = isL ? fL : fC;
