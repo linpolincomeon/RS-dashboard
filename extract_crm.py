@@ -507,17 +507,18 @@ def extract_funnel_data(models, uid):
                 "litros": int(l.get("expected_revenue") or 0),  # TomEnergy: expected_revenue = litros estimados
             })
 
-        # 2. Contactos efectivos
+        # 2. Contactos efectivos — comentarios y correos REALES (excluye notificaciones del sistema/cron)
         contact_count = 0
         contacts_by_user = defaultdict(int)
         try:
-            contact_msgs = sr(models, uid, "mail.message", [
+            contact_domain = [
                 ["date", ">=", fdt_s(ws)],
                 ["date", "<=", fdt_e(we)],
                 ["model", "=", "crm.lead"],
-                ["message_type", "in", ["comment", "email", "notification", "sms"]],
-            ], ["res_id"], limit=2000)
-            contact_count = len(contact_msgs)
+                ["message_type", "in", ["comment", "email"]],
+            ]
+            contact_count = s_count(models, uid, "mail.message", contact_domain)
+            contact_msgs = sr(models, uid, "mail.message", contact_domain, ["res_id"], limit=5000)
 
             lead_ids = list(set(m.get("res_id") for m in contact_msgs if m.get("res_id")))
             if lead_ids:
@@ -534,19 +535,8 @@ def extract_funnel_data(models, uid):
                     rid = m.get("res_id")
                     u = lead_user_map.get(rid, "Sin asignar")
                     contacts_by_user[u] += 1
-        except:
-            try:
-                acts = sr(models, uid, "mail.activity", [
-                    ["date_deadline", ">=", ws],
-                    ["date_deadline", "<=", we],
-                    ["res_model", "=", "crm.lead"],
-                ], ["user_id"], limit=2000)
-                contact_count = len(acts)
-                for a in acts:
-                    u = safe_name(a.get("user_id"))
-                    contacts_by_user[u] += 1
-            except:
-                pass
+        except Exception as e:
+            print(f"    Contactos efectivos skipped: {e}")
 
         # 2b. Ruta (visitas) — leads moved to "Ruta" stage this week
         ruta_count = 0
