@@ -358,6 +358,10 @@ function _partialMatch(testName, refWordsList) {
   });
 }
 const isAllowed = n => _partialMatch(n, _aN);
+// Vendedores excluidos (ex-equipo con data histórica en Odoo que NO debe figurar en ninguna tabla)
+const EXCLUDED_VENDORS = ['ron yenire'];
+const _xN = EXCLUDED_VENDORS.map(n => norm(n).split(' '));
+const isExcluded = n => _partialMatch(n, _xN);
 
 // Canonical vendor name: resolve any variant to the reference name from ALLOWED_VENDORS/FREELANCERS/CS_TEAM
 const _ALL_REF = [...ALLOWED_VENDORS, ...FREELANCERS, ...CS_TEAM];
@@ -740,19 +744,19 @@ function getFreelancerNames() {
 
   // Collect all vendor names from litros
   for (const name of Object.keys(lbu)) {
-    if (!isAllowed(name) && !isCS(name)) seenNames.add(norm(name));
+    if (!isAllowed(name) && !isCS(name) && !isExcluded(name)) seenNames.add(norm(name));
   }
   // Collect from new clients
   for (const c of ncDetail) {
-    if (!isAllowed(c.vendedor) && !isCS(c.vendedor)) seenNames.add(norm(c.vendedor));
+    if (!isAllowed(c.vendedor) && !isCS(c.vendedor) && !isExcluded(c.vendedor)) seenNames.add(norm(c.vendedor));
   }
   // Collect from won deals
   for (const w of (D.won_deals || [])) {
-    if (!isAllowed(w.exec) && !isCS(w.exec)) seenNames.add(norm(w.exec));
+    if (!isAllowed(w.exec) && !isCS(w.exec) && !isExcluded(w.exec)) seenNames.add(norm(w.exec));
   }
   // Collect from pipeline
   for (const p of (D.pipeline || [])) {
-    if (!isAllowed(p.exec) && !isCS(p.exec)) seenNames.add(norm(p.exec));
+    if (!isAllowed(p.exec) && !isCS(p.exec) && !isExcluded(p.exec)) seenNames.add(norm(p.exec));
   }
 
   // Map back to original names
@@ -1168,7 +1172,7 @@ function renderVentas() {
 
   // 4. Litros Fidelización (everyone else — CS + others, NOT ejecutivos, NOT freelancers)
   let litrosFidelizacion = 0;
-  for (const [u, v] of Object.entries(lbuSrc)) { if (!isAllowed(u) && !isFreelancer(u)) litrosFidelizacion += v; }
+  for (const [u, v] of Object.entries(lbuSrc)) { if (!isAllowed(u) && !isFreelancer(u) && !isExcluded(u)) litrosFidelizacion += v; }
 
   // 4. Litros Nuevos (new clients)
   const ncDetail = V.new_clients?.detail || [];
