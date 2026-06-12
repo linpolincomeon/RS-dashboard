@@ -999,18 +999,20 @@ function renderEjecutivos() {
   const _collectG = (stages) => {
     for (const sk of Object.keys(stages || {})) {
       const det = (stages[sk] || {}).detail || [];
-      det.forEach(x => { if (matchesExec(x.vendedor)) execGestion.push({cliente: x.empresa || x.name || '', etapa: x.etapa || sk, fecha: (x.fecha || '').slice(0, 10)}); });
+      det.forEach(x => { if (matchesExec(x.vendedor)) execGestion.push({cliente: x.empresa || x.cliente || x.name || '', etapa: x.etapa || sk, fecha: (x.fecha || '').slice(0, 10), litros: x.litros || 0}); });
     }
   };
   if (isExecAccum) { fwE.forEach(w => _collectG(w.stages)); } else { _collectG(st); }
   execGestion.sort((a, b) => (b.fecha || '').localeCompare(a.fecha || ''));
-  h += '<div class="sec"><div class="sec-h"><h2>🎯 Gestión Real de la Semana</h2><span style="font-size:12px;color:var(--dim)">' + execGestion.length + '</span></div><div class="sec-b" style="padding:0;max-height:420px;overflow-y:auto"><table>';
-  h += '<thead><tr><th>Cliente</th><th>Etapa</th><th>Fecha</th></tr></thead><tbody>';
+  const totGestL = execGestion.reduce((s, x) => s + (x.litros || 0), 0);
+  h += '<div class="sec"><div class="sec-h"><h2>🎯 Gestión Real de la Semana</h2><span style="font-size:12px;color:var(--dim)">' + execGestion.length + (totGestL ? ' · ' + fL(totGestL) : '') + '</span></div><div class="sec-b" style="padding:0;max-height:420px;overflow-y:auto"><table>';
+  h += '<thead><tr><th>Cliente</th><th>Etapa</th><th>Litros</th><th>Fecha</th></tr></thead><tbody>';
   if (execGestion.length === 0) {
-    h += '<tr><td colspan="3" style="text-align:center;color:var(--dim);padding:20px">Sin gestión esta semana</td></tr>';
+    h += '<tr><td colspan="4" style="text-align:center;color:var(--dim);padding:20px">Sin gestión esta semana</td></tr>';
   } else {
     execGestion.forEach(x => {
-      h += `<tr><td class="bold">${H(x.cliente)}</td><td>${H(x.etapa)}</td><td style="white-space:nowrap">${x.fecha || '—'}</td></tr>`;
+      const lt = x.litros ? fL(x.litros) : '<span style="color:var(--dim)">—</span>';
+      h += `<tr><td class="bold">${H(x.cliente)}</td><td>${H(x.etapa)}</td><td>${lt}</td><td style="white-space:nowrap">${x.fecha || '—'}</td></tr>`;
     });
   }
   h += '</tbody></table></div></div>';
