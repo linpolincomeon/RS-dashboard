@@ -3,6 +3,8 @@ name: Update CRM Dashboard Data
 on:
   schedule:
     - cron: '0 11,15,19,23 * * *'   # anchor: 8am, 12pm, 4pm, 8pm Chile (UTC-3)
+    - cron: '0 13,17,21 * * 5'      # VIERNES extra: con el diario queda cada ~2h (11,13,15,17,19,21,23 UTC)
+    - cron: '0 14 * * 5'            # VIERNES: 14:00 UTC = 10am GMT-4, dato fresco 1h antes de la reunion (11am GMT-4 = 15:00 UTC)
   workflow_dispatch:
 
 permissions:
