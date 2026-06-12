@@ -1,32 +1,32 @@
 {
-  "updated": "2026-06-12T14:17:53.371249",
+  "updated": "2026-06-12T17:45:07.230664",
   "weeks": [
     {
       "label": "11jun-17jun",
       "start": "2026-06-11",
       "end": "2026-06-17",
-      "ventas": 51554351,
-      "neto": 36646272,
-      "litros": 36110,
-      "litros_retail": 22560,
+      "ventas": 36642441,
+      "neto": 24523776,
+      "litros": 25780,
+      "litros_retail": 12230,
       "litros_volumen": 13550,
-      "precio_neto": 1015,
-      "precio_bruto": 1428,
-      "margin": 0.06984,
-      "margin_retail": 0.08366,
+      "precio_neto": 951,
+      "precio_bruto": 1432,
+      "margin": 0.07211,
+      "margin_retail": 0.08464,
       "margin_volumen": 0.04528,
-      "facturas": 21,
-      "nc": 0,
-      "clientes": 21,
-      "recaud": 63608609,
-      "cheques": 0,
-      "transf": 58378009,
+      "facturas": 25,
+      "nc": 2,
+      "clientes": 25,
+      "recaud": 125173827,
+      "cheques": 12395259,
+      "transf": 107547968,
       "factoring": 5230600,
-      "compras_odoo": 0,
+      "compras_odoo": 40078961,
       "cheq_cartera_saldo": 0,
       "cheq_recibidos": 0,
       "facturas_contado": 6,
-      "facturas_credito": 15,
+      "facturas_credito": 19,
       "margin_by_term": {
         "1 Día": {
           "margin": 0.04522,
@@ -47,9 +47,9 @@
           "days": 15
         },
         "30 Días": {
-          "margin": 0.09301,
-          "normalizado": 0.09301,
-          "count": 9,
+          "margin": 0.0921,
+          "normalizado": 0.0921,
+          "count": 12,
           "days": 30
         },
         "45 Días": {
@@ -57,9 +57,15 @@
           "normalizado": 0.09418,
           "count": 1,
           "days": 45
+        },
+        "60 Días": {
+          "margin": 0.09178,
+          "normalizado": 0.08178,
+          "count": 1,
+          "days": 60
         }
       },
-      "cotiz_canceladas": 1,
+      "cotiz_canceladas": 3,
       "visitas": 100,
       "clientes_nuevos": 1,
       "ppto": 178726,
@@ -1236,8 +1242,8 @@
     {
       "date": "12jun",
       "day": "Vie",
-      "litros": 17600,
-      "neto": 17368644
+      "litros": 22270,
+      "neto": 22184660
     },
     {
       "date": "11jun",
@@ -1333,7 +1339,7 @@
   "banks": [
     {
       "name": "DE CHILE",
-      "balance": 55183681
+      "balance": 59495500
     },
     {
       "name": "ITAU",
@@ -1360,15 +1366,15 @@
       "balance": -1627884
     }
   ],
-  "total_cash": 79525093,
+  "total_cash": 83836912,
   "receivables": {
-    "open_invoices": 223,
-    "total_due": 582092608,
-    "current": 482609369,
-    "overdue": 99483239,
-    "pct_overdue": 17.1,
+    "open_invoices": 224,
+    "total_due": 577911299,
+    "current": 482913060,
+    "overdue": 94998239,
+    "pct_overdue": 16.4,
     "aging": {
-      "0-30": 88770456,
+      "0-30": 84285456,
       "31-60": 947220,
       "61-90": 0,
       "90+": 9765563
@@ -1379,8 +1385,8 @@
         "amount": 58944599
       },
       {
-        "name": "JOSE RODRIGO ORMAZABAL VIDAL",
-        "amount": 26763004
+        "name": "SOC. DE TRANSPORTES TRACMAVI LTDA.",
+        "amount": 24489048
       },
       {
         "name": "Servicios de construcción y maquinarias Talmaqq Ltda.",
@@ -1391,16 +1397,16 @@
         "amount": 22677569
       },
       {
+        "name": "JOSE RODRIGO ORMAZABAL VIDAL",
+        "amount": 22278004
+      },
+      {
         "name": "PATRICIO VISCAY ALBORNOZ",
         "amount": 21605084
       },
       {
         "name": "CIA CHILENA DE FOSFOROS S A",
         "amount": 21452502
-      },
-      {
-        "name": "SOC. DE TRANSPORTES TRACMAVI LTDA.",
-        "amount": 20693048
       },
       {
         "name": "EMM SERVICIOS SPA",
@@ -1451,8 +1457,8 @@
         "amount": 7310001
       },
       {
-        "name": "TERRAMATER S A",
-        "amount": 7045000
+        "name": "SAMUEL BUDINICH SPA",
+        "amount": 7144702
       }
     ]
   },
@@ -1470,12 +1476,12 @@
           ]
         },
         "Rancagua": {
-          "total": 5,
-          "on_time": 2,
+          "total": 6,
+          "on_time": 3,
           "late": 3,
-          "pct": 40.0,
+          "pct": 50.0,
           "late_clients": [
-            "SAMUEL BUDINICH SPA (prom: 2026-06-12, fact: sin factura)",
+            "COMERCIALIZADORA ECONUT LTDA (prom: 2026-06-12, fact: sin factura)",
             "TRANSPORTE SANTA ELENITA SPA (prom: 2026-06-12, fact: sin factura)",
             "ARRIGONI AMBIENTAL NFU SPA (prom: 2026-06-12, fact: sin factura)"
           ]
@@ -1486,28 +1492,24 @@
           "late": 3,
           "pct": 40.0,
           "late_clients": [
-            "NUEVO SUR SPA (prom: 2026-06-11, fact: sin factura)",
+            "NUEVO SUR SPA (prom: 2026-06-11, fact: 2026-06-12)",
             "JORGE ALFONSO CATALAN FIGUEROA (prom: 2026-06-11, fact: 2026-06-12)",
             "SERVICIOS AGRICOLAS LUIS PULGAR E.I.R.L. (prom: 2026-06-12, fact: sin factura)"
           ]
         },
         "Talca": {
           "total": 5,
-          "on_time": 4,
-          "late": 1,
-          "pct": 80.0,
-          "late_clients": [
-            "SOC. DE TRANSPORTES TRACMAVI LTDA. (prom: 2026-06-12, fact: sin factura)"
-          ]
+          "on_time": 5,
+          "late": 0,
+          "pct": 100.0,
+          "late_clients": []
         },
         "VI Costa": {
           "total": 2,
-          "on_time": 1,
-          "late": 1,
-          "pct": 50.0,
-          "late_clients": [
-            "AGRÍCOLA EL CÓNDOR DE APALTA LIMITADA (prom: 2026-06-12, fact: sin factura)"
-          ]
+          "on_time": 2,
+          "late": 0,
+          "pct": 100.0,
+          "late_clients": []
         }
       }
     },
@@ -2481,8 +2483,8 @@
   "riesgo": {
     "cubierto": 0,
     "cubierto_count": 0,
-    "no_cubierto": 582092608,
-    "no_cubierto_count": 223,
+    "no_cubierto": 577911299,
+    "no_cubierto_count": 224,
     "pct_monto": 100.0,
     "pct_count": 100.0
   },
@@ -2826,9 +2828,9 @@
       },
       {
         "month": "Jun 2026",
-        "pct": 63.3,
-        "new_churn": 31,
-        "active_start": 49
+        "pct": 62.5,
+        "new_churn": 30,
+        "active_start": 48
       }
     ]
   },
@@ -2842,10 +2844,10 @@
           "5667"
         ],
         "target_total": 428073,
-        "mtd_litros": 155513,
-        "compliance_pct": 36.3,
-        "projected": 388782,
-        "projected_pct": 90.8,
+        "mtd_litros": 170629,
+        "compliance_pct": 39.9,
+        "projected": 426572,
+        "projected_pct": 99.6,
         "plants": {
           "Maipu": {
             "target": 153229
@@ -2879,10 +2881,10 @@
       }
     },
     "total_target": 741496,
-    "total_mtd": 275513,
-    "total_compliance_pct": 37.2,
-    "total_projected": 688782,
-    "total_projected_pct": 92.9
+    "total_mtd": 290629,
+    "total_compliance_pct": 39.2,
+    "total_projected": 726572,
+    "total_projected_pct": 98.0
   },
   "operaciones": {
     "months": [
@@ -2975,12 +2977,12 @@
         "month": "2026-06",
         "label": "Jun 2026",
         "budget": 16920204,
-        "actual": 6727465,
+        "actual": 6729315,
         "compliance_pct": 39.8,
         "categories": {
           "Petróleo": 3960972,
           "Mantención y Reparación": 1310252,
-          "Gastos Traslados (TAG)": 919334,
+          "Gastos Traslados (TAG)": 921184,
           "Seguros": 0,
           "Gastos Vehículos": 536907,
           "Arriendo": 0,
@@ -3047,7 +3049,7 @@
         "dso": 34.8
       }
     ],
-    "cxc_hoy": 1004383794
+    "cxc_hoy": 1000202485
   },
   "gerencia_goals": {
     "margen_contado_meta": 0.085,
