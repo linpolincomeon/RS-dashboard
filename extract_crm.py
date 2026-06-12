@@ -1201,6 +1201,81 @@ def extract_sales_data(models, uid, custom_start=None, custom_end=None, label_ov
 # ==============================================================
 LOST_THRESHOLD_DAYS = 270  # 9 months
 
+def gather_latest_note(models, uid, pids):
+    """Gestión MÁS RECIENTE por cliente, comparando POR FECHA entre:
+       - chatter (mail.message comment/note) en res.partner y en sus crm.lead
+       - actividades planeadas (mail.activity) en res.partner y crm.lead, por write_date (última edición)
+       Devuelve {pid: {"body","date","author"}}. La más nueva gana, sea nota o actividad."""
+    res = {}
+    pids = [p for p in (pids or []) if p]
+    if not pids:
+        return res
+    noise = ["lead enrichment", "nuevo lead para el equipo", "new lead for", "stage changed",
+             "cambio de etapa", "oportunidad ganada", "se crea un nuevo canal"]
+
+    def _ok(b):
+        bl = b.lower()[:80]
+        return len(b) > 3 and not any(n in bl for n in noise)
+
+    def consider(pid, date, body, author):
+        if not pid or not body:
+            return
+        body = body.strip()
+        if not body:
+            return
+        cur = res.get(pid)
+        if cur is None or (date or "") > (cur["date"] or ""):
+            res[pid] = {"date": date or "", "body": body[:150], "author": author or ""}
+
+    # Leads (todas las oportunidades) de estos clientes
+    lead_to_pid = {}
+    for l in sr(models, uid, "crm.lead",
+                [["partner_id", "in", pids], ["active", "in", [True, False]]],
+                ["id", "partner_id"], limit=20000):
+        lp = safe_id(l.get("partner_id"))
+        if lp:
+            lead_to_pid[l["id"]] = lp
+    lead_ids = list(lead_to_pid.keys())
+
+    # 1. Chatter en res.partner
+    for m in sr(models, uid, "mail.message",
+                [["model", "=", "res.partner"], ["res_id", "in", pids],
+                 ["message_type", "in", ["comment", "note"]]],
+                ["res_id", "body", "date", "author_id"], limit=20000, order="date desc"):
+        b = strip_html(m.get("body") or "")
+        if _ok(b):
+            consider(m.get("res_id"), (m.get("date") or "")[:10], b,
+                     safe_name(m.get("author_id")) if m.get("author_id") else "")
+    # 2. Chatter en crm.lead
+    if lead_ids:
+        for m in sr(models, uid, "mail.message",
+                    [["model", "=", "crm.lead"], ["res_id", "in", lead_ids],
+                     ["message_type", "in", ["comment", "note"]]],
+                    ["res_id", "body", "date", "author_id"], limit=20000, order="date desc"):
+            b = strip_html(m.get("body") or "")
+            if _ok(b):
+                consider(lead_to_pid.get(m.get("res_id")), (m.get("date") or "")[:10], b,
+                         safe_name(m.get("author_id")) if m.get("author_id") else "")
+    # 3. Actividades planeadas en res.partner (write_date = última edición de la gestión)
+    for a in sr(models, uid, "mail.activity",
+                [["res_model", "=", "res.partner"], ["res_id", "in", pids]],
+                ["res_id", "summary", "note", "write_date", "user_id"], limit=20000):
+        b = (a.get("summary") or "").strip() or strip_html(a.get("note") or "")
+        if b:
+            consider(a.get("res_id"), (a.get("write_date") or "")[:10], b,
+                     safe_name(a.get("user_id")) if a.get("user_id") else "Actividad")
+    # 4. Actividades planeadas en crm.lead
+    if lead_ids:
+        for a in sr(models, uid, "mail.activity",
+                    [["res_model", "=", "crm.lead"], ["res_id", "in", lead_ids]],
+                    ["res_id", "summary", "note", "write_date", "user_id"], limit=20000):
+            b = (a.get("summary") or "").strip() or strip_html(a.get("note") or "")
+            if b:
+                consider(lead_to_pid.get(a.get("res_id")), (a.get("write_date") or "")[:10], b,
+                         safe_name(a.get("user_id")) if a.get("user_id") else "Actividad")
+    return res
+
+
 def extract_churn_data(models, uid):
     print("\nExtracting Churn & Rescue data...")
     today = datetime.now().date()
@@ -1370,78 +1445,8 @@ def extract_churn_data(models, uid):
     last_note_by_pid = {}
     if all_churn_pids:
         try:
-            # 1. Build map: partner_id → best lead_id (most recently written)
-            all_leads = sr(models, uid, "crm.lead", [
-                ["partner_id", "in", all_churn_pids],
-                ["active", "in", [True, False]],
-            ], ["id", "partner_id", "write_date"], limit=5000, order="write_date desc")
-            # Keep only the most recent lead per partner
-            pid_to_lead = {}
-            for l in all_leads:
-                pid = safe_id(l.get("partner_id"))
-                if pid and pid not in pid_to_lead:
-                    pid_to_lead[pid] = l["id"]
-            lead_to_pid = {v: k for k, v in pid_to_lead.items()}
-            all_lead_ids = list(pid_to_lead.values())
-            print(f"  Churn notes: {len(all_lead_ids)} leads found for {len(all_churn_pids)} partners")
-
-            # 2. Get last message per lead (comment, email, or note)
-            if all_lead_ids:
-                for i in range(0, len(all_lead_ids), batch_size):
-                    batch = all_lead_ids[i:i+batch_size]
-                    msgs = sr(models, uid, "mail.message", [
-                        ["model", "=", "crm.lead"],
-                        ["res_id", "in", batch],
-                        ["message_type", "in", ["comment", "email", "notification"]],
-                    ], ["res_id", "body", "date", "author_id"], limit=2000, order="date desc")
-                    for m in msgs:
-                        lead_id = m.get("res_id")
-                        pid = lead_to_pid.get(lead_id)
-                        if pid and pid not in last_note_by_pid:
-                            body = strip_html(m.get("body") or "")
-                            if len(body) > 3 and not any(n in body.lower()[:80] for n in _noise):
-                                last_note_by_pid[pid] = body[:150]
-
-            # 2b. Fallback: notas escritas en la ficha del contacto (res.partner) — donde a veces se escribe
-            missing_pids = [p for p in all_churn_pids if p not in last_note_by_pid]
-            if missing_pids:
-                for i in range(0, len(missing_pids), batch_size):
-                    batch = missing_pids[i:i+batch_size]
-                    pmsgs = sr(models, uid, "mail.message", [
-                        ["model", "=", "res.partner"],
-                        ["res_id", "in", batch],
-                        ["message_type", "in", ["comment", "email", "notification"]],
-                    ], ["res_id", "body", "date"], limit=2000, order="date desc")
-                    for m in pmsgs:
-                        pid = m.get("res_id")
-                        if pid and pid not in last_note_by_pid:
-                            body = strip_html(m.get("body") or "")
-                            if len(body) > 3 and not any(n in body.lower()[:80] for n in _noise):
-                                last_note_by_pid[pid] = body[:150]
-
-            # 3. Fallback: mail.activity for partners still without note
-            missing_pids = [p for p in all_churn_pids if p not in last_note_by_pid]
-            if missing_pids:
-                missing_lead_ids = [pid_to_lead[p] for p in missing_pids if p in pid_to_lead]
-                if missing_lead_ids:
-                    for i in range(0, len(missing_lead_ids), batch_size):
-                        batch = missing_lead_ids[i:i+batch_size]
-                        acts = sr(models, uid, "mail.activity", [
-                            ["res_model", "=", "crm.lead"],
-                            ["res_id", "in", batch],
-                        ], ["res_id", "summary", "activity_type_id", "date_deadline"], limit=1000)
-                        for a in acts:
-                            lead_id = a.get("res_id")
-                            pid = lead_to_pid.get(lead_id)
-                            if pid and pid not in last_note_by_pid:
-                                summary = a.get("summary") or ""
-                                atype = a["activity_type_id"][1] if a.get("activity_type_id") else "Actividad"
-                                deadline = (a.get("date_deadline") or "")[:10]
-                                if summary:
-                                    last_note_by_pid[pid] = f"{atype}: {summary[:120]}" + (f" ({deadline})" if deadline else "")
-                                else:
-                                    last_note_by_pid[pid] = f"{atype} pendiente" + (f" ({deadline})" if deadline else "")
-
+            _latest = gather_latest_note(models, uid, all_churn_pids)
+            last_note_by_pid = {p: v["body"] for p, v in _latest.items()}
             print(f"  Churn notes found: {len(last_note_by_pid)}/{len(all_churn_pids)} partners")
         except Exception as e:
             print(f"  Churn notes skipped: {e}")
@@ -1540,84 +1545,19 @@ def extract_churn_data(models, uid):
         avg_litros_lost = {pid: round(max(total, 0) / 24) for pid, total in avg_litros_lost.items()}
         print(f"  Avg monthly litros computed for {len(avg_litros_lost)} lost partners")
 
-    # Lost notes: extender last_note_by_pid con lost_pids que aún no tienen nota
+    # Lost notes: gestión más reciente para perdidos (chatter + actividades, por fecha)
     extra_pids = [p for p in lost_pids if p not in last_note_by_pid]
     if extra_pids:
         try:
-            extra_leads = sr(models, uid, "crm.lead", [
-                ["partner_id", "in", extra_pids],
-                ["active", "in", [True, False]],
-            ], ["id", "partner_id", "write_date"], limit=2000, order="write_date desc")
-            extra_pid_to_lead = {}
-            for l in extra_leads:
-                pid2 = safe_id(l.get("partner_id"))
-                if pid2 and pid2 not in extra_pid_to_lead:
-                    extra_pid_to_lead[pid2] = l["id"]
-            extra_lead_to_pid = {v: k for k, v in extra_pid_to_lead.items()}
-            if extra_pid_to_lead:
-                for i in range(0, len(list(extra_pid_to_lead.values())), batch_size):
-                    batch = list(extra_pid_to_lead.values())[i:i+batch_size]
-                    msgs = sr(models, uid, "mail.message", [
-                        ["model", "=", "crm.lead"],
-                        ["res_id", "in", batch],
-                        ["message_type", "in", ["comment", "email", "notification"]],
-                    ], ["res_id", "body", "date"], limit=2000, order="date desc")
-                    for m in msgs:
-                        pid2 = extra_lead_to_pid.get(m.get("res_id"))
-                        if pid2 and pid2 not in last_note_by_pid:
-                            body = strip_html(m.get("body") or "")
-                            if len(body) > 3 and not any(n in body.lower()[:80] for n in _noise):
-                                last_note_by_pid[pid2] = body[:150]
-                # Fallback to activities
-                still_missing = [p for p in extra_pids if p not in last_note_by_pid]
-                if still_missing:
-                    sm_lead_ids = [extra_pid_to_lead[p] for p in still_missing if p in extra_pid_to_lead]
-                    if sm_lead_ids:
-                        acts = sr(models, uid, "mail.activity", [
-                            ["res_model", "=", "crm.lead"],
-                            ["res_id", "in", sm_lead_ids],
-                        ], ["res_id", "summary", "activity_type_id", "date_deadline"], limit=500)
-                        for a in acts:
-                            pid2 = extra_lead_to_pid.get(a.get("res_id"))
-                            if pid2 and pid2 not in last_note_by_pid:
-                                summary = a.get("summary") or ""
-                                atype = a["activity_type_id"][1] if a.get("activity_type_id") else "Actividad"
-                                deadline = (a.get("date_deadline") or "")[:10]
-                                last_note_by_pid[pid2] = (f"{atype}: {summary[:120]}" if summary else f"{atype} pendiente") + (f" ({deadline})" if deadline else "")
-            # Fallback adicional: mensajes/actividades del CLIENTE (res.partner) y Notas internas (comment)
+            _latest_lost = gather_latest_note(models, uid, extra_pids)
+            for _p, _v in _latest_lost.items():
+                last_note_by_pid[_p] = _v["body"]
             still_p = [p for p in extra_pids if p not in last_note_by_pid]
             if still_p:
-                pmsgs = sr(models, uid, "mail.message", [
-                    ["model", "=", "res.partner"],
-                    ["res_id", "in", still_p],
-                    ["message_type", "in", ["comment", "note"]],
-                ], ["res_id", "body", "date"], limit=2000, order="date desc")
-                for m in pmsgs:
-                    pid2 = m.get("res_id")
-                    if pid2 and pid2 not in last_note_by_pid:
-                        body = strip_html(m.get("body") or "")
-                        if len(body) > 3 and not any(n in body.lower()[:80] for n in _noise):
-                            last_note_by_pid[pid2] = body[:150]
-                still_p = [p for p in extra_pids if p not in last_note_by_pid]
-                if still_p:
-                    pacts = sr(models, uid, "mail.activity", [
-                        ["res_model", "=", "res.partner"],
-                        ["res_id", "in", still_p],
-                    ], ["res_id", "summary", "activity_type_id"], limit=500)
-                    for a in pacts:
-                        pid2 = a.get("res_id")
-                        if pid2 and pid2 not in last_note_by_pid and a.get("summary"):
-                            atype = a["activity_type_id"][1] if a.get("activity_type_id") else "Actividad"
-                            last_note_by_pid[pid2] = f"{atype}: {a['summary'][:120]}"
-                still_p = [p for p in extra_pids if p not in last_note_by_pid]
-                if still_p:
-                    pcoms = sr(models, uid, "res.partner", [["id", "in", still_p]],
-                               ["id", "comment"], limit=5000)
-                    for p in pcoms:
-                        pid2 = p.get("id")
-                        cmt = strip_html(p.get("comment") or "")
-                        if pid2 and pid2 not in last_note_by_pid and cmt:
-                            last_note_by_pid[pid2] = cmt[:150]
+                for pc in sr(models, uid, "res.partner", [["id", "in", still_p]], ["id", "comment"], limit=5000):
+                    cmt = strip_html(pc.get("comment") or "")
+                    if pc.get("id") and pc["id"] not in last_note_by_pid and cmt:
+                        last_note_by_pid[pc["id"]] = cmt[:150]
             print(f"  Lost notes extended: {len([p for p in lost_pids if p in last_note_by_pid])}/{len(lost_pids)}")
         except Exception as e:
             print(f"  Lost notes extension skipped: {e}")
@@ -2045,68 +1985,8 @@ def extract_recovery_clients(models, uid):
             "last_crm": (l.get("write_date") or "")[:10],
         }
 
-    # ── 7. Última nota CRM por partner (de mail.message en res.partner) ──
-    msgs = sr(models, uid, "mail.message", [
-        ["res_id", "in", candidates],
-        ["model", "=", "res.partner"],
-        ["message_type", "in", ["comment", "note"]],
-    ], ["res_id", "body", "date", "author_id"], limit=10000, order="date desc")
-
-    last_note = {}
-    for m in msgs:
-        pid = m.get("res_id")
-        if not pid or pid in last_note:
-            continue
-        last_note[pid] = {
-            "body": strip_html(m.get("body", ""))[:150],
-            "date": (m.get("date") or "")[:10],
-            "author": safe_name(m.get("author_id")) if m.get("author_id") else "",
-        }
-
-    # ── 7b. Notas escritas DENTRO de la oportunidad (crm.lead) — donde el ejecutivo
-    #        realmente escribe. Se queda con la más reciente entre nota-contacto y nota-lead.
-    if rec_lead_to_pid:
-        lead_msgs = sr(models, uid, "mail.message", [
-            ["res_id", "in", list(rec_lead_to_pid.keys())],
-            ["model", "=", "crm.lead"],
-            ["message_type", "in", ["comment", "note"]],
-        ], ["res_id", "body", "date", "author_id"], limit=10000, order="date desc")
-        for m in lead_msgs:
-            pid = rec_lead_to_pid.get(m.get("res_id"))
-            if not pid:
-                continue
-            body = strip_html(m.get("body", ""))[:150]
-            if not body:
-                continue
-            mdate = (m.get("date") or "")[:10]
-            existing = last_note.get(pid)
-            if existing and existing.get("date", "") >= mdate:
-                continue  # la nota del contacto es igual o más reciente
-            last_note[pid] = {"body": body, "date": mdate,
-                              "author": safe_name(m.get("author_id")) if m.get("author_id") else ""}
-
-    # ── 7c. Gestión en Actividades planeadas (mail.activity) — el equipo escribe el
-    #        log de gestión en el resumen del To-Do, a menudo con plazo a futuro. ──
-    act_note = {}  # pid -> {body, author}
-    try:
-        act_rows = []
-        if rec_lead_to_pid:
-            act_rows += [("crm.lead", a) for a in sr(models, uid, "mail.activity",
-                [["res_model", "=", "crm.lead"], ["res_id", "in", list(rec_lead_to_pid.keys())]],
-                ["res_id", "summary", "note", "user_id"], limit=10000, order="id desc")]
-        act_rows += [("res.partner", a) for a in sr(models, uid, "mail.activity",
-            [["res_model", "=", "res.partner"], ["res_id", "in", candidates]],
-            ["res_id", "summary", "note", "user_id"], limit=10000, order="id desc")]
-        for _model, a in act_rows:
-            pid = rec_lead_to_pid.get(a.get("res_id")) if _model == "crm.lead" else a.get("res_id")
-            if not pid or pid in act_note:
-                continue
-            body = (a.get("summary") or "").strip() or strip_html(a.get("note") or "")
-            if body:
-                act_note[pid] = {"body": body[:150],
-                                 "author": safe_name(a.get("user_id")) if a.get("user_id") else "Actividad CRM"}
-    except Exception as _e:
-        print(f"  Recovery activities skipped: {_e}")
+    # ── 7. Gestión de cliente MÁS RECIENTE (chatter + actividades planeadas, por fecha) ──
+    last_note = gather_latest_note(models, uid, candidates)
 
     # ── 8. Clasificar cada candidato: recoverable vs seasonal ──
     SPANISH_MONTHS = ["", "ene", "feb", "mar", "abr", "may", "jun",
@@ -2176,12 +2056,6 @@ def extract_recovery_clients(models, uid):
         _note_body = note.get("body", "")
         _note_author = note.get("author", "")
         _note_date = note.get("date", "")
-        if not _note_body:
-            _act = act_note.get(pid)
-            if _act and _act.get("body"):
-                _note_body = _act["body"]
-                _note_author = _act.get("author") or "Actividad CRM"
-                _note_date = ""
         if not _note_body:
             _cmt = strip_html(p.get("comment") or "")[:150]
             if _cmt:
