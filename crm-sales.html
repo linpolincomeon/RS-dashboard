@@ -556,8 +556,8 @@ function renderFunnel() {
   // Cotizaciones table
   const qd = (st.cotizacion && st.cotizacion.detail) || [];
   if (qd.length) {
-    h += '<div class="sec"><div class="sec-h"><h2>Cotizaciones</h2></div><div class="sec-b" style="padding:0;overflow-x:auto"><table><thead><tr><th>Nº</th><th>Cliente</th><th>Vendedor</th><th>Monto</th><th>Estado</th></tr></thead><tbody>';
-    qd.forEach(q => { h += `<tr><td class="bold">${H(q.name)}</td><td>${H(q.cliente)}</td><td>${H(q.vendedor)}</td><td>${fC(q.monto)}</td><td><span class="tag ${q.estado === 'sent' ? 'tag-g' : 'tag-y'}">${q.estado === 'sent' ? 'Enviada' : 'Borrador'}</span></td></tr>`; });
+    h += '<div class="sec"><div class="sec-h"><h2>Cotizaciones</h2></div><div class="sec-b" style="padding:0;overflow-x:auto"><table><thead><tr><th>Cliente</th><th>Vendedor</th><th>Litros</th><th>Monto</th><th>Fecha</th><th>Estado</th></tr></thead><tbody>';
+    qd.forEach(q => { h += `<tr><td class="bold">${H(q.cliente || '—')}</td><td>${H(q.vendedor)}</td><td>${fL(q.litros || 0)}</td><td>${fC(q.monto)}</td><td style="white-space:nowrap">${q.fecha || '—'}</td><td><span class="tag ${q.estado === 'sent' ? 'tag-g' : 'tag-y'}">${q.estado === 'sent' ? 'Enviada' : 'Borrador'}</span></td></tr>`; });
     h += '</tbody></table></div></div>';
   }
   // Cierres table
@@ -996,10 +996,17 @@ function renderEjecutivos() {
 
   // ── Gestión Real de la Semana (desde el funnel, con fechas REALES — no el cron de Odoo) ──
   let execGestion = [];
+  const _clientName = (x) => {
+    const c = x.empresa || x.cliente || x.partner || '';
+    if (c) return c;
+    const n = (x.name || '').trim();
+    if (/^S?\d+$/i.test(n)) return '—'; // nunca mostrar el número de cotización
+    return n || '—';
+  };
   const _collectG = (stages) => {
     for (const sk of Object.keys(stages || {})) {
       const det = (stages[sk] || {}).detail || [];
-      det.forEach(x => { if (matchesExec(x.vendedor)) execGestion.push({cliente: x.empresa || x.cliente || x.name || '', etapa: x.etapa || sk, fecha: (x.fecha || '').slice(0, 10), litros: x.litros || 0}); });
+      det.forEach(x => { if (matchesExec(x.vendedor)) execGestion.push({cliente: _clientName(x), etapa: x.etapa || sk, fecha: (x.fecha || '').slice(0, 10), litros: x.litros || 0}); });
     }
   };
   if (isExecAccum) { fwE.forEach(w => _collectG(w.stages)); } else { _collectG(st); }
