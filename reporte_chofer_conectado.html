@@ -5,78 +5,81 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>TomEnergy — Reporte Bodega</title>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;900&family=Barlow:wght@400;500;600&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap');
 
   :root {
-    --negro: #0D0D0D;
-    --gris-oscuro: #1A1A1A;
-    --gris-medio: #2A2A2A;
-    --gris-borde: #333;
-    --blanco: #F5F5F0;
-    --blanco-suave: #CCCCCC;
-    --amarillo: #F5C400;
-    --rojo: #E03030;
-    --azul: #2E6FD4;
-    --verde: #2EAA5A;
-    --naranja: #E07820;
-    --violeta: #8B5CF6;
-    --cyan: #2EBFD4;
+    /* Paleta corporativa TomEnergy */
+    --background: #f7f6f3;
+    --card:       #ffffff;
+    --texto:      #1a1a1a;
+    --texto-suave:#666666;
+    --borde:      #e6e4df;
+
+    --naranja:    #E8451A;   /* Brand orange */
+    --naranja-dk: #c8360e;   /* Acento rojo (más oscuro) */
+    --verde:      #C8D9A0;   /* Brand green */
+    --verde-dk:   #6F8B3A;   /* Verde más oscuro para texto/iconos */
+    --amarillo:   #F5C842;   /* Brand yellow */
+    --amarillo-dk:#B8902A;
+
+    /* Colores funcionales (para tipos de movimiento) */
+    --violeta:    #8B5CF6;
+    --azul:       #2E6FD4;
+    --rojo:       #c8360e;
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
 
   body {
-    background: var(--negro);
-    color: var(--blanco);
-    font-family: 'Barlow', sans-serif;
+    background: var(--background);
+    color: var(--texto);
+    font-family: 'DM Sans', system-ui, sans-serif;
     min-height: 100vh;
-    padding-bottom: 40px;
+    padding-bottom: 50px;
+    font-weight: 400;
   }
 
   /* HEADER */
   .header {
-    background: var(--gris-oscuro);
-    border-bottom: 3px solid var(--amarillo);
-    padding: 16px 20px 14px;
+    background: var(--card);
+    border-bottom: 1px solid var(--borde);
+    padding: 14px 20px;
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 14px;
     position: sticky;
     top: 0;
     z-index: 100;
   }
-  .logo-badge {
-    background: var(--amarillo);
-    color: var(--negro);
-    font-family: 'Barlow Condensed', sans-serif;
-    font-weight: 900;
-    font-size: 13px;
-    padding: 4px 8px;
-    letter-spacing: 1px;
+  .header-logo {
+    height: 36px;
+    width: auto;
     flex-shrink: 0;
   }
   .header-text h1 {
-    font-family: 'Barlow Condensed', sans-serif;
+    font-family: 'DM Sans', sans-serif;
     font-weight: 700;
-    font-size: 18px;
-    letter-spacing: 0.5px;
-    line-height: 1;
+    font-size: 16px;
+    letter-spacing: 0.2px;
+    line-height: 1.1;
+    color: var(--texto);
   }
   .header-text p {
-    font-size: 11px;
-    color: var(--blanco-suave);
+    font-size: 12px;
+    color: var(--texto-suave);
     margin-top: 2px;
+    font-weight: 500;
   }
 
   /* FORM */
   .container { padding: 20px 16px; max-width: 480px; margin: 0 auto; }
 
   .section-label {
-    font-family: 'Barlow Condensed', sans-serif;
+    font-family: 'DM Sans', sans-serif;
     font-weight: 700;
     font-size: 11px;
-    letter-spacing: 2px;
-    color: var(--amarillo);
+    letter-spacing: 1.5px;
+    color: var(--naranja-dk);
     text-transform: uppercase;
     margin-bottom: 8px;
     margin-top: 24px;
@@ -89,44 +92,35 @@
     gap: 8px;
   }
   .camion-btn {
-    background: var(--gris-medio);
-    border: 2px solid var(--gris-borde);
-    color: var(--blanco-suave);
-    font-family: 'Barlow Condensed', sans-serif;
+    background: var(--card);
+    border: 2px solid var(--borde);
+    color: var(--texto);
+    font-family: 'DM Sans', sans-serif;
     font-weight: 700;
-    font-size: 16px;
-    padding: 14px 10px;
+    font-size: 22px;
+    padding: 16px 10px;
     text-align: center;
     cursor: pointer;
     transition: all 0.15s;
-    border-radius: 4px;
+    border-radius: 8px;
     line-height: 1.2;
+    letter-spacing: 1px;
   }
   .camion-btn .placa {
     display: block;
-    font-size: 22px;
-    font-weight: 900;
-    color: var(--blanco);
-    letter-spacing: 1px;
-  }
-  .camion-btn .nombre {
-    display: block;
-    font-size: 11px;
-    color: var(--blanco-suave);
-    font-weight: 400;
-    margin-top: 2px;
+    font-weight: 800;
   }
   .camion-btn.active {
-    border-color: var(--amarillo);
-    background: #2A2500;
-    color: var(--amarillo);
+    border-color: var(--naranja);
+    background: #FFF5F0;
+    color: var(--naranja-dk);
   }
-  .camion-btn.active .placa { color: var(--amarillo); }
-  .camion-btn.active .nombre { color: #AA8800; }
+  .camion-btn.active .placa { color: var(--naranja-dk); }
   .camion-btn:active { transform: scale(0.97); }
-  .camion-btn-small { padding: 10px 8px; }
-  .camion-btn-small .placa { font-size: 18px; }
-  .camion-btn-small .nombre { font-size: 10px; }
+  .camion-btn-small {
+    padding: 10px 8px;
+    font-size: 16px;
+  }
 
   /* TIPO MOVIMIENTO */
   .tipo-grid {
@@ -135,47 +129,53 @@
     gap: 8px;
   }
   .tipo-btn {
-    background: var(--gris-medio);
-    border: 2px solid var(--gris-borde);
-    color: var(--blanco);
-    font-family: 'Barlow Condensed', sans-serif;
+    background: var(--card);
+    border: 2px solid var(--borde);
+    color: var(--texto);
+    font-family: 'DM Sans', sans-serif;
     font-weight: 700;
-    font-size: 18px;
+    font-size: 16px;
     padding: 14px 16px;
     text-align: left;
     cursor: pointer;
-    border-radius: 4px;
+    border-radius: 8px;
     display: flex;
     align-items: center;
     gap: 12px;
     transition: all 0.15s;
   }
-  .tipo-btn .icono { font-size: 22px; flex-shrink: 0; }
-  .tipo-btn .tipo-desc { font-size: 11px; font-weight: 400; color: var(--blanco-suave); display: block; margin-top: 1px; font-family: 'Barlow', sans-serif; }
+  .tipo-btn .icono { font-size: 20px; flex-shrink: 0; }
+  .tipo-btn .tipo-desc {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--texto-suave);
+    display: block;
+    margin-top: 2px;
+  }
   .tipo-btn:active { transform: scale(0.98); }
 
-  .tipo-btn[data-tipo="inicio"].active         { border-color: var(--violeta); background: #1A1030; }
-  .tipo-btn[data-tipo="carga"].active          { border-color: var(--azul);    background: #0A1830; }
-  .tipo-btn[data-tipo="venta"].active          { border-color: var(--naranja); background: #201008; }
-  .tipo-btn[data-tipo="traslado_sale"].active  { border-color: #CCA000;        background: #1E1800; }
-  .tipo-btn[data-tipo="traslado_entra"].active { border-color: var(--cyan);    background: #08202A; }
-  .tipo-btn[data-tipo="cierre"].active         { border-color: var(--verde);   background: #081808; }
+  .tipo-btn[data-tipo="inicio"].active         { border-color: var(--violeta); background: #F3EFFB; }
+  .tipo-btn[data-tipo="carga"].active          { border-color: var(--azul);    background: #EAF1FB; }
+  .tipo-btn[data-tipo="venta"].active          { border-color: var(--naranja); background: #FFF0EA; }
+  .tipo-btn[data-tipo="traslado_sale"].active  { border-color: var(--amarillo-dk); background: #FDF5E0; }
+  .tipo-btn[data-tipo="traslado_entra"].active { border-color: var(--verde-dk); background: #F0F5E5; }
+  .tipo-btn[data-tipo="cierre"].active         { border-color: var(--verde-dk); background: #F0F5E5; }
 
-  /* TRASLADO FIELDS (selector de otro camión, aparece solo en traslados) */
+  /* TRASLADO FIELDS (selector de otro camión) */
   .traslado-fields {
     display: none;
     margin-top: 16px;
     padding: 14px;
-    background: #1A1500;
-    border: 1px dashed #CCA000;
-    border-radius: 4px;
+    background: #FDF5E0;
+    border: 1px dashed var(--amarillo-dk);
+    border-radius: 8px;
   }
   .traslado-fields.visible { display: block; }
   .traslado-titulo {
-    font-family: 'Barlow Condensed', sans-serif;
+    font-family: 'DM Sans', sans-serif;
     font-weight: 700;
-    font-size: 13px;
-    color: var(--amarillo);
+    font-size: 12px;
+    color: var(--amarillo-dk);
     margin-bottom: 10px;
     text-transform: uppercase;
     letter-spacing: 1px;
@@ -183,44 +183,34 @@
 
   /* INPUTS */
   .input-group { margin-top: 8px; }
-  .input-label {
-    font-family: 'Barlow Condensed', sans-serif;
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 1.5px;
-    color: var(--blanco-suave);
-    text-transform: uppercase;
-    display: block;
-    margin-bottom: 6px;
-  }
   input[type="number"], input[type="text"], input[type="tel"] {
     width: 100%;
-    background: var(--gris-medio);
-    border: 2px solid var(--gris-borde);
-    color: var(--blanco);
-    font-family: 'Barlow Condensed', sans-serif;
+    background: var(--card);
+    border: 2px solid var(--borde);
+    color: var(--texto);
+    font-family: 'DM Sans', sans-serif;
     font-weight: 700;
-    font-size: 28px;
+    font-size: 26px;
     padding: 14px 16px;
-    border-radius: 4px;
+    border-radius: 8px;
     outline: none;
     appearance: none;
     -moz-appearance: textfield;
   }
   input[type="number"]:focus, input[type="text"]:focus, input[type="tel"]:focus {
-    border-color: var(--amarillo);
-    background: #1A1800;
+    border-color: var(--naranja);
+    background: #FFF5F0;
   }
-  input::placeholder { color: #555; font-weight: 400; font-size: 20px; }
+  input::placeholder { color: #B5B0A8; font-weight: 500; font-size: 18px; }
   input[type="number"]::-webkit-outer-spin-button,
   input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; }
 
   input.input-small {
-    font-size: 20px;
+    font-size: 18px;
     padding: 12px 16px;
   }
 
-  /* CAMPOS EXTRA - ocultos por defecto */
+  /* CAMPOS EXTRA */
   .extra-fields {
     display: none;
     flex-direction: column;
@@ -229,59 +219,62 @@
   }
   .extra-fields.visible { display: flex; }
 
-  /* DIVIDER */
-  .divider {
-    height: 1px;
-    background: var(--gris-borde);
-    margin: 24px 0 0;
-  }
+  .divider { height: 1px; background: var(--borde); margin: 24px 0 0; }
 
   /* SUBMIT */
   .submit-btn {
     width: 100%;
-    background: var(--amarillo);
-    color: var(--negro);
-    font-family: 'Barlow Condensed', sans-serif;
-    font-weight: 900;
-    font-size: 22px;
-    letter-spacing: 1px;
+    background: var(--naranja);
+    color: #ffffff;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 800;
+    font-size: 18px;
+    letter-spacing: 0.5px;
     padding: 18px;
     border: none;
-    border-radius: 4px;
+    border-radius: 8px;
     cursor: pointer;
     margin-top: 24px;
     transition: all 0.15s;
     text-transform: uppercase;
+    box-shadow: 0 2px 8px rgba(232, 69, 26, 0.25);
   }
-  .submit-btn:active { transform: scale(0.98); background: #D4A900; }
-  .submit-btn:disabled { background: #444; color: #777; cursor: not-allowed; }
+  .submit-btn:active { transform: scale(0.98); background: var(--naranja-dk); }
+  .submit-btn:disabled {
+    background: var(--borde);
+    color: #999;
+    cursor: not-allowed;
+    box-shadow: none;
+  }
 
   /* PREVIEW */
   .preview-box {
-    background: var(--gris-medio);
-    border: 1px solid var(--gris-borde);
-    border-radius: 4px;
+    background: var(--card);
+    border: 1px solid var(--borde);
+    border-left: 4px solid var(--naranja);
+    border-radius: 8px;
     padding: 14px 16px;
     margin-top: 16px;
     display: none;
   }
   .preview-box.visible { display: block; }
-  .preview-box .preview-label {
+  .preview-label {
     font-size: 10px;
-    letter-spacing: 2px;
-    color: var(--blanco-suave);
+    letter-spacing: 1.5px;
+    color: var(--texto-suave);
     text-transform: uppercase;
-    font-family: 'Barlow Condensed', sans-serif;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 700;
     margin-bottom: 6px;
   }
-  .preview-box .preview-content {
-    font-family: 'Barlow Condensed', sans-serif;
-    font-size: 16px;
+  .preview-content {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
     font-weight: 600;
-    color: var(--blanco);
+    color: var(--texto);
     line-height: 1.6;
   }
-  .preview-box .preview-content span { color: var(--amarillo); }
+  .preview-content span { color: var(--naranja-dk); font-weight: 700; }
 
   /* SUCCESS */
   .success-screen {
@@ -292,46 +285,52 @@
   .success-screen.visible { display: block; }
   .success-icon { font-size: 64px; margin-bottom: 16px; }
   .success-screen h2 {
-    font-family: 'Barlow Condensed', sans-serif;
-    font-size: 32px;
-    font-weight: 900;
-    color: var(--verde);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 28px;
+    font-weight: 800;
+    color: var(--verde-dk);
     margin-bottom: 8px;
+    letter-spacing: 0.5px;
   }
-  .success-screen p { color: var(--blanco-suave); margin-bottom: 24px; }
+  .success-screen p { color: var(--texto-suave); margin-bottom: 24px; font-weight: 500; }
   .success-detail {
-    background: var(--gris-medio);
-    border-left: 4px solid var(--verde);
+    background: var(--card);
+    border: 1px solid var(--borde);
+    border-left: 4px solid var(--verde-dk);
     padding: 14px 16px;
     text-align: left;
-    border-radius: 0 4px 4px 0;
-    font-family: 'Barlow Condensed', sans-serif;
-    font-size: 16px;
+    border-radius: 0 8px 8px 0;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--texto);
     margin-bottom: 24px;
     line-height: 1.8;
   }
   .nuevo-btn {
-    background: transparent;
-    border: 2px solid var(--amarillo);
-    color: var(--amarillo);
-    font-family: 'Barlow Condensed', sans-serif;
+    background: var(--card);
+    border: 2px solid var(--naranja);
+    color: var(--naranja-dk);
+    font-family: 'DM Sans', sans-serif;
     font-weight: 700;
-    font-size: 18px;
+    font-size: 16px;
     padding: 14px 32px;
-    border-radius: 4px;
+    border-radius: 8px;
     cursor: pointer;
-    letter-spacing: 1px;
+    letter-spacing: 0.3px;
   }
+  .nuevo-btn:active { background: #FFF5F0; }
 
   /* TIMESTAMP */
   .timestamp-bar {
-    background: var(--gris-oscuro);
-    border-top: 1px solid var(--gris-borde);
+    background: var(--card);
+    border-top: 1px solid var(--borde);
     padding: 8px 20px;
     font-size: 11px;
-    color: #555;
+    color: var(--texto-suave);
     text-align: center;
-    font-family: 'Barlow Condensed', sans-serif;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 500;
     letter-spacing: 1px;
     position: fixed;
     bottom: 0;
@@ -343,7 +342,7 @@
 <body>
 
 <div class="header">
-  <div class="logo-badge">TOM<br>ENERGY</div>
+  <img src="tomenergy_logo.png" alt="TomEnergy" class="header-logo">
   <div class="header-text">
     <h1>REPORTE BODEGA</h1>
     <p id="fecha-header">Cargando fecha...</p>
@@ -383,49 +382,41 @@
   <div class="tipo-grid">
     <button class="tipo-btn" data-tipo="inicio" onclick="selTipo(this)">
       <span class="icono">🟣</span>
-      <div>
-        INICIO DEL DÍA
+      <div>INICIO DEL DÍA
         <span class="tipo-desc">Saldo con que arrancas la jornada</span>
       </div>
     </button>
     <button class="tipo-btn" data-tipo="carga" onclick="selTipo(this)">
       <span class="icono">🔵</span>
-      <div>
-        CARGA ENAP
+      <div>CARGA ENAP
         <span class="tipo-desc">Litros cargados en planta (saldo previo = 0)</span>
       </div>
     </button>
     <button class="tipo-btn" data-tipo="venta" onclick="selTipo(this)">
       <span class="icono">🟠</span>
-      <div>
-        VENTA
+      <div>VENTA
         <span class="tipo-desc">Despacho a cliente con factura</span>
       </div>
     </button>
     <button class="tipo-btn" data-tipo="traslado_sale" onclick="selTipo(this)">
       <span class="icono">🟡</span>
-      <div>
-        TRASLADO −
+      <div>TRASLADO −
         <span class="tipo-desc">ENTREGO litros a otro camión (resta)</span>
       </div>
     </button>
     <button class="tipo-btn" data-tipo="traslado_entra" onclick="selTipo(this)">
       <span class="icono">🟢</span>
-      <div>
-        TRASLADO +
+      <div>TRASLADO +
         <span class="tipo-desc">RECIBO litros de otro camión (suma)</span>
       </div>
     </button>
     <button class="tipo-btn" data-tipo="cierre" onclick="selTipo(this)">
       <span class="icono">🟢</span>
-      <div>
-        CIERRE DEL DÍA
+      <div>CIERRE DEL DÍA
         <span class="tipo-desc">Saldo final al terminar la jornada</span>
       </div>
     </button>
   </div>
-
-
 
   <!-- OTRO CAMIÓN (solo se muestra en traslados) -->
   <div class="traslado-fields" id="traslado-fields">
@@ -469,7 +460,7 @@
   <!-- OBSERVACIÓN -->
   <div class="section-label" id="obs-label">4. Observación (opcional)</div>
   <div class="input-group">
-    <input type="text" id="observacion" class="input-small" placeholder="Ej: rotura manguera, traslado desde SH..."
+    <input type="text" id="observacion" class="input-small" placeholder="Ej: rotura manguera..."
            oninput="actualizarPreview()">
   </div>
 
@@ -528,7 +519,7 @@
     document.querySelectorAll('.camion-btn[data-camion]').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
     camionSel = btn.dataset.camion;
-    // Ocultar el camión seleccionado del selector "otro camión"
+    // Ocultar el camión activo del selector "otro camión"
     document.querySelectorAll('.camion-btn[data-otro]').forEach(b => {
       b.style.display = (b.dataset.otro === camionSel) ? 'none' : '';
     });
@@ -554,7 +545,6 @@
     const trasladoTitulo = document.getElementById('traslado-titulo');
     const obsLabel = document.getElementById('obs-label');
 
-    // Reset campos contextuales
     extra.classList.remove('visible');
     traslado.classList.remove('visible');
     otroCamionSel = null;
@@ -616,7 +606,6 @@
   function checkSubmit(){
     const litros = document.getElementById('litros').value;
     const btn = document.getElementById('submit-btn');
-    // Si es traslado, requiere también otro camión seleccionado
     const trasladoOK = (tipoSel !== 'traslado_sale' && tipoSel !== 'traslado_entra') || otroCamionSel;
     btn.disabled = !(camionSel && tipoSel && litros && parseInt(litros, 10) > 0 && trasladoOK);
   }
@@ -629,7 +618,6 @@
     const now = new Date();
     const litrosInt = parseInt(document.getElementById('litros').value, 10);
 
-    // Mapear tipo interno -> nombre en el Sheet
     const tipoGuardar = {
       inicio: 'INICIO', carga: 'CARGA', venta: 'VENTA',
       traslado_sale: 'TRASLADO ENVIADO',
@@ -637,7 +625,6 @@
       cierre: 'CIERRE'
     }[tipoSel];
 
-    // Si es traslado, anteponer destino/origen a la observación
     let obs = document.getElementById('observacion').value || '';
     if(tipoSel === 'traslado_sale' && otroCamionSel)  obs = `→ ${otroCamionSel}` + (obs ? ' | ' + obs : '');
     if(tipoSel === 'traslado_entra' && otroCamionSel) obs = `← ${otroCamionSel}` + (obs ? ' | ' + obs : '');
