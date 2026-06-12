@@ -1465,6 +1465,10 @@ function renderFidelizacion() {
   const rescuePct = summary.rescue_pct || 0;
   kh += mkKpi('c-green', '🏆 Tasa Rescate', rescuePct.toFixed(1) + '%', `${rescuedCount} rescatados`, null, null);
 
+  // Cotizaciones enviadas en la semana seleccionada (funnel, conteo real)
+  const cotizSemana = (((week.stages || {}).cotizacion) || {}).value || 0;
+  kh += mkKpi('c-yellow', '📨 Cotizaciones', cotizSemana, 'enviadas esta semana (equipo)', null, null);
+
   document.getElementById('churnKpiRow').innerHTML = kh;
 
   // Explanation notes
