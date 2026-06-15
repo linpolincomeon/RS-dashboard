@@ -1138,23 +1138,31 @@ def extract_riesgo(models, uid):
     }
 
 
-# ── DSO (Days Sales Outstanding) ──
+# ── DSO / Rotacion CxC ──
+# Replica EXACTA de la hoja del directorio (celda CD28):
+#   Rotacion = PROMEDIO_3m(CxC) / Revenue_bruto(mes) * 30
 # Numerador: CxC cuentas (1.1.04.05 + 1.1.04.11) + cheques en cartera (journal 114)
-# Promedio 3 meses para suavizar distorsiones de fin de mes
-# Denominador: ventas netas del mes × 30 dias fijos (comparable entre meses)
+#            al cierre de mes, promediado con los 2 meses anteriores.
+# Denominador: Revenue BRUTO del mes = venta_neta(4.1.01.01) * 1.19 (IVA)
+#              + IEC(4.2.01.02). NO es amount_untaxed neto.
 CXC_ACCOUNT_CODES = ["1.1.04.05", "1.1.04.11"]
+# Cuentas de ingreso para el Revenue bruto (mismo origen que la hoja del directorio)
+REVENUE_ACCOUNT_CODE = "4.1.01.01"   # INGRESOS POR VENTA CO (venta neta)
+IEC_ACCOUNT_CODE = "4.2.01.02"       # IMPUESTO ESPECIFICO VENTAS (IEC)
+IVA_RATE = 1.19                      # IVA 19% aplicado sobre la venta neta
 
 
 def extract_dso(models, uid, n_months=6):
-    """DSO = promedio_CxC_3m / ventas_mes * 30.
+    """Rotacion CxC = promedio_CxC_3m / Revenue_bruto_mes * 30.
+
+    Replica exacta de la hoja del directorio (celda CD28).
 
     Numerador: saldo acumulado cuentas 1.1.04.05 + 1.1.04.11
-               + cheques en cartera (journal 114)
-               al cierre del mes, promediado con los 2 meses anteriores.
+               + cheques en cartera (journal 114) al cierre del mes,
+               promediado con los 2 meses anteriores (suaviza fin de mes).
 
-    Denominador: ventas netas del mes (out_invoice - out_refund, posted,
-               amount_untaxed). Normalizado a 30 dias para comparar meses
-               de distinta duracion.
+    Denominador: Revenue BRUTO del mes = venta neta (cuenta 4.1.01.01) * 1.19
+               + IEC (cuenta 4.2.01.02). Normalizado a 30 dias.
 
     Tambien retorna cxc_hoy: planta impago HOY (CxC + cheques a fecha ejecucion).
     """
@@ -1169,6 +1177,39 @@ def extract_dso(models, uid, n_months=6):
         print("  WARNING: cuentas CxC no encontradas, DSO omitido")
         return {"months": [], "cxc_hoy": 0}
     print(f"  Cuentas CxC: {len(acc_ids)} encontradas (codes: {CXC_ACCOUNT_CODES})")
+
+    # 1b. IDs cuentas de ingreso (venta neta + IEC) para Revenue bruto
+    rev_acc_ids = models.execute_kw(
+        ODOO_DB, uid, ODOO_KEY, "account.account", "search",
+        [[["code", "=", REVENUE_ACCOUNT_CODE]]]
+    )
+    iec_acc_ids = models.execute_kw(
+        ODOO_DB, uid, ODOO_KEY, "account.account", "search",
+        [[["code", "=", IEC_ACCOUNT_CODE]]]
+    )
+    if not rev_acc_ids:
+        print(f"  WARNING: cuenta venta {REVENUE_ACCOUNT_CODE} no encontrada, DSO omitido")
+        return {"months": [], "cxc_hoy": 0}
+    if not iec_acc_ids:
+        print(f"  WARNING: cuenta IEC {IEC_ACCOUNT_CODE} no encontrada")
+    print(f"  Cuenta venta {REVENUE_ACCOUNT_CODE}: {rev_acc_ids} | IEC {IEC_ACCOUNT_CODE}: {iec_acc_ids}")
+
+    def get_account_balance(account_ids, first_date, last_date):
+        """Balance (abs) de cuentas de ingreso en el mes. Ingresos son credito,
+        por eso se toma abs(credit - debit)."""
+        if not account_ids:
+            return 0
+        rg = models.execute_kw(
+            ODOO_DB, uid, ODOO_KEY, "account.move.line", "read_group",
+            [[["account_id", "in", account_ids],
+              ["parent_state", "=", "posted"],
+              ["date", ">=", first_date],
+              ["date", "<=", last_date]]],
+            {"fields": ["debit", "credit"], "groupby": [], "lazy": False}
+        )
+        debit = rg[0].get("debit", 0) if rg else 0
+        credit = rg[0].get("credit", 0) if rg else 0
+        return abs(credit - debit)
 
     def get_cxc_at(cutoff_date):
         """Saldo CxC contable al cutoff."""
@@ -1219,22 +1260,10 @@ def extract_dso(models, uid, n_months=6):
         cheq = get_cheques_at(mo["last"])
         cxc_total = cxc_acc + cheq
 
-        base_domain = [["state", "=", "posted"],
-                       ["invoice_date", ">=", mo["first"]],
-                       ["invoice_date", "<=", mo["last"]]]
-        inv_rg = models.execute_kw(
-            ODOO_DB, uid, ODOO_KEY, "account.move", "read_group",
-           [[["move_type", "=", "out_invoice"]] + base_domain],
-            {"fields": ["amount_untaxed"], "groupby": [], "lazy": False}
-        )
-        ref_rg = models.execute_kw(
-            ODOO_DB, uid, ODOO_KEY, "account.move", "read_group",
-            [[["move_type", "=", "out_refund"]] + base_domain],
-            {"fields": ["amount_untaxed"], "groupby": [], "lazy": False}
-        )
-        ventas_inv = inv_rg[0].get("amount_untaxed", 0) if inv_rg else 0
-        ventas_ref = ref_rg[0].get("amount_untaxed", 0) if ref_rg else 0
-        net_sales = max(ventas_inv - ventas_ref, 0)
+        # Revenue bruto = venta neta (4.1.01.01) * 1.19 + IEC (4.2.01.02)
+        venta_neta = get_account_balance(rev_acc_ids, mo["first"], mo["last"])
+        iec = get_account_balance(iec_acc_ids, mo["first"], mo["last"])
+        net_sales = venta_neta * IVA_RATE + iec
         raw.append({"label": mo["label"], "cxc_total": cxc_total, "cxc_acc": cxc_acc, "cheques": cheq, "net_sales": net_sales})
 
     # 4. DSO con promedio 3m (solo para los ultimos n_months)
@@ -1244,7 +1273,7 @@ def extract_dso(models, uid, n_months=6):
         avg_cxc = round((raw[i]["cxc_total"] + raw[i-1]["cxc_total"] + raw[i-2]["cxc_total"]) / 3)
         net_sales = cur["net_sales"]
         dso = round(avg_cxc / net_sales * 30, 1) if net_sales > 0 else 0
-        print(f"  {cur['label']}: CxC_prom3m=${avg_cxc:,.0f} | Ventas=${net_sales:,.0f} | DSO={dso}d")
+        print(f"  {cur['label']}: CxC_prom3m=${avg_cxc:,.0f} | RevenueBruto=${net_sales:,.0f} | Rotacion={dso}d")
         results.append({
             "month": cur["label"],
             "cxc": round(cur["cxc_total"]),
