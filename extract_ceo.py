@@ -663,125 +663,145 @@ def extract_sla(models, uid, weeks):
     return sla_data
 
 
-# ── CHURN: Posible Churn — stable clients who stopped buying ──
-# Criteria: min 4 invoices in 8 months, frequency ≤ 60 days, silent > 2× frequency
-FREQ_MAP = {
-    "diaria": 1, "diario": 1,
-    "semanal": 7,
-    "quincenal": 15,
-    "mensual": 30,
-    "bimensual": 60, "bimestral": 60,
-    "trimestral": 90,
-}
-CHURN_MULTIPLIER = 2
-IRREGULAR_DEFAULT_DAYS = 15
-MIN_INVOICES_FOR_CHURN = 8   # need solid purchase history
-MAX_FREQ_DAYS_FOR_CHURN = 45  # exclude seasonal/irregular (>45 day frequency)
+# ── CHURN: Clasificación correcta por facturación ──
+# Definiciones operativas TomEnergy:
+#   Durmiente: superó freq×1.5 (freq<30d) o freq×1.3 (freq≥30d), pero <270 días sin factura
+#   Perdido:   sin factura 270+ días (9 meses)
+#   Churn %:   perdidos NUEVOS este mes / clientes activos mes anterior
+#
+# Frecuencia se calcula desde historial real de facturas (últimos 3 meses activos),
+# no desde campo frecuencia_facturacion (que puede estar vacío o desactualizado).
+
+LOST_THRESHOLD_DAYS = 270   # 9 meses → Perdido
+LOOKBACK_FREQ_MONTHS = 3    # meses para calcular frecuencia promedio
+LOOKBACK_ALL_MONTHS = 30    # meses para traer todo el historial (perdidos incluidos)
 
 
-def parse_frecuencia(val):
-    """Parse frecuencia_facturacion char field into expected days between purchases."""
-    import re
-    if not val:
+def compute_freq_days(invoice_dates_sorted):
+    """
+    Calcula frecuencia promedio de compra en días desde lista de fechas ordenadas (str YYYY-MM-DD).
+    Necesita al menos 2 facturas. Devuelve None si no hay suficientes datos.
+    """
+    if len(invoice_dates_sorted) < 2:
         return None
-    low = val.lower().strip()
-    for key, days in FREQ_MAP.items():
-        if key in low:
-            return days
-    m = re.search(r"(\d+[\.,]?\d*)", low)
-    if m:
-        return round(float(m.group(1).replace(",", ".")))
-    if "irregular" in low:
-        return IRREGULAR_DEFAULT_DAYS
-    return None
+    dts = [datetime.strptime(d, "%Y-%m-%d") for d in invoice_dates_sorted]
+    gaps = [(dts[i+1] - dts[i]).days for i in range(len(dts)-1)]
+    return round(sum(gaps) / len(gaps))
+
+
+def dormant_threshold(freq_days):
+    """
+    Umbral de días sin compra para clasificar como Durmiente.
+    freq < 30d → freq × 1.5
+    freq ≥ 30d → freq × 1.3
+    """
+    if freq_days < 30:
+        return freq_days * 1.5
+    return freq_days * 1.3
+
+
+def classify_client(days_since, freq_days):
+    """
+    Devuelve 'activo', 'durmiente', o 'perdido'.
+    days_since: días desde última factura
+    freq_days: frecuencia promedio en días (puede ser None)
+    """
+    if days_since >= LOST_THRESHOLD_DAYS:
+        return "perdido"
+    if freq_days is not None and days_since > dormant_threshold(freq_days):
+        return "durmiente"
+    return "activo"
 
 
 def extract_churn(models, uid):
     """
-    Posible Churn: clients with stable purchase history (≥4 invoices in 8 months,
-    frequency ≤60 days) who stopped buying for >2× their frequency.
-    Excludes seasonal/irregular clients to reduce false positives.
+    Churn con definiciones correctas TomEnergy:
+    - Durmiente: superó umbral de frecuencia pero <270 días sin factura
+    - Perdido: 270+ días sin factura (churn real)
+    - Churn %: perdidos nuevos este mes / activos mes anterior
+    - Rescate durmiente: fidelización (Comber Sigall)
+    - Rescate perdido: ejecutivo → cuenta como cliente nuevo
     """
-    print("Extracting Posible Churn (stable clients only)...")
+    import re
+    print("Extracting Churn (definiciones correctas TomEnergy)...")
     today = datetime.now()
+    today_str = today.strftime("%Y-%m-%d")
 
-    # Get all invoices in last 8 months
-    eight_months_ago = (today - timedelta(days=240)).strftime("%Y-%m-%d")
-    recent_invs = fetch_all(models, uid, "account.move",
-        [["move_type", "=", "out_invoice"], ["state", "=", "posted"],
-         ["invoice_date", ">=", eight_months_ago]],
-        ["partner_id", "invoice_date"])
+    # ── 1. Traer TODO el historial necesario ──
+    # Para detectar perdidos (270d) necesitamos hasta 30 meses atrás
+    lookback_start = (today - timedelta(days=LOOKBACK_ALL_MONTHS * 31)).strftime("%Y-%m-%d")
 
-    # Build per-partner: last_invoice + invoice_count
-    partner_last = {}   # pid -> last invoice date string
-    partner_count = {}  # pid -> number of invoices in 8 months
-    for inv in recent_invs:
-        pid = inv["partner_id"][0] if inv.get("partner_id") else None
-        if not pid:
+    all_invs = fetch_all(models, uid, "account.move",
+        [["move_type", "=", "out_invoice"],
+         ["state", "=", "posted"],
+         ["invoice_date", ">=", lookback_start],
+         ["partner_id.name", "!=", "Predeterminado"]],
+        ["partner_id", "invoice_date", "partner_id.name"])
+
+    # ── 2. Construir historial por partner ──
+    partner_dates = {}   # pid -> sorted list of invoice dates (str)
+    partner_name = {}    # pid -> name
+    for inv in all_invs:
+        if not inv.get("partner_id"):
+            continue
+        pid = inv["partner_id"][0]
+        name = inv["partner_id"][1] if isinstance(inv["partner_id"], (list, tuple)) else ""
+        if "predeterminado" in name.lower():
             continue
         dt = inv.get("invoice_date", "")
-        if dt > partner_last.get(pid, ""):
-            partner_last[pid] = dt
-        partner_count[pid] = partner_count.get(pid, 0) + 1
-
-    active_pids = list(partner_last.keys())
-    print(f"  {len(active_pids)} partners with invoices in last 8 months")
-
-    # Read frecuencia_facturacion for all active partners
-    partner_freq = {}
-    for offset in range(0, len(active_pids), 200):
-        batch = active_pids[offset:offset + 200]
-        partners = sr(models, uid, "res.partner", [["id", "in", batch]],
-                       ["id", "name", "frecuencia_facturacion"], limit=200)
-        for p in partners:
-            freq_raw = p.get("frecuencia_facturacion") or ""
-            freq_days = parse_frecuencia(freq_raw)
-            partner_freq[p["id"]] = {
-                "name": p["name"],
-                "freq_raw": freq_raw,
-                "freq_days": freq_days,
-            }
-
-    # Filter: only stable clients (≥4 invoices, frequency ≤60 days)
-    churned = []
-    eligible_count = 0
-    for pid, last_date in partner_last.items():
-        info = partner_freq.get(pid)
-        if not info or not info["freq_days"]:
+        if not dt:
             continue
-        if info["freq_days"] > MAX_FREQ_DAYS_FOR_CHURN:
-            continue  # seasonal — skip
-        if partner_count.get(pid, 0) < MIN_INVOICES_FOR_CHURN:
-            continue  # not enough history — skip
-        eligible_count += 1
+        partner_name[pid] = name
+        partner_dates.setdefault(pid, [])
+        partner_dates[pid].append(dt)
+
+    for pid in partner_dates:
+        partner_dates[pid] = sorted(set(partner_dates[pid]))
+
+    print(f"  {len(partner_dates)} partners con historial de facturas")
+
+    # ── 3. Para frecuencia: solo facturas en últimos 3 meses ──
+    freq_cutoff = (today - timedelta(days=LOOKBACK_FREQ_MONTHS * 31)).strftime("%Y-%m-%d")
+
+    partner_freq = {}  # pid -> freq_days (o None)
+    for pid, dates in partner_dates.items():
+        recent = [d for d in dates if d >= freq_cutoff]
+        partner_freq[pid] = compute_freq_days(recent)
+
+    # ── 4. Clasificar todos los partners ──
+    dormant_list = []
+    lost_list = []
+
+    for pid, dates in partner_dates.items():
+        last_date = dates[-1]
         days_since = (today - datetime.strptime(last_date, "%Y-%m-%d")).days
-        threshold = info["freq_days"] * CHURN_MULTIPLIER
-        if days_since > threshold:
-            churned.append({
-                "name": info["name"],
-                "freq": info["freq_raw"],
-                "freq_days": info["freq_days"],
-                "last_invoice": last_date,
-                "days_since": days_since,
-                "threshold": threshold,
-                "invoices_8m": partner_count.get(pid, 0),
-            })
+        freq = partner_freq.get(pid)
+        cls = classify_client(days_since, freq)
+        name = partner_name.get(pid, "")
 
-    churned.sort(key=lambda x: -x["days_since"])
-    pct = round(len(churned) / eligible_count * 100, 1) if eligible_count > 0 else 0
+        entry = {
+            "partner_id": pid,
+            "name": name,
+            "last_invoice": last_date,
+            "days_since": days_since,
+            "freq_days": freq,
+            "threshold": round(dormant_threshold(freq), 1) if freq else None,
+        }
 
-    # Tag new churn this week (crossed threshold in last 7 days)
-    for c in churned:
-        days_over = c["days_since"] - c["threshold"]
-        c["new_this_week"] = days_over <= 7
+        if cls == "durmiente":
+            dormant_list.append(entry)
+        elif cls == "perdido":
+            lost_list.append(entry)
 
-    new_this_week = sum(1 for c in churned if c["new_this_week"])
-    print(f"  Posible Churn: {len(churned)} total, {new_this_week} new this week")
+    dormant_list.sort(key=lambda x: -x["days_since"])
+    lost_list.sort(key=lambda x: -x["days_since"])
 
-    # ── Monthly history (last 6 months) — NEW churns per month only ──
-    # A client is "new churn" in month M if they crossed the threshold DURING that month
-    # (were OK at start of month, exceeded threshold by end of month)
-    print("  Calculating monthly churn rate (new per month, not accumulated)...")
+    print(f"  Durmientes: {len(dormant_list)}, Perdidos: {len(lost_list)}")
+
+    # ── 5. Churn % mensual (últimos 6 meses) ──
+    # Churn % = perdidos NUEVOS en mes M / activos al inicio del mes M
+    # "Perdido nuevo en M" = cruzó 270d dentro de ese mes calendario
+    print("  Calculando churn rate mensual...")
     churn_history = []
     for m_offset in range(6):
         ref = today.replace(day=1)
@@ -791,41 +811,60 @@ def extract_churn(models, uid):
         m_end = (ref + timedelta(days=32)).replace(day=1) - timedelta(days=1)
         m_label = ref.strftime("%b %Y")
 
-        m_new_churn = 0
+        m_new_lost = 0
         m_active_start = 0
-        for pid, last_date in partner_last.items():
-            info = partner_freq.get(pid)
-            if not info or not info["freq_days"]:
-                continue
-            if info["freq_days"] > MAX_FREQ_DAYS_FOR_CHURN:
-                continue
-            if partner_count.get(pid, 0) < MIN_INVOICES_FOR_CHURN:
-                continue
+
+        for pid, dates in partner_dates.items():
+            last_date = dates[-1]
             ld = datetime.strptime(last_date, "%Y-%m-%d")
+
+            # ¿Tenía factura el mes anterior (activo al inicio de M)?
+            prev_month_end = m_start - timedelta(days=1)
+            prev_month_start = prev_month_end.replace(day=1)
+            had_invoice_prev = any(
+                prev_month_start.strftime("%Y-%m-%d") <= d <= prev_month_end.strftime("%Y-%m-%d")
+                for d in dates
+            )
+            # Activo al inicio de M = no perdido aún al 1ro del mes
             days_at_start = (m_start - ld).days
-            days_at_end = (m_end - ld).days
-            threshold = info["freq_days"] * CHURN_MULTIPLIER
-            if days_at_start < 0:
-                continue  # last invoice after this month started
-            # Was active at start of month (not yet exceeded threshold)
-            if days_at_start <= threshold:
+            if days_at_start < LOST_THRESHOLD_DAYS:
                 m_active_start += 1
-                # But exceeded by end of month = NEW churn this month
-                if days_at_end > threshold:
-                    m_new_churn += 1
-        m_pct = round(m_new_churn / m_active_start * 100, 1) if m_active_start > 0 else 0
-        churn_history.append({"month": m_label, "pct": m_pct, "new_churn": m_new_churn, "active_start": m_active_start})
-        print(f"    {m_label}: {m_new_churn} new / {m_active_start} active = {m_pct}%")
+                # ¿Se convirtió en perdido DURANTE este mes?
+                days_at_end = (m_end - ld).days
+                if days_at_end >= LOST_THRESHOLD_DAYS:
+                    m_new_lost += 1
+
+        m_pct = round(m_new_lost / m_active_start * 100, 1) if m_active_start > 0 else 0
+        churn_history.append({
+            "month": m_label,
+            "pct": m_pct,
+            "new_lost": m_new_lost,
+            "active_start": m_active_start,
+        })
+        print(f"    {m_label}: {m_new_lost} nuevos perdidos / {m_active_start} activos = {m_pct}%")
 
     churn_history.reverse()
 
+    # ── 6. Nuevos perdidos este mes (para KPI) ──
+    this_month_start = today.replace(day=1)
+    newly_lost_this_month = 0
+    for pid, dates in partner_dates.items():
+        ld = datetime.strptime(dates[-1], "%Y-%m-%d")
+        lost_date = ld + timedelta(days=LOST_THRESHOLD_DAYS)
+        if this_month_start <= lost_date <= today:
+            newly_lost_this_month += 1
+
+    current_churn_pct = churn_history[-1]["pct"] if churn_history else 0
+
     return {
-        "eligible_clients": eligible_count,
-        "churned_count": len(churned),
-        "pct": pct,
-        "churned": churned[:30],
-        "filters": f"≥{MIN_INVOICES_FOR_CHURN} facturas, frecuencia ≤{MAX_FREQ_DAYS_FOR_CHURN}d, silencio >{CHURN_MULTIPLIER}x freq",
+        "dormant_count": len(dormant_list),
+        "lost_count": len(lost_list),
+        "newly_lost_this_month": newly_lost_this_month,
+        "churn_pct": current_churn_pct,
+        "dormant": dormant_list[:50],
+        "lost": lost_list[:50],
         "history": churn_history,
+        "definition": f"Perdido = {LOST_THRESHOLD_DAYS}d sin factura | Durmiente = >freq×1.5 (<30d) o freq×1.3 (≥30d)",
     }
 
 
