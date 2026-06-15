@@ -1,0 +1,40 @@
+name: Update Route Data
+
+on:
+  schedule:
+    - cron: '0 11 * * *'   # 8am Chile (UTC-3) — una vez al día
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  update-data:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+
+      - name: Fetch route data from Odoo
+        env:
+          ODOO_URL: https://tomenergy.cl
+          ODOO_DB: PRODUCCION
+          ODOO_USER: p@tomenergy.cl
+          ODOO_KEY: ${{ secrets.ODOO_KEY }}
+        run: python extract_route.py
+
+      - name: Commit and push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add route-data.json
+          git diff --cached --quiet && echo "No changes" && exit 0
+          git commit -m "Update route data $(date -u +'%Y-%m-%d %H:%M UTC')"
+          git pull --rebase origin main
+          git push
