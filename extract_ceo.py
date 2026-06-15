@@ -1141,11 +1141,15 @@ def extract_riesgo(models, uid):
 # ── DSO / Rotacion CxC ──
 # Replica EXACTA de la hoja del directorio (celda CD28):
 #   Rotacion = PROMEDIO_3m(CxC) / Revenue_bruto(mes) * 30
-# Numerador: CxC cuentas (1.1.04.05 + 1.1.04.11) + cheques en cartera (journal 114)
-#            al cierre de mes, promediado con los 2 meses anteriores.
+# Numerador: saldo cuentas CxC clientes (1.1.04.05 + 1.1.04.11)
+#            + cheques en cartera (1.1.05.07) al cierre de mes,
+#            promediado con los 2 meses anteriores.
+#            NOTA: los cheques salen de la CUENTA 1.1.05.07, NO del journal 114
+#            (el journal 114 solo se usa en la seccion Cash Flow semanal).
 # Denominador: Revenue BRUTO del mes = venta_neta(4.1.01.01) * 1.19 (IVA)
 #              + IEC(4.2.01.02). NO es amount_untaxed neto.
-CXC_ACCOUNT_CODES = ["1.1.04.05", "1.1.04.11"]
+CXC_ACCOUNT_CODES = ["1.1.04.05", "1.1.04.11"]   # cuentas por cobrar clientes
+CHEQUES_ACCOUNT_CODE = "1.1.05.07"               # cheques en cartera (saldo contable)
 # Cuentas de ingreso para el Revenue bruto (mismo origen que la hoja del directorio)
 REVENUE_ACCOUNT_CODE = "4.1.01.01"   # INGRESOS POR VENTA CO (venta neta)
 IEC_ACCOUNT_CODE = "4.2.01.02"       # IMPUESTO ESPECIFICO VENTAS (IEC)
@@ -1157,8 +1161,8 @@ def extract_dso(models, uid, n_months=6):
 
     Replica exacta de la hoja del directorio (celda CD28).
 
-    Numerador: saldo acumulado cuentas 1.1.04.05 + 1.1.04.11
-               + cheques en cartera (journal 114) al cierre del mes,
+    Numerador: saldo cuentas CxC clientes (1.1.04.05 + 1.1.04.11)
+               + cheques en cartera (cuenta 1.1.05.07) al cierre del mes,
                promediado con los 2 meses anteriores (suaviza fin de mes).
 
     Denominador: Revenue BRUTO del mes = venta neta (cuenta 4.1.01.01) * 1.19
@@ -1176,7 +1180,17 @@ def extract_dso(models, uid, n_months=6):
     if not acc_ids:
         print("  WARNING: cuentas CxC no encontradas, DSO omitido")
         return {"months": [], "cxc_hoy": 0}
-    print(f"  Cuentas CxC: {len(acc_ids)} encontradas (codes: {CXC_ACCOUNT_CODES})")
+    print(f"  Cuentas CxC clientes: {len(acc_ids)} encontradas (codes: {CXC_ACCOUNT_CODES})")
+
+    # 1a. ID cuenta cheques en cartera (1.1.05.07) — saldo contable, NO journal 114
+    cheq_acc_ids = models.execute_kw(
+        ODOO_DB, uid, ODOO_KEY, "account.account", "search",
+        [[["code", "=", CHEQUES_ACCOUNT_CODE]]]
+    )
+    if not cheq_acc_ids:
+        print(f"  WARNING: cuenta cheques {CHEQUES_ACCOUNT_CODE} no encontrada (cheques = 0)")
+    else:
+        print(f"  Cuenta cheques {CHEQUES_ACCOUNT_CODE}: {cheq_acc_ids}")
 
     # 1b. IDs cuentas de ingreso (venta neta + IEC) para Revenue bruto
     rev_acc_ids = models.execute_kw(
@@ -1225,10 +1239,13 @@ def extract_dso(models, uid, n_months=6):
         return max(debit - credit, 0)
 
     def get_cheques_at(cutoff_date):
-        """Saldo cheques en cartera (journal 114) al cutoff."""
+        """Saldo cheques en cartera (cuenta 1.1.05.07) al cutoff.
+        NO usa journal 114 (ese filtro daba 0 — los cheques estan en la cuenta)."""
+        if not cheq_acc_ids:
+            return 0
         rg = models.execute_kw(
             ODOO_DB, uid, ODOO_KEY, "account.move.line", "read_group",
-            [[["journal_id", "=", CHEQUES_CARTERA_JOURNAL],
+            [[["account_id", "in", cheq_acc_ids],
               ["parent_state", "=", "posted"],
               ["date", "<=", cutoff_date]]],
             {"fields": ["debit", "credit"], "groupby": [], "lazy": False}
