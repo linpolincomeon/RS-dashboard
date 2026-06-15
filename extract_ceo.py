@@ -734,9 +734,8 @@ def extract_churn(models, uid):
     all_invs = fetch_all(models, uid, "account.move",
         [["move_type", "=", "out_invoice"],
          ["state", "=", "posted"],
-         ["invoice_date", ">=", lookback_start],
-         ["partner_id.name", "!=", "Predeterminado"]],
-        ["partner_id", "invoice_date", "partner_id.name"])
+         ["invoice_date", ">=", lookback_start]],
+        ["partner_id", "invoice_date"])
 
     # ── 2. Construir historial por partner ──
     partner_dates = {}   # pid -> sorted list of invoice dates (str)
