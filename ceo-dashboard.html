@@ -593,7 +593,7 @@ function renderGerencia(){
     } else {
         h+='<div class="chart-card" style="text-align:center;padding:2rem;color:var(--text3)">Sin datos de churn</div>';
     }
-        // ═══ SECTION 3: SLA OPERACIONES — solo 1 semana + listado atrasados ═══
+        // ═══ SECTION 3: SLA OPERACIONES — semana actual + histórico ═══
     const sla=D.sla||[];
     if(sla.length>0){
         h+='<div class="section-label">SLA Entrega — '+sla[0].label+'</div>';
@@ -606,7 +606,22 @@ function renderGerencia(){
         h+=kpi('SLA Global',allPct.toFixed(1)+'%',null,allPct>=slaTgt?'c-green':allPct>=90?'c-amber':'c-red',`${allOT} a tiempo / ${allTotal} total · meta ${slaTgt}%`);
         h+=kpi('Entregas Atrasadas',''+allLate,null,allLate===0?'c-green':allLate<=3?'c-amber':'c-red','fuera de plazo (>24h)');
         h+='</div>';
-        // SLA by zone table
+        // Historical SLA table (last 8 weeks)
+        if(sla.length>1){
+            h+='<div class="table-card"><table><thead><tr><th>Semana</th><th class="r">Total</th><th class="r">A Tiempo</th><th class="r">Atrasados</th><th class="r">SLA %</th></tr></thead><tbody>';
+            sla.slice(0,8).forEach((w,idx)=>{
+                const wT=Object.values(w.zones||{}).reduce((s,z)=>s+z.total,0);
+                const wOT=Object.values(w.zones||{}).reduce((s,z)=>s+z.on_time,0);
+                const wPct=wT>0?wOT/wT*100:100;
+                const wLate=wT-wOT;
+                const cls=wPct>=slaTgt?'ok':wPct>=90?'':'bad';
+                const tag=idx===0?'<span style="font-size:9px;color:var(--accent);font-weight:700"> · actual</span>':'';
+                h+=`<tr><td class="hi">${w.label}${tag}</td><td class="r">${wT}</td><td class="r">${wOT}</td><td class="r ${wLate>0?'bad':''}">${wLate}</td><td class="r ${cls}">${wPct.toFixed(1)}%</td></tr>`;
+            });
+            h+='</tbody></table><div class="note">Histórico últimas 8 semanas</div></div>';
+        }
+        // SLA by zone table (current week only)
+        h+='<div class="section-label" style="font-size:13px;margin-top:1.5rem">Por Zona — '+slaW.label+'</div>';
         const zones=Object.keys(slaW.zones||{}).sort();
         h+='<div class="table-card"><table><thead><tr><th>Zona</th><th class="r">Total</th><th class="r">A Tiempo</th><th class="r">Atrasados</th><th class="r">SLA %</th></tr></thead><tbody>';
         zones.forEach(z=>{
