@@ -1400,6 +1400,46 @@ def main():
         json.dump(data, f, ensure_ascii=False, indent=2)
     print(f"\nceo-data.json written OK ({len(weekly)} weeks, {len(banks)} banks)")
 
+    # ── Actualizar riesgo-historico.json (snapshot semanal) ──
+    # Convención del archivo: una fila por semana, fecha = domingo de la semana.
+    # Si ya existe esa semana, se actualiza (último valor del run del día gana).
+    hist_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "riesgo-historico.json")
+    today = datetime.now()
+    days_to_sunday = (today.weekday() + 1) % 7  # weekday(): Mon=0..Sun=6
+    week_sunday = today - timedelta(days=days_to_sunday)
+    week_sunday_str = week_sunday.strftime("%Y-%m-%d")
+
+    snapshot = {
+        "fecha": week_sunday_str,
+        "no_cubierto": riesgo.get("no_cubierto", 0),
+        "cubierto": riesgo.get("cubierto", 0),
+        "ventas_nc": riesgo.get("no_cubierto_count", 0),
+        "ventas_c": riesgo.get("cubierto_count", 0),
+    }
+
+    try:
+        with open(hist_path, "r", encoding="utf-8") as f:
+            hist = json.load(f)
+    except (FileNotFoundError, json.JSONDecodeError):
+        hist = []
+
+    # Update existing week or append
+    idx = next((i for i, w in enumerate(hist) if w.get("fecha") == week_sunday_str), None)
+    if idx is not None:
+        hist[idx] = snapshot
+        action = "updated"
+    else:
+        hist.append(snapshot)
+        action = "appended"
+
+    # Keep sorted by fecha and cap at 52 weeks
+    hist.sort(key=lambda w: w.get("fecha", ""))
+    hist = hist[-52:]
+
+    with open(hist_path, "w", encoding="utf-8") as f:
+        json.dump(hist, f, ensure_ascii=False, indent=2)
+    print(f"riesgo-historico.json {action} for week {week_sunday_str} ({len(hist)} weeks total)")
+
 
 if __name__ == "__main__":
     main()
