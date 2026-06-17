@@ -1,23 +1,23 @@
 {
-  "updated": "2026-06-17T14:35:51.308206",
+  "updated": "2026-06-17T16:01:09.575066",
   "weeks": [
     {
       "label": "11jun-17jun",
       "start": "2026-06-11",
       "end": "2026-06-17",
-      "ventas": 155432558,
-      "neto": 107786622,
-      "litros": 108401,
-      "litros_retail": 71881,
+      "ventas": 156972598,
+      "neto": 108864293,
+      "litros": 109481,
+      "litros_retail": 72961,
       "litros_volumen": 36520,
       "precio_neto": 994,
       "precio_bruto": 1436,
-      "margin": 0.07407,
-      "margin_retail": 0.08631,
+      "margin": 0.07398,
+      "margin_retail": 0.08604,
       "margin_volumen": 0.04275,
-      "facturas": 76,
+      "facturas": 78,
       "nc": 3,
-      "clientes": 68,
+      "clientes": 70,
       "recaud": 245181148,
       "cheques": 22869879,
       "transf": 217080669,
@@ -25,13 +25,13 @@
       "compras_odoo": 180717785,
       "cheq_cartera_saldo": 0,
       "cheq_recibidos": 0,
-      "facturas_contado": 14,
-      "facturas_credito": 62,
+      "facturas_contado": 15,
+      "facturas_credito": 63,
       "margin_by_term": {
         "Prepago": {
-          "margin": 0.09904,
-          "normalizado": 0.10904,
-          "count": 2,
+          "margin": 0.09232,
+          "normalizado": 0.10232,
+          "count": 3,
           "days": 0
         },
         "1 Día": {
@@ -53,9 +53,9 @@
           "days": 15
         },
         "30 Días": {
-          "margin": 0.09364,
-          "normalizado": 0.09364,
-          "count": 44,
+          "margin": 0.09339,
+          "normalizado": 0.09339,
+          "count": 45,
           "days": 30
         },
         "45 Días": {
@@ -73,7 +73,7 @@
       },
       "cotiz_canceladas": 8,
       "visitas": 104,
-      "clientes_nuevos": 3,
+      "clientes_nuevos": 4,
       "ppto": 178726,
       "ppto_retail": 125108,
       "ppto_volumen": 53618,
@@ -1248,8 +1248,8 @@
     {
       "date": "17jun",
       "day": "Mié",
-      "litros": 3500,
-      "neto": 3552223
+      "litros": 4580,
+      "neto": 4629894
     },
     {
       "date": "16jun",
@@ -1374,9 +1374,9 @@
   ],
   "total_cash": 44885551,
   "receivables": {
-    "open_invoices": 232,
-    "total_due": 596665091,
-    "current": 502947351,
+    "open_invoices": 234,
+    "total_due": 598205131,
+    "current": 504487391,
     "overdue": 93717740,
     "pct_overdue": 15.7,
     "aging": {
@@ -1480,11 +1480,12 @@
           "late_clients": []
         },
         "Curico": {
-          "total": 16,
+          "total": 17,
           "on_time": 11,
-          "late": 5,
-          "pct": 68.75,
+          "late": 6,
+          "pct": 64.71,
           "late_clients": [
+            "AGRICOLA RIOJARA LIMITADA (prom: 2026-06-17, fact: sin factura)",
             "AGRIZANO S A (prom: 2026-06-17, fact: sin factura)",
             "VINICOLA PATACON SPA. (prom: 2026-06-17, fact: sin factura)",
             "BEPATAGONIA MAQUINARIA S.A. (prom: 2026-06-17, fact: sin factura)",
@@ -1494,12 +1495,10 @@
         },
         "Rancagua": {
           "total": 18,
-          "on_time": 17,
-          "late": 1,
-          "pct": 94.44,
-          "late_clients": [
-            "SEMILLAS TUNICHE LTDA (prom: 2026-06-17, fact: sin factura)"
-          ]
+          "on_time": 18,
+          "late": 0,
+          "pct": 100.0,
+          "late_clients": []
         },
         "San Fernando": {
           "total": 11,
@@ -1524,11 +1523,10 @@
         },
         "VI Costa": {
           "total": 10,
-          "on_time": 8,
-          "late": 2,
-          "pct": 80.0,
+          "on_time": 9,
+          "late": 1,
+          "pct": 90.0,
           "late_clients": [
-            "VINA HACIENDA ARAUCANO SPA (prom: 2026-06-17, fact: sin factura)",
             "AGRICOLA XIONGDI SPA (prom: 2026-06-15, fact: 2026-06-16)"
           ]
         }
@@ -2504,13 +2502,13 @@
   "riesgo": {
     "cubierto": 0,
     "cubierto_count": 0,
-    "no_cubierto": 596665091,
-    "no_cubierto_count": 232,
+    "no_cubierto": 598205131,
+    "no_cubierto_count": 234,
     "pct_monto": 100.0,
     "pct_count": 100.0
   },
   "churn": {
-    "dormant_count": 70,
+    "dormant_count": 69,
     "lost_count": 179,
     "newly_lost_this_month": 7,
     "churn_pct": 2.3,
@@ -3323,37 +3321,37 @@
         "month": "Jan 2026",
         "pct": 1.5,
         "new_lost": 9,
-        "active_start": 605
+        "active_start": 606
       },
       {
         "month": "Feb 2026",
         "pct": 1.3,
         "new_lost": 8,
-        "active_start": 596
+        "active_start": 597
       },
       {
         "month": "Mar 2026",
         "pct": 2.4,
         "new_lost": 14,
-        "active_start": 587
+        "active_start": 588
       },
       {
         "month": "Apr 2026",
         "pct": 0.9,
         "new_lost": 5,
-        "active_start": 573
+        "active_start": 574
       },
       {
         "month": "May 2026",
         "pct": 1.4,
         "new_lost": 8,
-        "active_start": 568
+        "active_start": 569
       },
       {
         "month": "Jun 2026",
         "pct": 2.3,
         "new_lost": 13,
-        "active_start": 559
+        "active_start": 560
       }
     ],
     "definition": "Perdido = 270d sin factura | Durmiente = >freq×1.5 (<30d) o freq×1.3 (≥30d)"
@@ -3501,10 +3499,10 @@
         "month": "2026-06",
         "label": "Jun 2026",
         "budget": 16920204,
-        "actual": 7471080,
-        "compliance_pct": 44.2,
+        "actual": 11122836,
+        "compliance_pct": 65.7,
         "categories": {
-          "Petróleo": 3960972,
+          "Petróleo": 7612728,
           "Mantención y Reparación": 1310252,
           "Gastos Traslados (TAG)": 969814,
           "Seguros": 643135,
@@ -3573,7 +3571,7 @@
         "dso": 28.3
       }
     ],
-    "cxc_hoy": 1037996776
+    "cxc_hoy": 1039536816
   },
   "gerencia_goals": {
     "margen_contado_meta": 0.085,
