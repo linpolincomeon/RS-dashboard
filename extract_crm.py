@@ -2892,7 +2892,7 @@ def main():
         "vendor_goals": vendor_goals,
         "company_goals": {
             "litros_mes": 866750,
-            "litros_cs_mes": 493505,
+            "litros_cs_mes": 526505,
             "margen_retail": 8.5,
             "margen_volumen": 6.0,
             "month": "junio 2026",
