@@ -1,23 +1,23 @@
 {
-  "updated": "2026-06-18T14:15:31.109819",
+  "updated": "2026-06-18T17:00:06.190645",
   "weeks": [
     {
       "label": "18jun-24jun",
       "start": "2026-06-18",
       "end": "2026-06-24",
-      "ventas": 4517802,
-      "neto": 3124980,
-      "litros": 3350,
-      "litros_retail": 2500,
+      "ventas": 25885055,
+      "neto": 19078299,
+      "litros": 19523,
+      "litros_retail": 18673,
       "litros_volumen": 850,
-      "precio_neto": 933,
-      "precio_bruto": 1373,
-      "margin": 0.11689,
-      "margin_retail": 0.12176,
+      "precio_neto": 977,
+      "precio_bruto": 1337,
+      "margin": 0.09039,
+      "margin_retail": 0.09017,
       "margin_volumen": 0.09641,
-      "facturas": 5,
-      "nc": 1,
-      "clientes": 5,
+      "facturas": 14,
+      "nc": 2,
+      "clientes": 14,
       "recaud": 72149070,
       "cheques": 0,
       "transf": 15569124,
@@ -25,19 +25,31 @@
       "compras_odoo": 0,
       "cheq_cartera_saldo": 0,
       "cheq_recibidos": 0,
-      "facturas_contado": 0,
-      "facturas_credito": 5,
+      "facturas_contado": 2,
+      "facturas_credito": 12,
       "margin_by_term": {
+        "1 Día": {
+          "margin": 0.06414,
+          "normalizado": 0.07381,
+          "count": 2,
+          "days": 1
+        },
         "30 Días": {
-          "margin": 0.11689,
-          "normalizado": 0.11689,
-          "count": 5,
+          "margin": 0.09673,
+          "normalizado": 0.09673,
+          "count": 11,
           "days": 30
+        },
+        "60 Días": {
+          "margin": 0.06941,
+          "normalizado": 0.05941,
+          "count": 1,
+          "days": 60
         }
       },
-      "cotiz_canceladas": 0,
+      "cotiz_canceladas": 4,
       "visitas": 106,
-      "clientes_nuevos": 1,
+      "clientes_nuevos": 2,
       "ppto": 178726,
       "ppto_retail": 125108,
       "ppto_volumen": 53618,
@@ -113,7 +125,7 @@
           "days": 60
         }
       },
-      "cotiz_canceladas": 12,
+      "cotiz_canceladas": 11,
       "visitas": 0,
       "clientes_nuevos": 4,
       "ppto": 178726,
@@ -1212,8 +1224,8 @@
     {
       "date": "18jun",
       "day": "Jue",
-      "litros": 4290,
-      "neto": 4089839
+      "litros": 22883,
+      "neto": 22358367
     },
     {
       "date": "17jun",
@@ -1338,11 +1350,11 @@
   ],
   "total_cash": 67246809,
   "receivables": {
-    "open_invoices": 227,
-    "total_due": 585036530,
-    "current": 491272893,
+    "open_invoices": 204,
+    "total_due": 550571452,
+    "current": 456807815,
     "overdue": 93763637,
-    "pct_overdue": 16.0,
+    "pct_overdue": 17.0,
     "aging": {
       "0-30": 83050854,
       "31-60": 947220,
@@ -1356,7 +1368,7 @@
       },
       {
         "name": "CIA CHILENA DE FOSFOROS S A",
-        "amount": 24362502
+        "amount": 27038502
       },
       {
         "name": "PATRICIO VISCAY ALBORNOZ",
@@ -1404,7 +1416,7 @@
       },
       {
         "name": "AGRICOLA EL CABRINO LIMITADA",
-        "amount": 9464500
+        "amount": 11431000
       },
       {
         "name": "AGROSERVICIOS JR SPA",
@@ -1446,35 +1458,36 @@
           ]
         },
         "Rancagua": {
-          "total": 4,
-          "on_time": 2,
-          "late": 2,
-          "pct": 50.0,
+          "total": 5,
+          "on_time": 4,
+          "late": 1,
+          "pct": 80.0,
           "late_clients": [
-            "GUSTAVO ESPINOZA ZAMORA (prom: 2026-06-18, fact: sin factura)",
-            "AGRICOLA EL CABRINO LIMITADA (prom: 2026-06-18, fact: sin factura)"
+            "AGRICOLA AGROBOSQUES SAN ISIDRO S.A. (prom: 2026-06-18, fact: sin factura)"
           ]
         },
         "San Fernando": {
-          "total": 2,
-          "on_time": 0,
-          "late": 2,
-          "pct": 0.0,
+          "total": 4,
+          "on_time": 3,
+          "late": 1,
+          "pct": 75.0,
           "late_clients": [
-            "SOCIEDAD COMERCIAL Y TRANSPORTE VENEGAS Y ROJAS LTDA (prom: 2026-06-18, fact: sin factura)",
-            "AGRICOLA COLLADO IBACACHE LIMITADA (prom: 2026-06-18, fact: sin factura)"
+            "FRUTICOLA AGUA BUENA LTDA (prom: 2026-06-18, fact: sin factura)"
           ]
         },
         "Talca": {
-          "total": 5,
-          "on_time": 1,
-          "late": 4,
-          "pct": 20.0,
+          "total": 11,
+          "on_time": 4,
+          "late": 7,
+          "pct": 36.36,
           "late_clients": [
-            "CONSTRUCTORA JAVAG SPA. (prom: 2026-06-18, fact: sin factura)",
-            "EXCAVACIONES SEBASTIAN ARAVENA E.I.R.L. (prom: 2026-06-18, fact: sin factura)",
+            "AGRICOLA Y COMERCIAL EL RINCON LIMITADA (prom: 2026-06-18, fact: sin factura)",
+            "AGRICOLA Y COMERCIAL EL RINCON LIMITADA (prom: 2026-06-18, fact: sin factura)",
             "JUAN PABLO ARMANDO CANCINO CORVALAN (prom: 2026-06-18, fact: sin factura)",
-            "BOMBAS DE HORMIGON G&P SPA (prom: 2026-06-18, fact: sin factura)"
+            "AGROPELLIN SPA (prom: 2026-06-18, fact: sin factura)",
+            "BOMBAS DE HORMIGON G&P SPA (prom: 2026-06-18, fact: sin factura)",
+            "CONSTRUCTORA JAVAG SPA. (prom: 2026-06-18, fact: sin factura)",
+            "EXCAVACIONES SEBASTIAN ARAVENA E.I.R.L. (prom: 2026-06-18, fact: sin factura)"
           ]
         }
       }
@@ -2432,8 +2445,8 @@
   "riesgo": {
     "cubierto": 0,
     "cubierto_count": 0,
-    "no_cubierto": 585036530,
-    "no_cubierto_count": 227,
+    "no_cubierto": 550571452,
+    "no_cubierto_count": 204,
     "pct_monto": 100.0,
     "pct_count": 100.0
   },
@@ -3251,37 +3264,37 @@
         "month": "Jan 2026",
         "pct": 1.5,
         "new_lost": 9,
-        "active_start": 607
+        "active_start": 608
       },
       {
         "month": "Feb 2026",
         "pct": 1.3,
         "new_lost": 8,
-        "active_start": 598
+        "active_start": 599
       },
       {
         "month": "Mar 2026",
         "pct": 2.4,
         "new_lost": 14,
-        "active_start": 589
+        "active_start": 590
       },
       {
         "month": "Apr 2026",
         "pct": 0.9,
         "new_lost": 5,
-        "active_start": 575
+        "active_start": 576
       },
       {
         "month": "May 2026",
         "pct": 1.4,
         "new_lost": 8,
-        "active_start": 570
+        "active_start": 571
       },
       {
         "month": "Jun 2026",
         "pct": 2.3,
         "new_lost": 13,
-        "active_start": 561
+        "active_start": 562
       }
     ],
     "definition": "Perdido = 270d sin factura | Durmiente = >freq×1.5 (<30d) o freq×1.3 (≥30d)"
@@ -3501,7 +3514,7 @@
         "dso": 28.3
       }
     ],
-    "cxc_hoy": 960402156
+    "cxc_hoy": 945175538
   },
   "gerencia_goals": {
     "margen_contado_meta": 0.085,
