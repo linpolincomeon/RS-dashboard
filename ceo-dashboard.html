@@ -593,11 +593,14 @@ function renderGerencia(){
     } else {
         h+='<div class="chart-card" style="text-align:center;padding:2rem;color:var(--text3)">Sin datos de churn</div>';
     }
-        // ═══ SECTION 3: SLA OPERACIONES — semana actual + histórico ═══
+        // ═══ SECTION 3: SLA OPERACIONES — semana seleccionada + histórico ═══
     const sla=D.sla||[];
     if(sla.length>0){
-        h+='<div class="section-label">SLA Entrega — '+sla[0].label+'</div>';
-        const slaW=sla[0];
+        // Buscar la semana seleccionada en el array de SLA por label
+        const selLabel=(D.weeks[selW]||{}).label;
+        const slaIdx=Math.max(0,sla.findIndex(w=>w.label===selLabel));
+        const slaW=sla[slaIdx];
+        h+='<div class="section-label">SLA Entrega — '+slaW.label+'</div>';
         const allTotal=Object.values(slaW.zones||{}).reduce((s,z)=>s+z.total,0);
         const allOT=Object.values(slaW.zones||{}).reduce((s,z)=>s+z.on_time,0);
         const allPct=allTotal>0?allOT/allTotal*100:100;
@@ -615,7 +618,7 @@ function renderGerencia(){
                 const wPct=wT>0?wOT/wT*100:100;
                 const wLate=wT-wOT;
                 const cls=wPct>=slaTgt?'ok':wPct>=90?'':'bad';
-                const tag=idx===0?'<span style="font-size:9px;color:var(--accent);font-weight:700"> · actual</span>':'';
+                const tag=idx===slaIdx?'<span style="font-size:9px;color:var(--accent);font-weight:700"> · actual</span>':'';
                 h+=`<tr><td class="hi">${w.label}${tag}</td><td class="r">${wT}</td><td class="r">${wOT}</td><td class="r ${wLate>0?'bad':''}">${wLate}</td><td class="r ${cls}">${wPct.toFixed(1)}%</td></tr>`;
             });
             h+='</tbody></table><div class="note">Histórico últimas 8 semanas</div></div>';
