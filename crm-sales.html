@@ -113,7 +113,7 @@ tr:hover td{background:#fafaf8}
   </div>
   <div class="topbar-right">
     <span><span class="dot dot-load" id="dot"></span><span id="stxt">Cargando...</span></span>
-    <button class="btn" onclick="loadData()">↻ Actualizar</button>
+    <button class="btn" onclick="loadData()" title="Recarga la última extracción. Para traer datos nuevos de Odoo hay que correr el workflow update-crm-data.">↻ Recargar</button>
     <a class="btn" href="crm-weekly.html" style="text-decoration:none">📊 Pipeline CRM</a>
   </div>
 </div>
@@ -965,7 +965,7 @@ function renderEjecutivos() {
 
   // KPI row
   h += '<div class="kpi-row" id="execKpiRow">';
-  h += mkKpi('c-red', 'Litros', fL(litros), 'Mes actual', null, null);
+  h += mkKpi('c-red', 'Litros facturados', fL(litros), 'Mes actual (facturado, no estimado)', null, null);
   h += mkKpi('c-red', 'Leads', leads, `Meta: ${leadsGoal}`, leads, leadsGoal);
   h += mkKpi('c-yellow', 'Cotizaciones', cotizaciones, 'Semana actual', null, null);
   h += mkKpi('c-green', 'Nuevos Clientes', nuevoClientes, 'Primera factura', null, null);
@@ -1011,9 +1011,16 @@ function renderEjecutivos() {
   };
   if (isExecAccum) { fwE.forEach(w => _collectG(w.stages)); } else { _collectG(st); }
   execGestion.sort((a, b) => (b.fecha || '').localeCompare(a.fecha || ''));
+  // dedupe por cliente+etapa (evita que el mismo cliente salga varias veces por múltiples cotizaciones)
+  const _seenG = {};
+  execGestion = execGestion.filter(x => {
+    const k = (x.cliente || '') + '|' + (x.etapa || '');
+    if (_seenG[k]) { _seenG[k].litros = Math.max(_seenG[k].litros || 0, x.litros || 0); return false; }
+    _seenG[k] = x; return true;
+  });
   const totGestL = execGestion.reduce((s, x) => s + (x.litros || 0), 0);
-  h += '<div class="sec"><div class="sec-h"><h2>🎯 Gestión Real de la Semana</h2><span style="font-size:12px;color:var(--dim)">' + execGestion.length + (totGestL ? ' · ' + fL(totGestL) : '') + '</span></div><div class="sec-b" style="padding:0;max-height:420px;overflow-y:auto"><table>';
-  h += '<thead><tr><th>Cliente</th><th>Etapa</th><th>Litros</th><th>Fecha</th></tr></thead><tbody>';
+  h += '<div class="sec"><div class="sec-h"><h2>🎯 Gestión Real de la Semana</h2><span style="font-size:12px;color:var(--dim)">' + execGestion.length + ' clientes' + (totGestL ? ' · ' + fL(totGestL) + ' L est.' : '') + '</span></div><div class="sec-b" style="padding:0;max-height:420px;overflow-y:auto"><table>';
+  h += '<thead><tr><th>Cliente</th><th>Etapa</th><th>Litros est.</th><th>Fecha</th></tr></thead><tbody>';
   if (execGestion.length === 0) {
     h += '<tr><td colspan="4" style="text-align:center;color:var(--dim);padding:20px">Sin gestión esta semana</td></tr>';
   } else {
@@ -2518,7 +2525,7 @@ async function loadData() {
     document.getElementById('content').style.display = 'block';
     dot.className = 'dot dot-ok';
     const upd = new Date(D.updated);
-    stxt.textContent = upd.toLocaleDateString('es-CL', { day: '2-digit', month: 'short' }) + ' ' + upd.toLocaleTimeString('es-CL', { hour: '2-digit', minute: '2-digit' });
+    stxt.textContent = 'Datos al ' + upd.toLocaleDateString('es-CL', { day: '2-digit', month: 'short' }) + ' ' + upd.toLocaleTimeString('es-CL', { hour: '2-digit', minute: '2-digit' }) + ' (última extracción)';
     document.getElementById('err').classList.remove('active');
   } catch (e) {
     dot.className = 'dot dot-err'; stxt.textContent = 'Error';
