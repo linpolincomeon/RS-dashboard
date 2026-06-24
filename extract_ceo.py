@@ -1123,25 +1123,58 @@ def extract_operaciones(models, uid):
 
 
 # ── RIESGO VIGENTE (credit risk) ──
+def normalize_rut(rut_str):
+    """Normalize RUT: remove dots, dashes, CL prefix, spaces. Returns digit-only string."""
+    if not rut_str:
+        return None
+    s = str(rut_str).upper().replace("CL", "").replace(".", "").replace("-", "").replace(" ", "").strip()
+    return s if s else None
+
+
+def load_avla_lines():
+    """Load AVLA insured lines from avla-lines.json. Returns dict keyed by normalized RUT."""
+    path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "avla-lines.json")
+    try:
+        with open(path, "r", encoding="utf-8") as f:
+            data = json.load(f)
+    except (FileNotFoundError, json.JSONDecodeError):
+        print("  WARNING: avla-lines.json no encontrado o inválido — usando cobertura $0")
+        return {}, None
+    # Re-key by normalized RUT
+    normalized = {}
+    for rut, info in data.get("lines", {}).items():
+        nr = normalize_rut(rut)
+        if nr:
+            normalized[nr] = info
+    return normalized, data.get("fecha_descarga")
+
+
 def extract_riesgo(models, uid):
-    """Uncovered vs covered receivable amounts (credit limit check)."""
-    print("Extracting credit risk (Riesgo Vigente)...")
+    """
+    Riesgo Vigente con cobertura AVLA real (no credit_limit Odoo).
+    Cubierto por cliente = min(deuda_cliente, cobertura_efectiva_avla_clp_cliente).
+    Suma → cubierto total. CxC - cubierto = no_cubierto.
+    """
+    print("Extracting credit risk (Riesgo Vigente AVLA)...")
+    avla_lines, avla_fecha = load_avla_lines()
+    print(f"  AVLA lines cargadas: {len(avla_lines)} RUTs (fecha descarga: {avla_fecha})")
+
     invoices = fetch_all(models, uid, "account.move",
         [["move_type", "=", "out_invoice"], ["state", "=", "posted"],
          ["payment_state", "in", ["not_paid", "partial"]], ["amount_residual", ">", 0]],
         ["partner_id", "amount_total", "amount_residual"])
 
-    # Get credit limits per partner
+    # Get VAT (RUT) per partner
     partner_ids = list(set(inv["partner_id"][0] for inv in invoices if inv.get("partner_id")))
-    partner_limits = {}
+    partner_vat = {}
     for offset in range(0, len(partner_ids), 200):
         batch = partner_ids[offset:offset+200]
         partners = sr(models, uid, "res.partner", [["id", "in", batch]],
-                       ["id", "credit_limit"], limit=200)
+                       ["id", "vat"], limit=200)
         for p in partners:
-            partner_limits[p["id"]] = p.get("credit_limit", 0)
+            partner_vat[p["id"]] = normalize_rut(p.get("vat"))
 
-    # Aggregate per partner
+    # Aggregate debt per partner
     partner_debt = {}
     for inv in invoices:
         pid = inv["partner_id"][0] if inv.get("partner_id") else None
@@ -1155,14 +1188,28 @@ def extract_riesgo(models, uid):
 
     cubierto_monto, cubierto_count = 0, 0
     no_cubierto_monto, no_cubierto_count = 0, 0
+    matched_ruts = 0
+
     for pid, d in partner_debt.items():
-        limit = partner_limits.get(pid, 0)
-        if limit > 0 and d["total"] <= limit:
-            cubierto_monto += d["total"]
-            cubierto_count += d["count"]
+        rut = partner_vat.get(pid)
+        avla_info = avla_lines.get(rut) if rut else None
+        if avla_info:
+            matched_ruts += 1
+            cobertura_clp = avla_info.get("cobertura_clp", 0)
+            cubierto_cliente = min(d["total"], cobertura_clp)
+            no_cubierto_cliente = d["total"] - cubierto_cliente
         else:
-            no_cubierto_monto += d["total"]
+            cubierto_cliente = 0
+            no_cubierto_cliente = d["total"]
+
+        cubierto_monto += cubierto_cliente
+        no_cubierto_monto += no_cubierto_cliente
+        if cubierto_cliente > 0:
+            cubierto_count += d["count"]
+        if no_cubierto_cliente > 0:
             no_cubierto_count += d["count"]
+
+    print(f"  Match RUT AVLA↔Odoo: {matched_ruts}/{len(partner_debt)} clientes con deuda")
 
     total_m = cubierto_monto + no_cubierto_monto
     total_c = cubierto_count + no_cubierto_count
@@ -1173,6 +1220,9 @@ def extract_riesgo(models, uid):
         "no_cubierto_count": no_cubierto_count,
         "pct_monto": round(no_cubierto_monto / total_m * 100, 2) if total_m > 0 else 0,
         "pct_count": round(no_cubierto_count / total_c * 100, 2) if total_c > 0 else 0,
+        "avla_fecha_descarga": avla_fecha,
+        "avla_ruts_matched": matched_ruts,
+        "avla_ruts_total": len(avla_lines),
     }
 
 
