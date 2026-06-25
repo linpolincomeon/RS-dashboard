@@ -2,7 +2,7 @@ name: Update Route Data
 
 on:
   schedule:
-    - cron: '0 11 * * *'   # 8am Chile (UTC-3) — una vez al día
+    - cron: '0 7 * * *'   # 3:00 AM Chile (UTC-4 en invierno) — escalonado
   workflow_dispatch:
 
 permissions:
