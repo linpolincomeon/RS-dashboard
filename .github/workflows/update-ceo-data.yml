@@ -1,17 +1,13 @@
 name: Update CEO Data
-
 on:
   schedule:
-    - cron: '0 11 * * *'      # 11:00 UTC diario — AJUSTA a tu hora actual
+    - cron: '30 7 * * *'      # 3:30 AM Chile (UTC-4) — escalonado tras Route (3:00)
   workflow_dispatch:           # trigger manual
-
 permissions:
   contents: write              # imprescindible para que el bot haga push
-
 concurrency:
   group: update-ceo-data       # evita que dos runs se pisen
   cancel-in-progress: false
-
 jobs:
   update-ceo:
     runs-on: ubuntu-latest
@@ -20,17 +16,14 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0        # historial completo: necesario para pull --rebase
-
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-
       - name: Run extractor
         env:                     # env al STEP, no al job
           ODOO_URL: https://tomenergy.cl
@@ -38,7 +31,6 @@ jobs:
           ODOO_USER: p@tomenergy.cl
           ODOO_KEY: ${{ secrets.ODOO_KEY }}
         run: python extract_ceo.py
-
       - name: Commit and push
         run: |
           git config user.name  "github-actions[bot]"
