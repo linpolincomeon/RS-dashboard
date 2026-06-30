@@ -1,23 +1,23 @@
 {
-  "updated": "2026-06-30T16:33:45.297312",
+  "updated": "2026-06-30T17:42:47.541238",
   "weeks": [
     {
       "label": "25jun-01jul",
       "start": "2026-06-25",
       "end": "2026-07-01",
-      "ventas": 106847301,
-      "neto": 77070131,
-      "litros": 80591,
-      "litros_retail": 66767,
+      "ventas": 114639303,
+      "neto": 82538954,
+      "litros": 86391,
+      "litros_retail": 72567,
       "litros_volumen": 13824,
-      "precio_neto": 956,
-      "precio_bruto": 1326,
-      "margin": 0.08371,
-      "margin_retail": 0.08865,
+      "precio_neto": 955,
+      "precio_bruto": 1327,
+      "margin": 0.08461,
+      "margin_retail": 0.08933,
       "margin_volumen": 0.05882,
-      "facturas": 55,
+      "facturas": 59,
       "nc": 0,
-      "clientes": 48,
+      "clientes": 52,
       "recaud": 124922604,
       "cheques": 0,
       "transf": 85831393,
@@ -26,7 +26,7 @@
       "cheq_cartera_saldo": 0,
       "cheq_recibidos": 0,
       "facturas_contado": 9,
-      "facturas_credito": 46,
+      "facturas_credito": 50,
       "margin_by_term": {
         "1 Día": {
           "margin": 0.06415,
@@ -47,9 +47,9 @@
           "days": 15
         },
         "30 Días": {
-          "margin": 0.09742,
-          "normalizado": 0.09742,
-          "count": 35,
+          "margin": 0.09741,
+          "normalizado": 0.09741,
+          "count": 39,
           "days": 30
         },
         "45 Días": {
@@ -1242,8 +1242,8 @@
     {
       "date": "30jun",
       "day": "Mar",
-      "litros": 13270,
-      "neto": 12235019
+      "litros": 19070,
+      "neto": 17703842
     },
     {
       "date": "29jun",
@@ -1368,11 +1368,11 @@
   ],
   "total_cash": 32604371,
   "receivables": {
-    "open_invoices": 274,
-    "total_due": 702974432,
-    "current": 594001497,
+    "open_invoices": 278,
+    "total_due": 710766434,
+    "current": 601793499,
     "overdue": 108972935,
-    "pct_overdue": 15.5,
+    "pct_overdue": 15.3,
     "aging": {
       "0-30": 93713152,
       "31-60": 5393000,
@@ -1491,12 +1491,11 @@
         },
         "Rancagua": {
           "total": 19,
-          "on_time": 12,
-          "late": 7,
-          "pct": 63.16,
+          "on_time": 13,
+          "late": 6,
+          "pct": 68.42,
           "late_clients": [
             "ALEX PRADO FRUTAS Y TRANSPORTES SPA (prom: 2026-06-30, fact: sin factura)",
-            "ALEJANDRO GARNHAM POBLETE (prom: 2026-06-30, fact: sin factura)",
             "CMSF SPA (prom: 2026-06-30, fact: sin factura)",
             "AGRICOLA LA ROBLERIA LTDA. (prom: 2026-06-30, fact: sin factura)",
             "GABRIEL ANDRES DUQUE SANCHEZ (prom: 2026-06-30, fact: sin factura)",
@@ -1512,17 +1511,15 @@
           "late_clients": []
         },
         "Talca": {
-          "total": 14,
-          "on_time": 8,
-          "late": 6,
-          "pct": 57.14,
+          "total": 15,
+          "on_time": 11,
+          "late": 4,
+          "pct": 73.33,
           "late_clients": [
+            "JUAN VILLAR ESPINOZA SPA (prom: 2026-06-30, fact: sin factura)",
             "SOCIEDAD AGRICOLA LIRCAY SPA. (prom: 2026-06-30, fact: sin factura)",
-            "MADERAS LA LOMA SPA (prom: 2026-06-30, fact: sin factura)",
             "Servicios de construcción y maquinarias Talmaqq Ltda. (prom: 2026-06-30, fact: sin factura)",
-            "INVERSIONES FRUTICOLAS S.A. (prom: 2026-06-30, fact: sin factura)",
-            "MARGARITA MARIA ALARCON VERGARA (prom: 2026-06-30, fact: sin factura)",
-            "JOSE ESTEVAN BURGOS CIFUENTES (prom: 2026-06-30, fact: sin factura)"
+            "MARGARITA MARIA ALARCON VERGARA (prom: 2026-06-30, fact: sin factura)"
           ]
         },
         "VI Costa": {
@@ -2480,8 +2477,8 @@
   "riesgo": {
     "cubierto": 0,
     "cubierto_count": 0,
-    "no_cubierto": 702974432,
-    "no_cubierto_count": 274,
+    "no_cubierto": 710766434,
+    "no_cubierto_count": 278,
     "pct_monto": 100.0,
     "pct_count": 100.0,
     "avla_fecha_descarga": null,
@@ -2489,7 +2486,7 @@
     "avla_ruts_total": 0
   },
   "churn": {
-    "dormant_count": 63,
+    "dormant_count": 62,
     "lost_count": 180,
     "newly_lost_this_month": 11,
     "churn_pct": 1.9,
@@ -2855,14 +2852,6 @@
         "threshold": 24.0
       },
       {
-        "partner_id": 6579,
-        "name": "ALEJANDRO GARNHAM POBLETE",
-        "last_invoice": "2026-06-01",
-        "days_since": 29,
-        "freq_days": 18,
-        "threshold": 27.0
-      },
-      {
         "partner_id": 4852,
         "name": "AGRICOLA SANTA BRIGIDA LTDA",
         "last_invoice": "2026-06-01",
@@ -2893,6 +2882,14 @@
         "days_since": 25,
         "freq_days": 13,
         "threshold": 19.5
+      },
+      {
+        "partner_id": 16552,
+        "name": "SERGIO IGNACIO VERGARA HERNANDEZ",
+        "last_invoice": "2026-06-08",
+        "days_since": 22,
+        "freq_days": 7,
+        "threshold": 10.5
       }
     ],
     "lost": [
@@ -3552,7 +3549,7 @@
         "dso": 28.3
       }
     ],
-    "cxc_hoy": 1055086201
+    "cxc_hoy": 1035190981
   },
   "gerencia_goals": {
     "margen_contado_meta": 0.085,
