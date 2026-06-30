@@ -415,7 +415,7 @@ function renderVentas(){
     h+=kpi('Litros',fK(last.litros),pD(last.litros,prev.litros),'c-blue',`Retail: ${fK(last.litros_retail||0)} · Vol: ${fK(last.litros_volumen||0)}`);
     h+=kpi('Nº Compras',fNum(last.facturas),pD(last.facturas,prev.facturas),'c-purple',`${last.facturas_contado||'—'} contado · ${last.facturas_credito||'—'} crédito`);
     h+=kpi('Nº Clientes',fNum(last.clientes),pD(last.clientes,prev.clientes),'c-teal','clientes únicos');
-    h+=kpi('Litros vs Ppto',(dv*100).toFixed(0)+'%',null,dv>=.8?'c-green':dv>=.6?'c-amber':'c-red',`Meta: ${fK(last.ppto)} · Real: ${fK(last.litros)}`);
+    h+=kpi('Litros vs PPTO base',(dv*100).toFixed(0)+'%',null,dv>=.8?'c-green':dv>=.6?'c-amber':'c-red',`PPTO base: ${fK(last.ppto)} · Real: ${fK(last.litros)}`);
     if(hasNM){
         h+=kpi('Margen Retail',fP(mcrRetail),pD(mcrRetail,prev.margin_retail||0),mcrRetail>=mRetail?'c-green':mcrRetail>=mRetail*.9?'c-amber':'c-red',`meta ${fP(mRetail)}`);
         h+=kpi('Margen Volumen',fP(mcVol),pD(mcVol,prev.margin_volumen||0),mcVol>=mVol?'c-green':mcVol>=mVol*.9?'c-amber':'c-red',`meta ${fP(mVol)}`);
@@ -502,18 +502,24 @@ function renderVentas(){
             {label:'Recaudación',data:wk.map(w=>Math.round(w.recaud/1e6)),backgroundColor:C.purple+'55',borderRadius:5},
             {label:'Compras',data:wk.map(w=>Math.round((w.compras_odoo||w.compras_enap||0)/1e6)),type:'line',borderColor:C.red,backgroundColor:'transparent',pointRadius:2,pointBackgroundColor:C.red,borderWidth:2,tension:.3}
         ]},options:co(tC,gC,v=>'$'+v+'M')});
-    // Daily chart with budget line (weekly ppto / 5 days)
+    // Daily chart with budget line (presupuesto mensual ÷ días hábiles del mes, por día)
     const dy=D.daily||[];
     if(dy.length>0){
         const dRev=[...dy].reverse();
         const dLabels=dRev.map(d=>d.date+' '+d.day);
-        const dailyBudget=Math.round((last.ppto||0)/5);
+        // mapa mes (YYYY-MM) → presupuesto mensual (ppto semanal × 4.33)
+        const _mb={};
+        (D.weeks||[]).forEach(w=>{ if(w.start && w.ppto){ _mb[w.start.slice(0,7)]=Math.round(w.ppto*4.33); } });
+        const _MES={ene:'01',feb:'02',mar:'03',abr:'04',may:'05',jun:'06',jul:'07',ago:'08',sep:'09',oct:'10',nov:'11',dic:'12'};
+        const _yr=(last.start||'2026').slice(0,4);
+        const _bizDays=(ym)=>{const p=ym.split('-'),y=+p[0],m=+p[1],ld=new Date(y,m,0).getDate();let c=0;for(let d=1;d<=ld;d++){const wd=new Date(y,m-1,d).getDay();if(wd>=1&&wd<=5)c++;}return c;};
+        const _dayTarget=(d)=>{const mm=(d.date||'').slice(-3).toLowerCase();const ym=_yr+'-'+(_MES[mm]||'06');const mb=_mb[ym]||Math.round((last.ppto||0)*4.33);return Math.round(mb/_bizDays(ym));};
         dc('cD');charts.cD=new Chart(document.getElementById('cDaily'),{type:'bar',
             data:{labels:dLabels,datasets:[
                 {label:'Litros',data:dRev.map(d=>d.litros),
-                    backgroundColor:dRev.map(d=>d.litros>=dailyBudget?C.green+'66':d.day==='Lun'?C.blue+'88':C.accent+'44'),
+                    backgroundColor:dRev.map(d=>d.litros>=_dayTarget(d)?C.green+'66':d.day==='Lun'?C.blue+'88':C.accent+'44'),
                     borderRadius:5},
-                {label:'Presupuesto diario',data:dRev.map(()=>dailyBudget),type:'line',borderColor:C.amber,backgroundColor:'transparent',pointRadius:0,borderWidth:2,borderDash:[5,3],tension:0}
+                {label:'Presupuesto diario',data:dRev.map(d=>_dayTarget(d)),type:'line',borderColor:C.amber,backgroundColor:'transparent',pointRadius:0,borderWidth:2,borderDash:[5,3],tension:0}
             ]},
             options:co(tC,gC,v=>fK(v))});
     }
