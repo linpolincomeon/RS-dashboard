@@ -338,7 +338,7 @@ let chartWeekly = null;
 const norm = s => s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').split(/\s+/).filter(Boolean).sort().join(' ');
 
 const ALLOWED_VENDORS = [
-  'toro gonzález sebastian enrique','muñoz encalada joaquin','manuel santana'
+  'toro gonzález sebastian enrique','sebastian toro','muñoz encalada joaquin','joaquin muñoz','manuel santana','carlos labbe'
 ];
 const FREELANCERS = [
   'carolina avilés','marcela márquez','raúl bisquertt','rodrigo retamal',
@@ -1207,9 +1207,9 @@ function renderVentas() {
   let litrosFreelancer = 0;
   for (const [u, v] of Object.entries(lbuSrc)) { if (isFreelancer(u)) litrosFreelancer += v; }
 
-  // 4. Litros Fidelización (everyone else — CS + others, NOT ejecutivos, NOT freelancers)
+  // 4. Litros Fidelización = SOLO equipo CS (isCS), consistente con tab Fidelización + CS y Mes Vencido
   let litrosFidelizacion = 0;
-  for (const [u, v] of Object.entries(lbuSrc)) { if (!isAllowed(u) && !isFreelancer(u) && !isExcluded(u)) litrosFidelizacion += v; }
+  for (const [u, v] of Object.entries(lbuSrc)) { if (isCS(u)) litrosFidelizacion += v; }
 
   // 4. Litros Nuevos (new clients)
   const ncDetail = V.new_clients?.detail || [];
@@ -1270,9 +1270,9 @@ function renderVentas() {
   } else {
     kh += mkKpi('c-red', 'Litros Totales', fL(wkLitros), wkPct + '% de meta ' + fL(wkBudget), wkLitros, wkBudget || 1);
   }
-  kh += mkKpi('c-blue', 'Litros Ejecutivos', fL(litrosEjecutivos), 'Toro + Muñoz + Santana', null, null);
+  kh += mkKpi('c-blue', 'Litros Ejecutivos', fL(litrosEjecutivos), 'Toro + Muñoz + Santana + Labbe', null, null);
   kh += mkKpi('c-yellow', 'Litros Freelancer', fL(litrosFreelancer), 'Avilés, Márquez, Bisquertt', null, null);
-  kh += mkKpi('c-green', 'Litros Fidelización', fL(litrosFidelizacion), 'CS + otros', null, null);
+  kh += mkKpi('c-green', 'Litros Fidelización', fL(litrosFidelizacion), 'CS (Comber mantención)', null, null);
   kh += mkKpi('c-red', 'Leads', wLeads, 'Meta: ' + leadsGoal, wLeads, leadsGoal);
   kh += mkKpi('c-yellow', 'Cotizaciones', wCotiz, 'Meta: ' + cotizGoal, wCotiz, cotizGoal);
   // Nuevos Clientes: usar primera factura diesel real, NO funnel cierre
