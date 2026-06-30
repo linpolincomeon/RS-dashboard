@@ -1,43 +1,43 @@
 {
-  "updated": "2026-06-30T17:42:47.541238",
+  "updated": "2026-06-30T19:46:09.482355",
   "weeks": [
     {
       "label": "25jun-01jul",
       "start": "2026-06-25",
       "end": "2026-07-01",
-      "ventas": 114639303,
-      "neto": 82538954,
-      "litros": 86391,
-      "litros_retail": 72567,
+      "ventas": 131104804,
+      "neto": 94087121,
+      "litros": 98691,
+      "litros_retail": 84867,
       "litros_volumen": 13824,
-      "precio_neto": 955,
-      "precio_bruto": 1327,
-      "margin": 0.08461,
-      "margin_retail": 0.08933,
+      "precio_neto": 953,
+      "precio_bruto": 1331,
+      "margin": 0.08681,
+      "margin_retail": 0.09115,
       "margin_volumen": 0.05882,
-      "facturas": 59,
-      "nc": 0,
-      "clientes": 52,
-      "recaud": 124922604,
+      "facturas": 66,
+      "nc": 1,
+      "clientes": 56,
+      "recaud": 148067904,
       "cheques": 0,
-      "transf": 85831393,
-      "factoring": 39091211,
+      "transf": 99050693,
+      "factoring": 49017211,
       "compras_odoo": 85338273,
       "cheq_cartera_saldo": 0,
       "cheq_recibidos": 0,
-      "facturas_contado": 9,
-      "facturas_credito": 50,
+      "facturas_contado": 10,
+      "facturas_credito": 56,
       "margin_by_term": {
         "1 Día": {
-          "margin": 0.06415,
-          "normalizado": 0.07381,
-          "count": 9,
+          "margin": 0.07187,
+          "normalizado": 0.08154,
+          "count": 10,
           "days": 1
         },
         "7 Días": {
-          "margin": 0.05921,
-          "normalizado": 0.06688,
-          "count": 6,
+          "margin": 0.05773,
+          "normalizado": 0.0654,
+          "count": 7,
           "days": 7
         },
         "15 Días": {
@@ -47,15 +47,15 @@
           "days": 15
         },
         "30 Días": {
-          "margin": 0.09741,
-          "normalizado": 0.09741,
-          "count": 39,
+          "margin": 0.09992,
+          "normalizado": 0.09992,
+          "count": 43,
           "days": 30
         },
         "45 Días": {
-          "margin": 0.10759,
-          "normalizado": 0.10259,
-          "count": 1,
+          "margin": 0.11126,
+          "normalizado": 0.10626,
+          "count": 2,
           "days": 45
         },
         "60 Días": {
@@ -1242,8 +1242,8 @@
     {
       "date": "30jun",
       "day": "Mar",
-      "litros": 19070,
-      "neto": 17703842
+      "litros": 33270,
+      "neto": 31311970
     },
     {
       "date": "29jun",
@@ -1338,6 +1338,10 @@
   ],
   "banks": [
     {
+      "name": "DE CHILE",
+      "balance": 23406040
+    },
+    {
       "name": "ITAU",
       "balance": 16869868
     },
@@ -1354,10 +1358,6 @@
       "balance": 3291177
     },
     {
-      "name": "DE CHILE",
-      "balance": 1893044
-    },
-    {
       "name": "BCI",
       "balance": 1202688
     },
@@ -1366,15 +1366,15 @@
       "balance": -1627884
     }
   ],
-  "total_cash": 32604371,
+  "total_cash": 54117367,
   "receivables": {
     "open_invoices": 278,
-    "total_due": 710766434,
-    "current": 601793499,
-    "overdue": 108972935,
-    "pct_overdue": 15.3,
+    "total_due": 719553135,
+    "current": 616319500,
+    "overdue": 103233635,
+    "pct_overdue": 14.3,
     "aging": {
-      "0-30": 93713152,
+      "0-30": 87973852,
       "31-60": 5393000,
       "61-90": 101220,
       "90+": 9765563
@@ -1417,10 +1417,6 @@
         "amount": 18180604
       },
       {
-        "name": "ARIDOS LO VALDIVIA LIMITADA",
-        "amount": 15792498
-      },
-      {
         "name": "TRANSPORTE SANTA ELENITA SPA",
         "amount": 15126950
       },
@@ -1443,6 +1439,10 @@
       {
         "name": "TERRAMATER S A",
         "amount": 13515000
+      },
+      {
+        "name": "ARIDOS LO VALDIVIA LIMITADA",
+        "amount": 13232498
       },
       {
         "name": "LUCERO Y MELLA LIMITIDA",
@@ -1468,22 +1468,18 @@
       "zones": {
         "Chillan": {
           "total": 9,
-          "on_time": 8,
-          "late": 1,
-          "pct": 88.89,
-          "late_clients": [
-            "RAMON ADRIAN PARADA VILLALOBOS (prom: 2026-06-30, fact: sin factura)"
-          ]
+          "on_time": 9,
+          "late": 0,
+          "pct": 100.0,
+          "late_clients": []
         },
         "Curico": {
           "total": 17,
-          "on_time": 11,
-          "late": 6,
-          "pct": 64.71,
+          "on_time": 13,
+          "late": 4,
+          "pct": 76.47,
           "late_clients": [
             "SERGIO IGNACIO VERGARA HERNANDEZ (prom: 2026-06-30, fact: sin factura)",
-            "SOCIEDAD FORESTAL Y AGRICOLA LAS PITRAS DE PAULA LIMITADA (prom: 2026-06-30, fact: sin factura)",
-            "AGRICOLA GEOAGRO LIMITADA (prom: 2026-06-30, fact: sin factura)",
             "AGRICOLA TRIPLE A S A (prom: 2026-06-25, fact: 2026-06-26)",
             "BEPATAGONIA MAQUINARIA S.A. (prom: 2026-06-25, fact: 2026-06-26)",
             "AGRICOLA RIOJARA LIMITADA (prom: 2026-06-25, fact: 2026-06-26)"
@@ -1491,35 +1487,32 @@
         },
         "Rancagua": {
           "total": 19,
-          "on_time": 13,
-          "late": 6,
-          "pct": 68.42,
+          "on_time": 15,
+          "late": 4,
+          "pct": 78.95,
           "late_clients": [
-            "ALEX PRADO FRUTAS Y TRANSPORTES SPA (prom: 2026-06-30, fact: sin factura)",
             "CMSF SPA (prom: 2026-06-30, fact: sin factura)",
             "AGRICOLA LA ROBLERIA LTDA. (prom: 2026-06-30, fact: sin factura)",
-            "GABRIEL ANDRES DUQUE SANCHEZ (prom: 2026-06-30, fact: sin factura)",
             "SEMILLAS TUNICHE LTDA (prom: 2026-06-30, fact: sin factura)",
             "CBARRIOS CONSTRUCTORA SPA (prom: 2026-06-30, fact: sin factura)"
           ]
         },
         "San Fernando": {
-          "total": 7,
-          "on_time": 7,
+          "total": 8,
+          "on_time": 8,
           "late": 0,
           "pct": 100.0,
           "late_clients": []
         },
         "Talca": {
           "total": 15,
-          "on_time": 11,
-          "late": 4,
-          "pct": 73.33,
+          "on_time": 12,
+          "late": 3,
+          "pct": 80.0,
           "late_clients": [
-            "JUAN VILLAR ESPINOZA SPA (prom: 2026-06-30, fact: sin factura)",
-            "SOCIEDAD AGRICOLA LIRCAY SPA. (prom: 2026-06-30, fact: sin factura)",
             "Servicios de construcción y maquinarias Talmaqq Ltda. (prom: 2026-06-30, fact: sin factura)",
-            "MARGARITA MARIA ALARCON VERGARA (prom: 2026-06-30, fact: sin factura)"
+            "SOCIEDAD AGRICOLA LIRCAY SPA. (prom: 2026-06-30, fact: sin factura)",
+            "JUAN VILLAR ESPINOZA SPA (prom: 2026-06-30, fact: sin factura)"
           ]
         },
         "VI Costa": {
@@ -2477,7 +2470,7 @@
   "riesgo": {
     "cubierto": 0,
     "cubierto_count": 0,
-    "no_cubierto": 710766434,
+    "no_cubierto": 719553135,
     "no_cubierto_count": 278,
     "pct_monto": 100.0,
     "pct_count": 100.0,
@@ -3549,7 +3542,7 @@
         "dso": 28.3
       }
     ],
-    "cxc_hoy": 1035190981
+    "cxc_hoy": 1043977682
   },
   "gerencia_goals": {
     "margen_contado_meta": 0.085,
