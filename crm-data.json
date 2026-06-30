@@ -1,5 +1,5 @@
 {
-  "updated": "2026-06-30T16:27:39.195548",
+  "updated": "2026-06-30T17:00:27.421760",
   "week": {
     "start": "2026-06-25",
     "end": "2026-07-01",
@@ -10,7 +10,7 @@
     "active": 928,
     "new_this_week": 3,
     "moved_this_week": 18,
-    "stale_7d": 899,
+    "stale_7d": 900,
     "won": 454,
     "total_value": 3588500
   },
@@ -91,7 +91,7 @@
       "total": 35,
       "moved": 13,
       "moved_30d": 34,
-      "stale": 21,
+      "stale": 22,
       "value": 1000,
       "won": 2
     },
@@ -833,7 +833,7 @@
       "exec": "Marcela Márquez",
       "exec_id": 265,
       "value": 0,
-      "days_in_stage": 7,
+      "days_in_stage": 8,
       "days_since_activity": 5,
       "last_update": "2026-06-22",
       "stage_update": "2026-06-22",
@@ -2553,7 +2553,7 @@
       "exec": "Comber Sigall Pauline",
       "exec_id": 52,
       "value": 0,
-      "days_in_stage": 18,
+      "days_in_stage": 19,
       "days_since_activity": 0,
       "last_update": "2026-06-11",
       "stage_update": "2026-06-11",
@@ -10480,7 +10480,7 @@
       "exec": "SEBASTIAN ENRIQUE TORO GONZALEZ",
       "exec_id": 56,
       "value": 0,
-      "days_in_stage": 326,
+      "days_in_stage": 327,
       "days_since_activity": 5,
       "last_update": "2025-08-07",
       "stage_update": "2025-08-07",
@@ -10501,7 +10501,7 @@
       "exec": "Sebastian Toro",
       "exec_id": 268,
       "value": 0,
-      "days_in_stage": 326,
+      "days_in_stage": 327,
       "days_since_activity": 5,
       "last_update": "2025-08-07",
       "stage_update": "2025-08-07",
@@ -10522,7 +10522,7 @@
       "exec": "SEBASTIAN ENRIQUE TORO GONZALEZ",
       "exec_id": 56,
       "value": 0,
-      "days_in_stage": 326,
+      "days_in_stage": 327,
       "days_since_activity": 5,
       "last_update": "2025-08-07",
       "stage_update": "2025-08-07",
@@ -11756,17 +11756,26 @@
           }
         },
         "cotizacion": {
-          "value": 23,
+          "value": 24,
           "goal": 8,
           "by_user": {
+            "TomEnergy": 4,
             "Carolina Avilés": 4,
             "Manuel Santana": 6,
             "Comber Sigall Pauline": 4,
-            "TomEnergy": 3,
-            "Nicolás Gonzalez": 2,
+            "Nicolás Gonzalez": 1,
             "SEBASTIAN ENRIQUE TORO GONZALEZ": 1
           },
           "detail": [
+            {
+              "name": "S32040",
+              "cliente": "LA FEÑA SPA",
+              "vendedor": "TomEnergy",
+              "monto": 0.0,
+              "litros": 0,
+              "estado": "draft",
+              "fecha": "2026-06-30"
+            },
             {
               "name": "S32037",
               "cliente": "AGRICOLA MIGUEL TORRES SPA",
@@ -11937,15 +11946,6 @@
               "litros": 1,
               "estado": "draft",
               "fecha": "2026-06-26"
-            },
-            {
-              "name": "S31988",
-              "cliente": "AGRICOLA GEOAGRO LIMITADA, Morza - Sebastián Cordova",
-              "vendedor": "Nicolás Gonzalez",
-              "monto": 902187.0,
-              "litros": 1000,
-              "estado": "draft",
-              "fecha": "2026-06-26"
             }
           ]
         },
@@ -11953,9 +11953,9 @@
           "value": 100,
           "goal": 100,
           "unit": "%",
-          "count": 32,
+          "count": 34,
           "by_user": {
-            "TomEnergy": 6,
+            "TomEnergy": 8,
             "Carolina Avilés": 6,
             "Manuel Santana": 7,
             "Comber Sigall Pauline": 5,
@@ -11963,6 +11963,20 @@
             "SEBASTIAN ENRIQUE TORO GONZALEZ": 2
           },
           "detail": [
+            {
+              "name": "S32040",
+              "cliente": "LA FEÑA SPA",
+              "vendedor": "TomEnergy",
+              "monto": 0.0,
+              "fecha": "2026-06-30"
+            },
+            {
+              "name": "S32039",
+              "cliente": "TRANSPORTE LOS LAGARTOS LTDA",
+              "vendedor": "TomEnergy",
+              "monto": 990423.0,
+              "fecha": "2026-06-30"
+            },
             {
               "name": "S32038",
               "cliente": "RECSOL S.A",
@@ -16395,9 +16409,9 @@
       "Carlos Labbe": 2
     },
     "totals": {
-      "total_litros": 653235,
-      "total_venta_neta": 671093412,
-      "invoice_count": 422,
+      "total_litros": 655035,
+      "total_venta_neta": 672792140,
+      "invoice_count": 424,
       "nc_count": 12,
       "nc_debug": [
         {
@@ -16618,7 +16632,7 @@
         }
       ],
       "litros_by_user": {
-        "Comber Sigall Pauline": 440839,
+        "Comber Sigall Pauline": 442639,
         "Toro González Sebastian Enrique": 89267,
         "Nicolás Gonzalez": 6000,
         "Carlos Labbe": 47970,
@@ -16631,7 +16645,7 @@
         "RON ROJAS YENIRE DEL VALLE": -14700
       },
       "venta_by_user": {
-        "Comber Sigall Pauline": 461600892,
+        "Comber Sigall Pauline": 463299620,
         "Toro González Sebastian Enrique": 90501456,
         "Nicolás Gonzalez": 5519795,
         "Carlos Labbe": 46875283,
@@ -16645,31 +16659,31 @@
       },
       "margin_retail_pct": 8.89,
       "margin_volume_pct": 6.42,
-      "retail_venta": 513950952,
+      "retail_venta": 515649680,
       "volume_venta": 213840407,
       "litros_by_zone": {
         "Curico": 172000,
-        "Talca": 159300,
+        "Talca": 160100,
         "Rancagua": 127560,
         "VI Costa": 82100,
         "San Fernando": 75272,
-        "Chillan": 62383,
+        "Chillan": 63383,
         "Región Metropolitana": 29700
       },
       "venta_by_zone": {
         "Curico": 175549398,
-        "Talca": 164923539,
+        "Talca": 165682264,
         "Rancagua": 130995260,
         "VI Costa": 82463005,
         "San Fernando": 77888519,
-        "Chillan": 62433385,
+        "Chillan": 63373388,
         "Región Metropolitana": 33538253
       },
       "margin_by_zone": {
-        "Rancagua": 8.6,
-        "Talca": 9.6,
-        "San Fernando": 9.4,
         "Chillan": 7.7,
+        "Talca": 9.6,
+        "Rancagua": 8.6,
+        "San Fernando": 9.4,
         "VI Costa": 5.8,
         "Curico": 7.3,
         "Región Metropolitana": 7.9
@@ -16688,10 +16702,10 @@
         "RON ROJAS YENIRE DEL VALLE": 0
       },
       "comber_mantencion_detail": {
-        "tomenergy_litros": 368939,
+        "tomenergy_litros": 370739,
         "comber_own_litros": 71900,
-        "total": 440839,
-        "merged_venta_neta": 461600892,
+        "total": 442639,
+        "merged_venta_neta": 463299620,
         "merged_margin_pct": 8.7
       }
     },
@@ -16932,8 +16946,8 @@
       },
       {
         "label": "25/6-30/6",
-        "litros": 80591,
-        "venta_neta": 77070131
+        "litros": 83391,
+        "venta_neta": 79751719
       }
     ],
     "weekly_history": [
@@ -17364,9 +17378,9 @@
       },
       {
         "label": "25/6-1/7",
-        "litros": 80591,
+        "litros": 83391,
         "litros_by_user": {
-          "TomEnergy": 42817,
+          "TomEnergy": 45617,
           "Comber Sigall Pauline": 11250,
           "Toro González Sebastian Enrique": 7324,
           "Nicolás Gonzalez": 5000,
@@ -17376,7 +17390,7 @@
           "Carolina Avilés": 1000
         },
         "venta_by_user": {
-          "TomEnergy": 41907200,
+          "TomEnergy": 44588788,
           "Comber Sigall Pauline": 11150919,
           "Toro González Sebastian Enrique": 6632408,
           "Nicolás Gonzalez": 4507576,
@@ -17386,7 +17400,7 @@
           "Carolina Avilés": 906389
         },
         "margin_by_user": {
-          "TomEnergy": 9.5,
+          "TomEnergy": 9.6,
           "Comber Sigall Pauline": 9.3,
           "Toro González Sebastian Enrique": 6.4,
           "Nicolás Gonzalez": 5.8,
@@ -19927,6 +19941,26 @@
           "pv": 1358.0,
           "venta_neta": 859616,
           "zona": "Curico",
+          "plazo_pago": "30 Days"
+        },
+        {
+          "fecha": "2026-06-30",
+          "cliente": "MADERAS LA LOMA SPA",
+          "rut": "77363457-2",
+          "litros": 1000,
+          "pv": 1340.0,
+          "venta_neta": 940003,
+          "zona": "Chillan",
+          "plazo_pago": "30 Days"
+        },
+        {
+          "fecha": "2026-06-30",
+          "cliente": "INVERSIONES FRUTICOLAS S.A.",
+          "rut": "76115616-0",
+          "litros": 800,
+          "pv": 1350.0,
+          "venta_neta": 758725,
+          "zona": "Talca",
           "plazo_pago": "30 Days"
         },
         {
@@ -22672,9 +22706,9 @@
       },
       {
         "label": "25/6-1/7",
-        "litros": 80591,
+        "litros": 83391,
         "litros_by_user": {
-          "TomEnergy": 42817,
+          "TomEnergy": 45617,
           "Comber Sigall Pauline": 11250,
           "Toro González Sebastian Enrique": 7324,
           "Nicolás Gonzalez": 5000,
@@ -22684,7 +22718,7 @@
           "Carolina Avilés": 1000
         },
         "venta_by_user": {
-          "TomEnergy": 41907200,
+          "TomEnergy": 44588788,
           "Comber Sigall Pauline": 11150919,
           "Toro González Sebastian Enrique": 6632408,
           "Nicolás Gonzalez": 4507576,
@@ -22694,7 +22728,7 @@
           "Carolina Avilés": 906389
         },
         "margin_by_user": {
-          "TomEnergy": 9.5,
+          "TomEnergy": 9.6,
           "Comber Sigall Pauline": 9.3,
           "Toro González Sebastian Enrique": 6.4,
           "Nicolás Gonzalez": 5.8,
@@ -29912,6 +29946,42 @@
         "last_note": ""
       },
       {
+        "name": "LA FEÑA SPA",
+        "vendedor": "TomEnergy",
+        "monto_credito": 11200000,
+        "saldo_credito": 1854699,
+        "utilizacion_pct": 83.4,
+        "avg_monthly_litros": 3620,
+        "avg_monthly_venta": 4264434,
+        "projected_monthly": 4264629,
+        "linea_ratio": 38.1,
+        "avg_payment_days": 9.0,
+        "plazo_pago_dias": 45,
+        "plazo_pago_label": "45 Días",
+        "mora_ratio": 0.2,
+        "overdue_count": 0,
+        "overdue_amount": 0,
+        "siniestro_count": 0,
+        "excepcion_count": 0,
+        "has_dicom": false,
+        "avg_margin_pct": 11.2,
+        "avg_price_rango": 17.6,
+        "pricelist": "BOMBA +12 (CLP)",
+        "zona": "San Fernando",
+        "tipo_venta": "Crédito",
+        "ar_balance": 9345301,
+        "risk_score": 25,
+        "risk_level": "Medio",
+        "score_detail": {
+          "morosidad": 4,
+          "utilizacion": 21,
+          "cobranza": 0,
+          "margen": 0,
+          "dicom": 0
+        },
+        "last_note": ""
+      },
+      {
         "name": "TERRAMATER S A",
         "vendedor": "Toro González Sebastian Enrique",
         "monto_credito": 15680000,
@@ -33586,35 +33656,35 @@
         "last_note": ""
       },
       {
-        "name": "MADERAS LA LOMA SPA",
+        "name": "SERVICIOS REVIVA SPA",
         "vendedor": "TomEnergy",
         "monto_credito": 5850000,
-        "saldo_credito": 1354999,
-        "utilizacion_pct": 76.8,
-        "avg_monthly_litros": 1961,
-        "avg_monthly_venta": 2094035,
-        "projected_monthly": 2093868,
-        "linea_ratio": 35.8,
+        "saldo_credito": 5850000,
+        "utilizacion_pct": 0.0,
+        "avg_monthly_litros": 4884,
+        "avg_monthly_venta": 4885097,
+        "projected_monthly": 4884799,
+        "linea_ratio": 83.5,
         "avg_payment_days": 1.0,
-        "plazo_pago_dias": 30,
-        "plazo_pago_label": "30 Days",
-        "mora_ratio": 0.03,
+        "plazo_pago_dias": 1,
+        "plazo_pago_label": "1 Día",
+        "mora_ratio": 1.0,
         "overdue_count": 0,
         "overdue_amount": 0,
         "siniestro_count": 0,
         "excepcion_count": 0,
         "has_dicom": false,
-        "avg_margin_pct": 6.8,
-        "avg_price_rango": 41.8,
-        "pricelist": "BOMBA +15 (CLP)",
-        "zona": "Chillan",
-        "tipo_venta": "Crédito",
-        "ar_balance": 4495001,
+        "avg_margin_pct": 7.4,
+        "avg_price_rango": -21.8,
+        "pricelist": "BOMBA -30 (CLP)",
+        "zona": "Talca",
+        "tipo_venta": "Contado",
+        "ar_balance": -21999,
         "risk_score": 25,
         "risk_level": "Medio",
         "score_detail": {
-          "morosidad": 1,
-          "utilizacion": 19,
+          "morosidad": 20,
+          "utilizacion": 0,
           "cobranza": 0,
           "margen": 5,
           "dicom": 0
@@ -33626,12 +33696,12 @@
       "total_evaluados": 433,
       "criticos": 1,
       "altos": 42,
-      "medios": 114,
-      "bajos": 276,
-      "linea_insuficiente_count": 27,
+      "medios": 115,
+      "bajos": 275,
+      "linea_insuficiente_count": 28,
       "total_siniestros": 0,
       "total_overdue_amount": 112370704,
-      "avg_utilizacion": 10.7
+      "avg_utilizacion": 10.9
     }
   },
   "graduating": [
