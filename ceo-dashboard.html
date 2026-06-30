@@ -512,7 +512,8 @@ function renderVentas(){
         (D.weeks||[]).forEach(w=>{ if(w.start && w.ppto){ _mb[w.start.slice(0,7)]=Math.round(w.ppto*4.33); } });
         const _MES={ene:'01',feb:'02',mar:'03',abr:'04',may:'05',jun:'06',jul:'07',ago:'08',sep:'09',oct:'10',nov:'11',dic:'12'};
         const _yr=(last.start||'2026').slice(0,4);
-        const _bizDays=(ym)=>{const p=ym.split('-'),y=+p[0],m=+p[1],ld=new Date(y,m,0).getDate();let c=0;for(let d=1;d<=ld;d++){const wd=new Date(y,m-1,d).getDay();if(wd>=1&&wd<=5)c++;}return c;};
+        const _FERIADOS=['2026-07-16']; // feriados en día hábil → se restan del divisor
+        const _bizDays=(ym)=>{const p=ym.split('-'),y=+p[0],m=+p[1],ld=new Date(y,m,0).getDate();let c=0;for(let d=1;d<=ld;d++){const wd=new Date(y,m-1,d).getDay();if(wd>=1&&wd<=5)c++;}_FERIADOS.forEach(f=>{if(f.slice(0,7)===ym){const dd=new Date(f+'T00:00:00').getDay();if(dd>=1&&dd<=5)c--;}});return c;};
         const _dayTarget=(d)=>{const mm=(d.date||'').slice(-3).toLowerCase();const ym=_yr+'-'+(_MES[mm]||'06');const mb=_mb[ym]||Math.round((last.ppto||0)*4.33);return Math.round(mb/_bizDays(ym));};
         dc('cD');charts.cD=new Chart(document.getElementById('cDaily'),{type:'bar',
             data:{labels:dLabels,datasets:[
