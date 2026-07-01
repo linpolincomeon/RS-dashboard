@@ -418,9 +418,9 @@
     </button>
   </div>
 
-  <!-- OTRO CAMIÓN (solo se muestra en traslados) -->
+  <!-- OTRO CAMIÓN o DESTINO (solo se muestra en traslados) -->
   <div class="traslado-fields" id="traslado-fields">
-    <div class="traslado-titulo" id="traslado-titulo">¿A qué camión?</div>
+    <div class="traslado-titulo" id="traslado-titulo">¿A qué destino?</div>
     <div class="camion-grid">
       <button class="camion-btn camion-btn-small" data-otro="PY" onclick="selOtroCamion(this)"><span class="placa">PY</span></button>
       <button class="camion-btn camion-btn-small" data-otro="SH" onclick="selOtroCamion(this)"><span class="placa">SH</span></button>
@@ -429,6 +429,7 @@
       <button class="camion-btn camion-btn-small" data-otro="TJ" onclick="selOtroCamion(this)"><span class="placa">TJ</span></button>
       <button class="camion-btn camion-btn-small" data-otro="HH" onclick="selOtroCamion(this)"><span class="placa">HH</span></button>
       <button class="camion-btn camion-btn-small" data-otro="TY" onclick="selOtroCamion(this)"><span class="placa">TY</span></button>
+      <button class="camion-btn camion-btn-small" data-otro="OTRA" onclick="selOtroCamion(this)" style="grid-column: span 2; background: #FEF3E7; border-color: var(--naranja);"><span class="placa" style="color: var(--naranja-dk);">OTRA (estanque)</span></button>
     </div>
   </div>
 
@@ -555,11 +556,11 @@
       obsLabel.textContent = '6. Observación (opcional)';
     } else if(tipoSel === 'traslado_sale'){
       traslado.classList.add('visible');
-      trasladoTitulo.textContent = '¿A qué camión ENTREGAS?';
+      trasladoTitulo.textContent = '¿A qué destino ENTREGAS?';
       obsLabel.textContent = '5. Observación (opcional)';
     } else if(tipoSel === 'traslado_entra'){
       traslado.classList.add('visible');
-      trasladoTitulo.textContent = '¿De qué camión RECIBES?';
+      trasladoTitulo.textContent = '¿De qué origen RECIBES?';
       obsLabel.textContent = '5. Observación (opcional)';
     } else {
       obsLabel.textContent = '4. Observación (opcional)';
@@ -638,7 +639,8 @@
       litros: litrosInt,
       factura: document.getElementById('factura').value || '',
       cliente: document.getElementById('cliente').value || '',
-      observacion: obs
+      observacion: obs,
+      otro_camion: otroCamionSel || ''
     };
 
     fetch(WEBHOOK_URL, {
