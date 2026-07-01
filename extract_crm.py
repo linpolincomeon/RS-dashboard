@@ -770,6 +770,8 @@ def extract_sales_data(models, uid, custom_start=None, custom_end=None, label_ov
     retail_costo = 0
     volume_venta = 0
     volume_costo = 0
+    retail_litros = 0
+    volume_litros = 0
     litros_by_partner = defaultdict(float)
     margin_by_user_venta = defaultdict(float)
     margin_by_user_costo = defaultdict(float)
@@ -807,9 +809,11 @@ def extract_sales_data(models, uid, custom_start=None, custom_end=None, label_ov
             if is_vol:
                 volume_venta += sub
                 volume_costo += sub * (1 - margin) if margin else sub
+                volume_litros += qty
             else:
                 retail_venta += sub
                 retail_costo += sub * (1 - margin) if margin else sub
+                retail_litros += qty
 
     margin_retail_pct = round(((retail_venta - retail_costo) / retail_venta) * 100, 2) if retail_venta > 0 else 0
     margin_volume_pct = round(((volume_venta - volume_costo) / volume_venta) * 100, 2) if volume_venta > 0 else 0
@@ -883,6 +887,10 @@ def extract_sales_data(models, uid, custom_start=None, custom_end=None, label_ov
         margin_by_user_costo[user] -= sub * (1 - nc_margin) if nc_margin else sub
         if nc_pid:
             litros_by_partner[nc_pid] -= qty
+        if nc_pid in volume_partners:
+            volume_litros -= qty
+        else:
+            retail_litros -= qty
         nc_litros_total += qty
         nc_venta_total += sub
         print(f"    NC {nc.get('name','?')}: litros={qty} venta={sub} user={user} rev={safe_id(nc.get('reversed_entry_id'))}")
@@ -1169,6 +1177,9 @@ def extract_sales_data(models, uid, custom_start=None, custom_end=None, label_ov
             "venta_by_user": merge_by_user({k: round(v) for k, v in venta_by_user.items()}),
             "margin_retail_pct": margin_retail_pct,
             "margin_volume_pct": margin_volume_pct,
+            "retail_litros": round(retail_litros),
+            "volume_litros": round(volume_litros),
+            "client_count": len(litros_by_partner),
             "retail_venta": round(retail_venta),
             "volume_venta": round(volume_venta),
             "litros_by_zone": {k: round(v) for k, v in sorted(litros_by_zone.items(), key=lambda x: -x[1])},
@@ -2642,6 +2653,47 @@ def main():
     prev_m_start = prev_m_end.replace(day=1)
     ventas_prev = extract_sales_data(models, uid, prev_m_start, prev_m_end, prev_m_start.strftime("%B %Y"))
 
+    # Part 3c: Historial mensual (resumen tab Mes Vencido) — reusa extract_sales_data
+    # por mes para que litros/venta/márgenes cuadren con el titular (no suma semanas).
+    BUDGET_2026 = {1: 1065753, 2: 1090372, 3: 1135242, 4: 1305689, 5: 1035293, 6: 866750,
+                   7: 1107706, 8: 1084934, 9: 1052901, 10: 1354911, 11: 1394823, 12: 1754688}
+    BUDGET_2025 = {1: 637139, 2: 645973, 3: 673983, 4: 846275, 5: 600862, 6: 451928,
+                   7: 716270, 8: 730703, 9: 736331, 10: 857146, 11: 829032, 12: 850191}
+    MESES_ES = {1: "Enero", 2: "Febrero", 3: "Marzo", 4: "Abril", 5: "Mayo", 6: "Junio",
+                7: "Julio", 8: "Agosto", 9: "Septiembre", 10: "Octubre", 11: "Noviembre", 12: "Diciembre"}
+
+    def _meta_mes(dt):
+        return (BUDGET_2026 if dt.year >= 2026 else BUDGET_2025).get(dt.month, 0)
+
+    def _month_row(sales, dt, parcial=False):
+        t = sales.get("totals", {})
+        meta = _meta_mes(dt)
+        return {
+            "label": f"{MESES_ES.get(dt.month, '')} {dt.year}",
+            "parcial": parcial,
+            "litros": t.get("total_litros", 0),
+            "meta": meta,
+            "ppto": round(meta / 1.12) if meta else 0,
+            "retail_litros": t.get("retail_litros", 0),
+            "volume_litros": t.get("volume_litros", 0),
+            "margin_retail_pct": t.get("margin_retail_pct", 0),
+            "margin_volume_pct": t.get("margin_volume_pct", 0),
+            "client_count": t.get("client_count", 0),
+        }
+
+    N_MONTHS_HISTORY = 6
+    monthly_history = [
+        _month_row(ventas, today.replace(day=1), parcial=True),
+        _month_row(ventas_prev, prev_m_start),
+    ]
+    _cur = prev_m_start
+    for _ in range(N_MONTHS_HISTORY - 2):
+        _cur = (_cur - timedelta(days=1)).replace(day=1)
+        _last = (_cur.replace(day=28) + timedelta(days=4)).replace(day=1) - timedelta(days=1)
+        _vh = extract_sales_data(models, uid, _cur, _last, _cur.strftime("%B %Y"))
+        monthly_history.append(_month_row(_vh, _cur))
+    print(f"  Historial mensual: {len(monthly_history)} meses")
+
     # Part 4: Churn & Rescue
     churn = extract_churn_data(models, uid)
 
@@ -2884,6 +2936,7 @@ def main():
         "funnel_weeks": funnel_weeks,
         "ventas": ventas,
         "ventas_prev": ventas_prev,
+        "monthly_history": monthly_history,
         "churn": churn,
         "rescued": rescued,
         "recovery": recovery,
@@ -2896,16 +2949,8 @@ def main():
             "margen_retail": 8.5,
             "margen_volumen": 6.0,
             "month": "junio 2026",
-            "budget_monthly_2026": {
-                "1": 1065753, "2": 1090372, "3": 1135242, "4": 1305689,
-                "5": 1035293, "6": 866750, "7": 1107706, "8": 1084934,
-                "9": 1052901, "10": 1354911, "11": 1394823, "12": 1754688,
-            },
-            "budget_monthly_2025": {
-                "1": 637139, "2": 645973, "3": 673983, "4": 846275,
-                "5": 600862, "6": 451928, "7": 716270, "8": 730703,
-                "9": 736331, "10": 857146, "11": 829032, "12": 850191,
-            },
+            "budget_monthly_2026": {str(k): v for k, v in BUDGET_2026.items()},
+            "budget_monthly_2025": {str(k): v for k, v in BUDGET_2025.items()},
         },
         "funnel_goals": {
             "leads": {"goal": 15, "label": "Leads", "freq": "semanal"},
