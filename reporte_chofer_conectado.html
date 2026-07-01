@@ -351,8 +351,8 @@
 
 <div class="container" id="main-form">
 
-  <!-- CAMIÓN -->
-  <div class="section-label">1. Tu camión</div>
+  <!-- CAMIÓN o BODEGA -->
+  <div class="section-label">1. Tu camión o bodega</div>
   <div class="camion-grid">
     <button class="camion-btn" data-camion="PY" onclick="selCamion(this)">
       <span class="placa">PY</span>
@@ -372,8 +372,11 @@
     <button class="camion-btn" data-camion="HH" onclick="selCamion(this)">
       <span class="placa">HH</span>
     </button>
-    <button class="camion-btn" style="grid-column: span 2;" data-camion="TY" onclick="selCamion(this)">
+    <button class="camion-btn" data-camion="TY" onclick="selCamion(this)">
       <span class="placa">TY</span>
+    </button>
+    <button class="camion-btn" data-camion="OTRA" onclick="selCamion(this)" style="background: #FEF3E7; border-color: var(--naranja);">
+      <span class="placa" style="color: var(--naranja-dk);">OTRA</span>
     </button>
   </div>
 
