@@ -1871,8 +1871,12 @@ function renderMesVencido(){
   const ltGoal=CG.litros_mes||0;
   const mrGoal=CG.margen_retail||8.5,mvGoal=CG.margen_volumen||6;
   const mrA=TP.margin_retail_pct||0,mvA=TP.margin_volume_pct||0;
-  let litrosFreelancer=0;
-  for(const [u,v] of Object.entries(TP.litros_by_user||{})){ if(isFreelancer(u)) litrosFreelancer+=v; }
+  let litrosFreelancer=0, litrosEjecMV=0, litrosFidelMV=0;
+  for(const [u,v] of Object.entries(TP.litros_by_user||{})){
+    if(isAllowed(u)) litrosEjecMV+=v;
+    if(isFreelancer(u)) litrosFreelancer+=v;
+    if(isCS(u)) litrosFidelMV+=v;
+  }
   // Ruta (visitas): misma fuente que el tab Ejecutivos (funnel_weeks.stages.ruta), semanas dentro del mes cerrado
   let rutaVisitasMes=0;
   (D.funnel_weeks||[]).forEach(w=>{ if((w.week_start||'')>=(VP.month_start||'') && (w.week_start||'')<=(VP.month_end||'')) rutaVisitasMes+=((w.stages&&w.stages.ruta&&w.stages.ruta.value)||0); });
@@ -1881,6 +1885,8 @@ function renderMesVencido(){
 
   h+='<div class="kpi-row">';
   h+=mkKpi('c-red','Litros',fL(TP.total_litros||0),ltGoal?pct(TP.total_litros||0,ltGoal)+'% de meta '+fL(ltGoal):'',TP.total_litros||0,ltGoal||1);
+  h+=mkKpi('c-blue','Litros Ejecutivos',fL(litrosEjecMV),'Toro + Muñoz + Santana + Labbe',null,null);
+  h+=mkKpi('c-green','Litros Fidelización',fL(litrosFidelMV),'CS (Comber mantención)',null,null);
   h+=mkKpi('c-yellow','Litros Freelancer',fL(litrosFreelancer),'Suma freelancers del mes',null,null);
   h+=mkKpi('c-blue','Clientes Nuevos',(ncP.count||0),'primera factura del mes');
   h+=mkKpi('c-blue','Ruta (visitas)',rutaVisitasMes,'visitas en etapa Ruta · semanas del mes',null,null);
@@ -1894,8 +1900,6 @@ function renderMesVencido(){
     var slaOk=sla.cumplimiento_pct>=80;
     h+='<div class="kpi-row">';
     h+=mkKpi(slaOk?'c-green':'c-red','SLA Entrega',sla.cumplimiento_pct+'%',sla.cumplidos+' ok / '+sla.incumplidos+' incumplidos',sla.cumplimiento_pct,80);
-    h+=mkKpi('c-yellow','Días Promedio',sla.dias_promedio+'d','fecha factura - fecha entrega prometida');
-    h+=mkKpi('c-blue','Órdenes Evaluadas',(sla.total_evaluadas||0),'con commitment_date');
     h+='</div>';
     if(sla.detalle&&sla.detalle.length){
       h+='<div class="sec"><div class="sec-h"><h2>SLA Incumplidos</h2><span class="badge">'+sla.incumplidos+'</span></div>';
