@@ -1922,24 +1922,20 @@ function renderMesVencido(){
   h+=mkKpi('c-blue','Rescatados Perdidos',(S.rescued_lost||0),'cuentan como cliente nuevo');
   h+='</div></div></div>';
 
-  // Perdidos del mes — usar month_start y month_end para filtrar correctamente
-  var ll=(C.lost_list||[]).filter(function(c){ var n=(c.name||'').trim().toLowerCase(); return n.length>=3 && n!=='sin asignar' && n.indexOf('sin nombre')<0 && n!=='?'; });
-  var mvStart=VP.month_start||'';
-  var mvEnd=VP.month_end||'';
-  var perdidosMes=ll.filter(function(c){
-    return c.last_update>=mvStart && (!mvEnd || c.last_update<=mvEnd)
-      && (c.avg_monthly_litros||0) >= 1000;
-  }).sort(function(a,b){ return (b.avg_monthly_litros||0)-(a.avg_monthly_litros||0); });
-  // Update the box to match the list count
-  h=h.replace(new RegExp('(Nuevos Perdidos</div><div class="kpi-val">)\\d+'), '$1'+perdidosMes.length);
-  h+='<div class="sec"><div class="sec-h"><h2>Clientes Perdidos — '+(VP.month_label||'Mes Anterior')+'</h2><span style="font-size:12px;color:var(--dim)">'+perdidosMes.length+' este mes (≥1.000 L/mes)</span></div>';
-  h+='<div class="sec-b" style="padding:0;overflow-x:auto"><table><thead><tr><th>Cliente</th><th>Último vendedor</th><th class="r">Prom. mensual</th><th>Fecha</th></tr></thead><tbody>';
+  // Perdidos del mes — el cron de Odoo re-estampa write_date (todos = hoy), así que la
+  // fecha no sirve para filtrar. Mostramos todo el estado "perdido" ordenado por litros.
+  var perdidosMes=(C.lost_list||[]).filter(function(c){ var n=(c.name||'').trim().toLowerCase(); return n.length>=3 && n!=='sin asignar' && n.indexOf('sin nombre')<0 && n!=='?'; })
+    .sort(function(a,b){ return (b.avg_monthly_litros||0)-(a.avg_monthly_litros||0); });
+  h+='<div class="sec"><div class="sec-h"><h2>Clientes Perdidos — '+(VP.month_label||'Mes Anterior')+'</h2><span style="font-size:12px;color:var(--dim)">'+perdidosMes.length+' en estado perdido</span></div>';
+  h+='<div class="sec-b" style="padding:0;overflow-x:auto"><table><thead><tr><th>Cliente</th><th>Último vendedor</th><th class="r">Prom. mensual</th><th>Última nota</th></tr></thead><tbody>';
   if(perdidosMes.length) perdidosMes.forEach(function(c){
     var lts=c.avg_monthly_litros||0;
-    var ltsTag=lts>=10000?'tag-r':lts>=3000?'tag-y':'';
+    var ltsTag=lts>=3000?'tag-r':lts>=1000?'tag-y':'';
     var ltsHtml=lts?'<span class="tag '+ltsTag+'">'+(Math.round(lts)).toLocaleString('es-CL')+' L</span>':'—';
-    h+='<tr><td class="bold">'+H(c.name)+'</td><td>'+H(c.user||'—')+'</td><td class="r">'+ltsHtml+'</td><td style="color:var(--dim)">'+(c.last_update||'—')+'</td></tr>';
-  }); else h+='<tr><td colspan="4" class="nodata">Sin perdidos relevantes (≥1.000 L/mes)</td></tr>';
+    var nota=(c.last_note||'').trim();
+    var notaHtml=nota?'<span title="'+H(nota)+'">'+H(nota.length>60?nota.slice(0,60)+'…':nota)+'</span>':'—';
+    h+='<tr><td class="bold">'+H(c.name)+'</td><td>'+H(c.user||'—')+'</td><td class="r">'+ltsHtml+'</td><td style="color:var(--dim);font-size:12px;max-width:340px">'+notaHtml+'</td></tr>';
+  }); else h+='<tr><td colspan="4" class="nodata">Sin clientes perdidos</td></tr>';
   h+='</tbody></table></div></div>';
 
   // Resumen por vendedor (merge duplicates like "Ron Yenire" / "Yeniré Ron")
