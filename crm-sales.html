@@ -1987,6 +1987,37 @@ function renderMesVencido(){
     h+='</tbody></table></div></div>';
   }
 
+  // Resumen Mensual — meta comercial vs presupuesto base, retail/volumen, márgenes, clientes
+  var MH=D.monthly_history||[];
+  if(MH.length){
+    h+='<div class="sec"><div class="sec-h"><h2>Resumen Mensual</h2><span style="font-size:12px;color:var(--dim)">meta comercial vs presupuesto base · litros reales</span></div>';
+    h+='<div class="sec-b" style="padding:0;overflow-x:auto"><table><thead><tr>'
+      +'<th>Mes</th><th class="r">Presup.</th><th class="r">Meta</th><th class="r">Litros</th><th class="r">Desv.</th>'
+      +'<th class="r">Retail</th><th class="r">Volumen</th><th class="r">M.Retail</th><th class="r">M.Volumen</th><th class="r">Nº Cli.</th>'
+      +'</tr></thead><tbody>';
+    MH.forEach(function(m){
+      var meta=m.meta||0, real=m.litros||0;
+      var desv=meta>0?Math.round(real/meta*100):0;
+      var dc=desv>=100?'tag-g':desv>=60?'tag-y':'tag-r';
+      var mr=m.margin_retail_pct||0, mv=m.margin_volume_pct||0;
+      var mrc=mr>=12?'tag-g':mr>=8?'tag-y':'tag-r';
+      var mvc=mv>=9?'tag-g':mv>=6?'tag-y':'tag-r';
+      h+='<tr'+(m.parcial?' style="background:var(--accent-light,#fdeee9)"':'')+'>'
+        +'<td class="bold">'+H(m.label||'')+(m.parcial?' *':'')+'</td>'
+        +'<td class="r" style="color:var(--dim)">'+fL(m.ppto||0)+'</td>'
+        +'<td class="r">'+fL(meta)+'</td>'
+        +'<td class="r bold">'+fL(real)+'</td>'
+        +'<td class="r"><span class="tag '+dc+'">'+desv+'%</span></td>'
+        +'<td class="r">'+fL(m.retail_litros||0)+'</td>'
+        +'<td class="r">'+fL(m.volume_litros||0)+'</td>'
+        +'<td class="r"><span class="tag '+mrc+'">'+mr+'%</span></td>'
+        +'<td class="r"><span class="tag '+mvc+'">'+mv+'%</span></td>'
+        +'<td class="r">'+(m.client_count||0)+'</td></tr>';
+    });
+    h+='</tbody></table></div>';
+    h+='<div style="padding:8px 16px;font-size:11px;color:var(--dim)">* mes en curso (parcial). Desv. = litros reales / meta comercial. Presup. base = meta ÷ 1,12.</div></div>';
+  }
+
   document.getElementById('tab-mesvencido').innerHTML=h;
 }
 
