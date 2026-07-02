@@ -2806,9 +2806,13 @@ def main():
     goals_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "vendor-goals.json")
     vendor_goals = {}
     if os.path.exists(goals_path):
-        with open(goals_path, "r", encoding="utf-8") as f:
-            vendor_goals = json.load(f)
-        print(f"\nvendor-goals.json loaded ({len(vendor_goals)} vendors)")
+        try:
+            with open(goals_path, "r", encoding="utf-8") as f:
+                vendor_goals = json.load(f)
+            print(f"\nvendor-goals.json loaded ({len(vendor_goals)} vendors)")
+        except (json.JSONDecodeError, ValueError) as e:
+            print(f"\n⚠️  vendor-goals.json MALFORMADO ({e}) — se ignora, se usan metas por defecto. ARREGLA EL JSON.")
+            vendor_goals = {}
     else:
         users = set()
         for w in funnel_weeks:
