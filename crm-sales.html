@@ -1987,12 +1987,12 @@ function renderMesVencido(){
     h+='</tbody></table></div></div>';
   }
 
-  // Resumen Mensual — meta comercial vs presupuesto base, retail/volumen, márgenes, clientes
+  // Resumen Mensual — meta comercial vs litros reales, retail/volumen, márgenes, clientes
   var MH=D.monthly_history||[];
   if(MH.length){
-    h+='<div class="sec"><div class="sec-h"><h2>Resumen Mensual</h2><span style="font-size:12px;color:var(--dim)">meta comercial vs presupuesto base · litros reales</span></div>';
+    h+='<div class="sec"><div class="sec-h"><h2>Resumen Mensual</h2><span style="font-size:12px;color:var(--dim)">meta comercial · litros reales</span></div>';
     h+='<div class="sec-b" style="padding:0;overflow-x:auto"><table><thead><tr>'
-      +'<th>Mes</th><th class="r">Presup.</th><th class="r">Meta</th><th class="r">Litros</th><th class="r">Desv.</th>'
+      +'<th>Mes</th><th class="r">Meta</th><th class="r">Litros</th><th class="r">Desv.</th>'
       +'<th class="r">Retail</th><th class="r">Volumen</th><th class="r">M.Retail</th><th class="r">M.Volumen</th><th class="r">Nº Cli.</th>'
       +'</tr></thead><tbody>';
     MH.forEach(function(m){
@@ -2004,7 +2004,6 @@ function renderMesVencido(){
       var mvc=mv>=9?'tag-g':mv>=6?'tag-y':'tag-r';
       h+='<tr'+(m.parcial?' style="background:var(--accent-light,#fdeee9)"':'')+'>'
         +'<td class="bold">'+H(m.label||'')+(m.parcial?' *':'')+'</td>'
-        +'<td class="r" style="color:var(--dim)">'+fL(m.ppto||0)+'</td>'
         +'<td class="r">'+fL(meta)+'</td>'
         +'<td class="r bold">'+fL(real)+'</td>'
         +'<td class="r"><span class="tag '+dc+'">'+desv+'%</span></td>'
@@ -2015,7 +2014,7 @@ function renderMesVencido(){
         +'<td class="r">'+(m.client_count||0)+'</td></tr>';
     });
     h+='</tbody></table></div>';
-    h+='<div style="padding:8px 16px;font-size:11px;color:var(--dim)">* mes en curso (parcial). Desv. = litros reales / meta comercial. Presup. base = meta ÷ 1,12.</div></div>';
+    h+='<div style="padding:8px 16px;font-size:11px;color:var(--dim)">* mes en curso (parcial). Desv. = litros reales / meta comercial.</div></div>';
   }
 
   document.getElementById('tab-mesvencido').innerHTML=h;
