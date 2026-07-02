@@ -2346,7 +2346,7 @@ function renderRecovery() {
   allActs.forEach(a => {
     const lead = (a.lead || '').trim().toUpperCase();
     if (!lead) return;
-    const entry = {date: a.date || '', type: a.type || 'To-Do', desc: a.summary || ''};
+    const entry = {date: a.date || '', type: a.type || 'To-Do', desc: a.summary || '', state: a.state || ''};
     allRecClients.forEach(c => {
       const cn = (c.name || '').trim().toUpperCase();
       if (cn && (lead.includes(cn) || cn.includes(lead))) {
@@ -2355,26 +2355,40 @@ function renderRecovery() {
       }
     });
   });
-  // Adjuntar la actividad más reciente a cada cliente
+  // Adjuntar la actividad más reciente y clasificar gestión
+  const _todayFid = new Date().toISOString().slice(0, 10);
   allRecClients.forEach(c => {
     const cn = (c.name || '').trim().toUpperCase();
     const acts = actByClient[cn] || [];
     acts.sort((a, b) => (b.date || '').localeCompare(a.date || ''));
     c._crmAct = acts[0] || null;
+    // Classify: overdue vs planned vs done (has note = someone acted)
+    if (c._crmAct && (c._crmAct.state === 'overdue' || c._crmAct.date < _todayFid)) {
+      c._gestionStatus = 'overdue';
+    } else if (c._crmAct) {
+      c._gestionStatus = 'planned';
+    } else if (c.last_note) {
+      c._gestionStatus = 'done';
+    } else {
+      c._gestionStatus = 'none';
+    }
   });
 
   // ── KPIs ──
   const totalLpmRec = rec.reduce((s, c) => s + c.lpm_2025, 0);
   const totalLpmSea = sea.reduce((s, c) => s + c.lpm_2025, 0);
-  const withAct = rec.filter(c => c._crmAct).length;
+  const withDone = rec.filter(c => c._gestionStatus === 'done' || c._gestionStatus === 'planned').length;
+  const withOverdue = rec.filter(c => c._gestionStatus === 'overdue').length;
+  const withNone = rec.filter(c => c._gestionStatus === 'none').length;
   const withCrm = rec.filter(c => c.crm_stage).length;
 
   let h = `
     <div class="kpi-row" style="margin-bottom:20px">
       ${mkKpi('c-red',    '⚠ Recuperables', sum.recoverable_count || 0, 'top 50 mostrados', null, null)}
       ${mkKpi('c-yellow', '📦 L/mes en riesgo', totalLpmRec.toLocaleString('es-CL'), 'top 50 recuperables', null, null)}
-      ${mkKpi('c-blue',   '🗓 Con gestión CRM', withAct, 'tienen actividad reciente', null, null)}
-      ${mkKpi('c-green',  '🔍 En pipeline CRM', withCrm, 'tienen lead activo', null, null)}
+      ${mkKpi('c-green',  '✅ Con gestión', withDone, 'actividad al día o nota reciente', null, null)}
+      ${mkKpi('c-red',    '⚠ Con atraso', withOverdue, 'actividad vencida sin completar', null, null)}
+      ${mkKpi('c-blue',   '❌ Sin gestión', withNone, 'sin actividad ni nota', null, null)}
     </div>
     <div style="background:var(--card);border-radius:12px;padding:16px;margin-bottom:20px;
                 border-left:3px solid #c8360e;font-size:12px;color:var(--dim);line-height:1.7">
@@ -2421,23 +2435,26 @@ function renderRecovery() {
         ? `<span style="font-size:11px">${H(c.crm_exec.split(' ').slice(-1)[0])}</span>`
         : '<span style="color:var(--dim);font-size:11px">—</span>';
 
-      // Actividad CRM (mail.activity) — patrón idéntico al bloque Durmientes
+      // Actividad CRM (mail.activity) — con estado de gestión
+      const gIcon = c._gestionStatus === 'done' ? '✅' : c._gestionStatus === 'planned' ? '📅' : c._gestionStatus === 'overdue' ? '⚠️' : '❌';
       let actCell = '';
       if (c._crmAct) {
+        const stColor = c._gestionStatus === 'overdue' ? 'color:var(--red)' : '';
         actCell = `<div style="font-size:11px;max-width:280px;white-space:normal">
+          <span style="${stColor}">${gIcon}</span>
           <strong>${H(c._crmAct.date.slice(0,10))}</strong> · ${H(c._crmAct.type)}
           <div style="color:var(--dim);font-size:11px;margin-top:2px;line-height:1.4">${H(c._crmAct.desc)}</div>
         </div>`;
       } else if (c.last_note) {
         actCell = `<div style="font-size:11px;max-width:280px;white-space:normal;line-height:1.4"
                 title="${H(c.last_note)}">
-             ${H(c.last_note.slice(0, 80))}${c.last_note.length > 80 ? '…' : ''}
+             ✅ ${H(c.last_note.slice(0, 80))}${c.last_note.length > 80 ? '…' : ''}
              <div style="color:var(--dim);font-size:10px;margin-top:2px">
                ${H(c.note_date)} · ${H((c.note_author||'').split(' ')[0])}
              </div>
            </div>`;
       } else {
-        actCell = '<span style="color:var(--dim);font-size:11px">Sin gestión</span>';
+        actCell = '<span style="color:var(--dim);font-size:11px">❌ Sin gestión</span>';
       }
       const caidaCell = (c.caida_pct >= 100)
         ? '<span class="tag tag-r">100%</span>'
@@ -2505,18 +2522,21 @@ function renderRecovery() {
         : '—';
 
       // Actividad CRM (mismo patrón que recuperables)
+      const gIcon2 = c._gestionStatus === 'done' ? '✅' : c._gestionStatus === 'planned' ? '📅' : c._gestionStatus === 'overdue' ? '⚠️' : '❌';
       let actCell = '';
       if (c._crmAct) {
+        const stColor2 = c._gestionStatus === 'overdue' ? 'color:var(--red)' : '';
         actCell = `<div style="font-size:11px;max-width:260px;white-space:normal">
+          <span style="${stColor2}">${gIcon2}</span>
           <strong>${H(c._crmAct.date.slice(0,10))}</strong> · ${H(c._crmAct.type)}
           <div style="color:var(--dim);font-size:11px;margin-top:2px;line-height:1.4">${H(c._crmAct.desc)}</div>
         </div>`;
       } else if (c.last_note) {
         actCell = `<div style="font-size:11px;max-width:260px;white-space:normal;line-height:1.4">
-          ${H(c.last_note.slice(0, 80))}${c.last_note.length > 80 ? '…' : ''}
+          ✅ ${H(c.last_note.slice(0, 80))}${c.last_note.length > 80 ? '…' : ''}
         </div>`;
       } else {
-        actCell = '<span style="color:var(--dim);font-size:11px">—</span>';
+        actCell = '<span style="color:var(--dim);font-size:11px">❌ —</span>';
       }
 
       h += `<tr>
