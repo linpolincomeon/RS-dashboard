@@ -2195,12 +2195,18 @@ def extract_credit_risk(models, uid):
     all_invoices = []
     for i in range(0, len(partner_ids), batch_size):
         batch = partner_ids[i:i+batch_size]
+        # Ventana 3 meses + TODAS las facturas impagas (aunque sean más antiguas):
+        # una factura impaga de 4+ meses es justamente la mora que el score debe ver.
         invs = sr(models, uid, "account.move", [
             ["move_type", "=", "out_invoice"],
             ["state", "=", "posted"],
             ["partner_id", "in", batch],
-            ["invoice_date", ">=", fmt(three_months_ago)],
             ["invoice_date", "<=", fmt(today)],
+            "|",
+            ["invoice_date", ">=", fmt(three_months_ago)],
+            "&",
+            ["payment_state", "in", ["not_paid", "partial"]],
+            ["amount_residual", ">", 0],
         ], ["id", "partner_id", "invoice_user_id", "amount_untaxed",
             "amount_residual", "payment_state", "invoice_date",
             "invoice_date_due", "margin_zone",
@@ -2257,14 +2263,30 @@ def extract_credit_risk(models, uid):
             }
 
         s = partner_stats[pid]
-        inv_data = litros_by_inv.get(inv["id"], {"litros": 0, "venta": 0})
-        s["litros_total"] += inv_data["litros"]
-        s["venta_total"] += inv_data["venta"]
-        s["invoice_count"] += 1
+        inv_date_str = (inv.get("invoice_date") or "")[:10]
+        in_window = (inv_date_str >= fmt(three_months_ago)) if inv_date_str else True
+        residual_apd = inv.get("amount_residual", 0) or 0
 
-        # Average payment days
+        # Litros/venta/count solo dentro de la ventana 3m (base de L/mes y proyección)
+        inv_data = litros_by_inv.get(inv["id"], {"litros": 0, "venta": 0})
+        if in_window:
+            s["litros_total"] += inv_data["litros"]
+            s["venta_total"] += inv_data["venta"]
+            s["invoice_count"] += 1
+
+        # Average payment days — días REALES:
+        # Impaga (residual > 0): hoy − invoice_date (piso de la mora, solo puede crecer).
+        # Pagada: average_payment_days de Odoo (solo existe si está reconciliada).
         apd = inv.get("average_payment_days")
-        if apd and apd > 0:
+        if residual_apd > 0 and inv_date_str:
+            try:
+                days_open = (today - datetime.strptime(inv_date_str, "%Y-%m-%d").date()).days
+                if days_open > 0:
+                    s["avg_payment_days_sum"] += days_open
+                    s["avg_payment_days_count"] += 1
+            except (ValueError, TypeError):
+                pass
+        elif apd and apd > 0:
             s["avg_payment_days_sum"] += apd
             s["avg_payment_days_count"] += 1
 
@@ -2280,17 +2302,17 @@ def extract_credit_risk(models, uid):
             except (ValueError, TypeError):
                 pass
 
-        # Margin
-        margin = inv.get("margin_zone", 0) or 0
-        if margin:
-            s["margin_sum"] += margin
-            s["margin_count"] += 1
+        # Margin y price_rango — solo ventana 3m (reflejan pricing reciente)
+        if in_window:
+            margin = inv.get("margin_zone", 0) or 0
+            if margin:
+                s["margin_sum"] += margin
+                s["margin_count"] += 1
 
-        # Price rango
-        pr = inv.get("price_rango", 0) or 0
-        if pr:
-            s["price_rango_sum"] += pr
-            s["price_rango_count"] += 1
+            pr = inv.get("price_rango", 0) or 0
+            if pr:
+                s["price_rango_sum"] += pr
+                s["price_rango_count"] += 1
 
         # Cobranza (collection status)
         cobranza = safe_name(inv.get("cobranza"))
