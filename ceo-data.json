@@ -1,37 +1,37 @@
 {
-  "updated": "2026-07-06T11:52:26.010974",
+  "updated": "2026-07-06T15:14:25.613270",
   "weeks": [
     {
       "label": "02jul-08jul",
       "start": "2026-07-02",
       "end": "2026-07-08",
-      "ventas": 139277398,
-      "neto": 92348056,
-      "litros": 107074,
-      "litros_retail": 59305,
-      "litros_volumen": 47769,
-      "precio_neto": 862,
-      "precio_bruto": 1302,
-      "margin": 0.06657,
-      "margin_retail": 0.08863,
-      "margin_volumen": 0.03598,
-      "facturas": 47,
+      "ventas": 146842988,
+      "neto": 97374159,
+      "litros": 112644,
+      "litros_retail": 62205,
+      "litros_volumen": 50439,
+      "precio_neto": 864,
+      "precio_bruto": 1305,
+      "margin": 0.06856,
+      "margin_retail": 0.08934,
+      "margin_volumen": 0.04011,
+      "facturas": 51,
       "nc": 2,
-      "clientes": 42,
-      "recaud": 163827597,
+      "clientes": 46,
+      "recaud": 179095436,
       "cheques": 7105800,
-      "transf": 105511445,
-      "factoring": 51210352,
-      "compras_odoo": 36728776,
+      "transf": 119569643,
+      "factoring": 52419993,
+      "compras_odoo": 104034317,
       "cheq_cartera_saldo": 0,
       "cheq_recibidos": 0,
-      "facturas_contado": 11,
-      "facturas_credito": 36,
+      "facturas_contado": 13,
+      "facturas_credito": 38,
       "margin_by_term": {
         "1 Día": {
-          "margin": 0.04285,
-          "normalizado": 0.05252,
-          "count": 11,
+          "margin": 0.044,
+          "normalizado": 0.05367,
+          "count": 13,
           "days": 1
         },
         "7 Días": {
@@ -47,10 +47,16 @@
           "days": 15
         },
         "30 Días": {
-          "margin": 0.07955,
-          "normalizado": 0.07955,
-          "count": 26,
+          "margin": 0.08096,
+          "normalizado": 0.08096,
+          "count": 27,
           "days": 30
+        },
+        "45 Días": {
+          "margin": 0.10759,
+          "normalizado": 0.10259,
+          "count": 1,
+          "days": 45
         },
         "60 Días": {
           "margin": 0.09822,
@@ -59,7 +65,7 @@
           "days": 60
         }
       },
-      "cotiz_canceladas": 5,
+      "cotiz_canceladas": 7,
       "visitas": 0,
       "clientes_nuevos": 2,
       "ppto": 228412,
@@ -1230,8 +1236,8 @@
     {
       "date": "06jul",
       "day": "Lun",
-      "litros": 0,
-      "neto": 0
+      "litros": 5570,
+      "neto": 5026103
     },
     {
       "date": "03jul",
@@ -1326,12 +1332,12 @@
   ],
   "banks": [
     {
-      "name": "DE CHILE",
-      "balance": 15570570
-    },
-    {
       "name": "ITAU",
       "balance": 9568838
+    },
+    {
+      "name": "DE CHILE",
+      "balance": 9404292
     },
     {
       "name": "ESTADO",
@@ -1354,15 +1360,15 @@
       "balance": -1971949
     }
   ],
-  "total_cash": 36136802,
+  "total_cash": 29970524,
   "receivables": {
-    "open_invoices": 277,
-    "total_due": 706865425,
-    "current": 536073682,
-    "overdue": 170791743,
-    "pct_overdue": 24.2,
+    "open_invoices": 275,
+    "total_due": 702330617,
+    "current": 542618672,
+    "overdue": 159711945,
+    "pct_overdue": 22.7,
     "aging": {
-      "0-30": 155531960,
+      "0-30": 144452162,
       "31-60": 5393000,
       "61-90": 101220,
       "90+": 9765563
@@ -1373,12 +1379,12 @@
         "amount": 47327099
       },
       {
-        "name": "AGRICOLA GEOAGRO LIMITADA",
-        "amount": 30176501
+        "name": "MAQUINARIAS Y ARIDOS SAN PEDRO SPA.",
+        "amount": 31886189
       },
       {
-        "name": "MAQUINARIAS Y ARIDOS SAN PEDRO SPA.",
-        "amount": 28262999
+        "name": "AGRICOLA GEOAGRO LIMITADA",
+        "amount": 30176501
       },
       {
         "name": "SOC. DE TRANSPORTES TRACMAVI LTDA.",
@@ -1455,19 +1461,21 @@
       "label": "02jul-08jul",
       "zones": {
         "Chillan": {
-          "total": 4,
+          "total": 5,
           "on_time": 4,
-          "late": 0,
-          "pct": 100.0,
-          "late_clients": []
+          "late": 1,
+          "pct": 80.0,
+          "late_clients": [
+            "RAMON ADRIAN PARADA VILLALOBOS (prom: 2026-07-06, fact: sin factura)"
+          ]
         },
         "Curico": {
-          "total": 9,
-          "on_time": 8,
+          "total": 10,
+          "on_time": 9,
           "late": 1,
-          "pct": 88.89,
+          "pct": 90.0,
           "late_clients": [
-            "SERGIO IGNACIO VERGARA HERNANDEZ (prom: 2026-07-06, fact: sin factura)"
+            "INVERSIONES SANTA BERTINA (prom: 2026-07-06, fact: sin factura)"
           ]
         },
         "Rancagua": {
@@ -1486,27 +1494,33 @@
           ]
         },
         "San Fernando": {
-          "total": 6,
-          "on_time": 5,
+          "total": 8,
+          "on_time": 7,
           "late": 1,
-          "pct": 83.33,
+          "pct": 87.5,
           "late_clients": [
-            "ALIMENTOS Y FRUTOS S.A. (prom: 2026-07-06, fact: sin factura)"
+            "LUCERO Y MELLA LIMITIDA (prom: 2026-07-06, fact: sin factura)"
           ]
         },
         "Talca": {
-          "total": 9,
-          "on_time": 9,
-          "late": 0,
-          "pct": 100.0,
-          "late_clients": []
+          "total": 13,
+          "on_time": 10,
+          "late": 3,
+          "pct": 76.92,
+          "late_clients": [
+            "SERVICIOS REVIVA SPA (prom: 2026-07-06, fact: sin factura)",
+            "BOMBAS DE HORMIGON G&P SPA (prom: 2026-07-06, fact: sin factura)",
+            "VITIVINICOLA INVINA LTDA (prom: 2026-07-06, fact: sin factura)"
+          ]
         },
         "VI Costa": {
-          "total": 9,
+          "total": 11,
           "on_time": 8,
-          "late": 1,
-          "pct": 88.89,
+          "late": 3,
+          "pct": 72.73,
           "late_clients": [
+            "ARIDOS LO VALDIVIA LIMITADA (prom: 2026-07-06, fact: sin factura)",
+            "AGRICOLA KUNAKO SPA (prom: 2026-07-06, fact: sin factura)",
             "AGRICOLA SANTA AMELIA LTDA (prom: 2026-07-06, fact: sin factura)"
           ]
         }
@@ -2455,18 +2469,18 @@
     }
   ],
   "riesgo": {
-    "cubierto": 582413652,
-    "cubierto_count": 251,
-    "no_cubierto": 124451773,
-    "no_cubierto_count": 52,
-    "pct_monto": 17.61,
-    "pct_count": 17.16,
+    "cubierto": 574208853,
+    "cubierto_count": 249,
+    "no_cubierto": 128121764,
+    "no_cubierto_count": 53,
+    "pct_monto": 18.24,
+    "pct_count": 17.55,
     "avla_fecha_descarga": "2026-06-24",
-    "avla_ruts_matched": 121,
+    "avla_ruts_matched": 120,
     "avla_ruts_total": 691
   },
   "churn": {
-    "dormant_count": 63,
+    "dormant_count": 62,
     "lost_count": 183,
     "newly_lost_this_month": 4,
     "churn_pct": 2.8,
@@ -3324,10 +3338,10 @@
           "5667"
         ],
         "target_total": 534567,
-        "mtd_litros": 70214,
-        "compliance_pct": 13.1,
-        "projected": 362772,
-        "projected_pct": 67.9,
+        "mtd_litros": 125433,
+        "compliance_pct": 23.5,
+        "projected": 648070,
+        "projected_pct": 121.2,
         "plants": {
           "Maipu": {
             "target": 195827
@@ -3361,10 +3375,10 @@
       }
     },
     "total_target": 935121,
-    "total_mtd": 70214,
-    "total_compliance_pct": 7.5,
-    "total_projected": 362772,
-    "total_projected_pct": 38.8
+    "total_mtd": 125433,
+    "total_compliance_pct": 13.4,
+    "total_projected": 648070,
+    "total_projected_pct": 69.3
   },
   "operaciones": {
     "months": [
@@ -3457,12 +3471,12 @@
         "month": "2026-07",
         "label": "Jul 2026",
         "budget": 12501767,
-        "actual": 5659491,
-        "compliance_pct": 45.3,
+        "actual": 6689630,
+        "compliance_pct": 53.5,
         "categories": {
           "Petróleo": 4190415,
-          "Mantención y Reparación": 1169076,
-          "Gastos Traslados (TAG)": 0,
+          "Mantención y Reparación": 1270084,
+          "Gastos Traslados (TAG)": 929131,
           "Seguros": 0,
           "Gastos Vehículos": 0,
           "Arriendo": 300000,
@@ -3529,7 +3543,7 @@
         "dso": 33.3
       }
     ],
-    "cxc_hoy": 1022239752
+    "cxc_hoy": 1017704944
   },
   "gerencia_goals": {
     "margen_contado_meta": 0.085,
