@@ -1,23 +1,23 @@
 {
-  "updated": "2026-07-06T17:05:44.317545",
+  "updated": "2026-07-06T17:29:06.180920",
   "weeks": [
     {
       "label": "02jul-08jul",
       "start": "2026-07-02",
       "end": "2026-07-08",
-      "ventas": 161714587,
-      "neto": 107169983,
-      "litros": 123944,
+      "ventas": 174561410,
+      "neto": 115538749,
+      "litros": 134096,
       "litros_retail": 73505,
-      "litros_volumen": 50439,
-      "precio_neto": 865,
-      "precio_bruto": 1306,
-      "margin": 0.06898,
+      "litros_volumen": 60591,
+      "precio_neto": 862,
+      "precio_bruto": 1303,
+      "margin": 0.06681,
       "margin_retail": 0.08697,
-      "margin_volumen": 0.04011,
-      "facturas": 58,
+      "margin_volumen": 0.03988,
+      "facturas": 60,
       "nc": 2,
-      "clientes": 52,
+      "clientes": 54,
       "recaud": 179095436,
       "cheques": 7105800,
       "transf": 119569643,
@@ -26,7 +26,7 @@
       "cheq_cartera_saldo": 0,
       "cheq_recibidos": 0,
       "facturas_contado": 14,
-      "facturas_credito": 44,
+      "facturas_credito": 46,
       "margin_by_term": {
         "Prepago": {
           "margin": 0.06124,
@@ -53,9 +53,9 @@
           "days": 15
         },
         "30 Días": {
-          "margin": 0.08256,
-          "normalizado": 0.08256,
-          "count": 30,
+          "margin": 0.07596,
+          "normalizado": 0.07596,
+          "count": 32,
           "days": 30
         },
         "45 Días": {
@@ -71,8 +71,8 @@
           "days": 60
         }
       },
-      "cotiz_canceladas": 7,
-      "visitas": 1,
+      "cotiz_canceladas": 8,
+      "visitas": 0,
       "clientes_nuevos": 2,
       "ppto": 228412,
       "ppto_retail": 155320,
@@ -1242,8 +1242,8 @@
     {
       "date": "06jul",
       "day": "Lun",
-      "litros": 16870,
-      "neto": 14821927
+      "litros": 27022,
+      "neto": 23190693
     },
     {
       "date": "03jul",
@@ -1368,11 +1368,11 @@
   ],
   "total_cash": 29970524,
   "receivables": {
-    "open_invoices": 282,
-    "total_due": 717202216,
-    "current": 557490271,
+    "open_invoices": 284,
+    "total_due": 730049039,
+    "current": 570337094,
     "overdue": 159711945,
-    "pct_overdue": 22.3,
+    "pct_overdue": 21.9,
     "aging": {
       "0-30": 144452162,
       "31-60": 5393000,
@@ -1417,6 +1417,10 @@
         "amount": 20534355
       },
       {
+        "name": "LUCERO Y MELLA LIMITIDA",
+        "amount": 19015000
+      },
+      {
         "name": "EMM SERVICIOS SPA",
         "amount": 18744000
       },
@@ -1447,10 +1451,6 @@
       {
         "name": "TERRAMATER S A",
         "amount": 13515000
-      },
-      {
-        "name": "LUCERO Y MELLA LIMITIDA",
-        "amount": 12670000
       },
       {
         "name": "AGRICOLA LA PALMA S A",
@@ -1486,33 +1486,31 @@
           ]
         },
         "Rancagua": {
-          "total": 19,
+          "total": 20,
           "on_time": 17,
-          "late": 2,
-          "pct": 89.47,
+          "late": 3,
+          "pct": 85.0,
           "late_clients": [
             "Agroindustrial superfruit LIMITADA (prom: 2026-07-06, fact: sin factura)",
+            "AGRICOLA AGROBOSQUES SAN ISIDRO S.A. (prom: 2026-07-06, fact: sin factura)",
             "CBARRIOS CONSTRUCTORA SPA (prom: 2026-07-06, fact: sin factura)"
           ]
         },
         "San Fernando": {
           "total": 8,
-          "on_time": 7,
-          "late": 1,
-          "pct": 87.5,
-          "late_clients": [
-            "LUCERO Y MELLA LIMITIDA (prom: 2026-07-06, fact: sin factura)"
-          ]
+          "on_time": 8,
+          "late": 0,
+          "pct": 100.0,
+          "late_clients": []
         },
         "Talca": {
           "total": 16,
-          "on_time": 11,
-          "late": 5,
-          "pct": 68.75,
+          "on_time": 12,
+          "late": 4,
+          "pct": 75.0,
           "late_clients": [
             "VITIVINICOLA INVINA LTDA (prom: 2026-07-06, fact: sin factura)",
             "AGROMORANDE S A (prom: 2026-07-06, fact: sin factura)",
-            "SOC AGRICOLA EL ALMENDRO LTDA (prom: 2026-07-06, fact: sin factura)",
             "SERVICIOS REVIVA SPA (prom: 2026-07-06, fact: sin factura)",
             "BOMBAS DE HORMIGON G&P SPA (prom: 2026-07-06, fact: sin factura)"
           ]
@@ -2474,11 +2472,11 @@
   ],
   "riesgo": {
     "cubierto": 586660352,
-    "cubierto_count": 254,
-    "no_cubierto": 130541864,
-    "no_cubierto_count": 55,
-    "pct_monto": 18.2,
-    "pct_count": 17.8,
+    "cubierto_count": 255,
+    "no_cubierto": 143388687,
+    "no_cubierto_count": 57,
+    "pct_monto": 19.64,
+    "pct_count": 18.27,
     "avla_fecha_descarga": "2026-06-24",
     "avla_ruts_matched": 120,
     "avla_ruts_total": 691
@@ -2897,7 +2895,10 @@
         "last_invoice": "2025-10-09",
         "days_since": 270,
         "freq_days": null,
-        "threshold": null
+        "threshold": null,
+        "litros_prom_mes": 833,
+        "ejecutivo": "TomEnergy",
+        "crm_lead": "Perdidos"
       },
       {
         "partner_id": 4876,
@@ -2905,7 +2906,10 @@
         "last_invoice": "2025-10-06",
         "days_since": 273,
         "freq_days": null,
-        "threshold": null
+        "threshold": null,
+        "litros_prom_mes": 167,
+        "ejecutivo": "TomEnergy",
+        "crm_lead": "Perdidos"
       },
       {
         "partner_id": 6813,
@@ -2913,7 +2917,10 @@
         "last_invoice": "2025-10-06",
         "days_since": 273,
         "freq_days": null,
-        "threshold": null
+        "threshold": null,
+        "litros_prom_mes": 112,
+        "ejecutivo": "TomEnergy",
+        "crm_lead": "Perdidos"
       },
       {
         "partner_id": 5254,
@@ -2921,7 +2928,10 @@
         "last_invoice": "2025-10-06",
         "days_since": 273,
         "freq_days": null,
-        "threshold": null
+        "threshold": null,
+        "litros_prom_mes": 167,
+        "ejecutivo": "TomEnergy",
+        "crm_lead": "Perdidos"
       },
       {
         "partner_id": 5252,
@@ -2929,7 +2939,10 @@
         "last_invoice": "2025-10-03",
         "days_since": 276,
         "freq_days": null,
-        "threshold": null
+        "threshold": null,
+        "litros_prom_mes": 483,
+        "ejecutivo": "TomEnergy",
+        "crm_lead": "Perdidos"
       },
       {
         "partner_id": 6608,
@@ -2937,7 +2950,10 @@
         "last_invoice": "2025-10-02",
         "days_since": 277,
         "freq_days": null,
-        "threshold": null
+        "threshold": null,
+        "litros_prom_mes": 300,
+        "ejecutivo": "TomEnergy",
+        "crm_lead": "Perdidos"
       },
       {
         "partner_id": 5213,
@@ -2945,7 +2961,10 @@
         "last_invoice": "2025-09-30",
         "days_since": 279,
         "freq_days": null,
-        "threshold": null
+        "threshold": null,
+        "litros_prom_mes": 167,
+        "ejecutivo": "TomEnergy",
+        "crm_lead": null
       },
       {
         "partner_id": 4894,
@@ -2953,7 +2972,10 @@
         "last_invoice": "2025-09-29",
         "days_since": 280,
         "freq_days": null,
-        "threshold": null
+        "threshold": null,
+        "litros_prom_mes": 683,
+        "ejecutivo": "TomEnergy",
+        "crm_lead": null
       },
       {
         "partner_id": 5050,
@@ -2961,7 +2983,10 @@
         "last_invoice": "2025-09-26",
         "days_since": 283,
         "freq_days": null,
-        "threshold": null
+        "threshold": null,
+        "litros_prom_mes": 333,
+        "ejecutivo": "TomEnergy",
+        "crm_lead": "Perdidos"
       },
       {
         "partner_id": 5143,
@@ -2969,7 +2994,10 @@
         "last_invoice": "2025-09-17",
         "days_since": 292,
         "freq_days": null,
-        "threshold": null
+        "threshold": null,
+        "litros_prom_mes": 1633,
+        "ejecutivo": "TomEnergy",
+        "crm_lead": "Perdidos"
       },
       {
         "partner_id": 5086,
@@ -2977,7 +3005,10 @@
         "last_invoice": "2025-09-17",
         "days_since": 292,
         "freq_days": null,
-        "threshold": null
+        "threshold": null,
+        "litros_prom_mes": 333,
+        "ejecutivo": "TomEnergy",
+        "crm_lead": null
       },
       {
         "partner_id": 6742,
@@ -2985,7 +3016,10 @@
         "last_invoice": "2025-09-17",
         "days_since": 292,
         "freq_days": null,
-        "threshold": null
+        "threshold": null,
+        "litros_prom_mes": 833,
+        "ejecutivo": "Toledo Núñez Madelaine Camila",
+        "crm_lead": "Perdidos"
       },
       {
         "partner_id": 5365,
@@ -2993,7 +3027,10 @@
         "last_invoice": "2025-09-16",
         "days_since": 293,
         "freq_days": null,
-        "threshold": null
+        "threshold": null,
+        "litros_prom_mes": 167,
+        "ejecutivo": "TomEnergy",
+        "crm_lead": "Perdidos"
       },
       {
         "partner_id": 4772,
@@ -3001,7 +3038,10 @@
         "last_invoice": "2025-09-15",
         "days_since": 294,
         "freq_days": null,
-        "threshold": null
+        "threshold": null,
+        "litros_prom_mes": 1152,
+        "ejecutivo": "TomEnergy",
+        "crm_lead": null
       },
       {
         "partner_id": 4785,
@@ -3009,7 +3049,10 @@
         "last_invoice": "2025-09-05",
         "days_since": 304,
         "freq_days": null,
-        "threshold": null
+        "threshold": null,
+        "litros_prom_mes": 1043,
+        "ejecutivo": "TomEnergy",
+        "crm_lead": "Perdidos"
       },
       {
         "partner_id": 5101,
@@ -3017,7 +3060,10 @@
         "last_invoice": "2025-09-04",
         "days_since": 305,
         "freq_days": null,
-        "threshold": null
+        "threshold": null,
+        "litros_prom_mes": 1250,
+        "ejecutivo": "Carolina Avilés",
+        "crm_lead": "Perdidos"
       },
       {
         "partner_id": 5145,
@@ -3025,7 +3071,10 @@
         "last_invoice": "2025-09-03",
         "days_since": 306,
         "freq_days": null,
-        "threshold": null
+        "threshold": null,
+        "litros_prom_mes": 1667,
+        "ejecutivo": "TomEnergy",
+        "crm_lead": "Perdidos"
       },
       {
         "partner_id": 6467,
@@ -3033,7 +3082,10 @@
         "last_invoice": "2025-08-26",
         "days_since": 314,
         "freq_days": null,
-        "threshold": null
+        "threshold": null,
+        "litros_prom_mes": 167,
+        "ejecutivo": "BOCCARDO SALVO MAURO",
+        "crm_lead": null
       },
       {
         "partner_id": 6406,
@@ -3041,7 +3093,10 @@
         "last_invoice": "2025-08-22",
         "days_since": 318,
         "freq_days": null,
-        "threshold": null
+        "threshold": null,
+        "litros_prom_mes": 333,
+        "ejecutivo": "TomEnergy",
+        "crm_lead": "Perdidos"
       },
       {
         "partner_id": 6414,
@@ -3049,7 +3104,10 @@
         "last_invoice": "2025-08-22",
         "days_since": 318,
         "freq_days": null,
-        "threshold": null
+        "threshold": null,
+        "litros_prom_mes": 167,
+        "ejecutivo": "TomEnergy",
+        "crm_lead": "Perdidos"
       },
       {
         "partner_id": 6384,
@@ -3057,7 +3115,10 @@
         "last_invoice": "2025-08-20",
         "days_since": 320,
         "freq_days": null,
-        "threshold": null
+        "threshold": null,
+        "litros_prom_mes": 167,
+        "ejecutivo": "TomEnergy",
+        "crm_lead": "Perdidos"
       },
       {
         "partner_id": 4776,
@@ -3065,7 +3126,10 @@
         "last_invoice": "2025-08-19",
         "days_since": 321,
         "freq_days": null,
-        "threshold": null
+        "threshold": null,
+        "litros_prom_mes": 469,
+        "ejecutivo": "TomEnergy",
+        "crm_lead": "Perdidos"
       },
       {
         "partner_id": 5015,
@@ -3073,7 +3137,10 @@
         "last_invoice": "2025-08-19",
         "days_since": 321,
         "freq_days": null,
-        "threshold": null
+        "threshold": null,
+        "litros_prom_mes": 2833,
+        "ejecutivo": "TomEnergy",
+        "crm_lead": "Perdidos"
       },
       {
         "partner_id": 4875,
@@ -3081,7 +3148,10 @@
         "last_invoice": "2025-08-06",
         "days_since": 334,
         "freq_days": null,
-        "threshold": null
+        "threshold": null,
+        "litros_prom_mes": 508,
+        "ejecutivo": "TomEnergy",
+        "crm_lead": "Perdidos"
       },
       {
         "partner_id": 4892,
@@ -3089,7 +3159,10 @@
         "last_invoice": "2025-07-31",
         "days_since": 340,
         "freq_days": null,
-        "threshold": null
+        "threshold": null,
+        "litros_prom_mes": 1000,
+        "ejecutivo": "TomEnergy",
+        "crm_lead": "Perdidos"
       },
       {
         "partner_id": 5844,
@@ -3097,7 +3170,10 @@
         "last_invoice": "2025-07-18",
         "days_since": 353,
         "freq_days": null,
-        "threshold": null
+        "threshold": null,
+        "litros_prom_mes": 892,
+        "ejecutivo": "TomEnergy",
+        "crm_lead": null
       },
       {
         "partner_id": 6038,
@@ -3105,7 +3181,10 @@
         "last_invoice": "2025-07-15",
         "days_since": 356,
         "freq_days": null,
-        "threshold": null
+        "threshold": null,
+        "litros_prom_mes": 247,
+        "ejecutivo": "TomEnergy",
+        "crm_lead": "Perdidos"
       },
       {
         "partner_id": 4816,
@@ -3113,7 +3192,10 @@
         "last_invoice": "2025-07-14",
         "days_since": 357,
         "freq_days": null,
-        "threshold": null
+        "threshold": null,
+        "litros_prom_mes": 709,
+        "ejecutivo": "TomEnergy",
+        "crm_lead": "Perdidos"
       },
       {
         "partner_id": 5847,
@@ -3121,7 +3203,10 @@
         "last_invoice": "2025-07-07",
         "days_since": 364,
         "freq_days": null,
-        "threshold": null
+        "threshold": null,
+        "litros_prom_mes": 333,
+        "ejecutivo": "TomEnergy",
+        "crm_lead": "Perdidos"
       },
       {
         "partner_id": 5359,
@@ -3129,7 +3214,10 @@
         "last_invoice": "2025-07-02",
         "days_since": 369,
         "freq_days": null,
-        "threshold": null
+        "threshold": null,
+        "litros_prom_mes": 167,
+        "ejecutivo": "TomEnergy",
+        "crm_lead": "Perdidos"
       },
       {
         "partner_id": 5850,
@@ -3137,7 +3225,10 @@
         "last_invoice": "2025-06-26",
         "days_since": 375,
         "freq_days": null,
-        "threshold": null
+        "threshold": null,
+        "litros_prom_mes": 183,
+        "ejecutivo": "TomEnergy",
+        "crm_lead": "Perdidos"
       },
       {
         "partner_id": 5851,
@@ -3145,7 +3236,10 @@
         "last_invoice": "2025-06-26",
         "days_since": 375,
         "freq_days": null,
-        "threshold": null
+        "threshold": null,
+        "litros_prom_mes": 367,
+        "ejecutivo": "TomEnergy",
+        "crm_lead": "Perdidos"
       },
       {
         "partner_id": 5849,
@@ -3153,7 +3247,10 @@
         "last_invoice": "2025-06-26",
         "days_since": 375,
         "freq_days": null,
-        "threshold": null
+        "threshold": null,
+        "litros_prom_mes": 500,
+        "ejecutivo": "TomEnergy",
+        "crm_lead": "Perdidos"
       },
       {
         "partner_id": 5845,
@@ -3161,7 +3258,10 @@
         "last_invoice": "2025-06-26",
         "days_since": 375,
         "freq_days": null,
-        "threshold": null
+        "threshold": null,
+        "litros_prom_mes": 167,
+        "ejecutivo": "Comber Sigall Pauline",
+        "crm_lead": "Perdidos"
       },
       {
         "partner_id": 5342,
@@ -3169,7 +3269,10 @@
         "last_invoice": "2025-06-25",
         "days_since": 376,
         "freq_days": null,
-        "threshold": null
+        "threshold": null,
+        "litros_prom_mes": 4003,
+        "ejecutivo": "TomEnergy",
+        "crm_lead": "Perdidos"
       },
       {
         "partner_id": 5196,
@@ -3177,7 +3280,10 @@
         "last_invoice": "2025-06-25",
         "days_since": 376,
         "freq_days": null,
-        "threshold": null
+        "threshold": null,
+        "litros_prom_mes": 284,
+        "ejecutivo": "TomEnergy",
+        "crm_lead": "Perdidos"
       },
       {
         "partner_id": 5138,
@@ -3185,7 +3291,10 @@
         "last_invoice": "2025-06-24",
         "days_since": 377,
         "freq_days": null,
-        "threshold": null
+        "threshold": null,
+        "litros_prom_mes": 317,
+        "ejecutivo": "TomEnergy",
+        "crm_lead": "Perdidos"
       },
       {
         "partner_id": 5408,
@@ -3193,7 +3302,10 @@
         "last_invoice": "2025-06-19",
         "days_since": 382,
         "freq_days": null,
-        "threshold": null
+        "threshold": null,
+        "litros_prom_mes": 533,
+        "ejecutivo": "TomEnergy",
+        "crm_lead": "Perdidos"
       },
       {
         "partner_id": 5854,
@@ -3201,7 +3313,10 @@
         "last_invoice": "2025-06-19",
         "days_since": 382,
         "freq_days": null,
-        "threshold": null
+        "threshold": null,
+        "litros_prom_mes": 167,
+        "ejecutivo": "TomEnergy",
+        "crm_lead": "Perdidos"
       },
       {
         "partner_id": 5855,
@@ -3209,7 +3324,10 @@
         "last_invoice": "2025-06-19",
         "days_since": 382,
         "freq_days": null,
-        "threshold": null
+        "threshold": null,
+        "litros_prom_mes": 167,
+        "ejecutivo": "TomEnergy",
+        "crm_lead": "Perdidos"
       },
       {
         "partner_id": 5019,
@@ -3217,7 +3335,10 @@
         "last_invoice": "2025-06-18",
         "days_since": 383,
         "freq_days": null,
-        "threshold": null
+        "threshold": null,
+        "litros_prom_mes": 835,
+        "ejecutivo": "TomEnergy",
+        "crm_lead": "Perdidos"
       },
       {
         "partner_id": 5068,
@@ -3225,7 +3346,10 @@
         "last_invoice": "2025-06-16",
         "days_since": 385,
         "freq_days": null,
-        "threshold": null
+        "threshold": null,
+        "litros_prom_mes": 333,
+        "ejecutivo": "TomEnergy",
+        "crm_lead": "Perdidos"
       },
       {
         "partner_id": 5403,
@@ -3233,7 +3357,10 @@
         "last_invoice": "2025-06-10",
         "days_since": 391,
         "freq_days": null,
-        "threshold": null
+        "threshold": null,
+        "litros_prom_mes": 167,
+        "ejecutivo": "TomEnergy",
+        "crm_lead": "Perdidos"
       },
       {
         "partner_id": 5108,
@@ -3241,7 +3368,10 @@
         "last_invoice": "2025-06-04",
         "days_since": 397,
         "freq_days": null,
-        "threshold": null
+        "threshold": null,
+        "litros_prom_mes": 500,
+        "ejecutivo": "TomEnergy",
+        "crm_lead": "Perdidos"
       },
       {
         "partner_id": 4849,
@@ -3249,7 +3379,10 @@
         "last_invoice": "2025-06-03",
         "days_since": 398,
         "freq_days": null,
-        "threshold": null
+        "threshold": null,
+        "litros_prom_mes": 217,
+        "ejecutivo": "TomEnergy",
+        "crm_lead": "Perdidos"
       },
       {
         "partner_id": 5116,
@@ -3257,7 +3390,10 @@
         "last_invoice": "2025-05-30",
         "days_since": 402,
         "freq_days": null,
-        "threshold": null
+        "threshold": null,
+        "litros_prom_mes": 800,
+        "ejecutivo": "TomEnergy",
+        "crm_lead": "Perdidos"
       },
       {
         "partner_id": 5014,
@@ -3265,7 +3401,10 @@
         "last_invoice": "2025-05-29",
         "days_since": 403,
         "freq_days": null,
-        "threshold": null
+        "threshold": null,
+        "litros_prom_mes": 333,
+        "ejecutivo": "TomEnergy",
+        "crm_lead": "Perdidos"
       },
       {
         "partner_id": 5005,
@@ -3273,7 +3412,10 @@
         "last_invoice": "2025-05-22",
         "days_since": 410,
         "freq_days": null,
-        "threshold": null
+        "threshold": null,
+        "litros_prom_mes": 33,
+        "ejecutivo": "TomEnergy",
+        "crm_lead": "Perdidos"
       },
       {
         "partner_id": 4969,
@@ -3281,7 +3423,10 @@
         "last_invoice": "2025-05-16",
         "days_since": 416,
         "freq_days": null,
-        "threshold": null
+        "threshold": null,
+        "litros_prom_mes": 682,
+        "ejecutivo": "TomEnergy",
+        "crm_lead": "Perdidos"
       },
       {
         "partner_id": 4942,
@@ -3289,7 +3434,10 @@
         "last_invoice": "2025-05-14",
         "days_since": 418,
         "freq_days": null,
-        "threshold": null
+        "threshold": null,
+        "litros_prom_mes": 1893,
+        "ejecutivo": "Comber Sigall Pauline",
+        "crm_lead": "Perdidos"
       }
     ],
     "history": [
@@ -3297,37 +3445,37 @@
         "month": "Feb 2026",
         "pct": 1.3,
         "new_lost": 8,
-        "active_start": 616
+        "active_start": 617
       },
       {
         "month": "Mar 2026",
         "pct": 2.3,
         "new_lost": 14,
-        "active_start": 607
+        "active_start": 608
       },
       {
         "month": "Apr 2026",
         "pct": 0.8,
         "new_lost": 5,
-        "active_start": 593
+        "active_start": 594
       },
       {
         "month": "May 2026",
         "pct": 1.4,
         "new_lost": 8,
-        "active_start": 588
+        "active_start": 589
       },
       {
         "month": "Jun 2026",
         "pct": 1.9,
         "new_lost": 11,
-        "active_start": 579
+        "active_start": 580
       },
       {
         "month": "Jul 2026",
         "pct": 2.8,
         "new_lost": 16,
-        "active_start": 568
+        "active_start": 569
       }
     ],
     "definition": "Perdido = 270d sin factura | Durmiente = >freq×1.5 (<30d) o freq×1.3 (≥30d)"
@@ -3347,14 +3495,26 @@
         "projected": 648070,
         "projected_pct": 121.2,
         "plants": {
+          "Linares": {
+            "target": 45000,
+            "mtd": 30170,
+            "compliance_pct": 67.0,
+            "projected": 155878,
+            "projected_pct": 346.4
+          },
           "Maipu": {
-            "target": 195827
+            "target": 195827,
+            "mtd": 0,
+            "compliance_pct": 0.0,
+            "projected": 0,
+            "projected_pct": 0.0
           },
           "San Fernando": {
-            "target": 293740
-          },
-          "Linares": {
-            "target": 45000
+            "target": 293740,
+            "mtd": 95263,
+            "compliance_pct": 32.4,
+            "projected": 492192,
+            "projected_pct": 167.6
           }
         }
       },
@@ -3369,11 +3529,19 @@
         "projected": 0,
         "projected_pct": 0.0,
         "plants": {
-          "Maipu": {
-            "target": 0
-          },
           "Linares": {
-            "target": 400554
+            "target": 400554,
+            "mtd": 0,
+            "compliance_pct": 0.0,
+            "projected": 0,
+            "projected_pct": 0.0
+          },
+          "Maipu": {
+            "target": 0,
+            "mtd": 0,
+            "compliance_pct": 0,
+            "projected": 0,
+            "projected_pct": 0
           }
         }
       }
@@ -3547,7 +3715,7 @@
         "dso": 33.3
       }
     ],
-    "cxc_hoy": 1006674447
+    "cxc_hoy": 1019521270
   },
   "gerencia_goals": {
     "margen_contado_meta": 0.085,
