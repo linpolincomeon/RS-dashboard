@@ -588,9 +588,9 @@ function renderGerencia(){
         const lost=churn.lost||[];
         if(lost.length>0){
             h+='<div class="section-label" style="font-size:13px;margin-top:1.5rem">Perdidos — 270+ días sin factura</div>';
-            h+='<div class="table-card"><table><thead><tr><th>Cliente</th><th class="r">Días sin compra</th><th class="r">Prom. L/mes previo</th><th>Ejecutivo</th><th>CRM</th></tr></thead><tbody>';
+            h+='<div class="table-card"><table><thead><tr><th>Cliente</th><th class="r">Días sin compra</th><th class="r">Prom. L/mes previo</th><th>Ejecutivo</th><th>CRM</th><th>Gestión</th></tr></thead><tbody>';
             [...lost].sort((a,b)=>(a.days_since||0)-(b.days_since||0)).slice(0,20).forEach(c=>{
-                h+=`<tr><td class="hi">${c.name}</td><td class="r bad">${c.days_since}d</td><td class="r">${c.litros_prom_mes!=null?fK(c.litros_prom_mes):'—'}</td><td>${c.ejecutivo||'—'}</td><td>${c.crm_lead||'—'}</td></tr>`;
+                h+=`<tr><td class="hi">${c.name}</td><td class="r bad">${c.days_since}d</td><td class="r">${c.litros_prom_mes!=null?fK(c.litros_prom_mes):'—'}</td><td>${c.ejecutivo||'—'}</td><td>${c.crm_lead||'—'}</td><td style="font-size:10px">${c.gestion||'—'}</td></tr>`;
             });
             h+=`</tbody></table><div class="note">Perdido = 270+ días sin factura. Si vuelve a comprar, cuenta como cliente nuevo. Responsable: ejecutivo comercial.</div></div>`;
         }
