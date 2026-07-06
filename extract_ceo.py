@@ -793,7 +793,10 @@ def extract_churn(models, uid):
             lost_list.append(entry)
 
     dormant_list.sort(key=lambda x: -x["days_since"])
-    lost_list.sort(key=lambda x: -x["days_since"])
+    # Perdidos: ascendente — los recién perdidos (270d, 271d...) primero,
+    # para que el truncado [:50] al escribir el JSON conserve los rescatables
+    # y no los fósiles de 700+ días.
+    lost_list.sort(key=lambda x: x["days_since"])
 
     print(f"  Durmientes: {len(dormant_list)}, Perdidos: {len(lost_list)}")
 
