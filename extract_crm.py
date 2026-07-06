@@ -22,6 +22,12 @@ ODOO_KEY = os.environ.get("ODOO_KEY", "")
 
 DIESEL_PRODUCT_ID = 14  # Diésel B1
 
+# Meses en español — NIVEL MÓDULO. Antes solo existía como local en Recuperación,
+# lo que causaba NameError en el cálculo de churn: churn_pct se computaba bien y
+# el except lo pisaba de vuelta a 0 (KPI mostraba 0.0% junto a 10/229).
+SPANISH_MONTHS = ["", "ene", "feb", "mar", "abr", "may", "jun",
+                  "jul", "ago", "sep", "oct", "nov", "dic"]
+
 
 def connect():
     common = xmlrpc.client.ServerProxy(f"{ODOO_URL}/xmlrpc/2/common")
@@ -3007,3 +3013,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+    
