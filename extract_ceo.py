@@ -969,8 +969,8 @@ SUPPLIER_TARGETS = {
         "2026-04": {"Maipu": 230827, "San Fernando": 346241, "Linares": 45000},
         "2026-05": {"Maipu": 183025, "San Fernando": 274538, "Linares": 45000},
         "2026-06": {"Maipu": 153229, "San Fernando": 229844, "Linares": 45000},
-        "2026-07": {"Maipu": 195827, "San Fernando": 293740, "Linares": 45000},
-        "2026-08": {"Maipu": 191801, "San Fernando": 287701, "Linares": 45000},
+        "2026-07": {"Maipu": 176244, "San Fernando": 264366, "Linares": 40500},   # -10% todas (acuerdo jul 2026)
+        "2026-08": {"Maipu": 172621, "San Fernando": 258931, "Linares": 45000},   # -10% solo Maipu y San Fdo
         "2026-09": {"Maipu": 186138, "San Fernando": 279207, "Linares": 45000},
         "2026-10": {"Maipu": 201974, "San Fernando": 302961, "Linares": 45000},
         "2026-11": {"Maipu": 190029, "San Fernando": 285043, "Linares": 388696},
