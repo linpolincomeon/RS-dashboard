@@ -2275,14 +2275,16 @@ def extract_credit_risk(models, uid):
             s["invoice_count"] += 1
 
         # Average payment days — días REALES:
-        # Impaga (residual > 0): hoy − invoice_date (piso de la mora, solo puede crecer).
+        # Impaga (residual > 0): max(hoy − invoice_date, apd) — una impaga fresca
+        # no puede reportar MENOS días que el comportamiento histórico del cliente.
         # Pagada: average_payment_days de Odoo (solo existe si está reconciliada).
         apd = inv.get("average_payment_days")
         if residual_apd > 0 and inv_date_str:
             try:
                 days_open = (today - datetime.strptime(inv_date_str, "%Y-%m-%d").date()).days
-                if days_open > 0:
-                    s["avg_payment_days_sum"] += days_open
+                eff_days = max(days_open, apd or 0)
+                if eff_days > 0:
+                    s["avg_payment_days_sum"] += eff_days
                     s["avg_payment_days_count"] += 1
             except (ValueError, TypeError):
                 pass
@@ -2394,7 +2396,16 @@ def extract_credit_risk(models, uid):
         # Averages — usando cons_stats (grupo consolidado si aplica)
         avg_monthly_litros = round(cons_stats["litros_total"] / months_in_window)
         avg_monthly_venta = round(cons_stats["venta_total"] / months_in_window)
-        avg_payment_days = round(cons_stats["avg_payment_days_sum"] / max(cons_stats["avg_payment_days_count"], 1), 1)
+        # Días de pago: MÁXIMO entre los promedios individuales del grupo, NO el
+        # promedio consolidado — el peor pagador del holding define el riesgo.
+        # (Promediar diluye: Palquibudis 40d + peers a 12d mostraba 23d).
+        _member_ids = group_to_pids.get(gid, [pid]) if gid else [pid]
+        _member_avgs = []
+        for _mid in _member_ids:
+            _ms = partner_stats.get(_mid)
+            if _ms and _ms["avg_payment_days_count"] > 0:
+                _member_avgs.append(_ms["avg_payment_days_sum"] / _ms["avg_payment_days_count"])
+        avg_payment_days = round(max(_member_avgs), 1) if _member_avgs else 0.0
         avg_margin = round((cons_stats["margin_sum"] / max(cons_stats["margin_count"], 1)) * 100, 1)
         avg_price_rango = round(cons_stats["price_rango_sum"] / max(cons_stats["price_rango_count"], 1), 1)
 
