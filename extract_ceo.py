@@ -858,6 +858,53 @@ def extract_churn(models, uid):
 
     current_churn_pct = churn_history[-1]["pct"] if churn_history else 0
 
+    # ── 6. Enriquecer top 50 perdidos: litros previos, ejecutivo, lead CRM ──
+    # Solo los 50 que van al JSON — queries acotadas a esos partner_ids.
+    lost_top = lost_list[:50]
+    if lost_top:
+        pids_l = [e["partner_id"] for e in lost_top]
+        # Litros Diésel en los ~6 meses previos a la última factura de cada cliente
+        min_last = min(e["last_invoice"] for e in lost_top)
+        lit_cutoff = (datetime.strptime(min_last, "%Y-%m-%d") - timedelta(days=190)).strftime("%Y-%m-%d")
+        dlines = fetch_all(models, uid, "account.move.line",
+            [["partner_id", "in", pids_l],
+             ["product_id", "=", DIESEL_B1_PRODUCT],
+             ["parent_state", "=", "posted"],
+             ["move_id.move_type", "=", "out_invoice"],
+             ["date", ">=", lit_cutoff]],
+            ["partner_id", "quantity", "date"])
+        lit_by_pid = {}
+        for ln in dlines:
+            if not ln.get("partner_id"):
+                continue
+            lit_by_pid.setdefault(ln["partner_id"][0], []).append(
+                (ln.get("date") or "", ln.get("quantity") or 0))
+        # Ejecutivo ASIGNADO (res.partner.user_id) — ojo: no es la gestión real
+        # (esa vive en mail.message), pero para perdidos antiguos es lo disponible.
+        pinfo = sr(models, uid, "res.partner", [["id", "in", pids_l]], ["id", "user_id"], limit=200)
+        exec_by_pid = {p["id"]: (p["user_id"][1] if p.get("user_id") else None) for p in pinfo}
+        # Lead CRM más reciente por partner (para saber si ya hay oportunidad creada)
+        leads_l = fetch_all(models, uid, "crm.lead",
+            [["partner_id", "in", pids_l]],
+            ["partner_id", "stage_id", "write_date"])
+        lead_by_pid = {}
+        for ldd in leads_l:
+            if not ldd.get("partner_id"):
+                continue
+            lp = ldd["partner_id"][0]
+            prev = lead_by_pid.get(lp)
+            if not prev or (ldd.get("write_date") or "") > (prev.get("write_date") or ""):
+                lead_by_pid[lp] = ldd
+        for e in lost_top:
+            pid_e = e["partner_id"]
+            win_start = (datetime.strptime(e["last_invoice"], "%Y-%m-%d") - timedelta(days=183)).strftime("%Y-%m-%d")
+            tot = sum(q for (d, q) in lit_by_pid.get(pid_e, []) if win_start <= d <= e["last_invoice"])
+            e["litros_prom_mes"] = round(tot / 6)
+            e["ejecutivo"] = exec_by_pid.get(pid_e)
+            ldd = lead_by_pid.get(pid_e)
+            e["crm_lead"] = (ldd["stage_id"][1] if ldd and ldd.get("stage_id") else ("Sí" if ldd else None))
+        print(f"  Top {len(lost_top)} perdidos enriquecidos (litros/ejecutivo/lead CRM)")
+
     return {
         "dormant_count": len(dormant_list),
         "lost_count": len(lost_list),
@@ -904,6 +951,20 @@ SUPPLIER_TARGETS = {
 }
 
 
+# Patio de carga por prefijo de patente (dato operacional Pauline, jul 2026).
+# PO.picking_type_id nombra el camión (ej. "TJVS-53: Recepciones") → prefijo 2 letras.
+# Patente no listada cae en "Sin mapear" — visible en la tabla, no se esconde.
+PLANT_BY_TRUCK_PREFIX = {
+    "PY": "Linares",        # Mario Marin
+    "SH": "Linares",        # Roberto Urrutia
+    "TY": "Linares",        # Patricio Garrido
+    "VD": "San Fernando",   # Fernando Garroz
+    "PH": "San Fernando",   # Jorge Aguilera
+    "TJ": "San Fernando",   # Jose Luis Valenzuela
+    "HH": "San Fernando",   # Sin conductor
+}
+
+
 def extract_enap_compliance(models, uid):
     """MTD purchases from ENAP + ADQUIM/ADGREEN vs monthly targets by plant, with projection."""
     import calendar
@@ -939,25 +1000,61 @@ def extract_enap_compliance(models, uid):
             ["partner_id", "in", partner_ids],
             ["invoice_date", ">=", month_start],
             ["invoice_date", "<=", today_str],
-        ], ["id"], 500)
+        ], ["id", "invoice_origin"], 500)
 
         bill_ids = [b["id"] for b in bills]
         mtd_litros = 0
+        litros_by_bill = {}
         if bill_ids:
             lines = sr(models, uid, "account.move.line", [
                 ["move_id", "in", bill_ids],
                 ["display_type", "=", "product"],
-            ], ["quantity"], 2000)
-            mtd_litros = round(sum(l["quantity"] for l in lines))
+            ], ["move_id", "quantity"], 2000)
+            for l in lines:
+                mid = l["move_id"][0] if l.get("move_id") else None
+                q = l.get("quantity") or 0
+                mtd_litros += q
+                if mid:
+                    litros_by_bill[mid] = litros_by_bill.get(mid, 0) + q
+            mtd_litros = round(mtd_litros)
 
         projected = round(mtd_litros / pct_month) if pct_month > 0 else 0
         compliance_pct = round(mtd_litros / target_total * 100, 1) if target_total > 0 else 0
         projected_pct = round(projected / target_total * 100, 1) if target_total > 0 else 0
 
-        # Per-plant breakdown (targets only — actual by plant requires warehouse info)
+        # Atribución por planta: factura → invoice_origin (PO) → picking_type (patente) → patio
+        po_names = sorted({(b.get("invoice_origin") or "").split(",")[0].strip()
+                           for b in bills if b.get("invoice_origin")})
+        plant_by_po = {}
+        if po_names:
+            pos = sr(models, uid, "purchase.order",
+                     [["name", "in", po_names]], ["name", "picking_type_id"], 500)
+            for po in pos:
+                pt_name = po["picking_type_id"][1] if po.get("picking_type_id") else ""
+                plant_by_po[po["name"]] = PLANT_BY_TRUCK_PREFIX.get(pt_name[:2].upper(), "Sin mapear")
+
+        mtd_by_plant = {}
+        for b in bills:
+            q = litros_by_bill.get(b["id"], 0)
+            if not q:
+                continue
+            po_name = (b.get("invoice_origin") or "").split(",")[0].strip()
+            plant = plant_by_po.get(po_name, "Sin mapear")
+            mtd_by_plant[plant] = mtd_by_plant.get(plant, 0) + q
+
+        # Per-plant breakdown: meta + MTD real + cumplimiento + proyección
         plants = {}
-        for plant, target_l in targets.items():
-            plants[plant] = {"target": target_l}
+        for plant in sorted(set(targets.keys()) | set(mtd_by_plant.keys())):
+            t = targets.get(plant, 0)
+            m = round(mtd_by_plant.get(plant, 0))
+            pr = round(m / pct_month) if pct_month > 0 else 0
+            plants[plant] = {
+                "target": t,
+                "mtd": m,
+                "compliance_pct": round(m / t * 100, 1) if t > 0 else 0,
+                "projected": pr,
+                "projected_pct": round(pr / t * 100, 1) if t > 0 else 0,
+            }
 
         results[group_name] = {
             "partners": [str(p) for p in partner_ids],
