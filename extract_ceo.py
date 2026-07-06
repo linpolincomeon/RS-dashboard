@@ -858,13 +858,15 @@ def extract_churn(models, uid):
 
     current_churn_pct = churn_history[-1]["pct"] if churn_history else 0
 
-    # ── 6. Enriquecer top 50 perdidos: litros previos, ejecutivo, lead CRM ──
-    # Solo los 50 que van al JSON — queries acotadas a esos partner_ids.
+    # ── 6. Enriquecer top 50 perdidos Y durmientes: litros, ejecutivo, lead CRM, gestión ──
+    # Solo los que van al JSON — queries acotadas a esos partner_ids (una pasada para ambos).
     lost_top = lost_list[:50]
-    if lost_top:
-        pids_l = [e["partner_id"] for e in lost_top]
+    dormant_top = dormant_list[:50]
+    enrich_all = lost_top + dormant_top
+    if enrich_all:
+        pids_l = sorted({e["partner_id"] for e in enrich_all})
         # Litros Diésel en los ~6 meses previos a la última factura de cada cliente
-        min_last = min(e["last_invoice"] for e in lost_top)
+        min_last = min(e["last_invoice"] for e in enrich_all)
         lit_cutoff = (datetime.strptime(min_last, "%Y-%m-%d") - timedelta(days=190)).strftime("%Y-%m-%d")
         dlines = fetch_all(models, uid, "account.move.line",
             [["partner_id", "in", pids_l],
@@ -880,22 +882,53 @@ def extract_churn(models, uid):
             lit_by_pid.setdefault(ln["partner_id"][0], []).append(
                 (ln.get("date") or "", ln.get("quantity") or 0))
         # Ejecutivo ASIGNADO (res.partner.user_id) — ojo: no es la gestión real
-        # (esa vive en mail.message), pero para perdidos antiguos es lo disponible.
-        pinfo = sr(models, uid, "res.partner", [["id", "in", pids_l]], ["id", "user_id"], limit=200)
+        pinfo = sr(models, uid, "res.partner", [["id", "in", pids_l]], ["id", "user_id"], limit=300)
         exec_by_pid = {p["id"]: (p["user_id"][1] if p.get("user_id") else None) for p in pinfo}
-        # Lead CRM más reciente por partner (para saber si ya hay oportunidad creada)
+        # Lead CRM más reciente por partner
         leads_l = fetch_all(models, uid, "crm.lead",
             [["partner_id", "in", pids_l]],
-            ["partner_id", "stage_id", "write_date"])
+            ["id", "partner_id", "stage_id", "write_date"])
         lead_by_pid = {}
+        pid_by_lead = {}
         for ldd in leads_l:
             if not ldd.get("partner_id"):
                 continue
             lp = ldd["partner_id"][0]
+            pid_by_lead[ldd["id"]] = lp
             prev = lead_by_pid.get(lp)
             if not prev or (ldd.get("write_date") or "") > (prev.get("write_date") or ""):
                 lead_by_pid[lp] = ldd
-        for e in lost_top:
+        lead_ids_all = list(pid_by_lead.keys())
+        # Última nota (comment) sobre el partner o sus leads — gestión REAL
+        msgs = fetch_all(models, uid, "mail.message",
+            [["message_type", "=", "comment"], "|",
+             "&", ["model", "=", "res.partner"], ["res_id", "in", pids_l],
+             "&", ["model", "=", "crm.lead"], ["res_id", "in", lead_ids_all or [0]]],
+            ["model", "res_id", "date", "author_id"])
+        last_note_by_pid = {}
+        for m in msgs:
+            pid_m = m["res_id"] if m.get("model") == "res.partner" else pid_by_lead.get(m.get("res_id"))
+            if not pid_m:
+                continue
+            prev = last_note_by_pid.get(pid_m)
+            if not prev or (m.get("date") or "") > (prev.get("date") or ""):
+                last_note_by_pid[pid_m] = m
+        # Actividades pendientes sobre el partner o sus leads
+        acts = fetch_all(models, uid, "mail.activity",
+            ["|",
+             "&", ["res_model", "=", "res.partner"], ["res_id", "in", pids_l],
+             "&", ["res_model", "=", "crm.lead"], ["res_id", "in", lead_ids_all or [0]]],
+            ["res_model", "res_id", "summary", "date_deadline"])
+        act_by_pid = {}
+        for a in acts:
+            pid_a = a["res_id"] if a.get("res_model") == "res.partner" else pid_by_lead.get(a.get("res_id"))
+            if not pid_a:
+                continue
+            prev = act_by_pid.get(pid_a)
+            if not prev or (a.get("date_deadline") or "9999") < (prev.get("date_deadline") or "9999"):
+                act_by_pid[pid_a] = a
+        # Anotar entradas (muta los dicts de lost_list/dormant_list, el [:50] los lleva)
+        for e in enrich_all:
             pid_e = e["partner_id"]
             win_start = (datetime.strptime(e["last_invoice"], "%Y-%m-%d") - timedelta(days=183)).strftime("%Y-%m-%d")
             tot = sum(q for (d, q) in lit_by_pid.get(pid_e, []) if win_start <= d <= e["last_invoice"])
@@ -903,7 +936,16 @@ def extract_churn(models, uid):
             e["ejecutivo"] = exec_by_pid.get(pid_e)
             ldd = lead_by_pid.get(pid_e)
             e["crm_lead"] = (ldd["stage_id"][1] if ldd and ldd.get("stage_id") else ("Sí" if ldd else None))
-        print(f"  Top {len(lost_top)} perdidos enriquecidos (litros/ejecutivo/lead CRM)")
+            act = act_by_pid.get(pid_e)
+            note = last_note_by_pid.get(pid_e)
+            if act:
+                e["gestion"] = f"⏰ {(act.get('summary') or 'Actividad')} · {act.get('date_deadline') or ''}"
+            elif note:
+                autor = note["author_id"][1] if note.get("author_id") else "?"
+                e["gestion"] = f"Nota {str(note.get('date') or '')[:10]} · {autor}"
+            else:
+                e["gestion"] = None
+        print(f"  Enriquecidos: {len(lost_top)} perdidos + {len(dormant_top)} durmientes (litros/ejecutivo/CRM/gestión)")
 
     return {
         "dormant_count": len(dormant_list),
