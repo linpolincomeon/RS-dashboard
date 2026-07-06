@@ -588,9 +588,9 @@ function renderGerencia(){
         const lost=churn.lost||[];
         if(lost.length>0){
             h+='<div class="section-label" style="font-size:13px;margin-top:1.5rem">Perdidos — 270+ días sin factura</div>';
-            h+='<div class="table-card"><table><thead><tr><th>Cliente</th><th class="r">Últ. Factura</th><th class="r">Días sin compra</th></tr></thead><tbody>';
+            h+='<div class="table-card"><table><thead><tr><th>Cliente</th><th class="r">Días sin compra</th><th class="r">Prom. L/mes previo</th><th>Ejecutivo</th><th>CRM</th></tr></thead><tbody>';
             [...lost].sort((a,b)=>(a.days_since||0)-(b.days_since||0)).slice(0,20).forEach(c=>{
-                h+=`<tr><td class="hi">${c.name}</td><td class="r">${c.last_invoice}</td><td class="r bad">${c.days_since}d</td></tr>`;
+                h+=`<tr><td class="hi">${c.name}</td><td class="r bad">${c.days_since}d</td><td class="r">${c.litros_prom_mes!=null?fK(c.litros_prom_mes):'—'}</td><td>${c.ejecutivo||'—'}</td><td>${c.crm_lead||'—'}</td></tr>`;
             });
             h+=`</tbody></table><div class="note">Perdido = 270+ días sin factura. Si vuelve a comprar, cuenta como cliente nuevo. Responsable: ejecutivo comercial.</div></div>`;
         }
@@ -680,7 +680,11 @@ function renderGerencia(){
             // Plant breakdown
             const plants=s.plants||{};
             for(const[plant,pd] of Object.entries(plants)){
-                if(pd.target>0) h+=`<tr style="font-size:10px;color:var(--text3)"><td style="padding-left:24px">${plant}</td><td class="r">${fK(pd.target)}</td><td colspan="4"></td></tr>`;
+                if((pd.target||0)<=0&&(pd.mtd||0)<=0) continue;
+                const hasT=(pd.target||0)>0;
+                const pcc=hasT?(pd.compliance_pct>=pctExpected?'ok':pd.compliance_pct>=pctExpected*.8?'':'bad'):'';
+                const ppc=hasT?(pd.projected_pct>=95?'ok':pd.projected_pct>=80?'':'bad'):'';
+                h+=`<tr style="font-size:10px;color:var(--text3)"><td style="padding-left:24px">${plant}</td><td class="r">${hasT?fK(pd.target):'—'}</td><td class="r">${fK(pd.mtd||0)}</td><td class="r ${pcc}">${hasT?pd.compliance_pct+'%':'—'}</td><td class="r">${fK(pd.projected||0)}</td><td class="r ${ppc}">${hasT?pd.projected_pct+'%':'—'}</td></tr>`;
             }
         }
         // Total row
