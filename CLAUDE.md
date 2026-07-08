@@ -64,7 +64,7 @@ Frontend sin framework. Fuente DM Sans. Background `#f7f6f3`, cards blancas, ace
 - Durmancia dinámica: freq <30d → durmiente si supera freq×1.5 sin comprar; freq ≥30d → freq×1.3.
 - Rescate Durmiente → Fidelización (Comber Sigall). Rescate Perdido → ejecutivo comercial, cuenta como cliente NUEVO.
 - Riesgo crediticio (score 0–100, mayor = peor): Morosidad 40 · Utilización 25 · Cobranza/Siniestro 20 · Margen 15. Crítico ≥60, Alto ≥40, Medio ≥20. Consolidación por grupo vía `group_consultek_id`.
-- Cobertura AVLA: por RUT, `min(deuda_cliente, cobertura_efectiva_avla_clp)`.
+- Cobertura AVLA: por RUT, `min(deuda_cliente, cobertura_efectiva_avla_clp)`. Cobertura efectiva = `monto_aprobado_UF × uf_value × (cobertura%/100)`. ⚠ El % (80% innominados / 90% nominados) se aplica **desde 2026-07-08**; los avla-lines.json previos usaban 100% nominal (ver Estado actual).
 - Calculadora de excepción: `minimo = base_min_zona + (−dias_real + 30) × C10 / 30`; `excepcion = minimo − 10`; C10 = −16. Usa días REALES (`avg_payment_days`).
 
 ## Equipo activo (junio 2026 — `ALLOWED_VENDORS`)
@@ -116,5 +116,6 @@ Si la tarea toca recaudación, cash flow, calculadora de excepción o debugging 
 - SLA reescrito y funcionando (join `invoice_origin`), respeta selector de semana.
 - Board dashboard operativo (histórico 2011–2026).
 - Churn del CEO dashboard alineado a definiciones correctas.
-- **Pendiente prioritario:** integración AVLA al CEO dashboard — exportar desde portal AVLA el listado de líneas aprobadas por RUT, recalcular % CxC no cubierto efectivo (mínimo por cliente), y recién entonces evaluar re-habilitar auto-actualización.
+- **AVLA (2026-07-08):** `avla-lines.json` regenerado desde export `INSURED_LINES` del portal (descarga 08/07/2026, UF 40842.07). Filtro: solo líneas `Actual` + estado `Aprobada`/`Aprobada parcialmente` → 706 RUTs. **Cambio de metodología:** ahora se aplica el % de cobertura (80/90) → cobertura total $6.920M (vs $6.683M en junio a 100%). ⚠ Esto crea una **discontinuidad en `riesgo-historico.json`**: los snapshots ≤ jun-2026 usan cobertura nominal al 100% y NO son comparables directos con jul-2026 en adelante. No re-escribir el histórico previo (los valores viejos eran correctos para su metodología); al comparar tendencia de "% no cubierto", tener presente el quiebre en esta fecha.
+- **Pendiente prioritario:** correr `extract_ceo.py` para propagar la nueva cobertura AVLA a `ceo-data.json`/dashboard y verificar el match RUT↔Odoo; recién entonces evaluar re-habilitar la auto-actualización AVLA (sigue deshabilitada a propósito).
 - Backlog: filtro "sin gestión" en Recuperación · asignar ejecutivo desde dashboard (Opción C browser-login vs D serverless, sin decidir) · export CSV recuperación · cron de durmancia en Odoo · fix `dias_facturacion` · orden de tags (workaround prefijos ZONA-).
