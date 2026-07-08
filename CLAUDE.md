@@ -92,6 +92,24 @@ Las dos Paulines: **Vial Comber** = CEO (NO aparece en dashboards de ventas) · 
 - **Bloque de auto-actualización AVLA en `extract_ceo.py` está DESHABILITADO a propósito** (generaba entradas falsas en `riesgo-historico.json`, ej. 14/06 con 100% no cubierto por mismatch de filename `Avla Lines` vs `avla-lines.json`). No reactivar sin instrucción explícita.
 - `dias_facturacion` en `res.partner` está roto (probablemente usa `write_date`). Calcular días desde `account.move`.
 
+## Tabla de zonas Mantenedor (hardcoded en ceo-dashboard.html)
+
+Actualizar aquí Y en el HTML cuando ENAP cambie precios. Valores de mayo 2026 — verificar vigencia contra Mantenedor antes de usar.
+
+| Zona | Bomba | Cred Mín | Vol Mín | Cont Mín |
+|---|---|---|---|---|
+| Rancagua | 1561 | 1504 | 1465 | 1488 |
+| San Fernando | 1551 | 1504 | 1465 | 1488 |
+| VI Costa | 1526 | 1504 | 1465 | 1488 |
+| Talca | 1503 | 1494 | 1454 | 1478 |
+| Curicó | 1503 | 1494 | 1454 | 1478 |
+| Chillán | 1503 | 1494 | 1454 | 1478 |
+| Región Metropolitana | 1561 | 1504 | 1465 | 1488 |
+
+## Documentación adicional
+
+Si la tarea toca recaudación, cash flow, calculadora de excepción o debugging histórico: leer `docs/REFERENCIA.md` antes de escribir código.
+
 ## Estado actual (julio 2026)
 
 - `crm-sales.html`: funcionando. Tab Recuperación completado, columna Actividad live.
