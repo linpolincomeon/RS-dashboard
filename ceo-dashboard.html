@@ -882,12 +882,24 @@ function renderRiesgo(){
     h += '</tr></thead><tbody>';
     unifiedTable.forEach(c => {
         const lv = riskLevel(c.risk_score);
+        // Sin línea: monto_credito=0 → utiliz./saldo/% línea son degenerados (÷0).
+        // No mostrar 0% / 999% / saldo negativo (falsa certeza); marcar explícito "Sin línea".
+        const sinLinea = !(c.monto_credito > 0);
+        const sinLineaTxt = '<span style="color:#9ca3af;font-size:11px">Sin línea</span>';
         const uc = c.utilizacion_pct >= 90 ? 'bad' : c.utilizacion_pct >= 70 ? '' : 'ok';
         const insuf = lineaInsufIds.has(c.name);
         const li = lineaMap[c.name] || {};
         const proyL = c.avg_monthly_litros ? Math.round(c.avg_monthly_litros).toLocaleString('es-CL') + ' L' : '—';
         const lineaRatio = li.linea_ratio || c.linea_ratio;
-        const lineaRatioHtml = lineaRatio ? `<span class="${lineaRatio >= 100 ? 'bad' : ''}">${lineaRatio}%</span>` : '—';
+        // saldo_credito = línea − deuda; para sin línea es negativo = lo que debe.
+        const deuda = c.saldo_credito < 0 ? -c.saldo_credito : 0;
+        const saldoHtml = sinLinea
+            ? (deuda > 0 ? `<span class="bad">Debe ${fMon(deuda)}</span>` : '—')
+            : fMon(c.saldo_credito);
+        const utilHtml = sinLinea ? sinLineaTxt : `${c.utilizacion_pct}%`;
+        const lineaRatioHtml = sinLinea
+            ? sinLineaTxt
+            : (lineaRatio ? `<span class="${lineaRatio >= 100 ? 'bad' : ''}">${lineaRatio}%</span>` : '—');
         const insufFlag = insuf ? ' <span style="font-size:10px;background:#fef3c7;color:#92400e;padding:1px 5px;border-radius:4px;font-weight:700">⚠️ línea</span>' : '';
         // Condición pactada: plazo de pago + tipo venta
         const tipo = c.tipo_venta || (c.is_volume_client ? 'Volumen' : 'Crédito');
@@ -898,8 +910,8 @@ function renderRiesgo(){
             <td class="hi">${c.name}${insufFlag}${dicomFlag}</td>
             <td style="font-size:12px;white-space:nowrap">${cond}</td>
             <td class="r">${fMon(c.monto_credito)}</td>
-            <td class="r">${fMon(c.saldo_credito)}</td>
-            <td class="r ${uc}">${c.utilizacion_pct}%</td>
+            <td class="r">${saldoHtml}</td>
+            <td class="r ${sinLinea ? '' : uc}">${utilHtml}</td>
             <td class="r">${proyL}</td>
             <td class="r">${lineaRatioHtml}</td>
         </tr>`;
