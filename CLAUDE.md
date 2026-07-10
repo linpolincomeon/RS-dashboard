@@ -69,7 +69,8 @@ Frontend sin framework. Fuente DM Sans. Background `#f7f6f3`, cards blancas, ace
 
 ## Equipo activo (junio 2026 — `ALLOWED_VENDORS`)
 
-Formales: Joaquín (Muñoz Encalada), Manuel Santana, Comber Sigall Pauline (fidelización/CS; meta mantención cambia mensualmente).
+Formales: Joaquín (Muñoz Encalada), Comber Sigall Pauline (fidelización/CS; meta mantención cambia mensualmente). Carlos Labbe también cuenta como ejecutivo formal en la KPI "Litros Ejecutivos".
+Manuel Santana: **removido de los dashboards el 2026-07-10** (quitado de `ALLOWED_VENDORS`, `EJECUTIVOS`, `EXEC_COUNT` 4→3 y canonical de `extract_crm.py`). No tenía facturas de julio, sin impacto en números del mes.
 Freelancers: Sebastián Toro (sin meta), Cristian Jiroz, Manuel López Allende, Carolina Avilés, Diego Varas, Marcela Márquez, Raúl Bisquertt, Nicolás Gonzalez, Rodrigo Retamal.
 Removidos de TODA referencia: Fernando Jullian, Yeniré Ron, André De Trenqualye, Vanessa Vázquez, Julio Phillipi, Turner Fabres Antonio.
 Las dos Paulines: **Vial Comber** = CEO (NO aparece en dashboards de ventas) · **Comber Sigall** = madre, fidelización (sí aparece en tab CS).
@@ -118,4 +119,5 @@ Si la tarea toca recaudación, cash flow, calculadora de excepción o debugging 
 - Churn del CEO dashboard alineado a definiciones correctas.
 - **AVLA (2026-07-08):** `avla-lines.json` regenerado desde export `INSURED_LINES` del portal (descarga 08/07/2026, UF 40842.07). Filtro: solo líneas `Actual` + estado `Aprobada`/`Aprobada parcialmente` → 706 RUTs. **Cambio de metodología:** ahora se aplica el % de cobertura (80/90) → cobertura total $6.920M (vs $6.683M en junio a 100%). ⚠ Esto crea una **discontinuidad en `riesgo-historico.json`**: los snapshots ≤ jun-2026 usan cobertura nominal al 100% y NO son comparables directos con jul-2026 en adelante. No re-escribir el histórico previo (los valores viejos eran correctos para su metodología); al comparar tendencia de "% no cubierto", tener presente el quiebre en esta fecha.
 - **Pendiente prioritario:** correr `extract_ceo.py` para propagar la nueva cobertura AVLA a `ceo-data.json`/dashboard y verificar el match RUT↔Odoo; recién entonces evaluar re-habilitar la auto-actualización AVLA (sigue deshabilitada a propósito).
+- **Santana + meta Julio (2026-07-10):** eliminado Manuel Santana de todos los dashboards (ver sección Equipo activo). `EXEC_COUNT` 4→3 en `crm-sales.html` y `crm-weekly.html` (metas de equipo del funnel se escalan sobre 3 ejecutivos). **Fix meta mensual:** `company_goals.litros_mes`/`month` estaban hardcodeados en junio (866.750) y no se bumpeaban al cambiar de mes; ahora son dinámicos vía `_meta_mes(today)` + mes actual sobre `BUDGET_2026`. Julio muestra 1.107.706. Auto-mantenido de aquí en adelante.
 - Backlog: filtro "sin gestión" en Recuperación · asignar ejecutivo desde dashboard (Opción C browser-login vs D serverless, sin decidir) · export CSV recuperación · cron de durmancia en Odoo · fix `dias_facturacion` · orden de tags (workaround prefijos ZONA-).
