@@ -2986,11 +2986,11 @@ def main():
         "graduating": graduating,
         "vendor_goals": vendor_goals,
         "company_goals": {
-            "litros_mes": 866750,
+            "litros_mes": _meta_mes(today),
             "litros_cs_mes": 526505,
             "margen_retail": 8.5,
             "margen_volumen": 6.0,
-            "month": "junio 2026",
+            "month": f"{MESES_ES[today.month].lower()} {today.year}",
             "budget_monthly_2026": {str(k): v for k, v in BUDGET_2026.items()},
             "budget_monthly_2025": {str(k): v for k, v in BUDGET_2025.items()},
         },
