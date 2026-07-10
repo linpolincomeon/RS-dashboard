@@ -141,7 +141,7 @@ tr:hover td{background:#fafaf8}
 
 <script>
 let D=null;
-const ALLOWED_VENDORS=['toro gonzález sebastian enrique','comber sigall pauline','manuel santana','tomenergy','carlos labbe','joaquin muñoz','yeniré ron','yenire ron','mauro boccardo'];
+const ALLOWED_VENDORS=['toro gonzález sebastian enrique','comber sigall pauline','tomenergy','carlos labbe','joaquin muñoz','yeniré ron','yenire ron','mauro boccardo'];
 const norm=s=>s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').split(/\s+/).filter(Boolean).sort().join(' ');
 const _aN=new Set(ALLOWED_VENDORS.map(norm));
 const isAllowed=n=>n&&_aN.has(norm(n));
@@ -149,7 +149,7 @@ function getGoal(name){if(!D||!D.vendor_goals)return{};const d=D.vendor_goals[na
 // Active acquisition executives only (count for team-level funnel goals).
 // Excluded: Comber (customer success, not acquisition), jefes, y los que aún no entraron.
 // Ajustar este número cuando se ramp-up un ejecutivo nuevo o cambie el equipo.
-const EXEC_COUNT=4;
+const EXEC_COUNT=3;
 
 document.getElementById('tabBar').addEventListener('click',e=>{
   const t=e.target.closest('.tab');if(!t)return;

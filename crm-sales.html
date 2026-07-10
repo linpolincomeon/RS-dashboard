@@ -338,7 +338,7 @@ let chartWeekly = null;
 const norm = s => s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').split(/\s+/).filter(Boolean).sort().join(' ');
 
 const ALLOWED_VENDORS = [
-  'toro gonzález sebastian enrique','sebastian toro','muñoz encalada joaquin','joaquin muñoz','manuel santana','carlos labbe'
+  'toro gonzález sebastian enrique','sebastian toro','muñoz encalada joaquin','joaquin muñoz','carlos labbe'
 ];
 const FREELANCERS = [
   'carolina avilés','marcela márquez','raúl bisquertt','rodrigo retamal',
@@ -480,7 +480,7 @@ function selectWeek(idx) {
   if (document.getElementById('tab-cs').classList.contains('active')) renderCS();
 }
 
-const EXEC_COUNT = 4;
+const EXEC_COUNT = 3;
 const fC = n => n ? '$' + Math.round(n).toLocaleString('es-CL') : '$0';
 const emoji = (v, g) => { const p = (v / g) * 100; return p >= 100 ? '✅' : p >= 60 ? '⚠️' : '🔴'; };
 
@@ -725,7 +725,6 @@ function renderVendedores() {
 const EJECUTIVOS = [
   { key: 'toro', name: 'Toro', fullName: 'toro gonzález sebastian enrique' },
   { key: 'munoz', name: 'Muñoz', fullName: 'muñoz encalada joaquin' },
-  { key: 'santana', name: 'Santana', fullName: 'manuel santana' },
   { key: 'aviles', name: 'Avilés', fullName: 'carolina avilés', freelancer: true },
   { key: 'marquez', name: 'Márquez', fullName: 'marcela márquez', freelancer: true },
   { key: 'bisquertt', name: 'Bisquertt', fullName: 'raúl bisquertt', freelancer: true },
@@ -1199,7 +1198,7 @@ function renderVentas() {
   const wkBudget = !isAccum && wkData.label ? getWeeklyBudget(wkData.label) : 0;
   const wkPct = wkBudget > 0 ? Math.round((wkLitros / wkBudget) * 100) : 0;
 
-  // 2. Litros Ejecutivos (Toro + Muñoz + Santana)
+  // 2. Litros Ejecutivos (Toro + Muñoz + Labbe)
   let litrosEjecutivos = 0;
   for (const [u, v] of Object.entries(lbuSrc)) { if (isAllowed(u)) litrosEjecutivos += v; }
 
@@ -1270,7 +1269,7 @@ function renderVentas() {
   } else {
     kh += mkKpi('c-red', 'Litros Totales', fL(wkLitros), wkPct + '% de meta ' + fL(wkBudget), wkLitros, wkBudget || 1);
   }
-  kh += mkKpi('c-blue', 'Litros Ejecutivos', fL(litrosEjecutivos), 'Toro + Muñoz + Santana + Labbe', null, null);
+  kh += mkKpi('c-blue', 'Litros Ejecutivos', fL(litrosEjecutivos), 'Toro + Muñoz + Labbe', null, null);
   kh += mkKpi('c-yellow', 'Litros Freelancer', fL(litrosFreelancer), 'Avilés, Márquez, Bisquertt', null, null);
   kh += mkKpi('c-green', 'Litros Fidelización', fL(litrosFidelizacion), 'CS (Comber mantención)', null, null);
   kh += mkKpi('c-red', 'Leads', wLeads, 'Meta: ' + leadsGoal, wLeads, leadsGoal);
@@ -1885,7 +1884,7 @@ function renderMesVencido(){
 
   h+='<div class="kpi-row">';
   h+=mkKpi('c-red','Litros',fL(TP.total_litros||0),ltGoal?pct(TP.total_litros||0,ltGoal)+'% de meta '+fL(ltGoal):'',TP.total_litros||0,ltGoal||1);
-  h+=mkKpi('c-blue','Litros Ejecutivos',fL(litrosEjecMV),'Toro + Muñoz + Santana + Labbe',null,null);
+  h+=mkKpi('c-blue','Litros Ejecutivos',fL(litrosEjecMV),'Toro + Muñoz + Labbe',null,null);
   h+=mkKpi('c-green','Litros Fidelización',fL(litrosFidelMV),'CS (Comber mantención)',null,null);
   h+=mkKpi('c-yellow','Litros Freelancer',fL(litrosFreelancer),'Suma freelancers del mes',null,null);
   h+=mkKpi('c-blue','Clientes Nuevos',(ncP.count||0),'primera factura del mes');

@@ -79,7 +79,6 @@ def norm_name(s):
 _CANONICAL_VENDORS = [
     ({"toro", "gonzalez", "sebastian", "enrique"}, "Toro González Sebastian Enrique"),
     ({"munoz", "encalada", "joaquin"}, "MUÑOZ ENCALADA JOAQUIN"),
-    ({"manuel", "santana"}, "Manuel Santana"),
     ({"comber", "sigall", "pauline"}, "Comber Sigall Pauline"),
     ({"aviles", "carolina"}, "Carolina Avilés"),
     ({"marquez", "marcela"}, "Marcela Márquez"),
@@ -2882,7 +2881,7 @@ def main():
         window_start = today - timedelta(days=120)
         window_end = today - timedelta(days=60)
         _exec_names = [
-            "toro gonzález sebastian enrique", "muñoz encalada joaquin", "manuel santana",
+            "toro gonzález sebastian enrique", "muñoz encalada joaquin",
             "carolina avilés", "marcela márquez", "raúl bisquertt", "rodrigo retamal",
         ]
 
