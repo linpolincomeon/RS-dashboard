@@ -490,11 +490,22 @@
 
 <div class="timestamp-bar" id="timestamp-bar">⏱ —</div>
 
+<!-- ENVÍO SIN CORS: form nativo apuntando a un iframe oculto.
+     El navegador no espera respuesta del servidor, así que Google no bloquea nada. -->
+<iframe name="hidden_iframe" id="hidden_iframe" style="display:none;"></iframe>
+<form id="envio-form"
+      action="https://script.google.com/macros/s/AKfycbyHbnqCOn01GIanDjEXxULDreMAEr6B0WaDizlgqoO1KaISiydyM6Fr7C_MsVli4zGW/exec"
+      method="POST"
+      target="hidden_iframe"
+      style="display:none;">
+  <input type="hidden" name="payload" id="payload-input">
+</form>
+
 <script>
   let camionSel = null;
   let tipoSel = null;
   let otroCamionSel = null;
-  const WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbyEEI4ujT7TVXhYMJPWtDskgvpDO-f5ZNJCPnmM4me11u2PSkiu9LmB8pPFzJI9xWak/exec';
+  // La URL del webhook vive en el atributo action del <form id="envio-form">.
 
   function pad(n){ return n.toString().padStart(2,'0'); }
 
@@ -634,25 +645,22 @@
     if(tipoSel === 'traslado_entra' && otroCamionSel) obs = `← ${otroCamionSel}` + (obs ? ' | ' + obs : '');
 
     const data = {
-      timestamp: now.toISOString(),
-      fecha: pad(now.getDate()) + '/' + pad(now.getMonth()+1) + '/' + now.getFullYear(),
-      hora: pad(now.getHours()) + ':' + pad(now.getMinutes()),
       camion: camionSel,
       tipo: tipoGuardar,
       litros: litrosInt,
       factura: document.getElementById('factura').value || '',
       cliente: document.getElementById('cliente').value || '',
       observacion: obs,
-      otro_camion: otroCamionSel || ''
+      fecha: pad(now.getDate()) + '/' + pad(now.getMonth()+1) + '/' + now.getFullYear(),
+      hora: pad(now.getHours()) + ':' + pad(now.getMinutes())
     };
 
-    fetch(WEBHOOK_URL, {
-      method: 'POST',
-      mode: 'no-cors',
-      headers: {'Content-Type': 'text/plain;charset=utf-8'},
-      body: JSON.stringify(data)
-    }).then(() => mostrarExito(data))
-      .catch(() => mostrarExito(data));
+    // Envío sin CORS: cargamos el JSON en el campo hidden "payload" y hacemos
+    // submit nativo del form hacia el iframe oculto. No se espera respuesta,
+    // así que Google no bloquea nada. Mostramos "REGISTRADO" de inmediato.
+    document.getElementById('payload-input').value = JSON.stringify(data);
+    document.getElementById('envio-form').submit();
+    mostrarExito(data);
   }
 
   function mostrarExito(data){
