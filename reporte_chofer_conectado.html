@@ -494,7 +494,7 @@
   let camionSel = null;
   let tipoSel = null;
   let otroCamionSel = null;
-  const WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbyHbnqCOn01GIanDjEXxULDreMAEr6B0WaDizlgqoO1KaISiydyM6Fr7C_MsVli4zGW/exec';
+  const WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbyEEI4ujT7TVXhYMJPWtDskgvpDO-f5ZNJCPnmM4me11u2PSkiu9LmB8pPFzJI9xWak/exec';
 
   function pad(n){ return n.toString().padStart(2,'0'); }
 
@@ -641,7 +641,8 @@
       cliente: document.getElementById('cliente').value || '',
       observacion: obs,
       fecha: pad(now.getDate()) + '/' + pad(now.getMonth()+1) + '/' + now.getFullYear(),
-      hora: pad(now.getHours()) + ':' + pad(now.getMinutes())
+      hora: pad(now.getHours()) + ':' + pad(now.getMinutes()),
+      otro_camion: otroCamionSel || ''
     };
 
     // El Apps Script lee el cuerpo como JSON (e.postData.contents). Enviamos con
