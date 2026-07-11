@@ -490,22 +490,11 @@
 
 <div class="timestamp-bar" id="timestamp-bar">⏱ —</div>
 
-<!-- ENVÍO SIN CORS: form nativo apuntando a un iframe oculto.
-     El navegador no espera respuesta del servidor, así que Google no bloquea nada. -->
-<iframe name="hidden_iframe" id="hidden_iframe" style="display:none;"></iframe>
-<form id="envio-form"
-      action="https://script.google.com/macros/s/AKfycbyHbnqCOn01GIanDjEXxULDreMAEr6B0WaDizlgqoO1KaISiydyM6Fr7C_MsVli4zGW/exec"
-      method="POST"
-      target="hidden_iframe"
-      style="display:none;">
-  <input type="hidden" name="payload" id="payload-input">
-</form>
-
 <script>
   let camionSel = null;
   let tipoSel = null;
   let otroCamionSel = null;
-  // La URL del webhook vive en el atributo action del <form id="envio-form">.
+  const WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbyHbnqCOn01GIanDjEXxULDreMAEr6B0WaDizlgqoO1KaISiydyM6Fr7C_MsVli4zGW/exec';
 
   function pad(n){ return n.toString().padStart(2,'0'); }
 
@@ -655,11 +644,15 @@
       hora: pad(now.getHours()) + ':' + pad(now.getMinutes())
     };
 
-    // Envío sin CORS: cargamos el JSON en el campo hidden "payload" y hacemos
-    // submit nativo del form hacia el iframe oculto. No se espera respuesta,
-    // así que Google no bloquea nada. Mostramos "REGISTRADO" de inmediato.
-    document.getElementById('payload-input').value = JSON.stringify(data);
-    document.getElementById('envio-form').submit();
+    // El Apps Script lee el cuerpo como JSON (e.postData.contents). Enviamos con
+    // fetch en modo no-cors: el POST SÍ llega y escribe; no-cors solo impide LEER
+    // la respuesta, no impide escribir. Por eso mostramos REGISTRADO sin esperar.
+    fetch(WEBHOOK_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: {'Content-Type': 'text/plain;charset=utf-8'},
+      body: JSON.stringify(data)
+    });
     mostrarExito(data);
   }
 
