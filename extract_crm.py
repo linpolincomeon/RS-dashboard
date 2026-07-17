@@ -385,7 +385,10 @@ def extract_crm_data(models, uid):
 
     # Noise phrases to skip (auto-generated Odoo messages, not real user activity)
     _noise = ["lead enrichment", "nuevo lead para el equipo", "new lead for", "stage changed",
-              "enrichment could", "no company data", "meeting scheduled"]
+              "enrichment could", "no company data", "meeting scheduled",
+              "ganado autom", "oportunidad ganada", "opportunity won", "facturas pendientes",
+              "proximo recordatorio", "próximo recordatorio", "cierre masivo de backlog",
+              "reemplazo automatico"]
 
     msg_list = []
     last_msg_by_lead = {}  # lead_id → latest REAL message (skip auto-generated noise)
@@ -1219,10 +1222,26 @@ def gather_latest_note(models, uid, pids):
     if not pids:
         return res
     noise = ["lead enrichment", "nuevo lead para el equipo", "new lead for", "stage changed",
-             "cambio de etapa", "oportunidad ganada", "se crea un nuevo canal"]
+             "cambio de etapa", "oportunidad ganada", "oportunidad perdida", "se crea un nuevo canal",
+             "ganado autom", "facturas pendientes", "proximo recordatorio", "próximo recordatorio",
+             "fecha del proximo", "fecha del próximo", "opportunity won", "recordatorio ser",
+             "cierre masivo de backlog", "reemplazo automatico"]
+
+    def _clean(b):
+        # Odoo 18 registra notas/actividades como envoltura; extraer la gestión real.
+        b = (b or "").strip()
+        low = b.lower()
+        if (low.startswith("actividades pendientes") or low.startswith("to-do done")
+                or "done (originally assigned" in low) and ":" in b:
+            b = b.split(":", 1)[1].strip()
+        for tail in ("Original note:", "Feedback:", "feedback:"):
+            idx = b.find(tail)
+            if idx > 0:
+                b = b[:idx].strip()
+        return b
 
     def _ok(b):
-        bl = b.lower()[:80]
+        bl = b.lower()
         return len(b) > 3 and not any(n in bl for n in noise)
 
     def consider(pid, date, body, author):
@@ -1245,38 +1264,52 @@ def gather_latest_note(models, uid, pids):
             lead_to_pid[l["id"]] = lp
     lead_ids = list(lead_to_pid.keys())
 
-    # 1. Chatter en res.partner
-    for m in sr(models, uid, "mail.message",
-                [["model", "=", "res.partner"], ["res_id", "in", pids],
-                 ["message_type", "in", ["comment", "note"]]],
-                ["res_id", "body", "date", "author_id"], limit=20000, order="date desc"):
-        b = strip_html(m.get("body") or "")
-        if _ok(b):
-            consider(m.get("res_id"), (m.get("date") or "")[:10], b,
-                     safe_name(m.get("author_id")) if m.get("author_id") else "")
-    # 2. Chatter en crm.lead
-    if lead_ids:
+    # Subtipos que cargan gestión REAL (Note = nota registrada, Activities = actividad
+    # completada). Filtrar por subtipo evita traer tracking/cambios de etapa/won — que en
+    # Odoo 18 son message_type='notification' y, sin filtrar, revientan el server con OOM.
+    gest_subtypes = [s["id"] for s in sr(models, uid, "mail.message.subtype",
+                     [["name", "in", ["Note", "Nota", "Activities", "Actividades"]]],
+                     ["id"], limit=50)] or [2, 3]
+
+    def _chunks(seq, n=100):
+        for i in range(0, len(seq), n):
+            yield seq[i:i + n]
+
+    # 1. Chatter en res.partner (subtipos de gestión; Odoo 18 los guarda como 'notification').
+    #    Batcheado por pids para no exceder memoria del servidor al serializar.
+    for chunk in _chunks(pids):
         for m in sr(models, uid, "mail.message",
-                    [["model", "=", "crm.lead"], ["res_id", "in", lead_ids],
-                     ["message_type", "in", ["comment", "note"]]],
-                    ["res_id", "body", "date", "author_id"], limit=20000, order="date desc"):
-            b = strip_html(m.get("body") or "")
+                    [["model", "=", "res.partner"], ["res_id", "in", chunk],
+                     ["subtype_id", "in", gest_subtypes]],
+                    ["res_id", "body", "date", "author_id"], limit=8000, order="date desc"):
+            b = _clean(strip_html(m.get("body") or ""))
+            if _ok(b):
+                consider(m.get("res_id"), (m.get("date") or "")[:10], b,
+                         safe_name(m.get("author_id")) if m.get("author_id") else "")
+    # 2. Chatter en crm.lead
+    for chunk in _chunks(lead_ids):
+        for m in sr(models, uid, "mail.message",
+                    [["model", "=", "crm.lead"], ["res_id", "in", chunk],
+                     ["subtype_id", "in", gest_subtypes]],
+                    ["res_id", "body", "date", "author_id"], limit=8000, order="date desc"):
+            b = _clean(strip_html(m.get("body") or ""))
             if _ok(b):
                 consider(lead_to_pid.get(m.get("res_id")), (m.get("date") or "")[:10], b,
                          safe_name(m.get("author_id")) if m.get("author_id") else "")
     # 3. Actividades planeadas en res.partner (write_date = última edición de la gestión)
-    for a in sr(models, uid, "mail.activity",
-                [["res_model", "=", "res.partner"], ["res_id", "in", pids]],
-                ["res_id", "summary", "note", "write_date", "user_id"], limit=20000):
-        b = (a.get("summary") or "").strip() or strip_html(a.get("note") or "")
-        if b:
-            consider(a.get("res_id"), (a.get("write_date") or "")[:10], b,
-                     safe_name(a.get("user_id")) if a.get("user_id") else "Actividad")
-    # 4. Actividades planeadas en crm.lead
-    if lead_ids:
+    for chunk in _chunks(pids):
         for a in sr(models, uid, "mail.activity",
-                    [["res_model", "=", "crm.lead"], ["res_id", "in", lead_ids]],
-                    ["res_id", "summary", "note", "write_date", "user_id"], limit=20000):
+                    [["res_model", "=", "res.partner"], ["res_id", "in", chunk]],
+                    ["res_id", "summary", "note", "write_date", "user_id"], limit=8000):
+            b = (a.get("summary") or "").strip() or strip_html(a.get("note") or "")
+            if b:
+                consider(a.get("res_id"), (a.get("write_date") or "")[:10], b,
+                         safe_name(a.get("user_id")) if a.get("user_id") else "Actividad")
+    # 4. Actividades planeadas en crm.lead
+    for chunk in _chunks(lead_ids):
+        for a in sr(models, uid, "mail.activity",
+                    [["res_model", "=", "crm.lead"], ["res_id", "in", chunk]],
+                    ["res_id", "summary", "note", "write_date", "user_id"], limit=8000):
             b = (a.get("summary") or "").strip() or strip_html(a.get("note") or "")
             if b:
                 consider(lead_to_pid.get(a.get("res_id")), (a.get("write_date") or "")[:10], b,
