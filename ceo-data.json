@@ -1,36 +1,61 @@
 {
-  "updated": "2026-07-17T09:31:20.782976",
+  "updated": "2026-07-18T09:12:43.406450",
   "weeks": [
     {
       "label": "16jul-22jul",
       "start": "2026-07-16",
       "end": "2026-07-22",
-      "ventas": 0,
-      "neto": 0,
-      "litros": 0,
-      "litros_retail": 0,
-      "litros_volumen": 0,
-      "precio_neto": 0,
-      "precio_bruto": 0,
-      "margin": 0,
-      "margin_retail": 0,
-      "margin_volumen": 0,
-      "facturas": 0,
+      "ventas": 24286053,
+      "neto": 18307212,
+      "litros": 21250,
+      "litros_retail": 9200,
+      "litros_volumen": 12050,
+      "precio_neto": 862,
+      "precio_bruto": 1143,
+      "margin": 0.07629,
+      "margin_retail": 0.10279,
+      "margin_volumen": 0.05479,
+      "facturas": 9,
       "nc": 0,
-      "clientes": 0,
-      "recaud": 2412001,
+      "clientes": 9,
+      "recaud": 41880091,
       "cheques": 0,
-      "transf": 2412001,
+      "transf": 41880091,
       "factoring": 0,
       "compras_odoo": 0,
       "cheq_cartera_saldo": 0,
       "cheq_recibidos": 0,
-      "facturas_contado": 0,
-      "facturas_credito": 0,
-      "margin_by_term": {},
-      "cotiz_canceladas": 0,
+      "facturas_contado": 1,
+      "facturas_credito": 8,
+      "margin_by_term": {
+        "1 Día": {
+          "margin": 0.02855,
+          "normalizado": 0.03822,
+          "count": 1,
+          "days": 1
+        },
+        "7 Días": {
+          "margin": 0.04178,
+          "normalizado": 0.04945,
+          "count": 1,
+          "days": 7
+        },
+        "30 Días": {
+          "margin": 0.10054,
+          "normalizado": 0.10054,
+          "count": 6,
+          "days": 30
+        },
+        "45 Días": {
+          "margin": 0.12157,
+          "normalizado": 0.11657,
+          "count": 1,
+          "days": 45
+        }
+      },
+      "cotiz_canceladas": 1,
       "visitas": 0,
-      "clientes_nuevos": 0,
+      "clientes_nuevos": 1,
       "ppto": 228412,
       "ppto_retail": 155320,
       "ppto_volumen": 73092,
@@ -106,7 +131,7 @@
           "days": 60
         }
       },
-      "cotiz_canceladas": 12,
+      "cotiz_canceladas": 13,
       "visitas": 3,
       "clientes_nuevos": 6,
       "ppto": 228412,
@@ -1193,8 +1218,8 @@
     {
       "date": "17jul",
       "day": "Vie",
-      "litros": 0,
-      "neto": 0
+      "litros": 21250,
+      "neto": 18307212
     },
     {
       "date": "16jul",
@@ -1290,11 +1315,7 @@
   "banks": [
     {
       "name": "DE CHILE",
-      "balance": 9401013
-    },
-    {
-      "name": "BCI",
-      "balance": 4937879
+      "balance": 17999408
     },
     {
       "name": "ESTADO",
@@ -1309,6 +1330,10 @@
       "balance": 2112205
     },
     {
+      "name": "BCI",
+      "balance": 1097558
+    },
+    {
       "name": "SANTANDER",
       "balance": 208572
     },
@@ -1317,15 +1342,15 @@
       "balance": -1971949
     }
   ],
-  "total_cash": 22731936,
+  "total_cash": 27490010,
   "receivables": {
-    "open_invoices": 271,
-    "total_due": 668226189,
-    "current": 519623422,
-    "overdue": 148602767,
-    "pct_overdue": 22.2,
+    "open_invoices": 263,
+    "total_due": 663195031,
+    "current": 530318836,
+    "overdue": 132876195,
+    "pct_overdue": 20.0,
     "aging": {
-      "0-30": 117582483,
+      "0-30": 101855911,
       "31-60": 21522500,
       "61-90": 947220,
       "90+": 8550564
@@ -1336,12 +1361,12 @@
         "amount": 55965600
       },
       {
-        "name": "SOCIEDAD TRANSPORTES SANCHEZ JERIA LIMITADA",
-        "amount": 37819601
+        "name": "MAQUINARIAS Y ARIDOS SAN PEDRO SPA.",
+        "amount": 38335785
       },
       {
-        "name": "MAQUINARIAS Y ARIDOS SAN PEDRO SPA.",
-        "amount": 35633534
+        "name": "SOCIEDAD TRANSPORTES SANCHEZ JERIA LIMITADA",
+        "amount": 37819601
       },
       {
         "name": "Servicios de construcción y maquinarias Talmaqq Ltda.",
@@ -1352,24 +1377,24 @@
         "amount": 24590000
       },
       {
+        "name": "JOSE RODRIGO ORMAZABAL VIDAL",
+        "amount": 22824006
+      },
+      {
         "name": "SOC. DE TRANSPORTES TRACMAVI LTDA.",
         "amount": 21360600
       },
       {
-        "name": "PATRICIO VISCAY ALBORNOZ",
-        "amount": 21212323
+        "name": "CIA CHILENA DE FOSFOROS S A",
+        "amount": 20341599
       },
       {
-        "name": "JOSE RODRIGO ORMAZABAL VIDAL",
-        "amount": 19332005
-      },
-      {
-        "name": "EMM SERVICIOS SPA",
+        "name": "EMM SERVICIOS SPA (SINIESTRO)",
         "amount": 18744000
       },
       {
-        "name": "CIA CHILENA DE FOSFOROS S A",
-        "amount": 17381599
+        "name": "PATRICIO VISCAY ALBORNOZ",
+        "amount": 18166323
       },
       {
         "name": "CIA AGRICOLA Y FORESTAL EL ALAMO LIMITADA",
@@ -1388,12 +1413,12 @@
         "amount": 13515000
       },
       {
-        "name": "TRANSPORTE SANTA ELENITA SPA",
-        "amount": 12637431
+        "name": "AGRICOLA GEOAGRO LIMITADA",
+        "amount": 13021059
       },
       {
-        "name": "AGRICOLA GEOAGRO LIMITADA",
-        "amount": 12109859
+        "name": "TRANSPORTE SANTA ELENITA SPA",
+        "amount": 12637431
       },
       {
         "name": "AGRICOLA AGROBOSQUES SAN ISIDRO S.A.",
@@ -1417,33 +1442,33 @@
     {
       "label": "16jul-22jul",
       "zones": {
-        "Curico": {
-          "total": 2,
-          "on_time": 0,
-          "late": 2,
-          "pct": 0.0,
-          "late_clients": [
-            "JOSE RODRIGO ORMAZABAL VIDAL (prom: 2026-07-17, fact: sin factura)",
-            "ARIDOS LO VALDIVIA LIMITADA (prom: 2026-07-17, fact: sin factura)"
-          ]
-        },
-        "San Fernando": {
+        "Chillan": {
           "total": 1,
-          "on_time": 0,
-          "late": 1,
-          "pct": 0.0,
-          "late_clients": [
-            "AGRICOLA EL ESFUERZO LIMITADA (prom: 2026-07-17, fact: sin factura)"
-          ]
+          "on_time": 1,
+          "late": 0,
+          "pct": 100.0,
+          "late_clients": []
+        },
+        "Curico": {
+          "total": 5,
+          "on_time": 5,
+          "late": 0,
+          "pct": 100.0,
+          "late_clients": []
+        },
+        "Rancagua": {
+          "total": 2,
+          "on_time": 2,
+          "late": 0,
+          "pct": 100.0,
+          "late_clients": []
         },
         "Talca": {
           "total": 1,
-          "on_time": 0,
-          "late": 1,
-          "pct": 0.0,
-          "late_clients": [
-            "MAQUINARIAS Y ARIDOS SAN PEDRO SPA. (prom: 2026-07-17, fact: sin factura)"
-          ]
+          "on_time": 1,
+          "late": 0,
+          "pct": 100.0,
+          "late_clients": []
         }
       }
     },
@@ -2333,39 +2358,27 @@
     }
   ],
   "riesgo": {
-    "cubierto": 572180602,
-    "cubierto_count": 247,
-    "no_cubierto": 96045587,
-    "no_cubierto_count": 49,
-    "pct_monto": 14.37,
-    "pct_count": 16.55,
+    "cubierto": 558938917,
+    "cubierto_count": 238,
+    "no_cubierto": 104256114,
+    "no_cubierto_count": 51,
+    "pct_monto": 15.72,
+    "pct_count": 17.65,
     "avla_fecha_descarga": "2026-07-08",
-    "avla_ruts_matched": 115,
+    "avla_ruts_matched": 110,
     "avla_ruts_total": 706
   },
   "churn": {
     "dormant_count": 58,
-    "lost_count": 185,
-    "newly_lost_this_month": 9,
+    "lost_count": 186,
+    "newly_lost_this_month": 10,
     "churn_pct": 2.8,
     "dormant": [
-      {
-        "partner_id": 5420,
-        "name": "VIÑA MATORI SPA.",
-        "last_invoice": "2026-04-22",
-        "days_since": 86,
-        "freq_days": 7,
-        "threshold": 10.5,
-        "litros_prom_mes": 1825,
-        "ejecutivo": "TomEnergy",
-        "crm_lead": "Durmiente",
-        "gestion": "⏰ 17/4 ultima compra 17/02 contactado Llamar en febrero! comienza la vendimia · 2026-06-16"
-      },
       {
         "partner_id": 5351,
         "name": "SOCIEDAD DE SERVICIO NUEVA LONGAVI LTDA",
         "last_invoice": "2026-04-28",
-        "days_since": 80,
+        "days_since": 81,
         "freq_days": 12,
         "threshold": 18.0,
         "litros_prom_mes": 1500,
@@ -2377,7 +2390,7 @@
         "partner_id": 4771,
         "name": "AGRICOLA ARANCIBIA HERMANOS SPA",
         "last_invoice": "2026-04-30",
-        "days_since": 78,
+        "days_since": 79,
         "freq_days": 13,
         "threshold": 19.5,
         "litros_prom_mes": 2333,
@@ -2389,11 +2402,11 @@
         "partner_id": 5033,
         "name": "EXPORTADORA MELIFEN LTDA.",
         "last_invoice": "2026-04-30",
-        "days_since": 78,
+        "days_since": 79,
         "freq_days": 3,
         "threshold": 4.5,
         "litros_prom_mes": 4517,
-        "ejecutivo": "TomEnergy",
+        "ejecutivo": "Sebastian Toro",
         "crm_lead": "Durmiente",
         "gestion": "⏰ RECUPERADO ESTACIONAL · 2026-03-24"
       },
@@ -2401,7 +2414,7 @@
         "partner_id": 5024,
         "name": "EUFLORCINA CACERES JORQUERA",
         "last_invoice": "2026-05-04",
-        "days_since": 74,
+        "days_since": 75,
         "freq_days": 18,
         "threshold": 27.0,
         "litros_prom_mes": 1833,
@@ -2413,7 +2426,7 @@
         "partner_id": 5232,
         "name": "PATRICIO REYES SERRANO",
         "last_invoice": "2026-05-05",
-        "days_since": 73,
+        "days_since": 74,
         "freq_days": 14,
         "threshold": 21.0,
         "litros_prom_mes": 17525,
@@ -2425,7 +2438,7 @@
         "partner_id": 16837,
         "name": "SOCIEDAD AGRÍCOLA SANTA ANITA SPA",
         "last_invoice": "2026-05-05",
-        "days_since": 73,
+        "days_since": 74,
         "freq_days": 11,
         "threshold": 16.5,
         "litros_prom_mes": 167,
@@ -2437,7 +2450,7 @@
         "partner_id": 5279,
         "name": "SERGIO HERNAN ALLENDES BLANCO",
         "last_invoice": "2026-05-11",
-        "days_since": 67,
+        "days_since": 68,
         "freq_days": 12,
         "threshold": 18.0,
         "litros_prom_mes": 2017,
@@ -2449,7 +2462,7 @@
         "partner_id": 17008,
         "name": "TOMAS ANDRES PINOCHET AGUIAR",
         "last_invoice": "2026-05-13",
-        "days_since": 65,
+        "days_since": 66,
         "freq_days": 6,
         "threshold": 9.0,
         "litros_prom_mes": 125,
@@ -2461,7 +2474,7 @@
         "partner_id": 4793,
         "name": "AGRICOLA EL ESFUERZO LIMITADA",
         "last_invoice": "2026-05-13",
-        "days_since": 65,
+        "days_since": 66,
         "freq_days": 16,
         "threshold": 24.0,
         "litros_prom_mes": 833,
@@ -2473,7 +2486,7 @@
         "partner_id": 17002,
         "name": "CLAUDIO TANCREDO PINOCHET TONELLI",
         "last_invoice": "2026-05-14",
-        "days_since": 64,
+        "days_since": 65,
         "freq_days": 4,
         "threshold": 6.0,
         "litros_prom_mes": 468,
@@ -2485,7 +2498,7 @@
         "partner_id": 16999,
         "name": "CLAUDIA PAZ AGUIAR DESORMEAUX",
         "last_invoice": "2026-05-14",
-        "days_since": 64,
+        "days_since": 65,
         "freq_days": 7,
         "threshold": 10.5,
         "litros_prom_mes": 408,
@@ -2497,11 +2510,11 @@
         "partner_id": 16701,
         "name": "AGRICOLA LOS BOLDOS SPA",
         "last_invoice": "2026-05-15",
-        "days_since": 63,
+        "days_since": 64,
         "freq_days": 5,
         "threshold": 7.5,
         "litros_prom_mes": 2083,
-        "ejecutivo": "SEBASTIAN ENRIQUE TORO GONZALEZ",
+        "ejecutivo": "TomEnergy",
         "crm_lead": "Durmiente",
         "gestion": "⏰ Re-engage dormant client · 2026-06-23"
       },
@@ -2509,7 +2522,7 @@
         "partner_id": 16405,
         "name": "JUAN CARLOS HERNANDEZ ESPINOZA",
         "last_invoice": "2026-05-18",
-        "days_since": 60,
+        "days_since": 61,
         "freq_days": 18,
         "threshold": 27.0,
         "litros_prom_mes": 1167,
@@ -2521,7 +2534,7 @@
         "partner_id": 4815,
         "name": "AGRICOLA LA SPEZIA LTDA",
         "last_invoice": "2026-05-19",
-        "days_since": 59,
+        "days_since": 60,
         "freq_days": 7,
         "threshold": 10.5,
         "litros_prom_mes": 767,
@@ -2533,7 +2546,7 @@
         "partner_id": 5322,
         "name": "SOC AGRICOLA GRANJA SAN RAFAEL LIMITADA",
         "last_invoice": "2026-05-20",
-        "days_since": 58,
+        "days_since": 59,
         "freq_days": 4,
         "threshold": 6.0,
         "litros_prom_mes": 26694,
@@ -2542,22 +2555,10 @@
         "gestion": "⏰ Re-engage dormant client · 2026-06-26"
       },
       {
-        "partner_id": 16716,
-        "name": "ELABORADORA Y COMERCIALIZADORA DE ACEITES DE OLIVA PICHUANTE E HIJOS SPA",
-        "last_invoice": "2026-05-20",
-        "days_since": 58,
-        "freq_days": 35,
-        "threshold": 45.5,
-        "litros_prom_mes": 467,
-        "ejecutivo": "Joaquin Muñoz",
-        "crm_lead": "Durmiente",
-        "gestion": "⏰ Re-engage dormant client · 2026-06-26"
-      },
-      {
         "partner_id": 17110,
         "name": "CRISTIAN ANTONIO REYES SERRANO",
         "last_invoice": "2026-05-22",
-        "days_since": 56,
+        "days_since": 57,
         "freq_days": 11,
         "threshold": 16.5,
         "litros_prom_mes": 333,
@@ -2569,7 +2570,7 @@
         "partner_id": 4911,
         "name": "AGRÍCOLA CORVAL II SPA",
         "last_invoice": "2026-05-22",
-        "days_since": 56,
+        "days_since": 57,
         "freq_days": 9,
         "threshold": 13.5,
         "litros_prom_mes": 2467,
@@ -2581,7 +2582,7 @@
         "partner_id": 16422,
         "name": "GABRIEL ANTONIO HERNANDEZ ESPINOZA",
         "last_invoice": "2026-05-22",
-        "days_since": 56,
+        "days_since": 57,
         "freq_days": 22,
         "threshold": 33.0,
         "litros_prom_mes": 1167,
@@ -2593,7 +2594,7 @@
         "partner_id": 16412,
         "name": "GABRIEL OCTAVIO HERNANDEZ MUNOZ",
         "last_invoice": "2026-05-22",
-        "days_since": 56,
+        "days_since": 57,
         "freq_days": 22,
         "threshold": 33.0,
         "litros_prom_mes": 1167,
@@ -2605,7 +2606,7 @@
         "partner_id": 6037,
         "name": "SERVICIOS AGRICOLAS AGROLIFETRILLA SPA",
         "last_invoice": "2026-05-25",
-        "days_since": 53,
+        "days_since": 54,
         "freq_days": 31,
         "threshold": 40.3,
         "litros_prom_mes": 583,
@@ -2617,7 +2618,7 @@
         "partner_id": 5182,
         "name": "MADERAS LARA LIMITADA",
         "last_invoice": "2026-05-25",
-        "days_since": 53,
+        "days_since": 54,
         "freq_days": 18,
         "threshold": 27.0,
         "litros_prom_mes": 2000,
@@ -2629,7 +2630,7 @@
         "partner_id": 17284,
         "name": "AGRICOLA MILLAMALAL E.I.R.L",
         "last_invoice": "2026-05-28",
-        "days_since": 50,
+        "days_since": 51,
         "freq_days": 6,
         "threshold": 9.0,
         "litros_prom_mes": 833,
@@ -2641,7 +2642,7 @@
         "partner_id": 5401,
         "name": "URBANO AMADOR GUTIERREZ PALMA",
         "last_invoice": "2026-05-28",
-        "days_since": 50,
+        "days_since": 51,
         "freq_days": 9,
         "threshold": 13.5,
         "litros_prom_mes": 1500,
@@ -2653,7 +2654,7 @@
         "partner_id": 4787,
         "name": "AGRICOLA EL BUEN PASTOR LIMITADA",
         "last_invoice": "2026-05-28",
-        "days_since": 50,
+        "days_since": 51,
         "freq_days": 31,
         "threshold": 40.3,
         "litros_prom_mes": 2033,
@@ -2665,7 +2666,7 @@
         "partner_id": 4914,
         "name": "AGRÍCOLA LA RIGADA SPA",
         "last_invoice": "2026-05-29",
-        "days_since": 49,
+        "days_since": 50,
         "freq_days": 16,
         "threshold": 24.0,
         "litros_prom_mes": 3167,
@@ -2677,7 +2678,7 @@
         "partner_id": 4946,
         "name": "ATILIO GIGLIO MAIRA",
         "last_invoice": "2026-05-29",
-        "days_since": 49,
+        "days_since": 50,
         "freq_days": 37,
         "threshold": 48.1,
         "litros_prom_mes": 433,
@@ -2689,7 +2690,7 @@
         "partner_id": 16859,
         "name": "EL PARRON SPA",
         "last_invoice": "2026-06-04",
-        "days_since": 43,
+        "days_since": 44,
         "freq_days": 7,
         "threshold": 10.5,
         "litros_prom_mes": 14900,
@@ -2701,7 +2702,7 @@
         "partner_id": 16415,
         "name": "PATRICIO IVAN HERNANDEZ ESPINOZA",
         "last_invoice": "2026-06-04",
-        "days_since": 43,
+        "days_since": 44,
         "freq_days": 24,
         "threshold": 36.0,
         "litros_prom_mes": 1000,
@@ -2713,7 +2714,7 @@
         "partner_id": 16409,
         "name": "VALENTIN GONZALO HERNANDEZ ESPINOZA",
         "last_invoice": "2026-06-04",
-        "days_since": 43,
+        "days_since": 44,
         "freq_days": 24,
         "threshold": 36.0,
         "litros_prom_mes": 1000,
@@ -2725,7 +2726,7 @@
         "partner_id": 17208,
         "name": "AGROELITE LIMITADA",
         "last_invoice": "2026-06-08",
-        "days_since": 39,
+        "days_since": 40,
         "freq_days": 24,
         "threshold": 36.0,
         "litros_prom_mes": 282,
@@ -2737,7 +2738,7 @@
         "partner_id": 5241,
         "name": "PRESTADORA DE SERVICIOS & ARRIENDO DE MAQUINARIA AGRICOLA JJR LIMITADA",
         "last_invoice": "2026-06-08",
-        "days_since": 39,
+        "days_since": 40,
         "freq_days": 24,
         "threshold": 36.0,
         "litros_prom_mes": 2483,
@@ -2749,7 +2750,7 @@
         "partner_id": 16995,
         "name": "AGRICOLA PALQUIBUDIS SPA",
         "last_invoice": "2026-06-10",
-        "days_since": 37,
+        "days_since": 38,
         "freq_days": 17,
         "threshold": 25.5,
         "litros_prom_mes": 225,
@@ -2761,7 +2762,7 @@
         "partner_id": 17024,
         "name": "AGRÍCOLA LA HUERTA SPA",
         "last_invoice": "2026-06-10",
-        "days_since": 37,
+        "days_since": 38,
         "freq_days": 17,
         "threshold": 25.5,
         "litros_prom_mes": 381,
@@ -2773,7 +2774,7 @@
         "partner_id": 17348,
         "name": "AGRICOLA TORREVAL LIMITADA",
         "last_invoice": "2026-06-10",
-        "days_since": 37,
+        "days_since": 38,
         "freq_days": 13,
         "threshold": 19.5,
         "litros_prom_mes": 333,
@@ -2785,7 +2786,7 @@
         "partner_id": 7747,
         "name": "MOVIMIENTO DE TIERRA JOSE RODRIGO ORMAZABAL VIDAL",
         "last_invoice": "2026-06-11",
-        "days_since": 36,
+        "days_since": 37,
         "freq_days": 12,
         "threshold": 18.0,
         "litros_prom_mes": 3050,
@@ -2797,7 +2798,7 @@
         "partner_id": 5223,
         "name": "NUEVO SUR SPA",
         "last_invoice": "2026-06-12",
-        "days_since": 35,
+        "days_since": 36,
         "freq_days": 16,
         "threshold": 24.0,
         "litros_prom_mes": 1917,
@@ -2809,7 +2810,7 @@
         "partner_id": 7259,
         "name": "INVERSIONES LOS CINCO SPA",
         "last_invoice": "2026-06-15",
-        "days_since": 32,
+        "days_since": 33,
         "freq_days": 6,
         "threshold": 9.0,
         "litros_prom_mes": 400,
@@ -2821,7 +2822,7 @@
         "partner_id": 17047,
         "name": "TRANSPORTES EMANUEL BUSTAMANTE BELTRÁN E.I.R.L.",
         "last_invoice": "2026-06-15",
-        "days_since": 32,
+        "days_since": 33,
         "freq_days": 3,
         "threshold": 4.5,
         "litros_prom_mes": 3333,
@@ -2833,7 +2834,7 @@
         "partner_id": 5043,
         "name": "FERNANDO OYARZUN ASTUDILLO",
         "last_invoice": "2026-06-15",
-        "days_since": 32,
+        "days_since": 33,
         "freq_days": 20,
         "threshold": 30.0,
         "litros_prom_mes": 858,
@@ -2845,7 +2846,7 @@
         "partner_id": 17389,
         "name": "CORNEJO MAQUINARIA C&C SPA",
         "last_invoice": "2026-06-16",
-        "days_since": 31,
+        "days_since": 32,
         "freq_days": 9,
         "threshold": 13.5,
         "litros_prom_mes": 600,
@@ -2857,7 +2858,7 @@
         "partner_id": 16492,
         "name": "SERVICIOS AGRICOLAS HERNANDEZ LIMITADA",
         "last_invoice": "2026-06-16",
-        "days_since": 31,
+        "days_since": 32,
         "freq_days": 10,
         "threshold": 15.0,
         "litros_prom_mes": 3833,
@@ -2869,7 +2870,7 @@
         "partner_id": 7558,
         "name": "CRISGO SPA",
         "last_invoice": "2026-06-18",
-        "days_since": 29,
+        "days_since": 30,
         "freq_days": 18,
         "threshold": 27.0,
         "litros_prom_mes": 1803,
@@ -2878,10 +2879,22 @@
         "gestion": null
       },
       {
+        "partner_id": 16727,
+        "name": "TERRAMATER S A",
+        "last_invoice": "2026-06-19",
+        "days_since": 29,
+        "freq_days": 18,
+        "threshold": 27.0,
+        "litros_prom_mes": 2500,
+        "ejecutivo": "TomEnergy",
+        "crm_lead": "Won",
+        "gestion": "⏰ Re-engage dormant client · 2026-05-26"
+      },
+      {
         "partner_id": 5186,
         "name": "MANUEL ANTONIO MAGNA OLIVARES",
         "last_invoice": "2026-06-19",
-        "days_since": 28,
+        "days_since": 29,
         "freq_days": 14,
         "threshold": 21.0,
         "litros_prom_mes": 1695,
@@ -2893,7 +2906,7 @@
         "partner_id": 4937,
         "name": "ARESTI CHILE WINE SA",
         "last_invoice": "2026-06-19",
-        "days_since": 28,
+        "days_since": 29,
         "freq_days": 9,
         "threshold": 13.5,
         "litros_prom_mes": 1000,
@@ -2902,10 +2915,22 @@
         "gestion": "⏰ 26/6 cancelan linea Impagos por MM$3 · 2026-07-14"
       },
       {
+        "partner_id": 4925,
+        "name": "ALFREDO ALFONSO OPAZO MUÑOZ",
+        "last_invoice": "2026-06-19",
+        "days_since": 29,
+        "freq_days": 19,
+        "threshold": 28.5,
+        "litros_prom_mes": 10167,
+        "ejecutivo": "TomEnergy",
+        "crm_lead": "Won",
+        "gestion": "⏰ pv contactado wsup · 2025-11-29"
+      },
+      {
         "partner_id": 4905,
         "name": "AGROPELLIN SPA",
         "last_invoice": "2026-06-22",
-        "days_since": 25,
+        "days_since": 26,
         "freq_days": 16,
         "threshold": 24.0,
         "litros_prom_mes": 554,
@@ -2917,7 +2942,7 @@
         "partner_id": 4854,
         "name": "AGRICOLA SANTA CAROLINA SPA",
         "last_invoice": "2026-06-22",
-        "days_since": 25,
+        "days_since": 26,
         "freq_days": 11,
         "threshold": 16.5,
         "litros_prom_mes": 1758,
@@ -2929,7 +2954,7 @@
         "partner_id": 5389,
         "name": "TRANSPORTES JORGE MARTINEZ SCHNETTLER E.I.R.L.",
         "last_invoice": "2026-06-22",
-        "days_since": 25,
+        "days_since": 26,
         "freq_days": 16,
         "threshold": 24.0,
         "litros_prom_mes": 1292,
@@ -2941,7 +2966,7 @@
         "partner_id": 5052,
         "name": "FRUTICOLA AGUA BUENA LTDA",
         "last_invoice": "2026-06-24",
-        "days_since": 23,
+        "days_since": 24,
         "freq_days": 12,
         "threshold": 18.0,
         "litros_prom_mes": 2918,
@@ -2952,10 +2977,22 @@
     ],
     "lost": [
       {
+        "partner_id": 7268,
+        "name": "HUGO HERNAN DONOSO POBLETE",
+        "last_invoice": "2025-10-21",
+        "days_since": 270,
+        "freq_days": null,
+        "threshold": null,
+        "litros_prom_mes": 167,
+        "ejecutivo": "TomEnergy",
+        "crm_lead": "Perdidos",
+        "gestion": "⏰ sube a bomba -15 16/01 · 2026-01-21"
+      },
+      {
         "partner_id": 5103,
         "name": "ISMAEL DE LA CRUZ VERGARA CISTERNA",
         "last_invoice": "2025-10-20",
-        "days_since": 270,
+        "days_since": 271,
         "freq_days": null,
         "threshold": null,
         "litros_prom_mes": 1048,
@@ -2967,7 +3004,7 @@
         "partner_id": 7625,
         "name": "OCTAVIO SEGUNDO ORTEGA VILLALOBOS",
         "last_invoice": "2025-10-20",
-        "days_since": 270,
+        "days_since": 271,
         "freq_days": null,
         "threshold": null,
         "litros_prom_mes": 83,
@@ -2979,7 +3016,7 @@
         "partner_id": 7600,
         "name": "ERNALDO CLEMENTE ESCOBAR MONDACA",
         "last_invoice": "2025-10-20",
-        "days_since": 270,
+        "days_since": 271,
         "freq_days": null,
         "threshold": null,
         "litros_prom_mes": 83,
@@ -2991,7 +3028,7 @@
         "partner_id": 6228,
         "name": "AGRÍCOLA SAN JOSE DE PERALILLO S.A",
         "last_invoice": "2025-10-16",
-        "days_since": 274,
+        "days_since": 275,
         "freq_days": null,
         "threshold": null,
         "litros_prom_mes": 1050,
@@ -3003,7 +3040,7 @@
         "partner_id": 5140,
         "name": "JUAN FLORENTINO LEIVA LARA",
         "last_invoice": "2025-10-15",
-        "days_since": 275,
+        "days_since": 276,
         "freq_days": null,
         "threshold": null,
         "litros_prom_mes": 167,
@@ -3015,7 +3052,7 @@
         "partner_id": 4926,
         "name": "ALFREDO ROSALINO MUÑOZ ENCINA",
         "last_invoice": "2025-10-09",
-        "days_since": 281,
+        "days_since": 282,
         "freq_days": null,
         "threshold": null,
         "litros_prom_mes": 833,
@@ -3027,7 +3064,7 @@
         "partner_id": 4876,
         "name": "AGRICOLA VILLASECA LTDA",
         "last_invoice": "2025-10-06",
-        "days_since": 284,
+        "days_since": 285,
         "freq_days": null,
         "threshold": null,
         "litros_prom_mes": 167,
@@ -3039,7 +3076,7 @@
         "partner_id": 6813,
         "name": "SERVICIOS E INVERSIONES KOALA S.A.",
         "last_invoice": "2025-10-06",
-        "days_since": 284,
+        "days_since": 285,
         "freq_days": null,
         "threshold": null,
         "litros_prom_mes": 112,
@@ -3051,7 +3088,7 @@
         "partner_id": 5254,
         "name": "RAQUEL ROJAS SEPULVEDA",
         "last_invoice": "2025-10-06",
-        "days_since": 284,
+        "days_since": 285,
         "freq_days": null,
         "threshold": null,
         "litros_prom_mes": 167,
@@ -3063,7 +3100,7 @@
         "partner_id": 5252,
         "name": "RAMON PARRAGUEZ LOPEZ",
         "last_invoice": "2025-10-03",
-        "days_since": 287,
+        "days_since": 288,
         "freq_days": null,
         "threshold": null,
         "litros_prom_mes": 483,
@@ -3075,7 +3112,7 @@
         "partner_id": 6608,
         "name": "AGRICOLA EL MEMBRILLO SPA",
         "last_invoice": "2025-10-02",
-        "days_since": 288,
+        "days_since": 289,
         "freq_days": null,
         "threshold": null,
         "litros_prom_mes": 300,
@@ -3087,7 +3124,7 @@
         "partner_id": 5213,
         "name": "MIGUEL ARCADIO CHAVEZ MENDEZ",
         "last_invoice": "2025-09-30",
-        "days_since": 290,
+        "days_since": 291,
         "freq_days": null,
         "threshold": null,
         "litros_prom_mes": 167,
@@ -3099,7 +3136,7 @@
         "partner_id": 4894,
         "name": "AGROFRUTICOLA SAN ANDRES DE CORDILLERILLA LTDA",
         "last_invoice": "2025-09-29",
-        "days_since": 291,
+        "days_since": 292,
         "freq_days": null,
         "threshold": null,
         "litros_prom_mes": 683,
@@ -3111,7 +3148,7 @@
         "partner_id": 5050,
         "name": "FREDY ALADINO QUINTERO SILVA",
         "last_invoice": "2025-09-26",
-        "days_since": 294,
+        "days_since": 295,
         "freq_days": null,
         "threshold": null,
         "litros_prom_mes": 333,
@@ -3123,7 +3160,7 @@
         "partner_id": 5143,
         "name": "JUAN RAMON MORALES PALMA",
         "last_invoice": "2025-09-17",
-        "days_since": 303,
+        "days_since": 304,
         "freq_days": null,
         "threshold": null,
         "litros_prom_mes": 1633,
@@ -3135,7 +3172,7 @@
         "partner_id": 5086,
         "name": "HERRERA HERMANOS LIMITADA",
         "last_invoice": "2025-09-17",
-        "days_since": 303,
+        "days_since": 304,
         "freq_days": null,
         "threshold": null,
         "litros_prom_mes": 333,
@@ -3147,7 +3184,7 @@
         "partner_id": 6742,
         "name": "TRANSPORTES RAFAEL MOYA Y COMPANIA LIMITADA.",
         "last_invoice": "2025-09-17",
-        "days_since": 303,
+        "days_since": 304,
         "freq_days": null,
         "threshold": null,
         "litros_prom_mes": 833,
@@ -3159,7 +3196,7 @@
         "partner_id": 5365,
         "name": "SUCESION LUIS PIZARRO",
         "last_invoice": "2025-09-16",
-        "days_since": 304,
+        "days_since": 305,
         "freq_days": null,
         "threshold": null,
         "litros_prom_mes": 167,
@@ -3171,7 +3208,7 @@
         "partner_id": 4772,
         "name": "AGRICOLA ARROYO GRANDE LIMITADA (quebró)",
         "last_invoice": "2025-09-15",
-        "days_since": 305,
+        "days_since": 306,
         "freq_days": null,
         "threshold": null,
         "litros_prom_mes": 1152,
@@ -3183,7 +3220,7 @@
         "partner_id": 4785,
         "name": "AGRICOLA EL ARRAYAN LIMITADA",
         "last_invoice": "2025-09-05",
-        "days_since": 315,
+        "days_since": 316,
         "freq_days": null,
         "threshold": null,
         "litros_prom_mes": 1043,
@@ -3195,7 +3232,7 @@
         "partner_id": 5101,
         "name": "INVERSIONES Y ASESORIAS ARGO LIMITADA",
         "last_invoice": "2025-09-04",
-        "days_since": 316,
+        "days_since": 317,
         "freq_days": null,
         "threshold": null,
         "litros_prom_mes": 1250,
@@ -3207,7 +3244,7 @@
         "partner_id": 5145,
         "name": "JUAN RAMON VALDEBENITO BRAVO",
         "last_invoice": "2025-09-03",
-        "days_since": 317,
+        "days_since": 318,
         "freq_days": null,
         "threshold": null,
         "litros_prom_mes": 1667,
@@ -3219,7 +3256,7 @@
         "partner_id": 6467,
         "name": "HECTOR ALEXIS SEPULVEDA VERGARA",
         "last_invoice": "2025-08-26",
-        "days_since": 325,
+        "days_since": 326,
         "freq_days": null,
         "threshold": null,
         "litros_prom_mes": 167,
@@ -3231,7 +3268,7 @@
         "partner_id": 6406,
         "name": "SEBASTIAN DEL CARMEN FLORES ESCOBAR",
         "last_invoice": "2025-08-22",
-        "days_since": 329,
+        "days_since": 330,
         "freq_days": null,
         "threshold": null,
         "litros_prom_mes": 333,
@@ -3243,7 +3280,7 @@
         "partner_id": 6414,
         "name": "LUIS ADOLFO FLORES LUPAYANTE",
         "last_invoice": "2025-08-22",
-        "days_since": 329,
+        "days_since": 330,
         "freq_days": null,
         "threshold": null,
         "litros_prom_mes": 167,
@@ -3255,7 +3292,7 @@
         "partner_id": 6384,
         "name": "AGRICOLA EL BOLDO LIMITADA",
         "last_invoice": "2025-08-20",
-        "days_since": 331,
+        "days_since": 332,
         "freq_days": null,
         "threshold": null,
         "litros_prom_mes": 167,
@@ -3267,7 +3304,7 @@
         "partner_id": 4776,
         "name": "AGRICOLA CARRANDI SANCHEZ LIMITADA",
         "last_invoice": "2025-08-19",
-        "days_since": 332,
+        "days_since": 333,
         "freq_days": null,
         "threshold": null,
         "litros_prom_mes": 469,
@@ -3279,19 +3316,19 @@
         "partner_id": 5015,
         "name": "ENERGIAS INDUSTRIALES SA",
         "last_invoice": "2025-08-19",
-        "days_since": 332,
+        "days_since": 333,
         "freq_days": null,
         "threshold": null,
         "litros_prom_mes": 2833,
-        "ejecutivo": "TomEnergy",
+        "ejecutivo": "Sebastian Toro",
         "crm_lead": "Perdidos",
-        "gestion": "⏰ Invierno pplmente Calderas consumo · 2025-12-22"
+        "gestion": "⏰ 19/5 contacto a Jose Reyes no han necesitado porque compran en situaciones especiales acogidos a beneficios tarifarios electricos. Nos tendran en consideración.  Invierno pplmente Calderas consumo14//5 contactar Invierno pplmente Calderas consumo 24/4 plantilla enviada · 2026-06-30"
       },
       {
         "partner_id": 4875,
         "name": "AGRICOLA ULISES CORREA GUTIERREZ EIRL",
         "last_invoice": "2025-08-06",
-        "days_since": 345,
+        "days_since": 346,
         "freq_days": null,
         "threshold": null,
         "litros_prom_mes": 508,
@@ -3303,11 +3340,11 @@
         "partner_id": 4892,
         "name": "AGROFARMING S.A.",
         "last_invoice": "2025-07-31",
-        "days_since": 351,
+        "days_since": 352,
         "freq_days": null,
         "threshold": null,
         "litros_prom_mes": 1000,
-        "ejecutivo": "TomEnergy",
+        "ejecutivo": "Sebastian Toro",
         "crm_lead": "Perdidos",
         "gestion": "Nota 2025-11-24 · Vial Comber Pauline"
       },
@@ -3315,7 +3352,7 @@
         "partner_id": 5844,
         "name": "ASERRADERO  TRANSPORTE DE CARGA Y SERVICIOS FORESTALES  VILLAR ESPINOZA SPA",
         "last_invoice": "2025-07-18",
-        "days_since": 364,
+        "days_since": 365,
         "freq_days": null,
         "threshold": null,
         "litros_prom_mes": 892,
@@ -3327,7 +3364,7 @@
         "partner_id": 6038,
         "name": "AMV SPA",
         "last_invoice": "2025-07-15",
-        "days_since": 367,
+        "days_since": 368,
         "freq_days": null,
         "threshold": null,
         "litros_prom_mes": 247,
@@ -3339,7 +3376,7 @@
         "partner_id": 4816,
         "name": "AGRICOLA LAS MERCEDES LTDA",
         "last_invoice": "2025-07-14",
-        "days_since": 368,
+        "days_since": 369,
         "freq_days": null,
         "threshold": null,
         "litros_prom_mes": 709,
@@ -3351,7 +3388,7 @@
         "partner_id": 5847,
         "name": "JORGE LUIS AVARIA MOLINA",
         "last_invoice": "2025-07-07",
-        "days_since": 375,
+        "days_since": 376,
         "freq_days": null,
         "threshold": null,
         "litros_prom_mes": 333,
@@ -3363,7 +3400,7 @@
         "partner_id": 5359,
         "name": "SOLFRUT AGRONEGOCIOS SA.",
         "last_invoice": "2025-07-02",
-        "days_since": 380,
+        "days_since": 381,
         "freq_days": null,
         "threshold": null,
         "litros_prom_mes": 167,
@@ -3375,7 +3412,7 @@
         "partner_id": 5850,
         "name": "LEONARDO ANTONIO REBOLLEDO ESCOBAR",
         "last_invoice": "2025-06-26",
-        "days_since": 386,
+        "days_since": 387,
         "freq_days": null,
         "threshold": null,
         "litros_prom_mes": 183,
@@ -3387,7 +3424,7 @@
         "partner_id": 5851,
         "name": "MILENA FERNANDA ESCOBAR MONDACA",
         "last_invoice": "2025-06-26",
-        "days_since": 386,
+        "days_since": 387,
         "freq_days": null,
         "threshold": null,
         "litros_prom_mes": 367,
@@ -3399,7 +3436,7 @@
         "partner_id": 5849,
         "name": "CARLOS MANUEL GONZALEZ MARTINEZ",
         "last_invoice": "2025-06-26",
-        "days_since": 386,
+        "days_since": 387,
         "freq_days": null,
         "threshold": null,
         "litros_prom_mes": 500,
@@ -3411,7 +3448,7 @@
         "partner_id": 5845,
         "name": "ALVARA DEL CARMEN ALVARADO RETAMAL",
         "last_invoice": "2025-06-26",
-        "days_since": 386,
+        "days_since": 387,
         "freq_days": null,
         "threshold": null,
         "litros_prom_mes": 167,
@@ -3423,7 +3460,7 @@
         "partner_id": 5342,
         "name": "SOCIEDAD COMERCIAL DON GUMERCINDO LIMITADA. (perdió licitación)",
         "last_invoice": "2025-06-25",
-        "days_since": 387,
+        "days_since": 388,
         "freq_days": null,
         "threshold": null,
         "litros_prom_mes": 4003,
@@ -3435,7 +3472,7 @@
         "partner_id": 5196,
         "name": "MARCOS ANTONIO MOYA CHAVEZ",
         "last_invoice": "2025-06-25",
-        "days_since": 387,
+        "days_since": 388,
         "freq_days": null,
         "threshold": null,
         "litros_prom_mes": 284,
@@ -3447,7 +3484,7 @@
         "partner_id": 5138,
         "name": "JUAN DE LA CRUZ URZÚA URZÚA",
         "last_invoice": "2025-06-24",
-        "days_since": 388,
+        "days_since": 389,
         "freq_days": null,
         "threshold": null,
         "litros_prom_mes": 317,
@@ -3459,7 +3496,7 @@
         "partner_id": 5408,
         "name": "VICTOR MANUEL GALLARDO URETA",
         "last_invoice": "2025-06-19",
-        "days_since": 393,
+        "days_since": 394,
         "freq_days": null,
         "threshold": null,
         "litros_prom_mes": 533,
@@ -3471,7 +3508,7 @@
         "partner_id": 5854,
         "name": "RENE ANTONIO GALLARDO URETA",
         "last_invoice": "2025-06-19",
-        "days_since": 393,
+        "days_since": 394,
         "freq_days": null,
         "threshold": null,
         "litros_prom_mes": 167,
@@ -3483,7 +3520,7 @@
         "partner_id": 5855,
         "name": "TRANSPORTE VICTOR MANUEL GALLARDO URETA E.I.R.L",
         "last_invoice": "2025-06-19",
-        "days_since": 393,
+        "days_since": 394,
         "freq_days": null,
         "threshold": null,
         "litros_prom_mes": 167,
@@ -3495,7 +3532,7 @@
         "partner_id": 5019,
         "name": "ERICK SANTIAGO VASQUEZ FIGUEROA",
         "last_invoice": "2025-06-18",
-        "days_since": 394,
+        "days_since": 395,
         "freq_days": null,
         "threshold": null,
         "litros_prom_mes": 835,
@@ -3507,7 +3544,7 @@
         "partner_id": 5068,
         "name": "GONZALO ARTURO SALGADO ESPINOZA",
         "last_invoice": "2025-06-16",
-        "days_since": 396,
+        "days_since": 397,
         "freq_days": null,
         "threshold": null,
         "litros_prom_mes": 333,
@@ -3519,7 +3556,7 @@
         "partner_id": 5403,
         "name": "URRUTIA Y CIA LIMITADA",
         "last_invoice": "2025-06-10",
-        "days_since": 402,
+        "days_since": 403,
         "freq_days": null,
         "threshold": null,
         "litros_prom_mes": 167,
@@ -3531,25 +3568,13 @@
         "partner_id": 5108,
         "name": "JAIME HERNAN DUQUE PIZARRO",
         "last_invoice": "2025-06-04",
-        "days_since": 408,
+        "days_since": 409,
         "freq_days": null,
         "threshold": null,
         "litros_prom_mes": 500,
         "ejecutivo": "TomEnergy",
         "crm_lead": "Perdidos",
         "gestion": "⏰ 14-05 quedo abastecido antes del alza, cree que volvera a compra en Agosto · 2026-08-03"
-      },
-      {
-        "partner_id": 4849,
-        "name": "AGRICOLA SAN LUIS DE POPETA LIMITADA (VENDIDA POR ATILIO)",
-        "last_invoice": "2025-06-03",
-        "days_since": 409,
-        "freq_days": null,
-        "threshold": null,
-        "litros_prom_mes": 217,
-        "ejecutivo": "TomEnergy",
-        "crm_lead": "Perdidos",
-        "gestion": "Nota 2025-12-15 · Comber Sigall Pauline"
       }
     ],
     "history": [
@@ -3557,44 +3582,44 @@
         "month": "Feb 2026",
         "pct": 1.3,
         "new_lost": 8,
-        "active_start": 625
+        "active_start": 626
       },
       {
         "month": "Mar 2026",
         "pct": 2.3,
         "new_lost": 14,
-        "active_start": 616
+        "active_start": 617
       },
       {
         "month": "Apr 2026",
         "pct": 0.8,
         "new_lost": 5,
-        "active_start": 602
+        "active_start": 603
       },
       {
         "month": "May 2026",
         "pct": 1.3,
         "new_lost": 8,
-        "active_start": 597
+        "active_start": 598
       },
       {
         "month": "Jun 2026",
         "pct": 1.9,
         "new_lost": 11,
-        "active_start": 588
+        "active_start": 589
       },
       {
         "month": "Jul 2026",
         "pct": 2.8,
         "new_lost": 16,
-        "active_start": 577
+        "active_start": 578
       }
     ],
     "definition": "Perdido = 270d sin factura | Durmiente = >freq×1.5 (<30d) o freq×1.3 (≥30d)"
   },
   "enap": {
     "month": "2026-07",
-    "days_elapsed": 17,
+    "days_elapsed": 18,
     "days_in_month": 31,
     "suppliers": {
       "enap": {
@@ -3604,15 +3629,15 @@
         "target_total": 481110,
         "mtd_litros": 401683,
         "compliance_pct": 83.5,
-        "projected": 732481,
-        "projected_pct": 152.2,
+        "projected": 691787,
+        "projected_pct": 143.8,
         "plants": {
           "Linares": {
             "target": 40500,
             "mtd": 45261,
             "compliance_pct": 111.8,
-            "projected": 82535,
-            "projected_pct": 203.8
+            "projected": 77950,
+            "projected_pct": 192.5
           },
           "Maipu": {
             "target": 176244,
@@ -3625,8 +3650,8 @@
             "target": 264366,
             "mtd": 356422,
             "compliance_pct": 134.8,
-            "projected": 649946,
-            "projected_pct": 245.9
+            "projected": 613838,
+            "projected_pct": 232.2
           }
         }
       },
@@ -3638,15 +3663,15 @@
         "target_total": 400554,
         "mtd_litros": 75000,
         "compliance_pct": 18.7,
-        "projected": 136765,
-        "projected_pct": 34.1,
+        "projected": 129167,
+        "projected_pct": 32.2,
         "plants": {
           "Linares": {
             "target": 400554,
             "mtd": 75000,
             "compliance_pct": 18.7,
-            "projected": 136765,
-            "projected_pct": 34.1
+            "projected": 129167,
+            "projected_pct": 32.2
           },
           "Maipu": {
             "target": 0,
@@ -3661,8 +3686,8 @@
     "total_target": 881664,
     "total_mtd": 476683,
     "total_compliance_pct": 54.1,
-    "total_projected": 869245,
-    "total_projected_pct": 98.6
+    "total_projected": 820954,
+    "total_projected_pct": 93.1
   },
   "operaciones": {
     "months": [
@@ -3827,7 +3852,7 @@
         "dso": 33.3
       }
     ],
-    "cxc_hoy": 1065981230
+    "cxc_hoy": 1063119271
   },
   "gerencia_goals": {
     "margen_contado_meta": 0.085,
