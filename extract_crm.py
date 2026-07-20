@@ -89,6 +89,7 @@ _CANONICAL_VENDORS = [
     ({"nicolas", "gonzalez"}, "Nicolás Gonzalez"),
     ({"cristian", "jiroz"}, "Cristian Jiroz"),
     ({"diego", "varas"}, "Diego Varas"),
+    ({"abraham", "urrutia"}, "Abraham Urrutia"),
 ]
 
 def canonical_vendedor(name):
@@ -2916,6 +2917,8 @@ def main():
         _exec_names = [
             "toro gonzález sebastian enrique", "muñoz encalada joaquin",
             "carolina avilés", "marcela márquez", "raúl bisquertt", "rodrigo retamal",
+            "manuel lópez", "nicolás gonzalez", "cristian jiroz", "diego varas",
+            "abraham urrutia",
         ]
 
         # Get all invoices in the window (candidates for first invoice)
@@ -2975,9 +2978,10 @@ def main():
                         "first_invoice": first_date,
                         "days_since": days,
                         "status": status,
+                        "pid": pid,
                     })
 
-        # Count invoices for grad candidates
+        # Count invoices + litros diesel for grad candidates
         for g in grad_candidates:
             cnt = s_count(models, uid, "account.move", [
                 ["move_type", "=", "out_invoice"],
@@ -2985,6 +2989,13 @@ def main():
                 ["partner_id.name", "=", g["name"]],
             ])
             g["total_invoices"] = cnt
+            lines = sr(models, uid, "account.move.line", [
+                ["move_id.move_type", "=", "out_invoice"],
+                ["move_id.state", "=", "posted"],
+                ["move_id.partner_id", "=", g.pop("pid")],
+                ["product_id", "=", DIESEL_PRODUCT_ID],
+            ], ["quantity"], limit=500)
+            g["litros"] = round(sum(l.get("quantity", 0) or 0 for l in lines))
 
         graduating = sorted(grad_candidates, key=lambda x: -x["days_since"])[:50]
         prox = sum(1 for g in graduating if g["status"] == "proximo")

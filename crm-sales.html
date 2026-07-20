@@ -216,7 +216,7 @@ tr:hover td{background:#fafaf8}
 
       <!-- Lost clients this month (below Churn KPI) -->
       <div class="sec"><div class="sec-h"><h2>📉 Clientes Perdidos Este Mes (precisión CRM)</h2></div><div class="sec-b" style="max-height:400px;overflow-y:auto">
-        <table><thead><tr><th>Cliente</th><th>Vendedor</th><th>Fecha</th><th>Estado Actual</th><th>Última Nota</th></tr></thead><tbody id="lostMonthBody"></tbody></table>
+        <table><thead><tr><th>Cliente</th><th>Prom. Mensual</th><th>Vendedor</th><th>Fecha</th><th>Estado Actual</th><th>Última Nota</th></tr></thead><tbody id="lostMonthBody"></tbody></table>
         <div class="nodata" id="noLostMonth" style="display:none">Sin perdidos en el mes</div></div></div>
 
       <!-- Clientes En Riesgo Crediticio -->
@@ -330,7 +330,7 @@ tr:hover td{background:#fafaf8}
 let D = null;
 let CEO = null; // ceo-data.json for weekly margins
 let selectedWeek = 0;
-let selectedExec = 0; // 0=Toro, 1=Muñoz, 2=Freelancers
+let selectedExec = 0; // índice dentro de EJECUTIVOS (freelancers con movimiento últimas 4 semanas)
 let execSubTab = 'semanal';
 let csSubTab = 'semanal'; // For CS tab sub-tabs
 let chartWeekly = null;
@@ -342,7 +342,7 @@ const ALLOWED_VENDORS = [
 ];
 const FREELANCERS = [
   'carolina avilés','marcela márquez','raúl bisquertt','rodrigo retamal',
-  'manuel lópez','nicolás gonzalez','cristian jiroz','diego varas'
+  'manuel lópez','nicolás gonzalez','cristian jiroz','diego varas','abraham urrutia'
 ];
 const CS_TEAM = ['comber sigall pauline','mauro boccardo','tomenergy'];
 const _aN = ALLOWED_VENDORS.map(n => norm(n).split(' '));
@@ -722,9 +722,9 @@ function renderVendedores() {
 // ═══════════════════════════════════════
 // EJECUTIVOS TAB
 // ═══════════════════════════════════════
-const EJECUTIVOS = [
-  { key: 'toro', name: 'Toro', fullName: 'toro gonzález sebastian enrique' },
-  { key: 'munoz', name: 'Muñoz', fullName: 'muñoz encalada joaquin' },
+// Solo freelancers (los full-time salieron del tab Ejecutivos, jul 2026).
+// La lista visible se filtra dinámicamente: sin movimiento en las últimas 4 semanas → no aparece.
+const EJECUTIVOS_ALL = [
   { key: 'aviles', name: 'Avilés', fullName: 'carolina avilés', freelancer: true },
   { key: 'marquez', name: 'Márquez', fullName: 'marcela márquez', freelancer: true },
   { key: 'bisquertt', name: 'Bisquertt', fullName: 'raúl bisquertt', freelancer: true },
@@ -732,8 +732,38 @@ const EJECUTIVOS = [
   { key: 'lopez', name: 'López', fullName: 'manuel lópez', freelancer: true },
   { key: 'gonzalez', name: 'Gonzalez', fullName: 'nicolás gonzalez', freelancer: true },
   { key: 'jiroz', name: 'Jiroz', fullName: 'cristian jiroz', freelancer: true },
-  { key: 'varas', name: 'Varas', fullName: 'diego varas', freelancer: true }
+  { key: 'varas', name: 'Varas', fullName: 'diego varas', freelancer: true },
+  { key: 'urrutia', name: 'Abraham', fullName: 'abraham urrutia', freelancer: true }
 ];
+let EJECUTIVOS = EJECUTIVOS_ALL;
+
+// Movimiento = litros vendidos, cliente ganado, cliente nuevo o actividad en pipeline en las últimas 4 semanas
+function execHasMovement(fullName) {
+  const cutoff = new Date(Date.now() - 28 * 86400000).toISOString().split('T')[0];
+  const fw = norm(fullName).split(' ');
+  const m = n => { if (!n) return false; const tw = norm(n).split(' '); return fw.every(w => tw.includes(w)); };
+  const hist = ((D.ventas || {}).weekly_history || []).slice(-4);
+  for (const w of hist) {
+    for (const [u, v] of Object.entries(w.litros_by_user || {})) if (v > 0 && m(u)) return true;
+  }
+  for (const w of (D.won_deals || [])) if (m(w.exec) && (wonDate(w) || '') >= cutoff) return true;
+  // executives agrega actividad de TODOS los leads (pipeline viene truncado a 150)
+  for (const e of (D.executives || [])) if (m(e.name) && ((e.moved_30d || 0) > 0 || (e.won || 0) > 0)) return true;
+  for (const p of (D.pipeline || [])) {
+    if (!m(p.exec)) continue;
+    if (p.days_since_activity >= 0 && p.days_since_activity <= 28) return true;
+    if ((p.stage_update || p.last_update || '') >= cutoff) return true;
+  }
+  for (const c of (((D.ventas || {}).new_clients || {}).detail || [])) if (m(c.vendedor) && (c.fecha || '') >= cutoff) return true;
+  return false;
+}
+
+function computeEjecutivos() {
+  if (!D) return;
+  const conMovimiento = EJECUTIVOS_ALL.filter(e => execHasMovement(e.fullName));
+  EJECUTIVOS = conMovimiento.length ? conMovimiento : EJECUTIVOS_ALL;
+  if (selectedExec >= EJECUTIVOS.length) selectedExec = 0;
+}
 
 function getFreelancerNames() {
   // All users with activity who are NOT in ALLOWED_VENDORS and NOT in CS_TEAM
@@ -782,6 +812,7 @@ function getFreelancerNames() {
 
 function renderEjecutivos() {
   if (!D) return;
+  computeEjecutivos();
 
   const V = D.ventas || {}, T = V.totals || {}, VG = D.vendor_goals || {};
   const lbu = T.litros_by_user || {};
@@ -1550,6 +1581,7 @@ function renderFidelizacion() {
 
   // Lost clients this month — from precise tracking (mail.tracking.value)
   const newlyLostPrecise = (churn.lost_list || []).filter(c => (c.last_update || '') >= monthStartStr);
+  newlyLostPrecise.sort((a, b) => (b.avg_monthly_litros || 0) - (a.avg_monthly_litros || 0));
 
   const lmb = document.getElementById('lostMonthBody'); lmb.innerHTML = '';
   if (newlyLostPrecise.length === 0) {
@@ -1560,8 +1592,12 @@ function renderFidelizacion() {
       const stageNow = c.stage_now || '';
       const recovered = stageNow && !stageNow.toLowerCase().includes('perdido');
       const noteHtmlM = c.last_note ? '<span style="font-size:11px;color:var(--dim)">' + H(c.last_note) + '</span>' : '<span style="color:var(--dim)">—</span>';
+      const lM = c.avg_monthly_litros || 0;
+      const lTagM = lM >= 5000 ? '<span style="color:var(--red);font-weight:700">' + fL(lM) + '</span>'
+        : lM >= 1000 ? '<span style="color:var(--yellow);font-weight:700">' + fL(lM) + '</span>'
+        : '<span style="color:var(--dim)">' + fL(lM) + '</span>';
       const tr = document.createElement('tr');
-      tr.innerHTML = '<td class="bold">' + H(c.name) + '</td><td>' + H(c.user || '—') + '</td><td>' + (c.date || '—') + '</td><td>' + (recovered ? '<span class="tag tag-g">Recuperado → ' + H(stageNow) + '</span>' : '<span class="tag tag-r">Perdido</span>') + '</td><td style="max-width:260px;white-space:normal">' + noteHtmlM + '</td>';
+      tr.innerHTML = '<td class="bold">' + H(c.name) + '</td><td>' + lTagM + '</td><td>' + H(c.user || '—') + '</td><td>' + (c.date || '—') + '</td><td>' + (recovered ? '<span class="tag tag-g">Recuperado → ' + H(stageNow) + '</span>' : '<span class="tag tag-r">Perdido</span>') + '</td><td style="max-width:260px;white-space:normal">' + noteHtmlM + '</td>';
       lmb.appendChild(tr);
     });
   }
@@ -1840,18 +1876,18 @@ function renderCS() {
       let gh = '';
       if (pendientes.length) {
         gh += '<div style="padding:8px 12px;font-weight:700;color:var(--red);font-size:13px">⚠️ Pendientes de transferir a CS (' + pendientes.length + ') — 3+ meses con ejecutivo</div>';
-        gh += '<table><thead><tr><th>Cliente</th><th>Vendedor</th><th>1ª Factura</th><th>Días</th><th>Facturas</th></tr></thead><tbody>';
+        gh += '<table><thead><tr><th>Cliente</th><th>Vendedor</th><th>1ª Factura</th><th>Días</th><th style="text-align:right">Litros</th></tr></thead><tbody>';
         pendientes.forEach(c => {
           const dc = c.days_since >= 180 ? 'color:var(--red);font-weight:700' : c.days_since >= 120 ? 'color:var(--orange);font-weight:700' : '';
-          gh += '<tr><td class="bold">' + H(c.name) + '</td><td>' + H(c.vendedor) + '</td><td>' + c.first_invoice + '</td><td style="' + dc + '">' + c.days_since + 'd</td><td>' + (c.total_invoices || '—') + '</td></tr>';
+          gh += '<tr><td class="bold">' + H(c.name) + '</td><td>' + H(c.vendedor) + '</td><td>' + c.first_invoice + '</td><td style="' + dc + '">' + c.days_since + 'd</td><td style="text-align:right">' + (c.litros ? fL(c.litros) : '—') + '</td></tr>';
         });
         gh += '</tbody></table>';
       }
       if (proximos.length) {
         gh += '<div style="padding:8px 12px;font-weight:700;color:var(--yellow);font-size:13px;margin-top:12px">⏳ Próximos a transición (' + proximos.length + ') — 60-89 días</div>';
-        gh += '<table><thead><tr><th>Cliente</th><th>Vendedor</th><th>1ª Factura</th><th>Días</th><th>Facturas</th></tr></thead><tbody>';
+        gh += '<table><thead><tr><th>Cliente</th><th>Vendedor</th><th>1ª Factura</th><th>Días</th><th style="text-align:right">Litros</th></tr></thead><tbody>';
         proximos.forEach(c => {
-          gh += '<tr><td class="bold">' + H(c.name) + '</td><td>' + H(c.vendedor) + '</td><td>' + c.first_invoice + '</td><td>' + c.days_since + 'd</td><td>' + (c.total_invoices || '—') + '</td></tr>';
+          gh += '<tr><td class="bold">' + H(c.name) + '</td><td>' + H(c.vendedor) + '</td><td>' + c.first_invoice + '</td><td>' + c.days_since + 'd</td><td style="text-align:right">' + (c.litros ? fL(c.litros) : '—') + '</td></tr>';
         });
         gh += '</tbody></table>';
       }
