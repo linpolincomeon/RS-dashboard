@@ -259,7 +259,7 @@ tr:hover td{background:#fafaf8}
       </div>
 
       <!-- Graduating clients (new → fidelización) -->
-      <div class="sec"><div class="sec-h"><h2>🔄 Transición a Fidelización</h2><span style="font-size:12px;color:var(--dim)">Clientes con 3+ meses desde primera compra</span></div>
+      <div class="sec"><div class="sec-h"><h2>🔄 Transición a Fidelización</h2><span style="font-size:12px;color:var(--dim)">Clientes con 6+ meses (180 días) desde primera compra</span></div>
         <div class="sec-b" style="padding:0;overflow-x:auto" id="csGraduatingContainer"></div></div>
 
       <!-- Mes Vencido CS -->
@@ -1875,16 +1875,16 @@ function renderCS() {
       const proximos = grad.filter(c => c.status === 'proximo');
       let gh = '';
       if (pendientes.length) {
-        gh += '<div style="padding:8px 12px;font-weight:700;color:var(--red);font-size:13px">⚠️ Pendientes de transferir a CS (' + pendientes.length + ') — 3+ meses con ejecutivo</div>';
+        gh += '<div style="padding:8px 12px;font-weight:700;color:var(--red);font-size:13px">⚠️ Pendientes de transferir a CS (' + pendientes.length + ') — 6+ meses con ejecutivo</div>';
         gh += '<table><thead><tr><th>Cliente</th><th>Vendedor</th><th>1ª Factura</th><th>Días</th><th style="text-align:right">Litros</th></tr></thead><tbody>';
         pendientes.forEach(c => {
-          const dc = c.days_since >= 180 ? 'color:var(--red);font-weight:700' : c.days_since >= 120 ? 'color:var(--orange);font-weight:700' : '';
+          const dc = c.days_since >= 270 ? 'color:var(--red);font-weight:700' : c.days_since >= 195 ? 'color:var(--orange);font-weight:700' : '';
           gh += '<tr><td class="bold">' + H(c.name) + '</td><td>' + H(c.vendedor) + '</td><td>' + c.first_invoice + '</td><td style="' + dc + '">' + c.days_since + 'd</td><td style="text-align:right">' + (c.litros ? fL(c.litros) : '—') + '</td></tr>';
         });
         gh += '</tbody></table>';
       }
       if (proximos.length) {
-        gh += '<div style="padding:8px 12px;font-weight:700;color:var(--yellow);font-size:13px;margin-top:12px">⏳ Próximos a transición (' + proximos.length + ') — 60-89 días</div>';
+        gh += '<div style="padding:8px 12px;font-weight:700;color:var(--yellow);font-size:13px;margin-top:12px">⏳ Próximos a transición (' + proximos.length + ') — 150-179 días</div>';
         gh += '<table><thead><tr><th>Cliente</th><th>Vendedor</th><th>1ª Factura</th><th>Días</th><th style="text-align:right">Litros</th></tr></thead><tbody>';
         proximos.forEach(c => {
           gh += '<tr><td class="bold">' + H(c.name) + '</td><td>' + H(c.vendedor) + '</td><td>' + c.first_invoice + '</td><td>' + c.days_since + 'd</td><td style="text-align:right">' + (c.litros ? fL(c.litros) : '—') + '</td></tr>';

@@ -2908,14 +2908,16 @@ def main():
     if "Toro González Sebastian Enrique" in vendor_goals:
         vendor_goals["Toro González Sebastian Enrique"]["litros_mes"] = 200000
 
-    # ── Graduating: clients whose FIRST invoice was 60-120 days ago, assigned to ejecutivo/freelancer ──
+    # ── Graduating: clients whose FIRST invoice was 150-210 days ago, assigned to ejecutivo/freelancer ──
+    # Regla jul-2026: el cliente queda con el ejecutivo externo 180 días (6 meses, alineado a comisiones), antes 90.
     graduating = []
     try:
-        # Search directly for first invoices in the 60-120 day window
-        window_start = today - timedelta(days=120)
-        window_end = today - timedelta(days=60)
+        # Search directly for first invoices in the 150-210 day window
+        window_start = today - timedelta(days=210)
+        window_end = today - timedelta(days=150)
         _exec_names = [
             "toro gonzález sebastian enrique", "muñoz encalada joaquin",
+            "sebastian toro", "joaquin muñoz",  # cuentas .ext (nombre corto, no canonicaliza al largo)
             "carolina avilés", "marcela márquez", "raúl bisquertt", "rodrigo retamal",
             "manuel lópez", "nicolás gonzalez", "cristian jiroz", "diego varas",
             "abraham urrutia",
@@ -2959,8 +2961,8 @@ def main():
                 except Exception:
                     continue
                 days = (today - first_dt).days
-                # Only include if their FIRST invoice is within the 60-120d window
-                if days < 60 or days > 120:
+                # Only include if their FIRST invoice is within the 150-210d window
+                if days < 150 or days > 210:
                     continue
                 pname = safe_name(first_inv[0].get("partner_id"))
                 # Get vendedor from res.partner.user_id (canonical rule)
@@ -2971,7 +2973,7 @@ def main():
                 vn = norm_name(vendedor)
                 is_exec = any(all(w in vn.split() for w in norm_name(av).split()) for av in _exec_names)
                 if is_exec:
-                    status = "pendiente" if days >= 90 else "proximo"
+                    status = "pendiente" if days >= 180 else "proximo"
                     grad_candidates.append({
                         "name": pname,
                         "vendedor": vendedor,
@@ -3000,7 +3002,7 @@ def main():
         graduating = sorted(grad_candidates, key=lambda x: -x["days_since"])[:50]
         prox = sum(1 for g in graduating if g["status"] == "proximo")
         pend = sum(1 for g in graduating if g["status"] == "pendiente")
-        print(f"  Graduating: {prox} próximos (60-89d) + {pend} pendientes (90+d)")
+        print(f"  Graduating: {prox} próximos (150-179d) + {pend} pendientes (180+d)")
     except Exception as e:
         print(f"  Graduating skipped: {e}")
 
