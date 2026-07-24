@@ -312,6 +312,41 @@ def extract_crm_data(models, uid):
         else:
             pipeline.append(entry)
 
+    # ── Fecha REAL del paso a Won vía mail.tracking.value ──
+    # El cron re-estampa date_last_stage_update en batch (todas las won quedaban con la
+    # misma fecha) → las semanas pasadas mostraban 0 Clientes Ganados aunque hubo cierres.
+    try:
+        _won_stage_names = [s["name"] for s in stages if classify_stage(s["name"]) == "won"]
+        _won_ids = [w["id"] for w in won_deals]
+        _wtrk = []
+        for i in range(0, len(_won_ids), 400):
+            _wtrk += sr(models, uid, "mail.tracking.value", [
+                ["mail_message_id.model", "=", "crm.lead"],
+                ["mail_message_id.res_id", "in", _won_ids[i:i+400]],
+                ["new_value_char", "in", _won_stage_names],
+            ], ["mail_message_id", "create_date"], limit=10000)
+        _wmids = list({safe_id(t.get("mail_message_id")) for t in _wtrk if t.get("mail_message_id")})
+        _wmid_res = {}
+        for i in range(0, len(_wmids), 500):
+            for m in sr(models, uid, "mail.message", [["id", "in", _wmids[i:i+500]]], ["res_id"], limit=1000):
+                _wmid_res[m["id"]] = m.get("res_id")
+        _won_real = {}
+        for t in sorted(_wtrk, key=lambda x: x.get("create_date") or ""):
+            lid = _wmid_res.get(safe_id(t.get("mail_message_id")))
+            if lid:
+                _won_real[lid] = (t.get("create_date") or "")[:10]
+        _fixed = 0
+        for w in won_deals:
+            rd = _won_real.get(w["id"])
+            if rd:
+                w["won_date"] = rd
+                w["stage_update"] = rd
+                w["last_update"] = rd
+                _fixed += 1
+        print(f"  Fechas reales de Won (tracking): {_fixed}/{len(won_deals)}")
+    except Exception as _e:
+        print(f"  Tracking de Won skipped: {_e}")
+
     exec_map = {}
     for p in pipeline:
         eid = p["exec_id"]
