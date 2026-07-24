@@ -1346,6 +1346,34 @@ def extract_churn_data(models, uid):
 
     print(f"  CRM: {len(durmiente_leads)} durmientes, {len(perdido_leads)} perdidos")
 
+    # ── Fecha REAL del cambio de etapa vía mail.tracking.value ──
+    # El cron de Odoo re-estampa write_date/date_last_stage_update en batch (todos = hoy),
+    # así que "nuevos durmientes/perdidos de la semana" mostraba SIEMPRE lo mismo.
+    # El tracking del chatter conserva la fecha verdadera del cambio de etapa.
+    _target_names = [stage_map[s] for s in durmiente_ids + perdido_ids]
+    _lead_ids = [l["id"] for l in durmiente_leads + perdido_leads]
+    _stage_real = {}  # lead_id -> 'YYYY-MM-DD' del último cambio a etapa durmiente/perdido
+    try:
+        _trk = []
+        for i in range(0, len(_lead_ids), 400):
+            _trk += sr(models, uid, "mail.tracking.value", [
+                ["mail_message_id.model", "=", "crm.lead"],
+                ["mail_message_id.res_id", "in", _lead_ids[i:i+400]],
+                ["new_value_char", "in", _target_names],
+            ], ["mail_message_id", "new_value_char", "create_date"], limit=20000)
+        _mids = list({safe_id(t.get("mail_message_id")) for t in _trk if t.get("mail_message_id")})
+        _mid_res = {}
+        for i in range(0, len(_mids), 500):
+            for m in sr(models, uid, "mail.message", [["id", "in", _mids[i:i+500]]], ["res_id"], limit=1000):
+                _mid_res[m["id"]] = m.get("res_id")
+        for t in sorted(_trk, key=lambda x: x.get("create_date") or ""):
+            lid = _mid_res.get(safe_id(t.get("mail_message_id")))
+            if lid:
+                _stage_real[lid] = (t.get("create_date") or "")[:10]
+        print(f"  Fechas reales de etapa (tracking): {len(_stage_real)}/{len(_lead_ids)} leads")
+    except Exception as _e:
+        print(f"  Tracking de etapa skipped: {_e}")
+
     month_start = today.replace(day=1)
     prev_month_end = month_start - timedelta(days=1)
     prev_month_start = prev_month_end.replace(day=1)
@@ -1406,7 +1434,7 @@ def extract_churn_data(models, uid):
         if name_key in seen_dormant:
             continue
         seen_dormant.add(name_key)
-        write_date = (lead.get("write_date") or "")[:10]
+        write_date = _stage_real.get(lead["id"]) or (lead.get("write_date") or "")[:10]
 
         invoiced = (pid and pid in curr_month_partners) or (name_key in curr_month_partner_names)
 
@@ -1522,7 +1550,7 @@ def extract_churn_data(models, uid):
         if name_key in seen_lost:
             continue
         seen_lost.add(name_key)
-        write_date = (lead.get("write_date") or "")[:10]
+        write_date = _stage_real.get(lead["id"]) or (lead.get("write_date") or "")[:10]
 
         if write_date >= fmt(month_start):
             newly_lost += 1

@@ -127,11 +127,10 @@ tr:hover td{background:#fafaf8}
       <button class="tab-btn active" onclick="switchTab('ventas')">Ventas</button>
       <button class="tab-btn" onclick="switchTab('ejecutivos')">👔 Ejecutivos</button>
       <button class="tab-btn" onclick="switchTab('funnel')">🎯 Funnel</button>
-      <button class="tab-btn" onclick="switchTab('fidelizacion')">Churn & Rescate</button>
-      <button class="tab-btn" onclick="switchTab('cs')">Fidelización + CS</button>
+      <button class="tab-btn" onclick="switchTab('fidelizacion')">🔁 Gestión Comercial Recuperación</button>
+      <button class="tab-btn" onclick="switchTab('cs')">👩‍💼 Gestión ADMIN Fidelización</button>
       <button class="tab-btn" onclick="switchTab('mesvencido')">📋 Mes Vencido</button>
       <button class="tab-btn" onclick="switchTab('pipeline')">📊 Pipeline</button>
-      <button class="tab-btn" onclick="switchTab('recovery')">🔁 Recuperación</button>
       <!-- Riesgo tab removed — now in CEO dashboard only -->
       <button class="tab-btn" onclick="switchTab('glosario')">📖 Glosario</button>
       <button class="tab-btn" onclick="switchTab('pendientes')" style="color:#c8360e">⚙️ Pendientes</button>
@@ -190,40 +189,22 @@ tr:hover td{background:#fafaf8}
       </div>
     </div>
 
-    <!-- ═══ TAB 2: CHURN & RESCATE ═══ -->
+    <!-- ═══ TAB: GESTIÓN COMERCIAL RECUPERACIÓN ═══ -->
     <div class="tab-panel" id="tab-fidelizacion">
-      <!-- KPI Row 1: 5 boxes -->
+      <!-- KPI Row: resumen de cartera de la empresa -->
       <div class="kpi-row" id="churnKpiRow"></div>
 
       <!-- Explanation notes -->
       <div id="churnNotes" style="background:var(--card);border-radius:12px;padding:16px;margin-bottom:24px;border-left:3px solid var(--yellow);font-size:12px;color:var(--dim);line-height:1.6"></div>
 
-      <!-- At-Risk Clients Section -->
+      <!-- Nuevos Perdidos del Mes (fecha real de cambio de etapa vía tracking) -->
+      <div class="sec"><div class="sec-h"><h2>💀 Nuevos Perdidos del Mes</h2><span class="badge" id="newLostCount">0</span></div><div class="sec-b" style="max-height:500px;overflow-y:auto">
+        <table><thead><tr><th>Prioridad</th><th>Cliente</th><th>Prom. Mensual 8M</th><th>Último vendedor</th><th>Fecha perdido</th><th>Última Nota</th></tr></thead><tbody id="newLostBody"></tbody></table>
+        <div class="nodata" id="noNewLost" style="display:none">Sin nuevos perdidos este mes</div></div></div>
 
-      <!-- Nuevos Durmientes de la Semana -->
-      <div class="sec"><div class="sec-h"><h2>😴 Nuevos Durmientes de la Semana</h2></div><div class="sec-b" style="max-height:400px;overflow-y:auto">
-        <table><thead><tr><th>Prioridad</th><th>Cliente</th><th>Prom. Mensual 8M</th><th>Responsable</th><th>Fecha</th><th>Última Nota</th></tr></thead><tbody id="newDormantBody"></tbody></table>
-        <div class="nodata" id="noNewDormant" style="display:none">Sin nuevos durmientes esta semana</div></div></div>
-
-      <!-- Nuevos Perdidos de la Semana -->
-      <div class="sec"><div class="sec-h"><h2>💀 Nuevos Perdidos de la Semana</h2></div><div class="sec-b" style="max-height:400px;overflow-y:auto">
-        <table><thead><tr><th>Prioridad</th><th>Cliente</th><th>Prom. Mensual 8M</th><th>Último vendedor</th><th>Fecha cambio</th><th>Última Nota</th></tr></thead><tbody id="newLostBody"></tbody></table>
-        <div class="nodata" id="noNewLost" style="display:none">Sin nuevos perdidos esta semana</div></div></div>
-
-      <!-- Lost clients this month (below Churn KPI) -->
-      <div class="sec"><div class="sec-h"><h2>📉 Clientes Perdidos Este Mes (precisión CRM)</h2></div><div class="sec-b" style="max-height:400px;overflow-y:auto">
-        <table><thead><tr><th>Cliente</th><th>Prom. Mensual</th><th>Vendedor</th><th>Fecha</th><th>Estado Actual</th><th>Última Nota</th></tr></thead><tbody id="lostMonthBody"></tbody></table>
-        <div class="nodata" id="noLostMonth" style="display:none">Sin perdidos en el mes</div></div></div>
-
-      <!-- Clientes En Riesgo Crediticio -->
-      <div class="sec"><div class="sec-h"><h2>⚠️ Clientes En Riesgo Crediticio</h2><span class="badge" id="riskClientCount">0</span></div><div class="sec-b" style="max-height:500px;overflow-y:auto">
-        <table><thead><tr><th>Nivel</th><th>Cliente</th><th>Vendedor</th><th style="text-align:right">Línea Crédito</th><th style="text-align:right">Utilización</th><th style="text-align:right">Mora</th><th>DICOM</th><th style="text-align:right">Score</th><th>Última Nota</th></tr></thead><tbody id="riskClientsBody"></tbody></table>
-        <div class="nodata" id="noRiskClients" style="display:none">Sin clientes en riesgo</div></div></div>
-
-      <!-- Todos los Durmientes -->
-      <div class="sec"><div class="sec-h"><h2>😴 Todos los Durmientes</h2><span class="badge" id="allDormantCount">0</span></div><div class="sec-b" style="max-height:600px;overflow-y:auto">
-        <table><thead><tr><th>Cliente</th><th style="text-align:right">Litros Prom/Mes</th><th>Responsable</th><th>Última Actividad</th><th style="text-align:center">Oport. CRM</th></tr></thead><tbody id="allDormantBody"></tbody></table>
-        <div class="nodata" id="noAllDormant" style="display:none">Sin durmientes registrados</div></div></div>
+      <!-- Transición a Fidelización (clientes nuevos con 6+ meses, se traspasan a CS) -->
+      <div class="sec"><div class="sec-h"><h2>🔄 Transición a Fidelización</h2><span style="font-size:12px;color:var(--dim)">Clientes con 6+ meses (180 días) desde primera compra</span></div>
+        <div class="sec-b" style="padding:0;overflow-x:auto" id="csGraduatingContainer"></div></div>
     </div>
 
     <!-- ═══ TAB: CS ═══ -->
@@ -254,16 +235,22 @@ tr:hover td{background:#fafaf8}
           <div class="nodata" id="noClientesAcumulado" style="display:none">Sin clientes ganados este mes</div></div></div>
       </div>
 
-      <!-- Clientes Rescatados (durmientes/perdidos que volvieron a facturar) -->
+      <!-- Clientes Recuperados (durmientes/perdidos que volvieron a facturar) -->
       <div id="csRescatadosContainer" style="display:none">
-        <div class="sec"><div class="sec-h"><h2>🏆 Clientes Rescatados</h2><span class="badge" id="csRescCount">0</span></div><div class="sec-b" style="max-height:500px;overflow-x:auto">
+        <div class="sec"><div class="sec-h"><h2>🏆 Clientes Recuperados</h2><span class="badge" id="csRescCount">0</span></div><div class="sec-b" style="max-height:500px;overflow-x:auto">
           <table><thead><tr><th>Cliente</th><th>Origen</th><th style="text-align:right">Prom. Mensual</th><th>Responsable</th><th>Fecha</th></tr></thead><tbody id="csRescatadosBody"></tbody></table>
-          <div class="nodata" id="noCsRescatados" style="display:none">Sin clientes rescatados en el período</div></div></div>
+          <div class="nodata" id="noCsRescatados" style="display:none">Sin clientes recuperados en el período</div></div></div>
       </div>
 
-      <!-- Graduating clients (new → fidelización) -->
-      <div class="sec"><div class="sec-h"><h2>🔄 Transición a Fidelización</h2><span style="font-size:12px;color:var(--dim)">Clientes con 6+ meses (180 días) desde primera compra</span></div>
-        <div class="sec-b" style="padding:0;overflow-x:auto" id="csGraduatingContainer"></div></div>
+      <!-- Nuevos Durmientes (fecha real de cambio de etapa vía tracking) -->
+      <div id="csDurmientesContainer" style="display:none">
+        <div class="sec"><div class="sec-h"><h2>😴 Nuevos Durmientes</h2><span class="badge" id="newDormantCount">0</span></div><div class="sec-b" style="max-height:500px;overflow-y:auto">
+          <table><thead><tr><th>Prioridad</th><th>Cliente</th><th>Prom. Mensual 8M</th><th>Responsable</th><th>Fecha durmiente</th><th>Última Nota</th></tr></thead><tbody id="newDormantBody"></tbody></table>
+          <div class="nodata" id="noNewDormant" style="display:none">Sin nuevos durmientes en el período</div></div></div>
+      </div>
+
+      <!-- Estacionales — esperar temporada -->
+      <div id="csEstacionalesContainer" style="display:none"></div>
 
       <!-- Mes Vencido CS -->
       <div id="csMesVencidoContainer" style="display:none"></div>
@@ -276,8 +263,6 @@ tr:hover td{background:#fafaf8}
 
     <!-- ═══ TAB: PIPELINE ═══ -->
     <div class="tab-panel" id="tab-pipeline"></div>
-
-    <div class="tab-panel" id="tab-recovery"></div>
 
     <!-- ═══ TAB: PENDIENTES ═══ -->
     <div class="tab-panel" id="tab-pendientes">
@@ -504,7 +489,6 @@ function switchTab(tab) {
   if (tab === 'cs' && D) renderCS();
   if (tab === 'mesvencido' && D) renderMesVencido();
   if (tab === 'pipeline' && D) renderPipeline();
-  if (tab === 'recovery' && D) renderRecovery();
   // Riesgo tab removed — now in CEO dashboard only
 }
 
@@ -1464,251 +1448,90 @@ function renderHotDeals() {
 // ═══════════════════════════════════════
 function renderFidelizacion() {
   if (!D) return;
-
-  // Dedup helper
-  const _dedup = (list) => {
-    const m = new Map();
-    list.forEach(c => {
-      const k = (c.name || '').toUpperCase();
-      const prev = m.get(k);
-      if (!prev || (c.last_update || '') > (prev.last_update || '')) m.set(k, c);
-    });
-    return [...m.values()];
-  };
-
   const churn = D.churn || {}, summary = churn.summary || {};
-  const week = getCurrentWeek() || {};
-  const weekStart = week.week_start || '';
-  const weekEnd = week.week_end || '';
-
-  // Get current month dates
   const now = new Date();
-  const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
-  const monthStartStr = monthStart.toISOString().split('T')[0];
+  const monthStartStr = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().split('T')[0];
 
-  // KPI Row 1 (5 boxes)
+  // KPI Row — resumen de cartera de la empresa
   let kh = '';
-  kh += mkKpi('c-green', '👥 Activos', summary.active || 0, 'facturaron últimos 2 meses', null, null);
-  kh += mkKpi('c-yellow', '😴 Durmientes', summary.dormant || 0, 'fuera de ciclo, < 9 meses', null, null);
-  kh += mkKpi('c-red', '💀 Perdidos', summary.lost || 0, 'sin factura 9+ meses', null, null);
-
-  // Churn KPI: newly_lost / prev_month_clients
+  kh += mkKpi('c-green', '\u{1F465} Activos', summary.active || 0, 'facturaron \u00faltimos 2 meses', null, null);
+  kh += mkKpi('c-yellow', '\u{1F634} Durmientes', summary.dormant || 0, 'fuera de ciclo, < 9 meses', null, null);
+  kh += mkKpi('c-red', '\u{1F480} Perdidos', summary.lost || 0, 'sin factura 9+ meses', null, null);
   const churnPct = summary.churn_pct || 0;
-  const newlyLost = summary.newly_lost || 0;
-  const prevMonthClients = summary.prev_month_clients || 1;
-  const churnLabel = summary.churn_label || '';
-  const churnDet = `${churnLabel ? churnLabel + ' · ' : ''}${newlyLost} / ${prevMonthClients}`;
-  kh += mkKpi('c-red', '📉 Churn', churnPct.toFixed(1) + '%', churnDet, null, null);
-
-  // Rescue rate: rescued / (dormant + rescued)
-  const rescuedCount = summary.rescued_count || 0;
-  const dormantCount = summary.dormant || 0;
-  const rescuePct = summary.rescue_pct || 0;
-  kh += mkKpi('c-green', '🏆 Tasa Rescate', rescuePct.toFixed(1) + '%', `${rescuedCount} rescatados`, null, null);
-
-  // Cotizaciones enviadas en la semana seleccionada (funnel, conteo real)
+  const churnDet = (summary.churn_label ? summary.churn_label + ' \u00b7 ' : '') + (summary.newly_lost || 0) + ' / ' + (summary.prev_month_clients || 1);
+  kh += mkKpi('c-red', '\u{1F4C9} Churn', churnPct.toFixed(1) + '%', churnDet, null, null);
+  const rescuedCount = (summary.rescued_dormant || 0) + (summary.rescued_lost || 0);
+  kh += mkKpi('c-green', '\u{1F3C6} Tasa Rescate', (summary.rescue_pct || 0).toFixed(1) + '%', rescuedCount + ' rescatados', null, null);
+  const week = getCurrentWeek() || {};
   const cotizSemana = (((week.stages || {}).cotizacion) || {}).value || 0;
-  kh += mkKpi('c-yellow', '📨 Cotizaciones', cotizSemana, 'enviadas esta semana (equipo)', null, null);
-
+  kh += mkKpi('c-yellow', '\u{1F4E8} Cotizaciones', cotizSemana, 'enviadas esta semana (equipo)', null, null);
   document.getElementById('churnKpiRow').innerHTML = kh;
 
-  // Explanation notes
   let notes = '<strong>Definiciones:</strong><br>';
-  notes += '<strong>Perdidos:</strong> Clientes sin factura por más de 9 meses (etapa CRM: Perdido)<br>';
-  notes += '<strong>Churn:</strong> Perdidos del mes (clientes que cruzan 9 meses sin comprar, excluyendo estacionales) ÷ Activos del mes anterior<br>';
-  notes += '<strong>Rescate:</strong> Rescatados = durmientes que volvieron a facturar / (durmientes + rescatados)';
+  notes += '<strong>Perdidos:</strong> Clientes sin factura por m\u00e1s de 9 meses (etapa CRM: Perdido). La fecha mostrada es la REAL del cambio de etapa (tracking del chatter, inmune al re-estampado del cron)<br>';
+  notes += '<strong>Churn:</strong> Perdidos del mes (clientes que cruzan 9 meses sin comprar, excluyendo estacionales) \u00f7 Activos del mes anterior<br>';
+  notes += '<strong>Rescate:</strong> Rescatados = durmientes/perdidos que volvieron a facturar / (durmientes + rescatados)';
   document.getElementById('churnNotes').innerHTML = notes;
 
-  // Nuevos Durmientes de la Semana — solo gestión del equipo CS/interno (no freelancers ni ejecutivos de venta)
-  const dormantListAll = (churn.dormant_list || []).filter(c => isCSGestion(c.user));
-  const newDormantWeek = dormantListAll.filter(c => {
-    const lu = c.last_update || '';
-    return weekStart && weekEnd && lu >= weekStart && lu <= weekEnd;
-  });
-  const newDormantDedup = _dedup(newDormantWeek);
-  newDormantDedup.sort((a, b) => (b.avg_monthly_litros || 0) - (a.avg_monthly_litros || 0));
-
-  const ndb = document.getElementById('newDormantBody'); ndb.innerHTML = '';
-  if (newDormantDedup.length === 0) {
-    document.getElementById('noNewDormant').style.display = 'block';
-  } else {
-    document.getElementById('noNewDormant').style.display = 'none';
-    newDormantDedup.forEach(c => {
-      const l = c.avg_monthly_litros || 0;
-      const lTag = l >= 5000 ? '<span style="color:var(--red);font-weight:700">' + fL(l) + '</span>'
-        : l >= 1000 ? '<span style="color:var(--yellow);font-weight:700">' + fL(l) + '</span>'
-        : '<span style="color:var(--dim)">' + fL(l) + '</span>';
-      const priority = l >= 5000 ? '🔴' : l >= 1000 ? '🟡' : '⚪';
-      const noteHtmlD = c.last_note ? `<span style="font-size:11px;color:var(--dim)">${H(c.last_note)}</span>` : '<span style="color:var(--dim)">—</span>';
-      const tr = document.createElement('tr');
-      tr.innerHTML = `<td>${priority}</td><td class="bold">${H(c.name)}</td><td>${lTag}</td><td>${H(c.user || '—')}</td><td>${c.last_update || '—'}</td><td style="max-width:260px;white-space:normal">${noteHtmlD}</td>`;
-      ndb.appendChild(tr);
-    });
-  }
-
-  // Nuevos Perdidos de la Semana
+  // \u2500\u2500 Nuevos Perdidos del Mes \u2500\u2500 fecha real de cambio de etapa; gestiona el equipo COMERCIAL (todos los vendedores)
   const _isGenericName = n => { if (!n || n === '?') return true; const nl = n.trim().toLowerCase(); return nl.length < 3 || nl === 'sin asignar' || nl.includes('sin nombre'); };
-  const lostListAll = (churn.lost_list || []).filter(c => !_isGenericName(c.name) && isCSGestion(c.user));
-  const newLostWeek = lostListAll.filter(c => {
-    const lu = c.last_update || '';
-    return weekStart && weekEnd && lu >= weekStart && lu <= weekEnd;
-  });
-  const newLostDedup = _dedup(newLostWeek);
-  newLostDedup.sort((a, b) => (b.avg_monthly_litros || 0) - (a.avg_monthly_litros || 0));
-
+  const _dedup = (list) => { const m = new Map(); list.forEach(c => { const k = (c.name || '').toUpperCase(); const prev = m.get(k); if (!prev || (c.last_update || '') > (prev.last_update || '')) m.set(k, c); }); return [...m.values()]; };
+  const newLost = _dedup((churn.lost_list || []).filter(c => !_isGenericName(c.name) && !isExcluded(c.user) && (c.last_update || '') >= monthStartStr));
+  newLost.sort((a, b) => (b.avg_monthly_litros || 0) - (a.avg_monthly_litros || 0));
+  document.getElementById('newLostCount').textContent = newLost.length;
   const nlb = document.getElementById('newLostBody'); nlb.innerHTML = '';
-  if (newLostDedup.length === 0) {
+  if (newLost.length === 0) {
     document.getElementById('noNewLost').style.display = 'block';
   } else {
     document.getElementById('noNewLost').style.display = 'none';
-    newLostDedup.forEach(c => {
+    newLost.forEach(c => {
       const l = c.avg_monthly_litros || 0;
       const lTag = l >= 5000 ? '<span style="color:var(--red);font-weight:700">' + fL(l) + '</span>'
         : l >= 1000 ? '<span style="color:var(--yellow);font-weight:700">' + fL(l) + '</span>'
         : '<span style="color:var(--dim)">' + fL(l) + '</span>';
-      const priority = l >= 5000 ? '🔴' : l >= 1000 ? '🟡' : '⚪';
-      const noteHtmlL = c.last_note ? `<span style="font-size:11px;color:var(--dim)">${H(c.last_note)}</span>` : '<span style="color:var(--dim)">—</span>';
+      const priority = l >= 5000 ? '\u{1F534}' : l >= 1000 ? '\u{1F7E1}' : '\u26AA';
+      const noteHtml = c.last_note ? '<span style="font-size:11px;color:var(--dim)">' + H(c.last_note) + '</span>' : '<span style="color:var(--dim)">\u2014</span>';
       const tr = document.createElement('tr');
-      tr.innerHTML = `<td>${priority}</td><td class="bold">${H(c.name)}</td><td>${lTag}</td><td>${H(c.user || '—')}</td><td>${c.last_update || '—'}</td><td style="max-width:260px;white-space:normal">${noteHtmlL}</td>`;
+      tr.innerHTML = '<td>' + priority + '</td><td class="bold">' + H(c.name) + '</td><td>' + lTag + '</td><td>' + H(c.user || '\u2014') + '</td><td>' + (c.last_update || '\u2014') + '</td><td style="max-width:260px;white-space:normal">' + noteHtml + '</td>';
       nlb.appendChild(tr);
     });
   }
 
-  // Lost clients this month — from precise tracking (mail.tracking.value)
-  const newlyLostPrecise = (churn.lost_list || []).filter(c => (c.last_update || '') >= monthStartStr && isCSGestion(c.user));
-  newlyLostPrecise.sort((a, b) => (b.avg_monthly_litros || 0) - (a.avg_monthly_litros || 0));
-
-  const lmb = document.getElementById('lostMonthBody'); lmb.innerHTML = '';
-  if (newlyLostPrecise.length === 0) {
-    document.getElementById('noLostMonth').style.display = 'block';
-  } else {
-    document.getElementById('noLostMonth').style.display = 'none';
-    newlyLostPrecise.forEach(c => {
-      const stageNow = c.stage_now || '';
-      const recovered = stageNow && !stageNow.toLowerCase().includes('perdido');
-      const noteHtmlM = c.last_note ? '<span style="font-size:11px;color:var(--dim)">' + H(c.last_note) + '</span>' : '<span style="color:var(--dim)">—</span>';
-      const lM = c.avg_monthly_litros || 0;
-      const lTagM = lM >= 5000 ? '<span style="color:var(--red);font-weight:700">' + fL(lM) + '</span>'
-        : lM >= 1000 ? '<span style="color:var(--yellow);font-weight:700">' + fL(lM) + '</span>'
-        : '<span style="color:var(--dim)">' + fL(lM) + '</span>';
-      const tr = document.createElement('tr');
-      tr.innerHTML = '<td class="bold">' + H(c.name) + '</td><td>' + lTagM + '</td><td>' + H(c.user || '—') + '</td><td>' + (c.date || '—') + '</td><td>' + (recovered ? '<span class="tag tag-g">Recuperado → ' + H(stageNow) + '</span>' : '<span class="tag tag-r">Perdido</span>') + '</td><td style="max-width:260px;white-space:normal">' + noteHtmlM + '</td>';
-      lmb.appendChild(tr);
-    });
-  }
-
-  // ── Clientes En Riesgo Crediticio (Crítico + Alto del score_table) ──
-  const crData = D.credit_risk || {};
-  const scoreTable = crData.score_table || [];
-  const riskClients = scoreTable.filter(s => s.risk_level === 'Crítico' || s.risk_level === 'Alto');
-  riskClients.sort((a, b) => (b.risk_score || 0) - (a.risk_score || 0));
-
-  const rcBadge = document.getElementById('riskClientCount');
-  if (rcBadge) rcBadge.textContent = riskClients.length;
-  const rcBody = document.getElementById('riskClientsBody');
-  const noRisk = document.getElementById('noRiskClients');
-  if (rcBody) {
-    rcBody.innerHTML = '';
-    if (riskClients.length === 0) {
-      noRisk.style.display = 'block';
-    } else {
-      noRisk.style.display = 'none';
-      riskClients.forEach(s => {
-        const lvlTag = s.risk_level === 'Crítico'
-          ? '<span class="tag tag-r">Crítico</span>'
-          : '<span class="tag tag-y">Alto</span>';
-        const dicom = s.has_dicom ? '<span class="tag tag-r">DICOM</span>' : '';
-        const tr = document.createElement('tr');
-        const noteHtml = s.last_note ? `<div style="font-size:11px;color:var(--dim);max-width:250px;white-space:normal">${H(s.last_note)}</div>` : '—';
-        tr.innerHTML = `<td>${lvlTag}</td><td class="bold">${H(s.name)}</td><td>${H(s.vendedor || '—')}</td><td style="text-align:right">$${fL(s.monto_credito || 0)}</td><td style="text-align:right">${s.utilizacion_pct || 0}%</td><td style="text-align:right">${s.mora_ratio || 0}</td><td>${dicom}</td><td style="text-align:right">${s.risk_score || 0}</td><td>${noteHtml}</td>`;
-        rcBody.appendChild(tr);
-      });
-    }
-  }
-
-  // ── Todos los Durmientes (con última actividad y observaciones) ──
-  const allDormantDedup = _dedup(dormantListAll);
-
-  // Cross-reference with CRM activities (mail.activity) by client name
-  const allActs = D.activities || [];
-  const allMsgsD = D.messages || [];
-  const actByClient = {};  // uppercase client name → [{date, type, desc}]
-  allActs.forEach(a => {
-    // a.lead is like "Oportunidad de CLIENT NAME" or just "CLIENT NAME"
-    const lead = (a.lead || '').trim().toUpperCase();
-    if (!lead) return;
-    const entry = {date: a.date || '', type: a.type || 'To-Do', desc: a.summary || ''};
-    // Try matching: exact or partial (client name appears in lead name)
-    allDormantDedup.forEach(c => {
-      const cn = (c.name || '').trim().toUpperCase();
-      if (cn && (lead.includes(cn) || cn.includes(lead))) {
-        if (!actByClient[cn]) actByClient[cn] = [];
-        actByClient[cn].push(entry);
-      }
-    });
-  });
-
-  // Enrich dormant clients with CRM activity
-  const _todayStr = new Date().toISOString().slice(0, 10);
-  allDormantDedup.forEach(c => {
-    const cn = (c.name || '').trim().toUpperCase();
-    // Solo gestión ya ocurrida: excluir actividades con plazo a futuro (deadlines tipo 2027)
-    const acts = (actByClient[cn] || []).filter(a => (a.date || '').slice(0, 10) <= _todayStr);
-    acts.sort((a, b) => (b.date || '').localeCompare(a.date || ''));
-    c._crmAct = acts[0] || null;  // actividad pasada más reciente
-  });
-
-  // Sort: those with CRM activity first (by date desc), then by avg_monthly_litros desc
-  allDormantDedup.sort((a, b) => {
-    const aAct = a._crmAct ? a._crmAct.date : '';
-    const bAct = b._crmAct ? b._crmAct.date : '';
-    if (aAct && !bAct) return -1;
-    if (!aAct && bAct) return 1;
-    if (aAct && bAct) return bAct.localeCompare(aAct);
-    return (b.avg_monthly_litros || 0) - (a.avg_monthly_litros || 0);
-  });
-
-  const dormBadge = document.getElementById('allDormantCount');
-  if (dormBadge) dormBadge.textContent = allDormantDedup.length;
-  const adb = document.getElementById('allDormantBody'); adb.innerHTML = '';
-  if (allDormantDedup.length === 0) {
-    document.getElementById('noAllDormant').style.display = 'block';
-  } else {
-    document.getElementById('noAllDormant').style.display = 'none';
-    // Build set of client names with CRM opportunity (pipeline + won_deals)
-    const crmOppNames = new Set();
-    (D.pipeline || []).forEach(p => { if (p.name) crmOppNames.add(p.name.trim().toUpperCase()); });
-    (D.won_deals || []).forEach(w => { if (w.name) crmOppNames.add(w.name.trim().toUpperCase()); });
-
-    allDormantDedup.forEach(c => {
-      const l = c.avg_monthly_litros || 0;
-      const lTag = l >= 5000 ? '<span style="color:var(--red);font-weight:700">' + fL(l) + '</span>'
-        : l >= 1000 ? '<span style="color:var(--yellow);font-weight:700">' + fL(l) + '</span>'
-        : '<span style="color:var(--dim)">' + fL(l) + '</span>';
-      // Activity from CRM (mail.activity)
-      let actHtml = '';
-      if (c._crmAct) {
-        actHtml = `<div style="font-size:11px"><strong>${c._crmAct.date.slice(0,10)}</strong> · ${H(c._crmAct.type)}</div><div style="font-size:11px;color:var(--dim);max-width:250px;white-space:normal">${H(c._crmAct.desc)}</div>`;
-      }
-      // Last note from mail.message (partner)
-      const noteHtml = c.last_note
-        ? `<div style="font-size:11px;color:var(--dim);max-width:250px;white-space:normal">${H(c.last_note)}</div>`
-        : '';
-      const activityCol = actHtml || noteHtml || (c.last_update || '—');
-      // CRM opportunity boolean
-      const cn = (c.name || '').trim().toUpperCase();
-      const hasOpp = crmOppNames.has(cn) || c._crmAct;
-      const oppTag = hasOpp ? '<span class="tag tag-g">Sí</span>' : '<span class="tag tag-r">No</span>';
-      const tr = document.createElement('tr');
-      tr.innerHTML = `<td class="bold">${H(c.name)}</td><td style="text-align:right">${lTag}</td><td>${H(c.user || '—')}</td><td>${activityCol}</td><td style="text-align:center">${oppTag}</td>`;
-      adb.appendChild(tr);
-    });
-  }
+  // Transici\u00f3n a Fidelizaci\u00f3n (vive en este tab: lo gestiona el equipo comercial)
+  renderGraduating();
 }
 
-// ═══════════════════════════════════════
-// CS TAB
-// ═══════════════════════════════════════
+function renderGraduating() {
+  const grad = D.graduating || [];
+  const gradContainer = document.getElementById('csGraduatingContainer');
+  if (!gradContainer) return;
+  if (grad.length === 0) {
+    gradContainer.innerHTML = '<div class="nodata">Sin clientes en transici\u00f3n</div>';
+    return;
+  }
+  const pendientes = grad.filter(c => c.status === 'pendiente');
+  const proximos = grad.filter(c => c.status === 'proximo');
+  let gh = '';
+  if (pendientes.length) {
+    gh += '<div style="padding:8px 12px;font-weight:700;color:var(--red);font-size:13px">\u26A0\uFE0F Pendientes de transferir a CS (' + pendientes.length + ') \u2014 6+ meses con ejecutivo</div>';
+    gh += '<table><thead><tr><th>Cliente</th><th>Vendedor</th><th>1\u00aa Factura</th><th>D\u00edas</th><th style="text-align:right">Litros</th></tr></thead><tbody>';
+    pendientes.forEach(c => {
+      const dc = c.days_since >= 270 ? 'color:var(--red);font-weight:700' : c.days_since >= 195 ? 'color:var(--orange);font-weight:700' : '';
+      gh += '<tr><td class="bold">' + H(c.name) + '</td><td>' + H(c.vendedor) + '</td><td>' + c.first_invoice + '</td><td style="' + dc + '">' + c.days_since + 'd</td><td style="text-align:right">' + (c.litros ? fL(c.litros) : '\u2014') + '</td></tr>';
+    });
+    gh += '</tbody></table>';
+  }
+  if (proximos.length) {
+    gh += '<div style="padding:8px 12px;font-weight:700;color:var(--yellow);font-size:13px;margin-top:12px">\u23F3 Pr\u00f3ximos a transici\u00f3n (' + proximos.length + ') \u2014 150-179 d\u00edas</div>';
+    gh += '<table><thead><tr><th>Cliente</th><th>Vendedor</th><th>1\u00aa Factura</th><th>D\u00edas</th><th style="text-align:right">Litros</th></tr></thead><tbody>';
+    proximos.forEach(c => {
+      gh += '<tr><td class="bold">' + H(c.name) + '</td><td>' + H(c.vendedor) + '</td><td>' + c.first_invoice + '</td><td>' + c.days_since + 'd</td><td style="text-align:right">' + (c.litros ? fL(c.litros) : '\u2014') + '</td></tr>';
+    });
+    gh += '</tbody></table>';
+  }
+  gradContainer.innerHTML = gh;
+}
+
 function renderCS() {
   if (!D) return;
 
@@ -1749,8 +1572,9 @@ function renderCS() {
     }
   }
 
-  // Durmientes y rescatados filtrados por semana — solo gestión del equipo CS/interno
-  const csDormAll = (churn.dormant_list || []).filter(c => isCSGestion(c.user));
+  // Durmientes = cola de trabajo de ADMIN (todos los clientes, sin filtro de vendedor).
+  // Recuperados/Ganados = gestión realizada por el equipo CS/interno (isCSGestion).
+  const csDormAll = (churn.dormant_list || []).filter(c => !isExcluded(c.user));
   const csRescDorm = (churn.rescued_dormant_list || []).filter(c => isCSGestion(c.user));
   const csRescLost = (churn.rescued_lost_list || []).filter(c => isCSGestion(c.user));
   let durmientes = 0, rescatados = 0, litrosRescatados = 0;
@@ -1841,7 +1665,37 @@ function renderCS() {
     });
   }
 
-  // Clientes Rescatados table (semanal y acumulado)
+  // Nuevos Durmientes table (semanal: semana seleccionada; acumulado: mes actual)
+  const dormSel = (csSubTab === 'semanal' ? csDormAll.filter(_inWeek)
+                   : csDormAll.filter(c => (c.last_update || '') >= monthStartStr))
+    .slice().sort((a, b) => (b.avg_monthly_litros || 0) - (a.avg_monthly_litros || 0));
+  const dormCont = document.getElementById('csDurmientesContainer');
+  if (dormCont) {
+    dormCont.style.display = csSubTab === 'mesvencido' ? 'none' : 'block';
+    document.getElementById('newDormantCount').textContent = dormSel.length;
+    const ndb = document.getElementById('newDormantBody'); ndb.innerHTML = '';
+    const noD = document.getElementById('noNewDormant');
+    if (dormSel.length === 0) { noD.style.display = 'block'; }
+    else {
+      noD.style.display = 'none';
+      dormSel.forEach(c => {
+        const l = c.avg_monthly_litros || 0;
+        const lTag = l >= 5000 ? '<span style="color:var(--red);font-weight:700">' + fL(l) + '</span>'
+          : l >= 1000 ? '<span style="color:var(--yellow);font-weight:700">' + fL(l) + '</span>'
+          : '<span style="color:var(--dim)">' + fL(l) + '</span>';
+        const priority = l >= 5000 ? '🔴' : l >= 1000 ? '🟡' : '⚪';
+        const noteHtmlD = c.last_note ? '<span style="font-size:11px;color:var(--dim)">' + H(c.last_note) + '</span>' : '<span style="color:var(--dim)">—</span>';
+        const tr = document.createElement('tr');
+        tr.innerHTML = '<td>' + priority + '</td><td class="bold">' + H(c.name) + '</td><td>' + lTag + '</td><td>' + H(c.user || '—') + '</td><td>' + (c.last_update || '—') + '</td><td style="max-width:260px;white-space:normal">' + noteHtmlD + '</td>';
+        ndb.appendChild(tr);
+      });
+    }
+  }
+
+  // Estacionales — esperar temporada
+  renderEstacionalesCS(csSubTab !== 'mesvencido');
+
+  // Clientes Recuperados table (semanal y acumulado)
   const rescBody = document.getElementById('csRescatadosBody');
   const rescCont = document.getElementById('csRescatadosContainer');
   if (rescBody && rescCont) {
@@ -1883,37 +1737,6 @@ function renderCS() {
       mvh += '<div class="sec"><div class="sec-h"><h2>📊 Clientes Nuevos</h2></div><div class="sec-b"><div class="nodata">Sin clientes nuevos en mes anterior</div></div></div>';
     }
     mvCsCont.innerHTML = mvh;
-  }
-
-  // Graduating clients table — split into "pendientes" (3+ months) and "próximos" (2-3 months)
-  const grad = D.graduating || [];
-  const gradContainer = document.getElementById('csGraduatingContainer');
-  if (gradContainer) {
-    if (grad.length === 0) {
-      gradContainer.innerHTML = '<div class="nodata">Sin clientes en transición</div>';
-    } else {
-      const pendientes = grad.filter(c => c.status === 'pendiente');
-      const proximos = grad.filter(c => c.status === 'proximo');
-      let gh = '';
-      if (pendientes.length) {
-        gh += '<div style="padding:8px 12px;font-weight:700;color:var(--red);font-size:13px">⚠️ Pendientes de transferir a CS (' + pendientes.length + ') — 6+ meses con ejecutivo</div>';
-        gh += '<table><thead><tr><th>Cliente</th><th>Vendedor</th><th>1ª Factura</th><th>Días</th><th style="text-align:right">Litros</th></tr></thead><tbody>';
-        pendientes.forEach(c => {
-          const dc = c.days_since >= 270 ? 'color:var(--red);font-weight:700' : c.days_since >= 195 ? 'color:var(--orange);font-weight:700' : '';
-          gh += '<tr><td class="bold">' + H(c.name) + '</td><td>' + H(c.vendedor) + '</td><td>' + c.first_invoice + '</td><td style="' + dc + '">' + c.days_since + 'd</td><td style="text-align:right">' + (c.litros ? fL(c.litros) : '—') + '</td></tr>';
-        });
-        gh += '</tbody></table>';
-      }
-      if (proximos.length) {
-        gh += '<div style="padding:8px 12px;font-weight:700;color:var(--yellow);font-size:13px;margin-top:12px">⏳ Próximos a transición (' + proximos.length + ') — 150-179 días</div>';
-        gh += '<table><thead><tr><th>Cliente</th><th>Vendedor</th><th>1ª Factura</th><th>Días</th><th style="text-align:right">Litros</th></tr></thead><tbody>';
-        proximos.forEach(c => {
-          gh += '<tr><td class="bold">' + H(c.name) + '</td><td>' + H(c.vendedor) + '</td><td>' + c.first_invoice + '</td><td>' + c.days_since + 'd</td><td style="text-align:right">' + (c.litros ? fL(c.litros) : '—') + '</td></tr>';
-        });
-        gh += '</tbody></table>';
-      }
-      gradContainer.innerHTML = gh;
-    }
   }
 
   // Actividades CS removed — activity info now shown in Durmientes (Churn tab)
@@ -2201,232 +2024,42 @@ function renderPipeline() {
 // ═══════════════════════════════════════
 // RECOVERY TAB — Quick Wins (clientes 2025 caídos en 2026)
 // ═══════════════════════════════════════
-function renderRecovery() {
-  const el = document.getElementById('tab-recovery');
-  if (!el) return;
-  const rec = (D.recovery && D.recovery.recoverable) || [];
+function renderEstacionalesCS(show) {
+  const cont = document.getElementById('csEstacionalesContainer');
+  if (!cont) return;
+  cont.style.display = show ? 'block' : 'none';
+  if (!show) return;
   const sea = (D.recovery && D.recovery.seasonal) || [];
   const sum = (D.recovery && D.recovery.summary) || {};
+  const totalLpmSea = sea.reduce((s, c) => s + (c.lpm_2025 || 0), 0);
 
-  // ── Cruce con mail.activity (mismo patrón que bloque Durmientes) ──
-  // D.activities tiene {date, who, type, summary, lead, state}
-  // Matching por nombre de cliente en el campo "lead" (uppercase, includes ambos lados)
-  const allActs = D.activities || [];
-  const actByClient = {};  // uppercase client name → [{date, type, desc}]
-  const allRecClients = rec.concat(sea);
-  allActs.forEach(a => {
-    const lead = (a.lead || '').trim().toUpperCase();
-    if (!lead) return;
-    const entry = {date: a.date || '', type: a.type || 'To-Do', desc: a.summary || '', state: a.state || ''};
-    allRecClients.forEach(c => {
-      const cn = (c.name || '').trim().toUpperCase();
-      if (cn && (lead.includes(cn) || cn.includes(lead))) {
-        if (!actByClient[cn]) actByClient[cn] = [];
-        actByClient[cn].push(entry);
-      }
-    });
-  });
-  // Adjuntar la actividad más reciente y clasificar gestión
-  const _todayFid = new Date().toISOString().slice(0, 10);
-  allRecClients.forEach(c => {
-    const cn = (c.name || '').trim().toUpperCase();
-    const acts = actByClient[cn] || [];
-    acts.sort((a, b) => (b.date || '').localeCompare(a.date || ''));
-    c._crmAct = acts[0] || null;
-    // Classify: overdue vs planned vs done (has note = someone acted)
-    if (c._crmAct && (c._crmAct.state === 'overdue' || c._crmAct.date < _todayFid)) {
-      c._gestionStatus = 'overdue';
-    } else if (c._crmAct) {
-      c._gestionStatus = 'planned';
-    } else if (c.last_note) {
-      c._gestionStatus = 'done';
-    } else {
-      c._gestionStatus = 'none';
-    }
-  });
-
-  // ── KPIs ──
-  const totalLpmRec = rec.reduce((s, c) => s + c.lpm_2025, 0);
-  const totalLpmSea = sea.reduce((s, c) => s + c.lpm_2025, 0);
-  const withDone = rec.filter(c => c._gestionStatus === 'done' || c._gestionStatus === 'planned').length;
-  const withOverdue = rec.filter(c => c._gestionStatus === 'overdue').length;
-  const withNone = rec.filter(c => c._gestionStatus === 'none').length;
-  const withCrm = rec.filter(c => c.crm_stage).length;
-
-  let h = `
-    <div class="kpi-row" style="margin-bottom:20px">
-      ${mkKpi('c-red',    '⚠ Recuperables', sum.recoverable_count || 0, 'top 50 mostrados', null, null)}
-      ${mkKpi('c-yellow', '📦 L/mes en riesgo', totalLpmRec.toLocaleString('es-CL'), 'top 50 recuperables', null, null)}
-      ${mkKpi('c-green',  '✅ Con gestión', withDone, 'actividad al día o nota reciente', null, null)}
-      ${mkKpi('c-red',    '⚠ Con atraso', withOverdue, 'actividad vencida sin completar', null, null)}
-      ${mkKpi('c-blue',   '❌ Sin gestión', withNone, 'sin actividad ni nota', null, null)}
-    </div>
-    <div style="background:var(--card);border-radius:12px;padding:16px;margin-bottom:20px;
-                border-left:3px solid #c8360e;font-size:12px;color:var(--dim);line-height:1.7">
-      <strong style="color:var(--text)">¿Qué es esta lista?</strong>
-      Clientes que compraron Diesel B1 en 2025 (≥500 L/mes promedio) y se cayeron en 2026:
-      <strong>cero compra YTD</strong> o <strong>caída &gt;70%</strong> vs período comparable.
-      No son prospectos fríos — te conocen. Cada uno es una llamada, no una venta nueva.
-      Los <strong>estacionales</strong> (compraron solo en ciertos meses todavía no llegados) están separados abajo.
-      Ordenados por volumen 2025 descendente. Top 50 cada tabla.
-    </div>`;
-
-  // ── Tabla principal: Recuperables ──
-  h += `<h3 style="margin:24px 0 12px;color:var(--text);font-size:16px">
-          🔁 Recuperables ahora <span style="font-weight:400;color:var(--dim);font-size:13px">
-          (${rec.length} mostrados de ${sum.recoverable_count || 0})</span>
-        </h3>`;
-
-  if (rec.length === 0) {
-    h += `<div style="padding:24px;color:var(--dim);text-align:center;background:var(--card);border-radius:12px">
-            No hay clientes recuperables que cumplan el criterio (≥500 L/mes 2025 + cero/caída 2026).
-          </div>`;
-  } else {
-    h += `<div style="overflow-x:auto"><table>
-      <thead><tr>
-        <th>#</th><th>Cliente</th><th>Zona</th>
-        <th style="text-align:right">L 2025</th>
-        <th style="text-align:right">L/mes</th>
-        <th style="text-align:right">L 2026</th>
-        <th style="text-align:right">Caída</th>
-        <th>Tipo</th>
-        <th>CRM</th>
-        <th>Ejecutivo</th>
-        <th>Última Actividad</th>
-      </tr></thead><tbody>`;
-
-    rec.forEach((c, i) => {
-      const tipo = c.is_volume
-        ? '<span class="tag tag-blue">Volumen</span>'
-        : '<span class="tag tag-g">Retail</span>';
-      const crmBadge = c.crm_stage
-        ? `<span class="tag ${/durmiente/i.test(c.crm_stage)?'tag-y':'tag-r'}">${H(c.crm_stage)}</span>`
-        : '<span style="color:var(--dim);font-size:11px">Sin lead</span>';
-      const execName = c.crm_exec
-        ? `<span style="font-size:11px">${H(c.crm_exec.split(' ').slice(-1)[0])}</span>`
-        : '<span style="color:var(--dim);font-size:11px">—</span>';
-
-      // Actividad CRM (mail.activity) — con estado de gestión
-      const gIcon = c._gestionStatus === 'done' ? '✅' : c._gestionStatus === 'planned' ? '📅' : c._gestionStatus === 'overdue' ? '⚠️' : '❌';
-      let actCell = '';
-      if (c._crmAct) {
-        const stColor = c._gestionStatus === 'overdue' ? 'color:var(--red)' : '';
-        actCell = `<div style="font-size:11px;max-width:280px;white-space:normal">
-          <span style="${stColor}">${gIcon}</span>
-          <strong>${H(c._crmAct.date.slice(0,10))}</strong> · ${H(c._crmAct.type)}
-          <div style="color:var(--dim);font-size:11px;margin-top:2px;line-height:1.4">${H(c._crmAct.desc)}</div>
-        </div>`;
-      } else if (c.last_note) {
-        actCell = `<div style="font-size:11px;max-width:280px;white-space:normal;line-height:1.4"
-                title="${H(c.last_note)}">
-             ✅ ${H(c.last_note.slice(0, 80))}${c.last_note.length > 80 ? '…' : ''}
-             <div style="color:var(--dim);font-size:10px;margin-top:2px">
-               ${H(c.note_date)} · ${H((c.note_author||'').split(' ')[0])}
-             </div>
-           </div>`;
-      } else {
-        actCell = '<span style="color:var(--dim);font-size:11px">❌ Sin gestión</span>';
-      }
-      const caidaCell = (c.caida_pct >= 100)
-        ? '<span class="tag tag-r">100%</span>'
-        : `<span class="tag ${c.caida_pct>=70?'tag-r':'tag-y'}">${c.caida_pct}%</span>`;
-      const highlight = (i < 10) ? 'style="background:#fff8f7"' : '';
-
-      h += `<tr ${highlight}>
-        <td style="color:var(--dim);font-size:11px">${i+1}</td>
-        <td class="bold">${H(c.name)}</td>
-        <td style="font-size:12px">${H(c.zone)}</td>
-        <td style="text-align:right;font-weight:600">${c.litros_2025.toLocaleString('es-CL')}</td>
-        <td style="text-align:right">${c.lpm_2025.toLocaleString('es-CL')}</td>
-        <td style="text-align:right;color:var(--dim)">${c.litros_2026.toLocaleString('es-CL')}</td>
-        <td style="text-align:right">${caidaCell}</td>
-        <td>${tipo}</td>
-        <td>${crmBadge}</td>
-        <td>${execName}</td>
-        <td>${actCell}</td>
-      </tr>`;
-    });
-    h += `</tbody></table></div>`;
-  }
-
-  // ── Tabla secundaria: Estacionales ──
-  h += `<h3 style="margin:32px 0 12px;color:var(--text);font-size:16px">
-          📅 Estacionales — esperar temporada
-          <span style="font-weight:400;color:var(--dim);font-size:13px">
-          (${sea.length} mostrados de ${sum.seasonal_count || 0} · ${totalLpmSea.toLocaleString('es-CL')} L/mes históricos)
-          </span>
-        </h3>
-        <div style="background:var(--card);border-radius:12px;padding:12px 16px;margin-bottom:12px;
-                    border-left:3px solid #d97706;font-size:12px;color:var(--dim);line-height:1.6">
-          Estos clientes <strong>tienen patrón estacional</strong>: en 2025 compraron solo en ciertos meses
-          que aún no han llegado en 2026 (o están lejos). No los persigas todavía — agenda recordatorio
-          para el mes de inicio de temporada.
-        </div>`;
+  let h = '<div class="sec"><div class="sec-h"><h2>\u{1F4C5} Estacionales \u2014 esperar temporada</h2>'
+    + '<span style="font-size:12px;color:var(--dim)">' + sea.length + ' mostrados de ' + (sum.seasonal_count || 0)
+    + ' \u00b7 ' + totalLpmSea.toLocaleString('es-CL') + ' L/mes hist\u00f3ricos</span></div>'
+    + '<div class="sec-b" style="padding:0;overflow-x:auto">'
+    + '<div style="padding:12px 16px;border-left:3px solid #d97706;font-size:12px;color:var(--dim);line-height:1.6">'
+    + 'Compraron solo en ciertos meses de 2025 que a\u00fan no llegan en 2026. No perseguir todav\u00eda \u2014 '
+    + 'agendar recordatorio para el mes de inicio de temporada.</div>';
 
   if (sea.length === 0) {
-    h += `<div style="padding:24px;color:var(--dim);text-align:center;background:var(--card);border-radius:12px">
-            No se detectaron clientes estacionales.
-          </div>`;
+    h += '<div class="nodata">No se detectaron clientes estacionales</div>';
   } else {
-    h += `<div style="overflow-x:auto"><table>
-      <thead><tr>
-        <th>#</th><th>Cliente</th><th>Zona</th>
-        <th style="text-align:right">L 2025</th>
-        <th style="text-align:right">L/mes</th>
-        <th>Patrón mensual 2025</th>
-        <th>Empieza temporada</th>
-        <th>Tipo</th>
-        <th>Ejecutivo</th>
-        <th>Última Actividad</th>
-      </tr></thead><tbody>`;
-
-    sea.forEach((c, i) => {
-      const tipo = c.is_volume
-        ? '<span class="tag tag-blue">Volumen</span>'
-        : '<span class="tag tag-g">Retail</span>';
-      const execName = c.crm_exec
-        ? `<span style="font-size:11px">${H(c.crm_exec.split(' ').slice(-1)[0])}</span>`
-        : '<span style="color:var(--dim);font-size:11px">—</span>';
-      const patron = (c.months_pattern || []).join(' · ');
-      const startLbl = c.season_start_label
-        ? `<span class="tag tag-y">${H(c.season_start_label)}</span>`
-        : '—';
-
-      // Actividad CRM (mismo patrón que recuperables)
-      const gIcon2 = c._gestionStatus === 'done' ? '✅' : c._gestionStatus === 'planned' ? '📅' : c._gestionStatus === 'overdue' ? '⚠️' : '❌';
-      let actCell = '';
-      if (c._crmAct) {
-        const stColor2 = c._gestionStatus === 'overdue' ? 'color:var(--red)' : '';
-        actCell = `<div style="font-size:11px;max-width:260px;white-space:normal">
-          <span style="${stColor2}">${gIcon2}</span>
-          <strong>${H(c._crmAct.date.slice(0,10))}</strong> · ${H(c._crmAct.type)}
-          <div style="color:var(--dim);font-size:11px;margin-top:2px;line-height:1.4">${H(c._crmAct.desc)}</div>
-        </div>`;
-      } else if (c.last_note) {
-        actCell = `<div style="font-size:11px;max-width:260px;white-space:normal;line-height:1.4">
-          ✅ ${H(c.last_note.slice(0, 80))}${c.last_note.length > 80 ? '…' : ''}
-        </div>`;
-      } else {
-        actCell = '<span style="color:var(--dim);font-size:11px">❌ —</span>';
-      }
-
-      h += `<tr>
-        <td style="color:var(--dim);font-size:11px">${i+1}</td>
-        <td class="bold">${H(c.name)}</td>
-        <td style="font-size:12px">${H(c.zone)}</td>
-        <td style="text-align:right;font-weight:600">${c.litros_2025.toLocaleString('es-CL')}</td>
-        <td style="text-align:right">${c.lpm_2025.toLocaleString('es-CL')}</td>
-        <td style="font-size:11px;color:var(--dim)">${H(patron)}</td>
-        <td>${startLbl}</td>
-        <td>${tipo}</td>
-        <td>${execName}</td>
-        <td>${actCell}</td>
-      </tr>`;
+    h += '<table><thead><tr><th>Cliente</th><th>Zona</th><th style="text-align:right">L 2025</th>'
+      + '<th style="text-align:right">L/mes</th><th>Patr\u00f3n mensual 2025</th><th>Empieza temporada</th><th>Tipo</th></tr></thead><tbody>';
+    sea.forEach(c => {
+      const tipo = c.is_volume ? '<span class="tag tag-blue">Volumen</span>' : '<span class="tag tag-g">Retail</span>';
+      const patron = (c.months_pattern || []).join(' \u00b7 ');
+      const startLbl = c.season_start_label ? '<span class="tag tag-y">' + H(c.season_start_label) + '</span>' : '\u2014';
+      h += '<tr><td class="bold">' + H(c.name) + '</td><td>' + H(c.zone || '\u2014') + '</td>'
+        + '<td style="text-align:right">' + fL(c.litros_2025 || 0) + '</td>'
+        + '<td style="text-align:right">' + fL(c.lpm_2025 || 0) + '</td>'
+        + '<td style="font-size:11px;color:var(--dim)">' + H(patron) + '</td>'
+        + '<td>' + startLbl + '</td><td>' + tipo + '</td></tr>';
     });
-    h += `</tbody></table></div>`;
+    h += '</tbody></table>';
   }
-
-  el.innerHTML = h;
+  h += '</div></div>';
+  cont.innerHTML = h;
 }
 
 // ═══════════════════════════════════════
