@@ -187,10 +187,6 @@ tr:hover td{background:#fafaf8}
           <div class="chart-cont"><h3>💰 Margen % por Ejecutivo</h3><canvas id="chartMargenExecAccum"></canvas></div>
         </div>
 
-        <!-- Hot Deals (same as semanal) -->
-        <div class="sec"><div class="sec-h"><h2>🔥 Hot Deals — Cotizados 30d</h2><span class="badge" id="hotCountAccum">0</span></div>
-          <div class="sec-b" style="max-height:480px;overflow-y:auto"><table><thead><tr><th>Cliente</th><th>Etapa</th><th>Ejecutivo</th><th>Litros</th><th>Fecha</th></tr></thead><tbody id="hotBodyAccum"></tbody></table>
-          <div class="nodata" id="noHotAccum" style="display:none">Sin hot deals</div></div></div>
       </div>
     </div>
 
@@ -1175,7 +1171,6 @@ function renderVentasData() {
   if (isAccum) {
     renderRankingAccum();
     renderMargenChartsAccum();
-    renderHotDealsAccum();
   } else {
     renderWeeklyChart();
     renderNewClientsTable();
@@ -1450,21 +1445,6 @@ function renderHotDeals() {
   });
 }
 
-// — Hot Deals (Acumulado Mes) —
-function renderHotDealsAccum() {
-  const pl = (D.pipeline || []).filter(p => p.days_since_activity <= 30 && isAllowed(p.exec) && p.stage_class !== 'durmiente' && p.stage_class !== 'perdido');
-  pl.sort((a, b) => (b.value || 0) - (a.value || 0));
-  const items = pl.slice(0, 12);
-  document.getElementById('hotCountAccum').textContent = pl.length + ' deals';
-  const tbody = document.getElementById('hotBodyAccum'); tbody.innerHTML = '';
-  if (items.length === 0) { document.getElementById('noHotAccum').style.display = 'block'; return; }
-  document.getElementById('noHotAccum').style.display = 'none';
-  items.forEach(p => {
-    const tr = document.createElement('tr');
-    tr.innerHTML = `<td class="bold">${H(p.name)}</td><td>${stageTag(p.stage, p.stage_class)}</td><td>${H((p.exec || '').split(' ').slice(0, 2).join(' '))}</td><td>${fL(p.value)}</td><td>${p.last_update || '—'}</td>`;
-    tbody.appendChild(tr);
-  });
-}
 
 
 // ═══════════════════════════════════════
@@ -2078,120 +2058,6 @@ function renderRescuedTable(list, bodyId, noId, countId) {
 }
 
 // ═══════════════════════════════════════
-// RIESGO CREDITICIO TAB
-// ═══════════════════════════════════════
-let chartRiskDist = null, chartRiesgoVigente = null;
-let _riesgoHist = null;
-async function loadRiesgoHist() {
-  if (_riesgoHist) return _riesgoHist;
-  try { const r = await fetch('riesgo-historico.json?t='+Date.now()); if(r.ok) _riesgoHist = await r.json(); } catch(e) {}
-  return _riesgoHist || [];
-}
-
-function renderRiesgo() {
-  if (!D || !D.credit_risk) return;
-  const cr = D.credit_risk, summary = cr.summary || {};
-  const scoreData = cr.score_table || [];
-  const lineaData = cr.linea_insuficiente || [];
-  const total = summary.total_evaluados || 1;
-  const pctCrit = ((summary.criticos||0)/total*100).toFixed(1);
-  const pctAlto = ((summary.altos||0)/total*100).toFixed(1);
-  const pctCritAlto = (((summary.criticos||0)+(summary.altos||0))/total*100).toFixed(1);
-
-  const fMoney = n => n ? '$' + Math.round(n).toLocaleString('es-CL') : '$0';
-
-  let kh = '';
-  kh += mkKpi(parseFloat(pctCritAlto)>30?'c-red':parseFloat(pctCritAlto)>15?'c-yellow':'c-green', '% Crítico+Alto', pctCritAlto+'%', `${summary.criticos||0} críticos + ${summary.altos||0} altos`, null, null);
-  kh += mkKpi('c-blue', 'Líneas Insuficientes', summary.linea_insuficiente_count || 0, 'requieren aumento', null, null);
-  kh += mkKpi('c-red', 'Monto Vencido', fMoney(summary.total_overdue_amount), `${summary.total_siniestros || 0} siniestros`, null, null);
-  kh += mkKpi('c-yellow', 'Utiliz. Promedio', (summary.avg_utilizacion || 0) + '%', `${summary.total_evaluados || 0} evaluados`, null, null);
-  kh += mkKpi('c-green', 'Riesgo Bajo', summary.bajos || 0, 'clientes sanos', null, null);
-  document.getElementById('riesgoKpiRow').innerHTML = kh;
-
-  // Donut with percentages
-  const ctx1 = document.getElementById('chartRiskDist').getContext('2d');
-  if (chartRiskDist) chartRiskDist.destroy();
-  chartRiskDist = new Chart(ctx1, {
-    type: 'doughnut',
-    data: {
-      labels: [`Crítico ${pctCrit}%`, `Alto ${pctAlto}%`, `Medio ${((summary.medios||0)/total*100).toFixed(1)}%`, `Bajo ${((summary.bajos||0)/total*100).toFixed(1)}%`],
-      datasets: [{ data: [summary.criticos||0, summary.altos||0, summary.medios||0, summary.bajos||0],
-        backgroundColor: ['#c8360e', '#ca8a04', '#2563eb', '#16a34a'], borderWidth: 2, borderColor: '#fff' }]
-    },
-    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { font: { family: 'DM Sans', size: 12 } } },
-      tooltip: { callbacks: { label: ctx => { const v=ctx.parsed; const t=ctx.dataset.data.reduce((a,b)=>a+b,0); return ctx.label+': '+v+' ('+(v/t*100).toFixed(1)+'%)'; } } } } }
-  });
-
-  // Riesgo Vigente AVLA trend line
-  loadRiesgoHist().then(hist => {
-    if (!hist || hist.length === 0) return;
-    const last16 = hist.slice(-16);
-    const labels = last16.map(w => { const d = new Date(w.fecha); return d.getDate()+'/'+(d.getMonth()+1); });
-    const riesgoPct = last16.map(w => { const t = (w.no_cubierto||0) + (w.cubierto||0); return t > 0 ? parseFloat(((w.no_cubierto||0)/t*100).toFixed(1)) : 0; });
-    const avg = riesgoPct.reduce((a,b) => a+b, 0) / riesgoPct.length;
-    const ctx2 = document.getElementById('chartRiesgoVigente').getContext('2d');
-    if (chartRiesgoVigente) chartRiesgoVigente.destroy();
-    chartRiesgoVigente = new Chart(ctx2, {
-      type: 'line',
-      data: { labels, datasets: [
-        { label: 'Riesgo Vigente %', data: riesgoPct, borderColor: '#c8360e', backgroundColor: 'rgba(200,54,14,.1)', fill: true, tension: .3, pointRadius: 3, pointBackgroundColor: riesgoPct.map(v => v>12?'#c8360e':v>8?'#ca8a04':'#16a34a'), borderWidth: 2 },
-        { label: 'Promedio', data: riesgoPct.map(() => parseFloat(avg.toFixed(1))), borderColor: '#ca8a04', borderDash: [5,3], borderWidth: 1, pointRadius: 0, fill: false }
-      ] },
-      options: { responsive: true, maintainAspectRatio: false,
-        plugins: { legend: { position: 'bottom', labels: { font: { family: 'DM Sans', size: 10 } } },
-          tooltip: { callbacks: { afterLabel: ctx => { if(ctx.datasetIndex>0)return''; const w=last16[ctx.dataIndex]; return 'No cubierto: $'+(w.no_cubierto/1e6).toFixed(1)+'M\nCubierto: $'+(w.cubierto/1e6).toFixed(1)+'M'; } } } },
-        scales: { x: { ticks: { font: { size: 9 } }, grid: { display: false } }, y: { beginAtZero: true, max: 20, ticks: { callback: v => v+'%', font: { size: 9 } }, grid: { color: '#f0f0f0' } } } }
-    });
-  });
-
-  // Top 10 Utilización TABLE
-  const top10 = [...scoreData].sort((a,b) => b.utilizacion_pct - a.utilizacion_pct).slice(0, 10);
-  const utb = document.getElementById('topUtilBody'); utb.innerHTML = '';
-  top10.forEach(c => {
-    const uc = c.utilizacion_pct >= 90 ? 'tag-r' : c.utilizacion_pct >= 70 ? 'tag-y' : 'tag-g';
-    const sc = c.risk_score >= 60 ? 'tag-r' : c.risk_score >= 40 ? 'tag-y' : 'tag-g';
-    const tr = document.createElement('tr');
-    tr.innerHTML = `<td><span class="tag ${sc}">${c.risk_score}</span></td><td class="bold">${H(c.name)}</td><td>${fMoney(c.monto_credito)}</td><td>${fMoney(c.saldo_credito)}</td><td><span class="tag ${uc}">${c.utilizacion_pct}%</span></td><td>${c.avg_payment_days}d</td>`;
-    utb.appendChild(tr);
-  });
-
-  // Líneas Insuficientes Table
-  document.getElementById('lineaInsufCount').textContent = lineaData.length;
-  const lb = document.getElementById('lineaInsufBody'); lb.innerHTML = '';
-  if (lineaData.length === 0) { document.getElementById('noLineaInsuf').style.display = 'block'; }
-  else {
-    document.getElementById('noLineaInsuf').style.display = 'none';
-    lineaData.forEach(c => {
-      const uc = c.utilizacion_pct >= 90 ? 'tag-r' : c.utilizacion_pct >= 70 ? 'tag-y' : 'tag-g';
-      const lc = c.linea_ratio >= 100 ? 'tag-r' : c.linea_ratio >= 80 ? 'tag-y' : 'tag-g';
-      const sc = c.risk_score >= 60 ? 'tag-r' : c.risk_score >= 40 ? 'tag-y' : c.risk_score >= 20 ? 'tag-blue' : 'tag-g';
-      const tr = document.createElement('tr');
-      tr.innerHTML = `<td><span class="tag ${sc}">${c.risk_score}</span></td><td class="bold">${H(c.name)}</td><td>${fMoney(c.monto_credito)}</td><td>${fMoney(c.saldo_credito)}</td><td><span class="tag ${uc}">${c.utilizacion_pct}%</span></td><td>${fMoney(c.projected_monthly)}/mes</td><td><span class="tag ${lc}">${c.linea_ratio}%</span></td>`;
-      lb.appendChild(tr);
-    });
-  }
-
-  // Score Table
-  document.getElementById('scoreCount').textContent = scoreData.length + ' clientes';
-  const sb = document.getElementById('scoreBody'); sb.innerHTML = '';
-  if (scoreData.length === 0) { document.getElementById('noScore').style.display = 'block'; }
-  else {
-    document.getElementById('noScore').style.display = 'none';
-    scoreData.forEach(c => {
-      const sc = c.risk_score >= 60 ? 'tag-r' : c.risk_score >= 40 ? 'tag-y' : c.risk_score >= 20 ? 'tag-blue' : 'tag-g';
-      const mc = c.mora_ratio >= 2 ? 'tag-r' : c.mora_ratio >= 1.3 ? 'tag-y' : 'tag-g';
-      const uc = c.utilizacion_pct >= 90 ? 'tag-r' : c.utilizacion_pct >= 70 ? 'tag-y' : 'tag-g';
-      const sinTag = c.siniestro_count > 0 ? `<span class="tag tag-r">${c.siniestro_count}</span>` : '<span style="color:var(--dim)">0</span>';
-      const overdueTag = c.overdue_amount > 0 ? `<span class="tag tag-r">${fMoney(c.overdue_amount)}</span>` : '<span style="color:var(--dim)">—</span>';
-      const tr = document.createElement('tr');
-      const dicomTag = c.has_dicom ? '<span class="tag tag-r">DICOM</span>' : '<span style="color:var(--dim)">—</span>';
-      tr.innerHTML = `<td><span class="tag ${sc}">${c.risk_score}</span></td><td class="bold">${H(c.name)}</td><td>${H(c.risk_level)}</td><td>${dicomTag}</td><td><span class="tag ${mc}">${c.avg_payment_days}d</span></td><td>${c.plazo_pago_dias}d</td><td><span class="tag ${uc}">${c.utilizacion_pct}%</span></td><td>${overdueTag}</td><td>${sinTag}</td><td>${c.avg_margin_pct}%</td><td>${fL(c.avg_monthly_litros)}</td>`;
-      sb.appendChild(tr);
-    });
-  }
-}
-
-// ═══════════════════════════════════════
 // PIPELINE TAB
 // ═══════════════════════════════════════
 const PIPELINE_ACTIVE_DAYS = 90;
@@ -2213,14 +2079,9 @@ function renderPipeline() {
   const stNoCerr = stageMap['No Cerrados'] || 0;
   const realActive = stOpp + stCont + stRuta + stCot;
 
-  // Pipeline detail: fresh vs legacy
+  // Pipeline detail (solo leads activos recientes; alimenta Hot Deals y Movimientos)
   const allActive = pl.filter(p => p && ACTIVE_STAGES.has(p.stage));
   const freshPl = allActive.filter(p => p.days_in_stage <= PIPELINE_ACTIVE_DAYS);
-  const legacyPl = allActive.filter(p => p.days_in_stage > PIPELINE_ACTIVE_DAYS);
-  const freshValue = freshPl.reduce((s, p) => s + (p.value || 0), 0);
-  const freshMoved = freshPl.filter(p => p.days_in_stage <= 7).length;
-  const freshStale = freshPl.filter(p => p.days_in_stage > 7).length;
-  const avgDays = freshPl.length ? Math.round(freshPl.reduce((s, p) => s + p.days_in_stage, 0) / freshPl.length) : 0;
 
   // Hot deals: Cotizado with activity in last 30d
   const HOT_DAYS = 30;
@@ -2229,24 +2090,12 @@ function renderPipeline() {
 
   let h = '';
 
-  // Period badge
-  h += `<div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;flex-wrap:wrap">
-    <span style="font-size:13px;color:var(--dim)">Pipeline activo de los últimos <strong style="color:var(--text)">${PIPELINE_ACTIVE_DAYS} días</strong></span>`;
-  if (legacyPl.length) h += `<span style="font-size:12px;color:var(--yellow);font-weight:600">${legacyPl.length} opp legacy (>${PIPELINE_ACTIVE_DAYS}d) ocultas</span>`;
-  h += `</div>`;
-
-  // KPI Row 1
+  // KPIs — solo conteos por etapa (confiables). Las métricas por días (velocidad,
+  // movimientos, estancadas) se eliminaron: el cron de Odoo re-estampa
+  // date_last_stage_update/write_date en batch y contaminaba la señal.
   h += `<div class="kpi-row">
     ${mkKpi('c-blue','Pipeline Activo', realActive, stOpp+' oportunidad · '+stCont+' contactado · '+stRuta+' ruta · '+stCot+' cotizado')}
-    ${mkKpi('c-green','Movimientos Semana', (s.moved_this_week||0), (s.new_this_week||0)+' nuevas + '+((s.moved_this_week||0)-(s.new_this_week||0)>0?(s.moved_this_week||0)-(s.new_this_week||0):0)+' avances de etapa')}
-    ${mkKpi('c-red','Necesitan Acción', freshStale, 'opp activas 8–90d sin movimiento', freshStale, realActive||1)}
-    ${mkKpi('c-blue', isL?'Litros en Pipeline':'Valor Pipeline', fV(freshValue), 'últimos '+PIPELINE_ACTIVE_DAYS+'d')}
     ${mkKpi('c-green','Ganadas', (s.won||0), 'cerradas (total histórico)')}
-  </div>`;
-
-  // KPI Row 2
-  h += `<div class="kpi-row" style="margin-bottom:8px">
-    ${mkKpi('c-yellow','Velocidad Promedio', avgDays+'d', 'días promedio en etapa actual')}
     ${mkKpi('c-yellow','Durmientes CRM', stDurm, 'fuera de ciclo de compra')}
     ${mkKpi('c-red','No Cerrados', stNoCerr, 'oportunidades perdidas/archivadas')}
   </div>`;
@@ -2259,16 +2108,12 @@ function renderPipeline() {
     {lbl:'Cotizado',cnt:stCot,bg:'#f0fdf4',color:'var(--green)'},
     {lbl:'Ganadas',cnt:(s.won||0),bg:'#f0fdf4',color:'var(--green)'}
   ];
-  const valByStage = {};
-  pl.filter(p => p).forEach(p => { valByStage[p.stage] = (valByStage[p.stage] || 0) + (p.value || 0); });
-
-  h += `<div class="sec"><div class="sec-h"><h2>Flujo del Pipeline</h2><span style="font-size:12px;color:var(--dim)">últimos ${PIPELINE_ACTIVE_DAYS}d</span></div><div class="sec-b"><div class="funnel-flow">`;
+  // Sin $ por etapa: el JSON pipeline viene truncado a 150 leads y los montos salían parciales.
+  h += `<div class="sec"><div class="sec-h"><h2>Flujo del Pipeline</h2><span style="font-size:12px;color:var(--dim)">snapshot actual</span></div><div class="sec-b"><div class="funnel-flow">`;
   stages.forEach((st, i) => {
-    const stKey = st.lbl === 'Oportunidad' ? 'Oportunidad de Negocio' : st.lbl;
-    const val = st.lbl === 'Ganadas' ? '' : '<span class="fs-val">' + fV(valByStage[stKey] || 0) + '</span>';
     h += `<div class="funnel-stage" style="background:${st.bg};color:${st.color}">
       <span class="fs-cnt">${st.cnt}</span>
-      <span class="fs-lbl">${st.lbl}</span>${val}</div>`;
+      <span class="fs-lbl">${st.lbl}</span></div>`;
     if (i < stages.length - 1) {
       const next = stages[i + 1];
       const convPct = st.cnt > 0 ? Math.round((next.cnt / st.cnt) * 100) : '—';
@@ -2276,31 +2121,6 @@ function renderPipeline() {
     }
   });
   h += `</div></div></div>`;
-
-  // Executive ranking
-  const execs = (D.executives || []).filter(e => e && isAllowed(e.name)).sort((a, b) => {
-    return (b.moved_30d || 0) - (a.moved_30d || 0) || (b.moved || 0) - (a.moved || 0) || (b.value || 0) - (a.value || 0);
-  });
-  h += `<div class="sec"><div class="sec-h"><h2>Ranking Ejecutivos</h2><span style="font-size:12px;color:var(--dim)">por movimientos últimos 30d</span></div>
-  <div class="sec-b" style="padding:0;overflow-x:auto"><table class="exec-rank"><thead><tr>
-    <th></th><th>Ejecutivo</th><th style="text-align:center">Pipeline</th><th style="text-align:center">Mov. 7d</th><th style="text-align:center">Mov. 30d</th><th style="text-align:center">Estancadas</th><th>${vL}</th>
-  </tr></thead><tbody>`;
-  execs.forEach((e, i) => {
-    const m7 = e.moved || 0, m30 = e.moved_30d || 0;
-    const c7 = m7 >= 3 ? 'color:var(--green);font-weight:700' : m7 >= 1 ? 'color:var(--yellow);font-weight:600' : 'color:var(--red);font-weight:600';
-    const c30 = m30 >= 10 ? 'color:var(--green);font-weight:700' : m30 >= 3 ? 'color:var(--yellow);font-weight:600' : 'color:var(--red);font-weight:600';
-    const staleStyle = e.stale > 0 ? 'color:var(--red);font-weight:600' : 'color:var(--dim)';
-    h += `<tr>
-      <td style="text-align:center;font-weight:700;color:var(--dim)">${i + 1}</td>
-      <td><span class="bold">${H(e.name)}</span></td>
-      <td style="text-align:center">${e.total}</td>
-      <td style="text-align:center;${c7}">${m7}</td>
-      <td style="text-align:center;${c30}">${m30}</td>
-      <td style="text-align:center;${staleStyle}">${e.stale}</td>
-      <td class="bold">${fS(e.value)}</td>
-    </tr>`;
-  });
-  h += `</tbody></table></div></div>`;
 
   // Hot Deals
   const hotWithValue = hotDeals.filter(p => p.value > 0);
@@ -2321,31 +2141,6 @@ function renderPipeline() {
     <div class="sec-b" style="padding:0;overflow-x:auto"><table><thead><tr><th>Cliente</th><th>Etapa</th><th>Ejecutivo</th><th>${vL}</th><th>Hace</th></tr></thead><tbody>`;
     recent.forEach(l => {
       h += `<tr><td class="bold">${H(l.name)}</td><td><span class="tag tag-${l.stage_class==='cotizado'?'g':l.stage_class==='contactado'?'y':'r'}">${H(l.stage)}</span></td><td>${H(l.exec)}</td><td class="bold">${fV(l.value)}</td><td style="color:var(--green)">${l.days_in_stage===0?'Hoy':l.days_in_stage+'d'}</td></tr>`;
-    });
-    h += `</tbody></table></div></div>`;
-  }
-
-  // Stale (8-90d) — collapsible
-  const freshStaleList = freshPl.filter(p => p.days_in_stage > 7).sort((a, b) => (b.value || 0) - (a.value || 0));
-  h += `<div class="sec"><div class="sec-h collapsible-trigger" onclick="this.parentElement.parentElement.querySelector('.collapsible-body').style.display=this.parentElement.parentElement.querySelector('.collapsible-body').style.display==='none'?'block':'none';this.querySelector('.chevron').textContent=this.parentElement.parentElement.querySelector('.collapsible-body').style.display==='none'?'▸':'▾'">
-    <h2><span class="chevron">▾</span> Necesitan Atención (8–90d)</h2><span style="font-size:12px;color:var(--dim)">${freshStaleList.length} opp</span></div>
-  <div class="sec-b collapsible-body" style="padding:0;overflow-x:auto"><table><thead><tr><th>Cliente</th><th>Etapa</th><th>Ejecutivo</th><th>${vL}</th><th>Días</th><th>Acción</th></tr></thead><tbody>`;
-  if (freshStaleList.length) freshStaleList.forEach(l => {
-    const dc = l.days_in_stage > 30 ? 'color:var(--red);font-weight:700' : l.days_in_stage > 14 ? 'color:var(--red);font-weight:600' : 'color:var(--yellow)';
-    h += `<tr><td class="bold">${H(l.name)}</td><td><span class="tag tag-r">${H(l.stage)}</span></td><td>${H(l.exec)}</td><td class="bold">${fV(l.value)}</td><td style="${dc}">${l.days_in_stage}d</td><td style="color:var(--yellow)">${l.action || 'Contactar'}</td></tr>`;
-  });
-  else h += `<tr><td colspan="6" class="nodata">Todo con movimiento reciente</td></tr>`;
-  h += `</tbody></table></div></div>`;
-
-  // Legacy backlog — collapsed by default
-  if (legacyPl.length) {
-    const legSorted = legacyPl.sort((a, b) => (b.value || 0) - (a.value || 0));
-    h += `<div class="sec" style="opacity:.7"><div class="sec-h collapsible-trigger" onclick="this.parentElement.parentElement.querySelector('.collapsible-body').style.display=this.parentElement.parentElement.querySelector('.collapsible-body').style.display==='none'?'block':'none';this.querySelector('.chevron').textContent=this.parentElement.parentElement.querySelector('.collapsible-body').style.display==='none'?'▸':'▾'">
-      <h2><span class="chevron">▸</span> Backlog Legacy (>${PIPELINE_ACTIVE_DAYS}d sin movimiento)</h2><span style="font-size:12px;color:var(--dim)">${legSorted.length} opp — requieren limpieza</span></div>
-    <div class="sec-b collapsible-body" style="padding:0;overflow-x:auto;display:none"><table><thead><tr><th>Cliente</th><th>Etapa</th><th>Ejecutivo</th><th>${vL}</th><th>Días</th><th>Sugerencia</th></tr></thead><tbody>`;
-    legSorted.forEach(l => {
-      const sug = l.value > 0 ? 'Revisar o cerrar' : 'Cerrar o archivar';
-      h += `<tr><td class="bold">${H(l.name)}</td><td><span class="tag tag-r">${H(l.stage)}</span></td><td>${H(l.exec)}</td><td class="bold">${fV(l.value)}</td><td style="color:var(--red);font-weight:700">${l.days_in_stage}d</td><td style="color:var(--dim);font-style:italic">${sug}</td></tr>`;
     });
     h += `</tbody></table></div></div>`;
   }

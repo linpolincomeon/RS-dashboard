@@ -369,7 +369,9 @@ def extract_crm_data(models, uid):
     for stg in stages:
         cls = classify_stage(stg["name"])
         if cls in ("won", "perdido"): continue
-        count = sum(1 for p in pipeline if p["stage_class"] == cls)
+        # Contar por NOMBRE de etapa, no por clase: varias etapas comparten clase
+        # (Oportunidad de Negocio / En Riesgo / No Cerrados) y salían todas con el total.
+        count = sum(1 for p in pipeline if p["stage"] == stg["name"])
         if count > 0:
             funnel.append({"stage": stg["name"], "class": cls, "count": count})
 
