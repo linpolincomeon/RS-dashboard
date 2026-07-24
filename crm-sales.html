@@ -300,9 +300,9 @@ tr:hover td{background:#fafaf8}
           <thead><tr><th style="width:180px">Variable</th><th>Definición</th><th style="width:120px">Fuente Odoo</th></tr></thead>
           <tbody>
             <tr><td class="bold">Litros Totales</td><td>Litros de Diesel B1 facturados en la semana/mes (facturas posteadas, descontando NC)</td><td>account.move.line</td></tr>
-            <tr><td class="bold">Litros Ejecutivos</td><td>Litros vendidos por Toro y Muñoz</td><td>invoice_user_id</td></tr>
-            <tr><td class="bold">Litros Fidelización</td><td>Litros vendidos por equipo CS (Comber, Mauro, TomEnergy) + otros</td><td>invoice_user_id</td></tr>
-            <tr><td class="bold">Litros Freelancer</td><td>Litros vendidos por Avilés, Márquez, Bisquertt</td><td>invoice_user_id</td></tr>
+            <tr><td class="bold">Litros Ejecutivos</td><td>Litros de vendedores internos (no freelance, no CS): Labbe, Isabel, etc.</td><td>res.partner.user_id</td></tr>
+            <tr><td class="bold">Litros Fidelización</td><td>Litros vendidos por equipo CS (Comber, Mauro, TomEnergy)</td><td>res.partner.user_id</td></tr>
+            <tr><td class="bold">Litros Freelancer</td><td>Litros de freelancers .ext: Toro, Muñoz, Avilés, Márquez, etc.</td><td>res.partner.user_id</td></tr>
             <tr style="border-top:2px solid #e5e4df"><td class="bold">Leads</td><td>Oportunidades CREADAS esa semana en CRM (create_date dentro de la semana). No incluye leads existentes con actividad.</td><td>crm.lead create_date</td></tr>
             <tr><td class="bold">Cotizaciones</td><td>Cotizaciones (sale.order) creadas esa semana en cualquier estado (borrador, enviada o confirmada). Incluye las que ya pasaron a pedido.</td><td>sale.order create_date</td></tr>
             <tr><td class="bold">Nuevos Clientes</td><td>Clientes cuya PRIMERA factura de Diesel B1 fue esta semana/mes. No cuenta facturas por intereses o servicios.</td><td>account.move + product_id=14</td></tr>
@@ -341,6 +341,7 @@ const ALLOWED_VENDORS = [
   'toro gonzález sebastian enrique','sebastian toro','muñoz encalada joaquin','joaquin muñoz','carlos labbe'
 ];
 const FREELANCERS = [
+  'sebastian toro','joaquin muñoz',
   'carolina avilés','marcela márquez','raúl bisquertt','rodrigo retamal',
   'manuel lópez','nicolás gonzalez','cristian jiroz','diego varas','abraham urrutia'
 ];
@@ -1231,11 +1232,11 @@ function renderVentas() {
   const wkBudget = !isAccum && wkData.label ? getWeeklyBudget(wkData.label) : 0;
   const wkPct = wkBudget > 0 ? Math.round((wkLitros / wkBudget) * 100) : 0;
 
-  // 2. Litros Ejecutivos (Toro + Muñoz + Labbe)
+  // 2. Litros Ejecutivos = internos: todo lo que NO es freelance ni CS (Labbe, Isabel, etc.)
   let litrosEjecutivos = 0;
-  for (const [u, v] of Object.entries(lbuSrc)) { if (isAllowed(u)) litrosEjecutivos += v; }
+  for (const [u, v] of Object.entries(lbuSrc)) { if (!isFreelancer(u) && !isCS(u) && !isExcluded(u) && norm(u) !== 'asignar sin') litrosEjecutivos += v; }
 
-  // 3. Litros Freelancer (Avilés, Márquez, Bisquertt)
+  // 3. Litros Freelancer (todos los .ext: Toro, Muñoz, Avilés, …)
   let litrosFreelancer = 0;
   for (const [u, v] of Object.entries(lbuSrc)) { if (isFreelancer(u)) litrosFreelancer += v; }
 
@@ -1302,8 +1303,8 @@ function renderVentas() {
   } else {
     kh += mkKpi('c-red', 'Litros Totales', fL(wkLitros), wkPct + '% de meta ' + fL(wkBudget), wkLitros, wkBudget || 1);
   }
-  kh += mkKpi('c-blue', 'Litros Ejecutivos', fL(litrosEjecutivos), 'Toro + Muñoz + Labbe', null, null);
-  kh += mkKpi('c-yellow', 'Litros Freelancer', fL(litrosFreelancer), 'Avilés, Márquez, Bisquertt', null, null);
+  kh += mkKpi('c-blue', 'Litros Ejecutivos', fL(litrosEjecutivos), 'Internos: Labbe, Isabel, …', null, null);
+  kh += mkKpi('c-yellow', 'Litros Freelancer', fL(litrosFreelancer), 'Toro, Muñoz, Avilés, …', null, null);
   kh += mkKpi('c-green', 'Litros Fidelización', fL(litrosFidelizacion), 'CS (Comber mantención)', null, null);
   kh += mkKpi('c-red', 'Leads', wLeads, 'Meta: ' + leadsGoal, wLeads, leadsGoal);
   kh += mkKpi('c-yellow', 'Cotizaciones', wCotiz, 'Meta: ' + cotizGoal, wCotiz, cotizGoal);
@@ -1910,9 +1911,9 @@ function renderMesVencido(){
   const mrA=TP.margin_retail_pct||0,mvA=TP.margin_volume_pct||0;
   let litrosFreelancer=0, litrosEjecMV=0, litrosFidelMV=0;
   for(const [u,v] of Object.entries(TP.litros_by_user||{})){
-    if(isAllowed(u)) litrosEjecMV+=v;
     if(isFreelancer(u)) litrosFreelancer+=v;
-    if(isCS(u)) litrosFidelMV+=v;
+    else if(isCS(u)) litrosFidelMV+=v;
+    else if(!isExcluded(u) && norm(u)!=='asignar sin') litrosEjecMV+=v;
   }
   // Ruta (visitas): misma fuente que el tab Ejecutivos (funnel_weeks.stages.ruta), semanas dentro del mes cerrado
   let rutaVisitasMes=0;
@@ -1922,7 +1923,7 @@ function renderMesVencido(){
 
   h+='<div class="kpi-row">';
   h+=mkKpi('c-red','Litros',fL(TP.total_litros||0),ltGoal?pct(TP.total_litros||0,ltGoal)+'% de meta '+fL(ltGoal):'',TP.total_litros||0,ltGoal||1);
-  h+=mkKpi('c-blue','Litros Ejecutivos',fL(litrosEjecMV),'Toro + Muñoz + Labbe',null,null);
+  h+=mkKpi('c-blue','Litros Ejecutivos',fL(litrosEjecMV),'Internos: Labbe, Isabel, …',null,null);
   h+=mkKpi('c-green','Litros Fidelización',fL(litrosFidelMV),'CS (Comber mantención)',null,null);
   h+=mkKpi('c-yellow','Litros Freelancer',fL(litrosFreelancer),'Suma freelancers del mes',null,null);
   h+=mkKpi('c-blue','Clientes Nuevos',(ncP.count||0),'primera factura del mes');

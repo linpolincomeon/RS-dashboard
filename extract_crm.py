@@ -562,11 +562,14 @@ def extract_funnel_data(models, uid):
                 u = canonical_vendedor(safe_name(rl.get("user_id")))
                 ruta_by_user[u] += 1
 
-        # 3. Cotizaciones
+        # 3. Cotizaciones — solo las creadas por PERSONAS. Se excluye OdooBot (uid 1):
+        # los crons generate_so (semanal/mensual/anual) crean ~970 borradores/mes que
+        # inflaban el funnel y no son gestión comercial real.
         quote_domain = [
             ["create_date", ">=", fdt_s(ws)],
             ["create_date", "<=", fdt_e(we)],
             ["state", "in", ["draft", "sent"]],
+            ["create_uid", "!=", 1],
         ]
         quote_count = s_count(models, uid, "sale.order", quote_domain)
         quote_detail = sr(models, uid, "sale.order", quote_domain,
