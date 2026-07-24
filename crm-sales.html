@@ -997,7 +997,7 @@ function renderEjecutivos() {
 
   // KPI row
   h += '<div class="kpi-row" id="execKpiRow">';
-  h += mkKpi('c-red', 'Litros facturados', fL(litros), 'Mes actual (facturado, no estimado)', null, null);
+  h += mkKpi('c-red', 'Litros facturados', fL(litros), isExecAccum ? 'Mes actual (facturado, no estimado)' : 'Semana seleccionada (facturado)', null, null);
   h += mkKpi('c-red', 'Leads', leads, `Meta: ${leadsGoal}`, leads, leadsGoal);
   h += mkKpi('c-yellow', 'Cotizaciones', cotizaciones, 'Semana actual', null, null);
   h += mkKpi('c-green', 'Nuevos Clientes', nuevoClientes, 'Primera factura', null, null);
