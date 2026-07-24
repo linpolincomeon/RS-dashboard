@@ -254,6 +254,13 @@ tr:hover td{background:#fafaf8}
           <div class="nodata" id="noClientesAcumulado" style="display:none">Sin clientes ganados este mes</div></div></div>
       </div>
 
+      <!-- Clientes Rescatados (durmientes/perdidos que volvieron a facturar) -->
+      <div id="csRescatadosContainer" style="display:none">
+        <div class="sec"><div class="sec-h"><h2>🏆 Clientes Rescatados</h2><span class="badge" id="csRescCount">0</span></div><div class="sec-b" style="max-height:500px;overflow-x:auto">
+          <table><thead><tr><th>Cliente</th><th>Origen</th><th style="text-align:right">Prom. Mensual</th><th>Responsable</th><th>Fecha</th></tr></thead><tbody id="csRescatadosBody"></tbody></table>
+          <div class="nodata" id="noCsRescatados" style="display:none">Sin clientes rescatados en el período</div></div></div>
+      </div>
+
       <!-- Graduating clients (new → fidelización) -->
       <div class="sec"><div class="sec-h"><h2>🔄 Transición a Fidelización</h2><span style="font-size:12px;color:var(--dim)">Clientes con 6+ meses (180 días) desde primera compra</span></div>
         <div class="sec-b" style="padding:0;overflow-x:auto" id="csGraduatingContainer"></div></div>
@@ -1743,9 +1750,11 @@ function renderCS() {
   const csRescLost = (churn.rescued_lost_list || []);
   let durmientes = 0, rescatados = 0, litrosRescatados = 0;
   const _inWeek = c => weekStart && weekEnd && (c.last_update||'') >= weekStart && (c.last_update||'') <= weekEnd;
+  const _tagOrigen = (list, origen) => list.map(c => ({...c, origen}));
+  const _rescAll = [..._tagOrigen(csRescDorm, 'Durmiente'), ..._tagOrigen(csRescLost, 'Perdido')];
   const rescSel = csSubTab === 'semanal'
-    ? [...csRescDorm.filter(_inWeek), ...csRescLost.filter(_inWeek)]
-    : [...csRescDorm, ...csRescLost]; // las listas ya son "rescatados del mes" (volvieron a facturar este mes)
+    ? _rescAll.filter(_inWeek)
+    : _rescAll; // las listas ya son "rescatados del mes" (volvieron a facturar este mes)
   rescatados = rescSel.length;
   litrosRescatados = rescSel.reduce((s, c) => s + (c.avg_monthly_litros || 0), 0);
   if (csSubTab === 'semanal') {
@@ -1825,6 +1834,26 @@ function renderCS() {
       tr.innerHTML = `<td class="bold">${H(w.name)}</td><td>${H(w.exec)}</td><td>${fL(litros)}</td><td>${wonDate(w) || ''}</td>`;
       acumuladoBody.appendChild(tr);
     });
+  }
+
+  // Clientes Rescatados table (semanal y acumulado)
+  const rescBody = document.getElementById('csRescatadosBody');
+  const rescCont = document.getElementById('csRescatadosContainer');
+  if (rescBody && rescCont) {
+    rescCont.style.display = csSubTab === 'mesvencido' ? 'none' : 'block';
+    document.getElementById('csRescCount').textContent = rescSel.length;
+    rescBody.innerHTML = '';
+    const noResc = document.getElementById('noCsRescatados');
+    if (rescSel.length === 0) { noResc.style.display = 'block'; }
+    else {
+      noResc.style.display = 'none';
+      rescSel.slice().sort((a, b) => (b.avg_monthly_litros || 0) - (a.avg_monthly_litros || 0)).forEach(c => {
+        const tr = document.createElement('tr');
+        const oTag = c.origen === 'Perdido' ? '<span class="tag tag-r">Perdido</span>' : '<span class="tag tag-y">Durmiente</span>';
+        tr.innerHTML = `<td class="bold">${H(c.name)}</td><td>${oTag}</td><td style="text-align:right">${fL(c.avg_monthly_litros || 0)}</td><td>${H(c.user || '—')}</td><td>${c.last_update || '—'}</td>`;
+        rescBody.appendChild(tr);
+      });
+    }
   }
 
   // Show correct sub-tab view
