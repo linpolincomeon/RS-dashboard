@@ -1741,14 +1741,17 @@ function renderCS() {
   const csDormAll = (churn.dormant_list || []);
   const csRescDorm = (churn.rescued_dormant_list || []);
   const csRescLost = (churn.rescued_lost_list || []);
-  let durmientes = 0, rescatados = 0;
+  let durmientes = 0, rescatados = 0, litrosRescatados = 0;
+  const _inWeek = c => weekStart && weekEnd && (c.last_update||'') >= weekStart && (c.last_update||'') <= weekEnd;
+  const rescSel = csSubTab === 'semanal'
+    ? [...csRescDorm.filter(_inWeek), ...csRescLost.filter(_inWeek)]
+    : [...csRescDorm, ...csRescLost]; // las listas ya son "rescatados del mes" (volvieron a facturar este mes)
+  rescatados = rescSel.length;
+  litrosRescatados = rescSel.reduce((s, c) => s + (c.avg_monthly_litros || 0), 0);
   if (csSubTab === 'semanal') {
-    durmientes = csDormAll.filter(c => weekStart && weekEnd && (c.last_update||'') >= weekStart && (c.last_update||'') <= weekEnd).length;
-    rescatados = csRescDorm.filter(c => weekStart && weekEnd && (c.last_update||'') >= weekStart && (c.last_update||'') <= weekEnd).length
-               + csRescLost.filter(c => weekStart && weekEnd && (c.last_update||'') >= weekStart && (c.last_update||'') <= weekEnd).length;
+    durmientes = csDormAll.filter(_inWeek).length;
   } else {
     durmientes = csDormAll.length;
-    rescatados = csRescDorm.length + csRescLost.length;
   }
 
   // KPI Row
@@ -1775,8 +1778,9 @@ function renderCS() {
   } else {
     kh += mkKpi('c-blue', '💧 Litros CS', fL(litrosCS), 'Meta ' + (csSubTab === 'semanal' ? 'sem' : 'mes') + ': ' + fL(csGoal) + ' (' + csPct + '%)', litrosCS, csGoal);
     kh += mkKpi('c-green', '👥 Clientes Ganados', clientesGanados, csSubTab === 'semanal' ? 'esta semana' : 'este mes', null, null);
+    kh += mkKpi('c-green', '🏆 Rescatados', rescatados, csSubTab === 'semanal' ? 'esta semana' : 'este mes', null, null);
+    kh += mkKpi('c-blue', '📦 Litros Rescatados', fL(litrosRescatados), 'prom. mensual de los ' + rescatados + ' rescatados', null, null);
     kh += mkKpi('c-yellow', '😴 Durmientes', durmientes, csSubTab === 'semanal' ? 'esta semana' : 'total', null, null);
-    kh += mkKpi('c-green', '🏆 Rescatados', rescatados, csSubTab === 'semanal' ? 'esta semana' : 'total', null, null);
   }
   document.getElementById('csKpiRow').innerHTML = kh;
 

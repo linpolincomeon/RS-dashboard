@@ -1530,7 +1530,7 @@ def extract_churn_data(models, uid):
         invoiced = (pid and pid in curr_month_partners) or (name_key in curr_month_partner_names)
 
         if invoiced:
-            rescued_lost_list.append({"name": name, "user": user, "last_update": write_date})
+            rescued_lost_list.append({"name": name, "user": user, "last_update": write_date, "partner_id": pid})
             rescued_lost_by_user[user] += 1
         else:
             lost_list.append({"name": name, "user": user, "last_update": write_date, "partner_id": pid})
@@ -1616,6 +1616,36 @@ def extract_churn_data(models, uid):
     for c in lost_list:
         c["avg_monthly_litros"] = avg_litros_lost.get(c.get("partner_id"), 0)
         c.pop("partner_id", None)
+
+    # ── Avg monthly litros (8 meses) para RESCATADOS (KPI Litros Rescatados en tab CS) ──
+    _resc_all = rescued_dormant_list + rescued_lost_list
+    _resc_pids = list({r["partner_id"] for r in _resc_all if r.get("partner_id")})
+    _resc_litros = {}
+    if _resc_pids:
+        try:
+            eight_start = today - timedelta(days=240)
+            for mt, sign in (("out_invoice", 1), ("out_refund", -1)):
+                _mv = sr(models, uid, "account.move", [
+                    ["move_type", "=", mt], ["state", "=", "posted"],
+                    ["partner_id", "in", _resc_pids],
+                    ["invoice_date", ">=", fmt(eight_start)],
+                ], ["id", "partner_id"], limit=5000)
+                _mv_pid = {m["id"]: safe_id(m.get("partner_id")) for m in _mv}
+                if _mv_pid:
+                    for ln in sr(models, uid, "account.move.line", [
+                        ["move_id", "in", list(_mv_pid.keys())],
+                        ["product_id", "=", DIESEL_PRODUCT_ID],
+                    ], ["move_id", "quantity"], limit=10000):
+                        _p = _mv_pid.get(safe_id(ln.get("move_id")))
+                        if _p:
+                            _resc_litros[_p] = _resc_litros.get(_p, 0) + sign * (ln.get("quantity", 0) or 0)
+            _resc_litros = {p: round(max(t, 0) / 8) for p, t in _resc_litros.items()}
+        except Exception as _e:
+            print(f"  Litros rescatados skipped: {_e}")
+    for r in _resc_all:
+        r["avg_monthly_litros"] = _resc_litros.get(r.get("partner_id"), 0)
+    for r in rescued_lost_list:
+        r.pop("partner_id", None)
 
     active_count = len(curr_month_partners | prev_month_partners)
     # ── Churn correcto: basado en FACTURACIÓN (no en etapa CRM, que el cron re-estampa) ──
