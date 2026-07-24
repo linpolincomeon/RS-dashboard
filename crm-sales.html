@@ -202,6 +202,9 @@ tr:hover td{background:#fafaf8}
         <table><thead><tr><th>Prioridad</th><th>Cliente</th><th>Prom. Mensual 8M</th><th>Último vendedor</th><th>Fecha perdido</th><th>Última Nota</th></tr></thead><tbody id="newLostBody"></tbody></table>
         <div class="nodata" id="noNewLost" style="display:none">Sin nuevos perdidos este mes</div></div></div>
 
+      <!-- Recuperables ahora (análisis por facturación 2025 vs 2026 — clientes que el CRM no ve) -->
+      <div id="recuperablesContainer"></div>
+
       <!-- Transición a Fidelización (clientes nuevos con 6+ meses, se traspasan a CS) -->
       <div class="sec"><div class="sec-h"><h2>🔄 Transición a Fidelización</h2><span style="font-size:12px;color:var(--dim)">Clientes con 6+ meses (180 días) desde primera compra</span></div>
         <div class="sec-b" style="padding:0;overflow-x:auto" id="csGraduatingContainer"></div></div>
@@ -1497,8 +1500,93 @@ function renderFidelizacion() {
     });
   }
 
-  // Transici\u00f3n a Fidelizaci\u00f3n (vive en este tab: lo gestiona el equipo comercial)
+  // Recuperables por facturaci\u00f3n + Transici\u00f3n a Fidelizaci\u00f3n (los gestiona el equipo comercial)
+  renderRecuperables();
   renderGraduating();
+}
+
+// Recuperables ahora: clientes con ca\u00edda de facturaci\u00f3n 2025\u21922026 (\u2265500 L/mes 2025, cero YTD o ca\u00edda >70%).
+// Detecci\u00f3n por FACTURAS, no por etapa CRM \u2014 la mayor\u00eda no aparece en Perdidos/Durmientes (varios sin lead).
+function renderRecuperables() {
+  const cont = document.getElementById('recuperablesContainer');
+  if (!cont) return;
+  const rec = (D.recovery && D.recovery.recoverable) || [];
+  const sum = (D.recovery && D.recovery.summary) || {};
+
+  // Cruce con actividades CRM para estado de gesti\u00f3n
+  const allActs = D.activities || [];
+  const actByClient = {};
+  allActs.forEach(a => {
+    const lead = (a.lead || '').trim().toUpperCase();
+    if (!lead) return;
+    const entry = {date: a.date || '', type: a.type || 'To-Do', desc: a.summary || '', state: a.state || ''};
+    rec.forEach(c => {
+      const cn = (c.name || '').trim().toUpperCase();
+      if (cn && (lead.includes(cn) || cn.includes(lead))) {
+        (actByClient[cn] = actByClient[cn] || []).push(entry);
+      }
+    });
+  });
+  const _today = new Date().toISOString().slice(0, 10);
+  rec.forEach(c => {
+    const acts = (actByClient[(c.name || '').trim().toUpperCase()] || []).sort((a, b) => (b.date || '').localeCompare(a.date || ''));
+    c._crmAct = acts[0] || null;
+    if (c._crmAct && (c._crmAct.state === 'overdue' || c._crmAct.date < _today)) c._gestionStatus = 'overdue';
+    else if (c._crmAct) c._gestionStatus = 'planned';
+    else if (c.last_note) c._gestionStatus = 'done';
+    else c._gestionStatus = 'none';
+  });
+
+  const totalLpm = rec.reduce((s, c) => s + (c.lpm_2025 || 0), 0);
+  const withDone = rec.filter(c => c._gestionStatus === 'done' || c._gestionStatus === 'planned').length;
+  const withOverdue = rec.filter(c => c._gestionStatus === 'overdue').length;
+  const withNone = rec.filter(c => c._gestionStatus === 'none').length;
+
+  let h = `<div class="sec"><div class="sec-h"><h2>\ud83d\udd01 Recuperables ahora</h2>
+    <span style="font-size:12px;color:var(--dim)">${rec.length} mostrados de ${sum.recoverable_count || 0} \u00b7 ${totalLpm.toLocaleString('es-CL')} L/mes en riesgo \u00b7 \u2705 ${withDone} con gesti\u00f3n \u00b7 \u26a0\ufe0f ${withOverdue} con atraso \u00b7 \u274c ${withNone} sin gesti\u00f3n</span></div>
+    <div class="sec-b" style="padding:0;overflow-x:auto">
+    <div style="padding:12px 16px;border-left:3px solid #c8360e;font-size:12px;color:var(--dim);line-height:1.6">
+      Clientes que compraron Diesel B1 en 2025 (\u2265500 L/mes) y se cayeron en 2026: <strong>cero compra YTD</strong> o <strong>ca\u00edda &gt;70%</strong>.
+      Detecci\u00f3n por facturaci\u00f3n \u2014 la mayor\u00eda NO aparece en Perdidos/Durmientes del CRM. Cada uno es una llamada, no una venta nueva.</div>`;
+
+  if (rec.length === 0) {
+    h += '<div class="nodata">No hay clientes recuperables seg\u00fan el criterio</div>';
+  } else {
+    h += `<table><thead><tr><th>#</th><th>Cliente</th><th>Zona</th>
+      <th style="text-align:right">L 2025</th><th style="text-align:right">L/mes</th><th style="text-align:right">L 2026</th>
+      <th style="text-align:right">Ca\u00edda</th><th>Tipo</th><th>CRM</th><th>Ejecutivo</th><th>\u00daltima Actividad</th></tr></thead><tbody>`;
+    rec.forEach((c, i) => {
+      const tipo = c.is_volume ? '<span class="tag tag-blue">Volumen</span>' : '<span class="tag tag-g">Retail</span>';
+      const crmBadge = c.crm_stage
+        ? `<span class="tag ${/durmiente/i.test(c.crm_stage) ? 'tag-y' : 'tag-r'}">${H(c.crm_stage)}</span>`
+        : '<span style="color:var(--dim);font-size:11px">Sin lead</span>';
+      const execName = c.crm_exec ? `<span style="font-size:11px">${H(c.crm_exec.split(' ').slice(-1)[0])}</span>` : '<span style="color:var(--dim);font-size:11px">\u2014</span>';
+      const gIcon = c._gestionStatus === 'done' ? '\u2705' : c._gestionStatus === 'planned' ? '\ud83d\udcc5' : c._gestionStatus === 'overdue' ? '\u26a0\ufe0f' : '\u274c';
+      let actCell = '';
+      if (c._crmAct) {
+        const stColor = c._gestionStatus === 'overdue' ? 'color:var(--red)' : '';
+        actCell = `<div style="font-size:11px;max-width:280px;white-space:normal"><span style="${stColor}">${gIcon}</span>
+          <strong>${H(c._crmAct.date.slice(0, 10))}</strong> \u00b7 ${H(c._crmAct.type)}
+          <div style="color:var(--dim);font-size:11px;margin-top:2px;line-height:1.4">${H(c._crmAct.desc)}</div></div>`;
+      } else if (c.last_note) {
+        actCell = `<div style="font-size:11px;max-width:280px;white-space:normal;line-height:1.4" title="${H(c.last_note)}">\u2705 ${H(c.last_note.slice(0, 80))}${c.last_note.length > 80 ? '\u2026' : ''}
+          <div style="color:var(--dim);font-size:10px;margin-top:2px">${H(c.note_date || '')} \u00b7 ${H((c.note_author || '').split(' ')[0])}</div></div>`;
+      } else {
+        actCell = '<span style="color:var(--dim);font-size:11px">\u274c Sin gesti\u00f3n</span>';
+      }
+      const caidaCell = (c.caida_pct >= 100) ? '<span class="tag tag-r">100%</span>' : `<span class="tag ${c.caida_pct >= 70 ? 'tag-r' : 'tag-y'}">${c.caida_pct}%</span>`;
+      h += `<tr ${i < 10 ? 'style="background:#fff8f7"' : ''}>
+        <td style="color:var(--dim);font-size:11px">${i + 1}</td>
+        <td class="bold">${H(c.name)}</td><td style="font-size:12px">${H(c.zone || '\u2014')}</td>
+        <td style="text-align:right;font-weight:600">${(c.litros_2025 || 0).toLocaleString('es-CL')}</td>
+        <td style="text-align:right">${(c.lpm_2025 || 0).toLocaleString('es-CL')}</td>
+        <td style="text-align:right;color:var(--dim)">${(c.litros_2026 || 0).toLocaleString('es-CL')}</td>
+        <td style="text-align:right">${caidaCell}</td><td>${tipo}</td><td>${crmBadge}</td><td>${execName}</td><td>${actCell}</td></tr>`;
+    });
+    h += '</tbody></table>';
+  }
+  h += '</div></div>';
+  cont.innerHTML = h;
 }
 
 function renderGraduating() {
