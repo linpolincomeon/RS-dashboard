@@ -349,6 +349,9 @@ const FREELANCERS = [
   'manuel lópez','nicolás gonzalez','cristian jiroz','diego varas','abraham urrutia'
 ];
 const CS_TEAM = ['comber sigall pauline','mauro boccardo','tomenergy'];
+// Gestión de fidelización/CS = equipo interno NO freelance (los ejecutivos de venta y
+// freelancers tienen su gestión en sus propios tabs). No afecta el split de litros.
+const CS_GESTION = [...CS_TEAM, 'isabel muñoz', 'tomas vidal', 'madelaine toledo'];
 const _aN = ALLOWED_VENDORS.map(n => norm(n).split(' '));
 const _csN = CS_TEAM.map(n => norm(n).split(' '));
 const _fN = FREELANCERS.map(n => norm(n).split(' '));
@@ -379,6 +382,8 @@ function canonicalName(testName) {
   return testName;
 }
 const isCS = n => _partialMatch(n, _csN);
+const _csgN = CS_GESTION.map(n => norm(n).split(' '));
+const isCSGestion = n => _partialMatch(n, _csgN);
 const isFreelancer = n => _partialMatch(n, _fN);
 
 function getGoal(name) {
@@ -1514,8 +1519,8 @@ function renderFidelizacion() {
   notes += '<strong>Rescate:</strong> Rescatados = durmientes que volvieron a facturar / (durmientes + rescatados)';
   document.getElementById('churnNotes').innerHTML = notes;
 
-  // Nuevos Durmientes de la Semana
-  const dormantListAll = churn.dormant_list || [];
+  // Nuevos Durmientes de la Semana — solo gestión del equipo CS/interno (no freelancers ni ejecutivos de venta)
+  const dormantListAll = (churn.dormant_list || []).filter(c => isCSGestion(c.user));
   const newDormantWeek = dormantListAll.filter(c => {
     const lu = c.last_update || '';
     return weekStart && weekEnd && lu >= weekStart && lu <= weekEnd;
@@ -1543,7 +1548,7 @@ function renderFidelizacion() {
 
   // Nuevos Perdidos de la Semana
   const _isGenericName = n => { if (!n || n === '?') return true; const nl = n.trim().toLowerCase(); return nl.length < 3 || nl === 'sin asignar' || nl.includes('sin nombre'); };
-  const lostListAll = (churn.lost_list || []).filter(c => !_isGenericName(c.name));
+  const lostListAll = (churn.lost_list || []).filter(c => !_isGenericName(c.name) && isCSGestion(c.user));
   const newLostWeek = lostListAll.filter(c => {
     const lu = c.last_update || '';
     return weekStart && weekEnd && lu >= weekStart && lu <= weekEnd;
@@ -1570,7 +1575,7 @@ function renderFidelizacion() {
   }
 
   // Lost clients this month — from precise tracking (mail.tracking.value)
-  const newlyLostPrecise = (churn.lost_list || []).filter(c => (c.last_update || '') >= monthStartStr);
+  const newlyLostPrecise = (churn.lost_list || []).filter(c => (c.last_update || '') >= monthStartStr && isCSGestion(c.user));
   newlyLostPrecise.sort((a, b) => (b.avg_monthly_litros || 0) - (a.avg_monthly_litros || 0));
 
   const lmb = document.getElementById('lostMonthBody'); lmb.innerHTML = '';
@@ -1734,7 +1739,7 @@ function renderCS() {
   const wonAll = D.won_deals || [];
   let clientesGanados = 0;
   for (const w of wonAll) {
-    if (isCS(w.exec)) {
+    if (isCSGestion(w.exec)) {
       const lu = wonDate(w);
       if (csSubTab === 'semanal') {
         if (weekStart && weekEnd && lu >= weekStart && lu <= weekEnd) clientesGanados++;
@@ -1744,10 +1749,10 @@ function renderCS() {
     }
   }
 
-  // Durmientes y rescatados filtrados por semana
-  const csDormAll = (churn.dormant_list || []);
-  const csRescDorm = (churn.rescued_dormant_list || []);
-  const csRescLost = (churn.rescued_lost_list || []);
+  // Durmientes y rescatados filtrados por semana — solo gestión del equipo CS/interno
+  const csDormAll = (churn.dormant_list || []).filter(c => isCSGestion(c.user));
+  const csRescDorm = (churn.rescued_dormant_list || []).filter(c => isCSGestion(c.user));
+  const csRescLost = (churn.rescued_lost_list || []).filter(c => isCSGestion(c.user));
   let durmientes = 0, rescatados = 0, litrosRescatados = 0;
   const _inWeek = c => weekStart && weekEnd && (c.last_update||'') >= weekStart && (c.last_update||'') <= weekEnd;
   const _tagOrigen = (list, origen) => list.map(c => ({...c, origen}));
@@ -1778,7 +1783,7 @@ function renderCS() {
     for (const [u, v] of Object.entries(TP_cs.venta_by_user || {})) { if (isCS(u)) ventaPrevCS += v; }
     let margenPrevCS = 0;
     for (const [u, v] of Object.entries(TP_cs.margin_by_user || {})) { if (isCS(u)) { margenPrevCS = v; break; } }
-    const ncPrevCS = ((VP_cs.new_clients || {}).detail || []).filter(c => isCS(c.vendedor)).length;
+    const ncPrevCS = ((VP_cs.new_clients || {}).detail || []).filter(c => isCSGestion(c.vendedor)).length;
     const prevLabel = VP_cs.month_label || 'Mes Anterior';
     kh += mkKpi('c-red', '💧 Litros CS', fL(litrosPrevCS), prevLabel, litrosPrevCS, csGoal);
     kh += mkKpi('c-yellow', 'Venta Neta', '$' + fL(ventaPrevCS), prevLabel, null, null);
@@ -1795,7 +1800,7 @@ function renderCS() {
 
   // Populate Clientes Ganados tables
   const ganados = wonAll.filter(w => {
-    if (!isCS(w.exec)) return false;
+    if (!isCSGestion(w.exec)) return false;
     const lu = wonDate(w);
     if (csSubTab === 'semanal') {
       return weekStart && weekEnd && lu >= weekStart && lu <= weekEnd;
@@ -1867,7 +1872,7 @@ function renderCS() {
   // Mes Vencido CS content
   if (csSubTab === 'mesvencido') {
     const VP_cs2 = D.ventas_prev || {}, ncPrev2 = (VP_cs2.new_clients || {}).detail || [];
-    const csNewClients = ncPrev2.filter(c => isCS(c.vendedor));
+    const csNewClients = ncPrev2.filter(c => isCSGestion(c.vendedor));
     let mvh = '';
     if (csNewClients.length > 0) {
       mvh += '<div class="sec"><div class="sec-h"><h2>📊 Clientes Nuevos — ' + (VP_cs2.month_label || 'Mes Anterior') + '</h2></div><div class="sec-b" style="max-height:400px;overflow-y:auto"><table>';
