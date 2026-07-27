@@ -426,7 +426,7 @@ def extract_crm_data(models, uid):
               "enrichment could", "no company data", "meeting scheduled",
               "ganado autom", "oportunidad ganada", "opportunity won", "facturas pendientes",
               "proximo recordatorio", "próximo recordatorio", "cierre masivo de backlog",
-              "reemplazo automatico"]
+              "reemplazo automatico", "lista de precios cambiada"]
 
     msg_list = []
     last_msg_by_lead = {}  # lead_id → latest REAL message (skip auto-generated noise)
@@ -1273,7 +1273,7 @@ def gather_latest_note(models, uid, pids):
              "cambio de etapa", "oportunidad ganada", "oportunidad perdida", "se crea un nuevo canal",
              "ganado autom", "facturas pendientes", "proximo recordatorio", "próximo recordatorio",
              "fecha del proximo", "fecha del próximo", "opportunity won", "recordatorio ser",
-             "cierre masivo de backlog", "reemplazo automatico"]
+             "cierre masivo de backlog", "reemplazo automatico", "lista de precios cambiada"]
 
     def _clean(b):
         # Odoo 18 registra notas/actividades como envoltura; extraer la gestión real.
