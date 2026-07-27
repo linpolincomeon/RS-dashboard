@@ -1002,8 +1002,10 @@ def extract_sales_data(models, uid, custom_start=None, custom_end=None, label_ov
             ["state", "=", "posted"],
             ["partner_id", "=", pid],
             ["invoice_date", "<", fmt(m_start)],
-        ], ["id"], limit=500)
+        ], ["id", "invoice_date"], limit=500, order="invoice_date desc")
         prev_ids = [i["id"] for i in prev_inv]
+        # Origen: 'nuevo' = nunca facturó antes; 'recuperado' = tenía historia (vuelve de perdido/inactivo)
+        last_prev_date = prev_inv[0].get("invoice_date", "") if prev_inv else ""
         had_diesel_before = False
         if prev_ids:
             # Check if any previous invoice had a diesel line
@@ -1031,7 +1033,12 @@ def extract_sales_data(models, uid, custom_start=None, custom_end=None, label_ov
                 new_cl_by_user[u] += 1
                 new_cl_count += 1
                 new_cl_litros_by_user[u] += partner_litros
-                new_cl_detail.append({"cliente": pname, "vendedor": u, "fecha": first_date, "litros": round(partner_litros)})
+                new_cl_detail.append({
+                    "cliente": pname, "vendedor": u, "fecha": first_date,
+                    "litros": round(partner_litros),
+                    "origen": "recuperado" if prev_ids else "nuevo",
+                    "ultima_compra_previa": last_prev_date,
+                })
 
     weekly_sales = []
     for offset in range(4):
