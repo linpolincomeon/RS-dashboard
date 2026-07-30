@@ -2818,6 +2818,58 @@ def extract_operaciones(models, uid):
     m_start = today.replace(day=1)
     sla_actual = extract_sla_data(models, uid, m_start, today)
 
+    # SLA por semana comercial ENAP (mismas 4 semanas del selector del dashboard)
+    # + LEAD TIME REAL: create_date del pedido → primera factura (fechas INMUTABLES,
+    #   a diferencia de shipping_date que se fija cuando el despacho ya está resuelto).
+    sla_semanas = []
+    for offset in range(4):
+        wk = get_enap_week(offset)
+        ws_d = datetime.strptime(wk["start"], "%Y-%m-%d").date()
+        we_d = datetime.strptime(wk["end"], "%Y-%m-%d").date()
+        s = extract_sla_data(models, uid, ws_d, we_d)
+        s["label"] = wk["label"]
+        s["week_start"] = wk["start"]
+        s["week_end"] = wk["end"]
+
+        # Lead time real de los pedidos CREADOS en la semana (solo órdenes humanas)
+        wk_orders = sr(models, uid, "sale.order", [
+            ["state", "in", ["sale", "done"]],
+            ["create_date", ">=", fdt_s(ws_d)],
+            ["create_date", "<=", fdt_e(we_d)],
+            ["create_uid", "!=", 1],
+        ], ["name", "partner_id", "create_date"], limit=2000)
+        _names = [o["name"] for o in wk_orders]
+        _inv_by = defaultdict(list)
+        for i in range(0, len(_names), 200):
+            for v in sr(models, uid, "account.move", [
+                ["invoice_origin", "in", _names[i:i+200]],
+                ["move_type", "=", "out_invoice"], ["state", "=", "posted"],
+            ], ["invoice_origin", "invoice_date"], limit=5000):
+                _inv_by[v["invoice_origin"]].append(v["invoice_date"])
+        ok48 = 0; facturadas = 0; sin_fact = 0; lentas = []
+        for o in wk_orders:
+            ds = sorted(_inv_by.get(o["name"], []))
+            if not ds:
+                sin_fact += 1
+                continue
+            facturadas += 1
+            dd = (datetime.strptime(ds[0][:10], "%Y-%m-%d").date()
+                  - datetime.strptime(o["create_date"][:10], "%Y-%m-%d").date()).days
+            if dd <= 1:
+                ok48 += 1
+            if dd >= 3:
+                lentas.append({"orden": o["name"], "cliente": safe_name(o.get("partner_id")),
+                               "pedido": o["create_date"][:10], "facturado": ds[0][:10], "dias": dd})
+        lentas.sort(key=lambda x: -x["dias"])
+        s["lead_total"] = len(wk_orders)
+        s["lead_facturadas"] = facturadas
+        s["lead_ok48"] = ok48
+        s["lead_pct48"] = round(ok48 / facturadas * 100) if facturadas else 0
+        s["lead_sin_factura"] = sin_fact
+        s["lead_lentas"] = lentas[:30]
+        print(f"  Lead {wk['label']}: {ok48}/{facturadas} ≤48h ({s['lead_pct48']}%) | lentas 3+d: {len(lentas)} | sin factura: {sin_fact}")
+        sla_semanas.append(s)
+
     d_start = today - timedelta(days=29)
     print(f"\nExtracting litros por camión ({fmt(d_start)} → {fmt(today)})...")
     invs = sr(models, uid, "account.move", [
@@ -2858,6 +2910,7 @@ def extract_operaciones(models, uid):
     print(f"  Entregas 30d: {len(rows)} filas día×camión | camiones: {camiones}")
     return {
         "sla": sla_actual,
+        "sla_semanas": sla_semanas,
         "camiones_diario": rows,
         "camiones": camiones,
         "rango": {"desde": fmt(d_start), "hasta": fmt(today)},
