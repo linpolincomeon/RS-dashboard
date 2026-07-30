@@ -2831,7 +2831,9 @@ def extract_operaciones(models, uid):
         s["week_start"] = wk["start"]
         s["week_end"] = wk["end"]
 
-        # Lead time real de los pedidos CREADOS en la semana (solo órdenes humanas)
+        # PROMESA COMERCIAL: "entregas el mismo día para el 95% de los pedidos
+        # informados antes de las 11 AM". Universo = pedidos humanos creados en la
+        # semana antes de las 11:00 hora Chile; cumplido = 1ª factura el MISMO día.
         wk_orders = sr(models, uid, "sale.order", [
             ["state", "in", ["sale", "done"]],
             ["create_date", ">=", fdt_s(ws_d)],
@@ -2846,28 +2848,44 @@ def extract_operaciones(models, uid):
                 ["move_type", "=", "out_invoice"], ["state", "=", "posted"],
             ], ["invoice_origin", "invoice_date"], limit=5000):
                 _inv_by[v["invoice_origin"]].append(v["invoice_date"])
-        ok48 = 0; facturadas = 0; sin_fact = 0; lentas = []
+
+        # Odoo guarda create_date en UTC. Chile: UTC-4 en invierno (abr-sep), UTC-3 en verano.
+        _cl_offset = 4 if 4 <= today.month <= 8 else 3
+        prom_total = 0; prom_ok = 0; post11 = 0; en_curso = 0
+        prom_incumplidas = []
         for o in wk_orders:
+            created_cl = datetime.strptime(o["create_date"][:19], "%Y-%m-%d %H:%M:%S") - timedelta(hours=_cl_offset)
+            pedido_dia = created_cl.date()
             ds = sorted(_inv_by.get(o["name"], []))
-            if not ds:
-                sin_fact += 1
+            if created_cl.hour >= 11:
+                post11 += 1
                 continue
-            facturadas += 1
-            dd = (datetime.strptime(ds[0][:10], "%Y-%m-%d").date()
-                  - datetime.strptime(o["create_date"][:10], "%Y-%m-%d").date()).days
-            if dd <= 1:
-                ok48 += 1
-            if dd >= 3:
-                lentas.append({"orden": o["name"], "cliente": safe_name(o.get("partner_id")),
-                               "pedido": o["create_date"][:10], "facturado": ds[0][:10], "dias": dd})
-        lentas.sort(key=lambda x: -x["dias"])
-        s["lead_total"] = len(wk_orders)
-        s["lead_facturadas"] = facturadas
-        s["lead_ok48"] = ok48
-        s["lead_pct48"] = round(ok48 / facturadas * 100) if facturadas else 0
-        s["lead_sin_factura"] = sin_fact
-        s["lead_lentas"] = lentas[:30]
-        print(f"  Lead {wk['label']}: {ok48}/{facturadas} ≤48h ({s['lead_pct48']}%) | lentas 3+d: {len(lentas)} | sin factura: {sin_fact}")
+            if not ds:
+                if pedido_dia >= today:
+                    en_curso += 1  # pedido de hoy aún en reparto: no evaluar todavía
+                    continue
+                prom_total += 1
+                prom_incumplidas.append({"orden": o["name"], "cliente": safe_name(o.get("partner_id")),
+                                         "pedido": created_cl.strftime("%Y-%m-%d %H:%M"),
+                                         "facturado": "—", "dias": (today - pedido_dia).days})
+                continue
+            prom_total += 1
+            first_inv = datetime.strptime(ds[0][:10], "%Y-%m-%d").date()
+            if first_inv <= pedido_dia:
+                prom_ok += 1
+            else:
+                prom_incumplidas.append({"orden": o["name"], "cliente": safe_name(o.get("partner_id")),
+                                         "pedido": created_cl.strftime("%Y-%m-%d %H:%M"),
+                                         "facturado": ds[0][:10], "dias": (first_inv - pedido_dia).days})
+        prom_incumplidas.sort(key=lambda x: -x["dias"])
+        s["prom_total"] = prom_total
+        s["prom_ok"] = prom_ok
+        s["prom_pct"] = round(prom_ok / prom_total * 100) if prom_total else 0
+        s["prom_post11"] = post11
+        s["prom_en_curso"] = en_curso
+        s["prom_incumplidas"] = prom_incumplidas[:30]
+        s["pedidos_semana"] = len(wk_orders)
+        print(f"  Promesa {wk['label']}: {prom_ok}/{prom_total} mismo día ({s['prom_pct']}%) | pre-11am incumplidas: {len(prom_incumplidas)} | post-11am: {post11}")
         sla_semanas.append(s)
 
     d_start = today - timedelta(days=29)
@@ -2875,7 +2893,14 @@ def extract_operaciones(models, uid):
     invs = sr(models, uid, "account.move", [
         ["move_type", "=", "out_invoice"], ["state", "=", "posted"],
         ["invoice_date", ">=", fmt(d_start)], ["invoice_date", "<=", fmt(today)],
-    ], ["id", "invoice_origin", "invoice_date"], limit=10000)
+    ], ["id", "invoice_origin", "invoice_date", "partner_id"], limit=10000)
+
+    # Zona de entrega por partner (para matriz litros/día por zona)
+    _pids = sorted({safe_id(i.get("partner_id")) for i in invs if i.get("partner_id")})
+    _pzone = {}
+    for i in range(0, len(_pids), 400):
+        for p in sr(models, uid, "res.partner", [["id", "in", _pids[i:i+400]]], ["delivery_zone_id"], limit=500):
+            _pzone[p["id"]] = safe_name(p.get("delivery_zone_id"))
 
     # invoice_origin puede ser "S123" o "S123, S124": usar el primer nombre
     def _first_origin(o):
@@ -2896,23 +2921,32 @@ def extract_operaciones(models, uid):
             mid = safe_id(ln.get("move_id"))
             qty_by_inv[mid] = qty_by_inv.get(mid, 0) + (ln.get("quantity") or 0)
 
-    daily = defaultdict(float)  # (fecha, camion) -> litros
+    daily = defaultdict(float)   # (fecha, camion) -> litros
+    daily_z = defaultdict(float)  # (fecha, zona) -> litros
     for inv in invs:
         q = qty_by_inv.get(inv["id"], 0)
         if q <= 0:
             continue
+        f = inv["invoice_date"][:10]
         cam = so_wh.get(_first_origin(inv.get("invoice_origin"))) or "Sin camión"
-        daily[(inv["invoice_date"][:10], cam)] += q
+        daily[(f, cam)] += q
+        zona = _pzone.get(safe_id(inv.get("partner_id"))) or "Sin zona"
+        daily_z[(f, zona)] += q
 
     rows = [{"fecha": f, "camion": c, "litros": round(l)} for (f, c), l in daily.items()]
     rows.sort(key=lambda r: (r["fecha"], r["camion"]))
     camiones = sorted({r["camion"] for r in rows})
-    print(f"  Entregas 30d: {len(rows)} filas día×camión | camiones: {camiones}")
+    rows_z = [{"fecha": f, "zona": z, "litros": round(l)} for (f, z), l in daily_z.items()]
+    rows_z.sort(key=lambda r: (r["fecha"], r["zona"]))
+    zonas = sorted({r["zona"] for r in rows_z})
+    print(f"  Entregas 30d: {len(rows)} filas día×camión | camiones: {camiones} | zonas: {zonas}")
     return {
         "sla": sla_actual,
         "sla_semanas": sla_semanas,
         "camiones_diario": rows,
         "camiones": camiones,
+        "zonas_diario": rows_z,
+        "zonas": zonas,
         "rango": {"desde": fmt(d_start), "hasta": fmt(today)},
     }
 

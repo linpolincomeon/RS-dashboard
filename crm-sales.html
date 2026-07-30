@@ -2017,99 +2017,87 @@ function renderRescuedTable(list, bodyId, noId, countId) {
 // ═══════════════════════════════════════
 // OPERACIONES TAB — SLA entrega + litros por camión
 // ═══════════════════════════════════════
-let chartCamiones = null;
 function renderOperaciones() {
   if (!D) return;
   const OP = D.operaciones || {};
-  // Vista SEMANAL: la gestión de operaciones se rinde por semana comercial (jueves-miércoles)
+  // Vista SEMANAL: la gestion de operaciones se rinde por semana comercial (jueves-miercoles)
   const sla = (OP.sla_semanas || [])[selectedWeek] || OP.sla || {};
   const wkStart = sla.week_start || '', wkEnd = sla.week_end || '';
-  const rows = (OP.camiones_diario || []).filter(r => (wkStart && wkEnd) ? (r.fecha >= wkStart && r.fecha <= wkEnd) : true);
+  const inWk = r => (wkStart && wkEnd) ? (r.fecha >= wkStart && r.fecha <= wkEnd) : true;
+  const rows = (OP.camiones_diario || []).filter(inWk);
+  const rowsZ = (OP.zonas_diario || []).filter(inWk);
   const camiones = (OP.camiones || []).filter(c => rows.some(r => r.camion === c));
-
+  const zonas = (OP.zonas || []).filter(z => rowsZ.some(r => r.zona === z));
   const litrosSem = rows.reduce((s, r) => s + (r.litros || 0), 0);
-  const dias = [...new Set(rows.map(r => r.fecha))].sort();
-  const byDay = {};
-  rows.forEach(r => { (byDay[r.fecha] = byDay[r.fecha] || {})[r.camion] = (byDay[r.fecha][r.camion] || 0) + r.litros; });
 
   // Selector de semana (mismas semanas ENAP del resto del dashboard)
   const fwOp = D.funnel_weeks || [];
   let h = '<div style="display:flex;gap:6px;margin-bottom:18px;flex-wrap:wrap">' + fwOp.map((w, i) =>
-    '<button class="btn"' + (i === selectedWeek ? ' style="border-color:var(--red);color:var(--red)"' : '') + ' onclick="selectWeek(' + i + ')">' + w.label + (w.is_current ? ' ●' : '') + '</button>'
+    '<button class="btn"' + (i === selectedWeek ? ' style="border-color:var(--red);color:var(--red)"' : '') + ' onclick="selectWeek(' + i + ')">' + w.label + (w.is_current ? ' \u25CF' : '') + '</button>'
   ).join('') + '</div>';
 
-  // KPI principal: lead time REAL (pedido digitado → factura, fechas inmutables).
-  // El "SLA plan" (shipping_date vs factura) queda como secundario: mide el plan de despacho, no la promesa.
-  const lentas = sla.lead_lentas || [];
+  // PROMESA COMERCIAL de TomEnergy: entrega el MISMO D\u00cdA para el 95% de los
+  // pedidos informados antes de las 11 AM. Ese es el SLA \u2014 no se inventa otro.
+  const incumplidas = sla.prom_incumplidas || [];
+  const atrasadas = sla.detalle || []; // secundario: facturadas >1 d\u00eda despu\u00e9s de la fecha de entrega sugerida
   h += '<div class="kpi-row">';
-  h += mkKpi((sla.lead_pct48 || 0) >= 90 ? 'c-green' : (sla.lead_pct48 || 0) >= 75 ? 'c-yellow' : 'c-red', '⏱ Entrega ≤48h', (sla.lead_pct48 || 0) + '%', 'desde que se toma el pedido · meta 90%', sla.lead_pct48 || 0, 90);
-  h += mkKpi('c-blue', 'Pedidos de la Semana', sla.lead_total || 0, (sla.lead_facturadas || 0) + ' facturados · ' + (sla.lead_sin_factura || 0) + ' sin facturar aún', null, null);
-  h += mkKpi(lentas.length > 0 ? 'c-red' : 'c-green', '🐢 Entregas Lentas', lentas.length, '3+ días desde el pedido', null, null);
-  h += mkKpi('c-yellow', 'SLA Plan Despacho', (sla.cumplimiento_pct || 0) + '%', 'factura vs fecha programada (' + (sla.incumplidos || 0) + ' fuera)', null, null);
+  h += mkKpi((sla.prom_pct || 0) >= 95 ? 'c-green' : (sla.prom_pct || 0) >= 85 ? 'c-yellow' : 'c-red', '\u{1F69A} Entrega Mismo D\u00eda', (sla.prom_pct || 0) + '%', 'pedidos antes de las 11 AM \u00b7 meta 95%', sla.prom_pct || 0, 95);
+  h += mkKpi('c-blue', 'Pedidos de la Semana', sla.pedidos_semana || 0, (sla.prom_total || 0) + ' antes de las 11 \u00b7 ' + (sla.prom_post11 || 0) + ' despu\u00e9s' + ((sla.prom_en_curso || 0) ? ' \u00b7 ' + sla.prom_en_curso + ' en reparto' : ''), null, null);
+  h += mkKpi(incumplidas.length > 0 ? 'c-red' : 'c-green', '\u23f0 Promesa Incumplida', incumplidas.length, 'pre-11 AM no entregados el mismo d\u00eda', null, null);
+  h += mkKpi(atrasadas.length > 0 ? 'c-yellow' : 'c-green', '\u{1F4C5} Vs Fecha Sugerida', atrasadas.length, 'facturadas despu\u00e9s de la fecha acordada', null, null);
   h += mkKpi('c-blue', 'Litros Entregados', fL(litrosSem), 'semana seleccionada', null, null);
-  h += mkKpi('c-green', 'Camiones Activos', camiones.filter(c => c !== 'Sin camión').length, 'con entregas en la semana', null, null);
+  h += mkKpi('c-green', 'Camiones Activos', camiones.filter(c => c !== 'Sin cami\u00f3n').length, 'con entregas en la semana', null, null);
   h += '</div>';
 
-  h += '<div class="chart-cont"><h3>📊 Litros entregados por camión — por día</h3><canvas id="chartCamiones" style="max-height:320px"></canvas></div>';
+  // Matriz generica dia x columna
+  const matriz = (titulo, icono, cols, data, keyFn) => {
+    const dias2 = [...new Set(data.map(r => r.fecha))].sort();
+    const byD = {};
+    data.forEach(r => { (byD[r.fecha] = byD[r.fecha] || {})[keyFn(r)] = (byD[r.fecha][keyFn(r)] || 0) + r.litros; });
+    let m = '<div class="sec"><div class="sec-h"><h2>' + icono + ' ' + titulo + '</h2><span style="font-size:12px;color:var(--dim)">semana ' + (wkStart ? wkStart + ' \u2192 ' + wkEnd : '') + '</span></div><div class="sec-b" style="padding:0;overflow-x:auto"><table><thead><tr><th>Fecha</th>';
+    cols.forEach(c => m += '<th style="text-align:right">' + H(c) + '</th>');
+    m += '<th style="text-align:right;border-left:2px solid #e5e4df">Total d\u00eda</th></tr></thead><tbody>';
+    [...dias2].reverse().forEach(f => {
+      const mm = byD[f] || {};
+      const tot = Object.values(mm).reduce((s, v) => s + v, 0);
+      m += '<tr><td class="bold" style="white-space:nowrap">' + f + '</td>';
+      cols.forEach(c => m += '<td style="text-align:right">' + (mm[c] ? Math.round(mm[c]).toLocaleString('es-CL') : '<span style="color:var(--dim)">\u2014</span>') + '</td>');
+      m += '<td class="bold" style="text-align:right;border-left:2px solid #e5e4df">' + Math.round(tot).toLocaleString('es-CL') + '</td></tr>';
+    });
+    const totC = {};
+    data.forEach(r => totC[keyFn(r)] = (totC[keyFn(r)] || 0) + r.litros);
+    const totAll = data.reduce((s, r) => s + r.litros, 0);
+    m += '<tr style="font-weight:700;border-top:2px solid #e5e4df"><td>Total semana</td>';
+    cols.forEach(c => m += '<td style="text-align:right">' + Math.round(totC[c] || 0).toLocaleString('es-CL') + '</td>');
+    m += '<td style="text-align:right;border-left:2px solid #e5e4df">' + Math.round(totAll).toLocaleString('es-CL') + '</td></tr>';
+    m += '</tbody></table></div></div>';
+    return m;
+  };
+  h += matriz('Litros diarios por cami\u00f3n', '\u{1F69B}', camiones, rows, r => r.camion);
+  h += matriz('Litros diarios por zona', '\u{1F5FA}\uFE0F', zonas, rowsZ, r => r.zona);
 
-  // Matriz día × camión (semana seleccionada)
-  h += '<div class="sec"><div class="sec-h"><h2>🚛 Litros diarios por camión</h2><span style="font-size:12px;color:var(--dim)">semana ' + (wkStart ? wkStart + ' → ' + wkEnd : '') + '</span></div><div class="sec-b" style="padding:0;overflow-x:auto"><table><thead><tr><th>Fecha</th>';
-  camiones.forEach(c => h += '<th style="text-align:right">' + H(c) + '</th>');
-  h += '<th style="text-align:right;border-left:2px solid #e5e4df">Total día</th></tr></thead><tbody>';
-  [...dias].reverse().forEach(f => {
-    const m = byDay[f] || {};
-    const tot = Object.values(m).reduce((s, v) => s + v, 0);
-    h += '<tr><td class="bold" style="white-space:nowrap">' + f + '</td>';
-    camiones.forEach(c => h += '<td style="text-align:right">' + (m[c] ? Math.round(m[c]).toLocaleString('es-CL') : '<span style="color:var(--dim)">—</span>') + '</td>');
-    h += '<td class="bold" style="text-align:right;border-left:2px solid #e5e4df">' + Math.round(tot).toLocaleString('es-CL') + '</td></tr>';
-  });
-  const totCam = {};
-  rows.forEach(r => totCam[r.camion] = (totCam[r.camion] || 0) + r.litros);
-  h += '<tr style="font-weight:700;border-top:2px solid #e5e4df"><td>Total semana</td>';
-  camiones.forEach(c => h += '<td style="text-align:right">' + Math.round(totCam[c] || 0).toLocaleString('es-CL') + '</td>');
-  h += '<td style="text-align:right;border-left:2px solid #e5e4df">' + Math.round(litrosSem).toLocaleString('es-CL') + '</td></tr>';
-  h += '</tbody></table></div></div>';
-
-  // Entregas lentas de la semana (lead time real: 3+ días entre pedido y factura)
-  h += '<div class="sec"><div class="sec-h"><h2>🐢 Entregas Lentas — ' + H(sla.label || 'semana') + '</h2><span class="badge">' + lentas.length + '</span></div><div class="sec-b" style="padding:0;overflow-x:auto"><table><thead><tr><th>Cliente</th><th>Orden</th><th>Pedido el</th><th>Facturado el</th><th>Días</th></tr></thead><tbody>';
-  if (lentas.length === 0) {
-    h += '<tr><td colspan="5" class="nodata">Sin entregas lentas esta semana 🎉</td></tr>';
+  // Promesa incumplida: pedidos antes de las 11 AM que NO se entregaron el mismo d\u00eda
+  h += '<div class="sec"><div class="sec-h"><h2>\u23f0 Promesa Incumplida (pre-11 AM sin entrega el mismo d\u00eda) \u2014 ' + H(sla.label || 'semana') + '</h2><span class="badge">' + incumplidas.length + '</span></div><div class="sec-b" style="padding:0;overflow-x:auto"><table><thead><tr><th>Cliente</th><th>Orden</th><th>Pedido (hora Chile)</th><th>Facturado el</th><th>D\u00edas despu\u00e9s</th></tr></thead><tbody>';
+  if (incumplidas.length === 0) {
+    h += '<tr><td colspan="5" class="nodata">Promesa cumplida toda la semana \u{1F389}</td></tr>';
   } else {
-    lentas.forEach(r => {
-      const dc = r.dias > 5 ? 'color:var(--red);font-weight:700' : 'color:var(--yellow);font-weight:600';
-      h += '<tr><td class="bold">' + H(r.cliente) + '</td><td>' + H(r.orden) + '</td><td>' + r.pedido + '</td><td>' + r.facturado + '</td><td style="' + dc + '">' + r.dias + 'd</td></tr>';
+    incumplidas.forEach(r => {
+      const dc = r.dias > 2 ? 'color:var(--red);font-weight:700' : 'color:var(--yellow);font-weight:600';
+      h += '<tr><td class="bold">' + H(r.cliente) + '</td><td>' + H(r.orden) + '</td><td>' + r.pedido + '</td><td>' + r.facturado + '</td><td style="' + dc + '">+' + r.dias + 'd</td></tr>';
     });
   }
   h += '</tbody></table></div></div>';
 
-  // SLA plan despacho incumplidos (secundario, suele venir vacío)
-  const det = sla.detalle || [];
-  if (det.length) {
-    h += '<div class="sec"><div class="sec-h"><h2>⏰ Fuera del plan de despacho</h2><span class="badge">' + det.length + '</span></div><div class="sec-b" style="padding:0;overflow-x:auto"><table><thead><tr><th>Cliente</th><th>Orden</th><th>Fecha Programada</th><th>Fecha Factura</th><th>Días atraso</th></tr></thead><tbody>';
-    det.forEach(r => {
-      h += '<tr><td class="bold">' + H(r.cliente) + '</td><td>' + H(r.orden) + '</td><td>' + r.fecha_entrega + '</td><td>' + r.fecha_factura + '</td><td style="color:var(--red);font-weight:600">+' + r.dias_diff + 'd</td></tr>';
+  // Secundario: facturadas despu\u00e9s de la fecha de entrega sugerida (solo si hay)
+  if (atrasadas.length) {
+    h += '<div class="sec"><div class="sec-h"><h2>\u{1F4C5} Facturadas despu\u00e9s de la fecha sugerida</h2><span class="badge">' + atrasadas.length + '</span></div><div class="sec-b" style="padding:0;overflow-x:auto"><table><thead><tr><th>Cliente</th><th>Orden</th><th>Entrega Sugerida</th><th>Facturado el</th><th>D\u00edas</th></tr></thead><tbody>';
+    atrasadas.forEach(r => {
+      h += '<tr><td class="bold">' + H(r.cliente) + '</td><td>' + H(r.orden) + '</td><td>' + r.fecha_entrega + '</td><td>' + r.fecha_factura + '</td><td style="color:var(--yellow);font-weight:600">+' + r.dias_diff + 'd</td></tr>';
     });
     h += '</tbody></table></div></div>';
   }
 
   document.getElementById('tab-operaciones').innerHTML = h;
-
-  const PALETA = ['#c8360e', '#1d4ed8', '#16a34a', '#ca8a04', '#7c3aed', '#0891b2', '#db2777', '#57534e', '#84cc16'];
-  const el = document.getElementById('chartCamiones');
-  if (el) {
-    if (chartCamiones) chartCamiones.destroy();
-    const labels = dias.map(f => f.slice(8) + '/' + f.slice(5, 7));
-    const datasets = camiones.map((c, i) => ({
-      label: c,
-      data: dias.map(f => (byDay[f] && byDay[f][c]) ? Math.round(byDay[f][c]) : 0),
-      backgroundColor: PALETA[i % PALETA.length],
-      stack: 'litros',
-    }));
-    chartCamiones = new Chart(el, { type: 'bar', data: { labels, datasets },
-      options: { responsive: true, maintainAspectRatio: false,
-        plugins: { legend: { position: 'bottom', labels: { font: { family: 'DM Sans', size: 11 } } } },
-        scales: { x: { stacked: true, grid: { display: false } }, y: { stacked: true, beginAtZero: true, grid: { color: '#f0f0f0' } } } } });
-  }
 }
 
 // ═══════════════════════════════════════
