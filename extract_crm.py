@@ -2809,6 +2809,62 @@ def extract_sla_data(models, uid, m_start, m_end):
 
 
 # ==============================================================
+# PART 8: OPERACIONES — SLA mes actual + litros entregados por camión/día
+# ==============================================================
+def extract_operaciones(models, uid):
+    """Camión = stock.warehouse de la sale.order (HHPT-71, PHXC-44, ...).
+    Entrega = factura posted, unida a la orden vía invoice_origin (mismo join del SLA)."""
+    today = datetime.now().date()
+    m_start = today.replace(day=1)
+    sla_actual = extract_sla_data(models, uid, m_start, today)
+
+    d_start = today - timedelta(days=29)
+    print(f"\nExtracting litros por camión ({fmt(d_start)} → {fmt(today)})...")
+    invs = sr(models, uid, "account.move", [
+        ["move_type", "=", "out_invoice"], ["state", "=", "posted"],
+        ["invoice_date", ">=", fmt(d_start)], ["invoice_date", "<=", fmt(today)],
+    ], ["id", "invoice_origin", "invoice_date"], limit=10000)
+
+    # invoice_origin puede ser "S123" o "S123, S124": usar el primer nombre
+    def _first_origin(o):
+        return (o or "").split(",")[0].strip()
+
+    origins = sorted({_first_origin(i.get("invoice_origin")) for i in invs if i.get("invoice_origin")})
+    so_wh = {}
+    for i in range(0, len(origins), 200):
+        for s in sr(models, uid, "sale.order", [["name", "in", origins[i:i+200]]], ["name", "warehouse_id"], limit=500):
+            so_wh[s["name"]] = safe_name(s.get("warehouse_id"))
+
+    inv_ids = [i["id"] for i in invs]
+    qty_by_inv = {}
+    for i in range(0, len(inv_ids), 500):
+        for ln in sr(models, uid, "account.move.line", [
+            ["move_id", "in", inv_ids[i:i+500]], ["product_id", "=", DIESEL_PRODUCT_ID],
+        ], ["move_id", "quantity"], limit=20000):
+            mid = safe_id(ln.get("move_id"))
+            qty_by_inv[mid] = qty_by_inv.get(mid, 0) + (ln.get("quantity") or 0)
+
+    daily = defaultdict(float)  # (fecha, camion) -> litros
+    for inv in invs:
+        q = qty_by_inv.get(inv["id"], 0)
+        if q <= 0:
+            continue
+        cam = so_wh.get(_first_origin(inv.get("invoice_origin"))) or "Sin camión"
+        daily[(inv["invoice_date"][:10], cam)] += q
+
+    rows = [{"fecha": f, "camion": c, "litros": round(l)} for (f, c), l in daily.items()]
+    rows.sort(key=lambda r: (r["fecha"], r["camion"]))
+    camiones = sorted({r["camion"] for r in rows})
+    print(f"  Entregas 30d: {len(rows)} filas día×camión | camiones: {camiones}")
+    return {
+        "sla": sla_actual,
+        "camiones_diario": rows,
+        "camiones": camiones,
+        "rango": {"desde": fmt(d_start), "hasta": fmt(today)},
+    }
+
+
+# ==============================================================
 # MAIN
 # ==============================================================
 def main():
@@ -2886,6 +2942,9 @@ def main():
     # Part 6b: SLA entrega mes anterior
     sla_prev = extract_sla_data(models, uid, prev_m_start, prev_m_end)
     ventas_prev["sla"] = sla_prev
+
+    # Part 6c: Operaciones — SLA mes actual + litros entregados por camión/día
+    operaciones = extract_operaciones(models, uid)
 
     # Part 7: Pauline Comber "mantención" — absorbs the TomEnergy bucket into Comber's row.
     # Liters = TomEnergy liters + Comber liters (simple sum, no subtraction).
@@ -3135,6 +3194,7 @@ def main():
         "recovery": recovery,
         "credit_risk": credit_risk,
         "graduating": graduating,
+        "operaciones": operaciones,
         "vendor_goals": vendor_goals,
         "company_goals": {
             "litros_mes": _meta_mes(today),

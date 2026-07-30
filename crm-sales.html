@@ -130,6 +130,7 @@ tr:hover td{background:#fafaf8}
       <button class="tab-btn" onclick="switchTab('fidelizacion')">🔁 Gestión Comercial Recuperación</button>
       <button class="tab-btn" onclick="switchTab('cs')">👩‍💼 Gestión Fidelización</button>
       <button class="tab-btn" onclick="switchTab('mesvencido')">📋 Mes Vencido</button>
+      <button class="tab-btn" onclick="switchTab('operaciones')">🚚 Operaciones</button>
       <button class="tab-btn" onclick="switchTab('pipeline')">📊 Pipeline</button>
       <!-- Riesgo tab removed — now in CEO dashboard only -->
       <button class="tab-btn" onclick="switchTab('glosario')">📖 Glosario</button>
@@ -261,6 +262,9 @@ tr:hover td{background:#fafaf8}
 
     <!-- ═══ TAB: MES VENCIDO ═══ -->
     <div class="tab-panel" id="tab-mesvencido"></div>
+
+    <!-- ═══ TAB: OPERACIONES ═══ -->
+    <div class="tab-panel" id="tab-operaciones"></div>
 
     <!-- Tab Riesgo removed — now in CEO dashboard only -->
 
@@ -494,6 +498,7 @@ function switchTab(tab) {
   if (tab === 'fidelizacion' && D) renderFidelizacion();
   if (tab === 'cs' && D) renderCS();
   if (tab === 'mesvencido' && D) renderMesVencido();
+  if (tab === 'operaciones' && D) renderOperaciones();
   if (tab === 'pipeline' && D) renderPipeline();
   // Riesgo tab removed — now in CEO dashboard only
 }
@@ -2006,6 +2011,84 @@ function renderRescuedTable(list, bodyId, noId, countId) {
     tr.innerHTML = `<td class="bold">${H(c.name)}</td><td>${H((c.vendedor||'—').split(' ').slice(0,2).join(' '))}</td><td>${lt ? `<span class="tag ${lt}">${fL(litros)}</span>` : fL(litros)}</td><td><span class="tag ${gc}">${gap}d</span></td><td>${c.frecuencia_dias||'?'}d</td>`;
     tbody.appendChild(tr);
   });
+}
+
+// ═══════════════════════════════════════
+// OPERACIONES TAB — SLA entrega + litros por camión
+// ═══════════════════════════════════════
+let chartCamiones = null;
+function renderOperaciones() {
+  if (!D) return;
+  const OP = D.operaciones || {};
+  const sla = OP.sla || {};
+  const rows = OP.camiones_diario || [];
+  const camiones = OP.camiones || [];
+
+  const litros30 = rows.reduce((s, r) => s + (r.litros || 0), 0);
+  const dias = [...new Set(rows.map(r => r.fecha))].sort();
+  const byDay = {};
+  rows.forEach(r => { (byDay[r.fecha] = byDay[r.fecha] || {})[r.camion] = (byDay[r.fecha][r.camion] || 0) + r.litros; });
+
+  let h = '<div class="kpi-row">';
+  h += mkKpi((sla.cumplimiento_pct || 0) >= 95 ? 'c-green' : 'c-red', '🚚 SLA Entrega', (sla.cumplimiento_pct || 0) + '%', 'mes actual · meta 95%', sla.cumplimiento_pct || 0, 95);
+  h += mkKpi('c-blue', 'Entregas Evaluadas', sla.total_evaluadas || 0, 'órdenes con fecha prometida', null, null);
+  h += mkKpi((sla.incumplidos || 0) > 0 ? 'c-red' : 'c-green', 'Incumplidas', sla.incumplidos || 0, 'más de 1 día de atraso', null, null);
+  h += mkKpi('c-yellow', 'Atraso Promedio', (sla.dias_promedio || 0) + 'd', 'días prometida → factura', null, null);
+  h += mkKpi('c-blue', 'Litros Entregados', fL(litros30), 'últimos 30 días', null, null);
+  h += mkKpi('c-green', 'Camiones Activos', camiones.filter(c => c !== 'Sin camión').length, 'con entregas en 30d', null, null);
+  h += '</div>';
+
+  h += '<div class="chart-cont"><h3>📊 Litros entregados por camión — por día</h3><canvas id="chartCamiones" style="max-height:320px"></canvas></div>';
+
+  // Matriz día × camión
+  h += '<div class="sec"><div class="sec-h"><h2>🚛 Litros diarios por camión</h2><span style="font-size:12px;color:var(--dim)">' + (OP.rango ? OP.rango.desde + ' → ' + OP.rango.hasta : '') + '</span></div><div class="sec-b" style="padding:0;overflow-x:auto"><table><thead><tr><th>Fecha</th>';
+  camiones.forEach(c => h += '<th style="text-align:right">' + H(c) + '</th>');
+  h += '<th style="text-align:right;border-left:2px solid #e5e4df">Total día</th></tr></thead><tbody>';
+  [...dias].reverse().forEach(f => {
+    const m = byDay[f] || {};
+    const tot = Object.values(m).reduce((s, v) => s + v, 0);
+    h += '<tr><td class="bold" style="white-space:nowrap">' + f + '</td>';
+    camiones.forEach(c => h += '<td style="text-align:right">' + (m[c] ? Math.round(m[c]).toLocaleString('es-CL') : '<span style="color:var(--dim)">—</span>') + '</td>');
+    h += '<td class="bold" style="text-align:right;border-left:2px solid #e5e4df">' + Math.round(tot).toLocaleString('es-CL') + '</td></tr>';
+  });
+  const totCam = {};
+  rows.forEach(r => totCam[r.camion] = (totCam[r.camion] || 0) + r.litros);
+  h += '<tr style="font-weight:700;border-top:2px solid #e5e4df"><td>Total 30d</td>';
+  camiones.forEach(c => h += '<td style="text-align:right">' + Math.round(totCam[c] || 0).toLocaleString('es-CL') + '</td>');
+  h += '<td style="text-align:right;border-left:2px solid #e5e4df">' + Math.round(litros30).toLocaleString('es-CL') + '</td></tr>';
+  h += '</tbody></table></div></div>';
+
+  // SLA incumplidos del mes
+  const det = sla.detalle || [];
+  h += '<div class="sec"><div class="sec-h"><h2>⏰ SLA Incumplidos — mes actual</h2><span class="badge">' + det.length + '</span></div><div class="sec-b" style="padding:0;overflow-x:auto"><table><thead><tr><th>Cliente</th><th>Orden</th><th>Fecha Prometida</th><th>Fecha Factura</th><th>Días atraso</th></tr></thead><tbody>';
+  if (det.length === 0) {
+    h += '<tr><td colspan="5" class="nodata">Sin incumplimientos este mes 🎉</td></tr>';
+  } else {
+    det.forEach(r => {
+      const dc = r.dias_diff > 5 ? 'color:var(--red);font-weight:700' : 'color:var(--yellow);font-weight:600';
+      h += '<tr><td class="bold">' + H(r.cliente) + '</td><td>' + H(r.orden) + '</td><td>' + r.fecha_entrega + '</td><td>' + r.fecha_factura + '</td><td style="' + dc + '">+' + r.dias_diff + 'd</td></tr>';
+    });
+  }
+  h += '</tbody></table></div></div>';
+
+  document.getElementById('tab-operaciones').innerHTML = h;
+
+  const PALETA = ['#c8360e', '#1d4ed8', '#16a34a', '#ca8a04', '#7c3aed', '#0891b2', '#db2777', '#57534e', '#84cc16'];
+  const el = document.getElementById('chartCamiones');
+  if (el) {
+    if (chartCamiones) chartCamiones.destroy();
+    const labels = dias.map(f => f.slice(8) + '/' + f.slice(5, 7));
+    const datasets = camiones.map((c, i) => ({
+      label: c,
+      data: dias.map(f => (byDay[f] && byDay[f][c]) ? Math.round(byDay[f][c]) : 0),
+      backgroundColor: PALETA[i % PALETA.length],
+      stack: 'litros',
+    }));
+    chartCamiones = new Chart(el, { type: 'bar', data: { labels, datasets },
+      options: { responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { position: 'bottom', labels: { font: { family: 'DM Sans', size: 11 } } } },
+        scales: { x: { stacked: true, grid: { display: false } }, y: { stacked: true, beginAtZero: true, grid: { color: '#f0f0f0' } } } } });
+  }
 }
 
 // ═══════════════════════════════════════
