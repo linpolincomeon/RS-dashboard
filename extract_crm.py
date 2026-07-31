@@ -40,14 +40,34 @@ def connect():
 
 
 def sr(models, uid, model, domain, fields, limit=5000, offset=0, order="id desc"):
-    return models.execute_kw(
-        ODOO_DB, uid, ODOO_KEY, model, "search_read",
-        [domain], {"fields": fields, "limit": limit, "offset": offset, "order": order}
-    )
+    # Reintentos ante errores transitorios del server (502/timeout), p.ej. cuando
+    # todo el equipo está en Odoo en horario de reunión. 3 intentos, pausa creciente.
+    import time as _time
+    last_err = None
+    for attempt in range(3):
+        try:
+            return models.execute_kw(
+                ODOO_DB, uid, ODOO_KEY, model, "search_read",
+                [domain], {"fields": fields, "limit": limit, "offset": offset, "order": order}
+            )
+        except (xmlrpc.client.ProtocolError, ConnectionError, OSError) as e:
+            last_err = e
+            print(f"  [retry {attempt+1}/3] {model}: {e}")
+            _time.sleep(10 * (attempt + 1))
+    raise last_err
 
 
 def s_count(models, uid, model, domain):
-    return models.execute_kw(ODOO_DB, uid, ODOO_KEY, model, "search_count", [domain])
+    import time as _time
+    last_err = None
+    for attempt in range(3):
+        try:
+            return models.execute_kw(ODOO_DB, uid, ODOO_KEY, model, "search_count", [domain])
+        except (xmlrpc.client.ProtocolError, ConnectionError, OSError) as e:
+            last_err = e
+            print(f"  [retry {attempt+1}/3] count {model}: {e}")
+            _time.sleep(10 * (attempt + 1))
+    raise last_err
 
 
 # ── Helpers ──
@@ -1453,14 +1473,17 @@ def extract_churn_data(models, uid):
         if _p:
             _all_lead_pids.add(_p)
     _churn_partner_user = {}
+    _churn_partner_zone = {}
     batch_size = 200
     for i in range(0, len(list(_all_lead_pids)), batch_size):
         batch = list(_all_lead_pids)[i:i+batch_size]
-        _ps = sr(models, uid, "res.partner", [["id", "in", batch]], ["id", "user_id"], limit=batch_size)
+        _ps = sr(models, uid, "res.partner", [["id", "in", batch]], ["id", "user_id", "delivery_zone_id"], limit=batch_size)
         for _p in _ps:
             _pu = canonical_vendedor(safe_name(_p.get("user_id")))
             if _pu:
                 _churn_partner_user[_p["id"]] = _pu
+            if _p.get("delivery_zone_id"):
+                _churn_partner_zone[_p["id"]] = safe_name(_p.get("delivery_zone_id"))
 
     dormant_list = []
     dormant_by_user = Counter()
@@ -1603,7 +1626,8 @@ def extract_churn_data(models, uid):
             rescued_lost_list.append({"name": name, "user": user, "last_update": write_date, "partner_id": pid})
             rescued_lost_by_user[user] += 1
         else:
-            lost_list.append({"name": name, "user": user, "last_update": write_date, "partner_id": pid})
+            lost_list.append({"name": name, "user": user, "last_update": write_date, "partner_id": pid,
+                              "zona": _churn_partner_zone.get(pid, "")})
             lost_by_user[user] += 1
 
     # ── Avg monthly litros (8 months) for lost clients ──
@@ -2963,6 +2987,86 @@ def extract_operaciones(models, uid):
 
 
 # ==============================================================
+# PART 9: ASIGNACIONES (remate de clientes a ejecutivos)
+# ==============================================================
+def extract_asignaciones(models, uid):
+    """Cambios de vendedor en res.partner hechos por los 3 autorizados
+    (Madelaine 50, Pauline Vial 53, Carlos 77) hacia cuentas de ejecutivos .ext,
+    últimas 5 semanas. Alimenta la tabla '🎯 Clientes Asignados' del tab comercial
+    para revisar en el comité de la semana siguiente si hubo gestión."""
+    AUTORIZADOS = {50: "Madelaine", 53: "Pauline", 77: "Carlos"}
+    print("\nExtracting asignaciones de clientes (remate)...")
+    try:
+        # partner_id de cada usuario autorizado (mail.message.author_id es un partner)
+        auth_users = sr(models, uid, "res.users", [["id", "in", list(AUTORIZADOS)]], ["id", "partner_id"])
+        author_partner = {safe_id(u.get("partner_id")): AUTORIZADOS[u["id"]] for u in auth_users}
+        # cuentas de ejecutivos destino (.ext activas)
+        ext_users = sr(models, uid, "res.users", [["login", "like", ".ext@"], ["active", "=", True]], ["id", "name"])
+        ext_ids = {u["id"]: u["name"] for u in ext_users}
+
+        since = (datetime.now() - timedelta(days=35)).strftime("%Y-%m-%d %H:%M:%S")
+        trk = sr(models, uid, "mail.tracking.value", [
+            ["mail_message_id.model", "=", "res.partner"],
+            ["field_id.name", "=", "user_id"],
+            ["create_date", ">=", since],
+        ], ["mail_message_id", "old_value_char", "new_value_integer", "new_value_char", "create_date"], limit=5000)
+        mids = list({safe_id(t.get("mail_message_id")) for t in trk if t.get("mail_message_id")})
+        mmap = {}
+        for i in range(0, len(mids), 500):
+            for m in sr(models, uid, "mail.message", [["id", "in", mids[i:i+500]]], ["res_id", "author_id", "date"], limit=1000):
+                mmap[m["id"]] = m
+
+        rows = []
+        for t in trk:
+            m = mmap.get(safe_id(t.get("mail_message_id")))
+            if not m:
+                continue
+            quien = author_partner.get(safe_id(m.get("author_id")))
+            if not quien:
+                continue  # solo asignaciones hechas por los 3 autorizados
+            if t.get("new_value_integer") not in ext_ids:
+                continue  # solo hacia cuentas de ejecutivos .ext
+            rows.append({
+                "pid": m["res_id"],
+                "ejecutivo": canonical_vendedor(t.get("new_value_char") or ""),
+                "_dest_uid": t.get("new_value_integer"),
+                "desde": t.get("old_value_char") or "(sin vendedor)",
+                "fecha": (m.get("date") or "")[:10],
+                "por": quien,
+            })
+
+        # dedup por partner (última asignación gana) y enriquecer
+        by_pid = {}
+        for r in sorted(rows, key=lambda x: x["fecha"]):
+            by_pid[r["pid"]] = r
+        rows = list(by_pid.values())
+        pids = [r["pid"] for r in rows]
+        pmap = {}
+        for i in range(0, len(pids), 400):
+            for p in sr(models, uid, "res.partner", [["id", "in", pids[i:i+400]]], ["name", "user_id"], limit=500):
+                pmap[p["id"]] = p
+        # Solo asignaciones VIGENTES: si el cliente ya no está con ese ejecutivo
+        # (p.ej. asignación revertida), no se muestra.
+        rows = [r for r in rows if safe_id((pmap.get(r["pid"]) or {}).get("user_id")) == r["_dest_uid"]]
+        pids = [r["pid"] for r in rows]
+        notas = gather_latest_note(models, uid, pids) if pids else {}
+        for r in rows:
+            r["cliente"] = (pmap.get(r["pid"]) or {}).get("name") or "?"
+            r.pop("_dest_uid", None)
+            n = notas.get(r["pid"]) or {}
+            r["nota"] = n.get("body", "")
+            r["nota_fecha"] = (n.get("date") or "")[:10]
+            r["gestionado"] = bool(r["nota_fecha"] and r["nota_fecha"] >= r["fecha"])
+            r.pop("pid", None)
+        rows.sort(key=lambda x: (x["fecha"], x["ejecutivo"]), reverse=True)
+        print(f"  Asignaciones últimas 5 semanas: {len(rows)}")
+        return rows
+    except Exception as e:
+        print(f"  Asignaciones skipped: {e}")
+        return []
+
+
+# ==============================================================
 # MAIN
 # ==============================================================
 def main():
@@ -3043,6 +3147,9 @@ def main():
 
     # Part 6c: Operaciones — SLA mes actual + litros entregados por camión/día
     operaciones = extract_operaciones(models, uid)
+
+    # Part 6d: Asignaciones de clientes a ejecutivos (remate)
+    asignaciones = extract_asignaciones(models, uid)
 
     # Part 7: Pauline Comber "mantención" — absorbs the TomEnergy bucket into Comber's row.
     # Liters = TomEnergy liters + Comber liters (simple sum, no subtraction).
@@ -3293,6 +3400,7 @@ def main():
         "credit_risk": credit_risk,
         "graduating": graduating,
         "operaciones": operaciones,
+        "asignaciones": asignaciones,
         "vendor_goals": vendor_goals,
         "company_goals": {
             "litros_mes": _meta_mes(today),

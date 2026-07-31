@@ -192,15 +192,23 @@ tr:hover td{background:#fafaf8}
 
     <!-- ═══ TAB: GESTIÓN COMERCIAL RECUPERACIÓN ═══ -->
     <div class="tab-panel" id="tab-fidelizacion">
+      <!-- Selector de semana (para revisar asignaciones del remate) -->
+      <div id="fidWeekSelector" style="display:flex;gap:6px;margin-bottom:18px;flex-wrap:wrap"></div>
+
       <!-- KPI Row: resumen de cartera de la empresa -->
       <div class="kpi-row" id="churnKpiRow"></div>
+
+      <!-- Clientes asignados a ejecutivos (remate) — revisar gestión la semana siguiente -->
+      <div class="sec"><div class="sec-h"><h2>🎯 Clientes Asignados a Ejecutivos</h2><span class="badge" id="asigCount">0</span></div><div class="sec-b" style="max-height:500px;overflow-x:auto">
+        <table><thead><tr><th>Cliente</th><th>Asignado a</th><th>Fecha</th><th>Por</th><th>Venía de</th><th>Gestión</th></tr></thead><tbody id="asigBody"></tbody></table>
+        <div class="nodata" id="noAsig" style="display:none">Sin asignaciones en la semana seleccionada</div></div></div>
 
       <!-- Explanation notes -->
       <div id="churnNotes" style="background:var(--card);border-radius:12px;padding:16px;margin-bottom:24px;border-left:3px solid var(--yellow);font-size:12px;color:var(--dim);line-height:1.6"></div>
 
       <!-- Nuevos Perdidos del Mes (fecha real de cambio de etapa vía tracking) -->
       <div class="sec"><div class="sec-h"><h2>💀 Nuevos Perdidos del Mes</h2><span class="badge" id="newLostCount">0</span></div><div class="sec-b" style="max-height:500px;overflow-y:auto">
-        <table><thead><tr><th>Prioridad</th><th>Cliente</th><th>Prom. Mensual 8M</th><th>Último vendedor</th><th>Fecha perdido</th><th>Última Nota</th></tr></thead><tbody id="newLostBody"></tbody></table>
+        <table><thead><tr><th>Prioridad</th><th>Cliente</th><th>Zona</th><th>Prom. Mensual 8M</th><th>Último vendedor</th><th>Fecha perdido</th><th>Última Nota</th></tr></thead><tbody id="newLostBody"></tbody></table>
         <div class="nodata" id="noNewLost" style="display:none">Sin nuevos perdidos este mes</div></div></div>
 
       <!-- Recuperables ahora (análisis por facturación 2025 vs 2026 — clientes que el CRM no ve) -->
@@ -483,6 +491,7 @@ function selectWeek(idx) {
   if (document.getElementById('tab-funnel').classList.contains('active')) renderFunnel();
   if (document.getElementById('tab-cs').classList.contains('active')) renderCS();
   if (document.getElementById('tab-operaciones').classList.contains('active')) renderOperaciones();
+  if (document.getElementById('tab-fidelizacion').classList.contains('active')) renderFidelizacion();
 }
 
 const EXEC_COUNT = 3;
@@ -1503,8 +1512,36 @@ function renderFidelizacion() {
       const priority = l >= 5000 ? '\u{1F534}' : l >= 1000 ? '\u{1F7E1}' : '\u26AA';
       const noteHtml = c.last_note ? '<span style="font-size:11px;color:var(--dim)">' + H(c.last_note) + '</span>' : '<span style="color:var(--dim)">\u2014</span>';
       const tr = document.createElement('tr');
-      tr.innerHTML = '<td>' + priority + '</td><td class="bold">' + H(c.name) + '</td><td>' + lTag + '</td><td>' + H(c.user || '\u2014') + '</td><td>' + (c.last_update || '\u2014') + '</td><td style="max-width:260px;white-space:normal">' + noteHtml + '</td>';
+      tr.innerHTML = '<td>' + priority + '</td><td class="bold">' + H(c.name) + '</td><td>' + H(c.zona || '\u2014') + '</td><td>' + lTag + '</td><td>' + H(c.user || '\u2014') + '</td><td>' + (c.last_update || '\u2014') + '</td><td style="max-width:260px;white-space:normal">' + noteHtml + '</td>';
       nlb.appendChild(tr);
+    });
+  }
+
+  // Selector de semana + asignaciones del remate
+  const fwFid = D.funnel_weeks || [];
+  const fidSel = document.getElementById('fidWeekSelector');
+  if (fidSel) {
+    fidSel.innerHTML = fwFid.map((w, i) =>
+      '<button class="btn"' + (i === selectedWeek ? ' style="border-color:var(--red);color:var(--red)"' : '') + ' onclick="selectWeek(' + i + ')">' + w.label + (w.is_current ? ' \u25cf' : '') + '</button>'
+    ).join('');
+  }
+  const wSel = fwFid[selectedWeek] || {};
+  const asigAll = D.asignaciones || [];
+  const asig = asigAll.filter(a => (wSel.week_start && wSel.week_end) ? (a.fecha >= wSel.week_start && a.fecha <= wSel.week_end) : true);
+  document.getElementById('asigCount').textContent = asig.length;
+  const ab = document.getElementById('asigBody'); ab.innerHTML = '';
+  const noA = document.getElementById('noAsig');
+  if (asig.length === 0) { noA.style.display = 'block'; }
+  else {
+    noA.style.display = 'none';
+    // Orden: por ejecutivo, luego fecha
+    asig.slice().sort((a, b) => (a.ejecutivo || '').localeCompare(b.ejecutivo || '') || (b.fecha || '').localeCompare(a.fecha || '')).forEach(a => {
+      const gest = a.gestionado
+        ? '<span class="tag tag-g" title="' + H(a.nota || '') + '">\u2705 ' + (a.nota_fecha || '') + '</span>'
+        : '<span class="tag tag-r">\u274c Sin gesti\u00f3n</span>';
+      const tr = document.createElement('tr');
+      tr.innerHTML = '<td class="bold">' + H(a.cliente) + '</td><td>' + H(a.ejecutivo) + '</td><td>' + (a.fecha || '\u2014') + '</td><td>' + H(a.por || '\u2014') + '</td><td style="font-size:11px;color:var(--dim)">' + H(a.desde || '\u2014') + '</td><td>' + gest + '</td>';
+      ab.appendChild(tr);
     });
   }
 
