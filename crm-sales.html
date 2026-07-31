@@ -2036,15 +2036,13 @@ function renderOperaciones() {
     '<button class="btn"' + (i === selectedWeek ? ' style="border-color:var(--red);color:var(--red)"' : '') + ' onclick="selectWeek(' + i + ')">' + w.label + (w.is_current ? ' \u25CF' : '') + '</button>'
   ).join('') + '</div>';
 
-  // PROMESA COMERCIAL de TomEnergy: pedido antes de las 11 AM \u2192 entrega el MISMO
-  // d\u00eda; despu\u00e9s de las 11 AM \u2192 entrega el D\u00cdA SIGUIENTE. Meta 95%.
+  // SLA SIMPLE: pedido entregado (facturado) dentro de 24 hrs \u2014 o en la fecha
+  // sugerida si el cliente hizo preorder para m\u00e1s adelante. Meta 95%.
   const incumplidas = sla.prom_incumplidas || [];
-  const atrasadas = sla.detalle || []; // secundario: facturadas >1 d\u00eda despu\u00e9s de la fecha de entrega sugerida
   h += '<div class="kpi-row">';
-  h += mkKpi((sla.prom_pct || 0) >= 95 ? 'c-green' : (sla.prom_pct || 0) >= 85 ? 'c-yellow' : 'c-red', '\u{1F69A} Promesa de Entrega', (sla.prom_pct || 0) + '%', 'pre-11: mismo d\u00eda \u00b7 post-11: d\u00eda sgte. \u00b7 meta 95%', sla.prom_pct || 0, 95);
-  h += mkKpi('c-blue', 'Pedidos de la Semana', sla.pedidos_semana || 0, (sla.prom_pre11 || 0) + ' antes de las 11 \u00b7 ' + (sla.prom_post11 || 0) + ' despu\u00e9s' + ((sla.prom_en_curso || 0) ? ' \u00b7 ' + sla.prom_en_curso + ' en reparto' : ''), null, null);
-  h += mkKpi(incumplidas.length > 0 ? 'c-red' : 'c-green', '\u23f0 Promesa Incumplida', incumplidas.length, 'entregados despu\u00e9s del plazo', null, null);
-  h += mkKpi(atrasadas.length > 0 ? 'c-yellow' : 'c-green', '\u{1F4C5} Vs Fecha Sugerida', atrasadas.length, 'facturadas despu\u00e9s de la fecha acordada', null, null);
+  h += mkKpi((sla.prom_pct || 0) >= 95 ? 'c-green' : (sla.prom_pct || 0) >= 85 ? 'c-yellow' : 'c-red', '\u{1F69A} SLA Entrega 24h', (sla.prom_pct || 0) + '%', 'facturado \u226424h del pedido (o fecha acordada) \u00b7 meta 95%', sla.prom_pct || 0, 95);
+  h += mkKpi('c-blue', 'Pedidos de la Semana', sla.pedidos_semana || 0, (sla.prom_total || 0) + ' evaluados \u00b7 ' + (sla.prom_preorders || 0) + ' preorder' + ((sla.prom_en_curso || 0) ? ' \u00b7 ' + sla.prom_en_curso + ' en reparto' : ''), null, null);
+  h += mkKpi(incumplidas.length > 0 ? 'c-red' : 'c-green', '\u23f0 Fuera de Plazo', incumplidas.length, 'facturados despu\u00e9s del plazo comprometido', null, null);
   h += mkKpi('c-blue', 'Litros Entregados', fL(litrosSem), 'semana seleccionada', null, null);
   h += mkKpi('c-green', 'Camiones Activos', camiones.filter(c => c !== 'Sin cami\u00f3n').length, 'con entregas en la semana', null, null);
   h += '</div>';
@@ -2076,10 +2074,10 @@ function renderOperaciones() {
   h += matriz('Litros diarios por cami\u00f3n', '\u{1F69B}', camiones, rows, r => r.camion);
   h += matriz('Litros diarios por zona', '\u{1F5FA}\uFE0F', zonas, rowsZ, r => r.zona);
 
-  // Promesa incumplida: entregados despu\u00e9s del plazo (pre-11 \u2192 mismo d\u00eda; post-11 \u2192 d\u00eda siguiente)
-  h += '<div class="sec"><div class="sec-h"><h2>\u23f0 Promesa Incumplida \u2014 ' + H(sla.label || 'semana') + '</h2><span class="badge">' + incumplidas.length + '</span></div><div class="sec-b" style="padding:0;overflow-x:auto"><table><thead><tr><th>Cliente</th><th>Orden</th><th>Pedido (hora Chile)</th><th>Plazo</th><th>Facturado el</th><th>D\u00edas despu\u00e9s</th></tr></thead><tbody>';
+  // Fuera de plazo: facturados despu\u00e9s de las 24h (o de la fecha acordada si fue preorder)
+  h += '<div class="sec"><div class="sec-h"><h2>\u23f0 Fuera de Plazo \u2014 ' + H(sla.label || 'semana') + '</h2><span class="badge">' + incumplidas.length + '</span></div><div class="sec-b" style="padding:0;overflow-x:auto"><table><thead><tr><th>Cliente</th><th>Orden</th><th>Pedido (hora Chile)</th><th>Plazo</th><th>Facturado el</th><th>D\u00edas despu\u00e9s</th></tr></thead><tbody>';
   if (incumplidas.length === 0) {
-    h += '<tr><td colspan="6" class="nodata">Promesa cumplida toda la semana \u{1F389}</td></tr>';
+    h += '<tr><td colspan="6" class="nodata">Todos los pedidos dentro de plazo \u{1F389}</td></tr>';
   } else {
     incumplidas.forEach(r => {
       const dc = r.dias > 2 ? 'color:var(--red);font-weight:700' : 'color:var(--yellow);font-weight:600';
@@ -2087,15 +2085,6 @@ function renderOperaciones() {
     });
   }
   h += '</tbody></table></div></div>';
-
-  // Secundario: facturadas despu\u00e9s de la fecha de entrega sugerida (solo si hay)
-  if (atrasadas.length) {
-    h += '<div class="sec"><div class="sec-h"><h2>\u{1F4C5} Facturadas despu\u00e9s de la fecha sugerida</h2><span class="badge">' + atrasadas.length + '</span></div><div class="sec-b" style="padding:0;overflow-x:auto"><table><thead><tr><th>Cliente</th><th>Orden</th><th>Entrega Sugerida</th><th>Facturado el</th><th>D\u00edas</th></tr></thead><tbody>';
-    atrasadas.forEach(r => {
-      h += '<tr><td class="bold">' + H(r.cliente) + '</td><td>' + H(r.orden) + '</td><td>' + r.fecha_entrega + '</td><td>' + r.fecha_factura + '</td><td style="color:var(--yellow);font-weight:600">+' + r.dias_diff + 'd</td></tr>';
-    });
-    h += '</tbody></table></div></div>';
-  }
 
   document.getElementById('tab-operaciones').innerHTML = h;
 }

@@ -2831,16 +2831,16 @@ def extract_operaciones(models, uid):
         s["week_start"] = wk["start"]
         s["week_end"] = wk["end"]
 
-        # PROMESA COMERCIAL (definición Pauline 31-jul): pedido antes de las 11 AM
-        # → entrega el MISMO día; pedido después de las 11 AM → entrega el DÍA
-        # SIGUIENTE. Meta 95%. Universo = TODOS los pedidos humanos de la semana;
-        # cumplido = 1ª factura dentro del plazo según la hora del pedido (hora Chile).
+        # SLA SIMPLE (definición final Pauline 31-jul): pedido entregado dentro de
+        # 24 HRS (con granularidad de fecha: facturado el mismo día o el siguiente).
+        # Preorder: si la entrega sugerida (shipping_date) es posterior, vale esa
+        # fecha como plazo. Cumplido = 1ª factura ≤ plazo. Meta 95%.
         wk_orders = sr(models, uid, "sale.order", [
             ["state", "in", ["sale", "done"]],
             ["create_date", ">=", fdt_s(ws_d)],
             ["create_date", "<=", fdt_e(we_d)],
             ["create_uid", "!=", 1],
-        ], ["name", "partner_id", "create_date"], limit=2000)
+        ], ["name", "partner_id", "create_date", "shipping_date"], limit=2000)
         _names = [o["name"] for o in wk_orders]
         _inv_by = defaultdict(list)
         for i in range(0, len(_names), 200):
@@ -2852,18 +2852,22 @@ def extract_operaciones(models, uid):
 
         # Odoo guarda create_date en UTC. Chile: UTC-4 en invierno (abr-sep), UTC-3 en verano.
         _cl_offset = 4 if 4 <= today.month <= 8 else 3
-        prom_total = 0; prom_ok = 0; pre11 = 0; post11 = 0; en_curso = 0
+        prom_total = 0; prom_ok = 0; en_curso = 0; preorders = 0
         prom_incumplidas = []
         for o in wk_orders:
             created_cl = datetime.strptime(o["create_date"][:19], "%Y-%m-%d %H:%M:%S") - timedelta(hours=_cl_offset)
             pedido_dia = created_cl.date()
-            es_pre11 = created_cl.hour < 11
-            if es_pre11:
-                pre11 += 1
-                limite = pedido_dia                      # mismo día
-            else:
-                post11 += 1
-                limite = pedido_dia + timedelta(days=1)  # día siguiente
+            limite = pedido_dia + timedelta(days=1)  # dentro de 24 hrs
+            # Preorder: si la entrega sugerida es posterior, ese es el compromiso
+            _ship = (o.get("shipping_date") or "")[:10]
+            if _ship:
+                try:
+                    _ship_d = datetime.strptime(_ship, "%Y-%m-%d").date()
+                    if _ship_d > limite:
+                        limite = _ship_d
+                        preorders += 1
+                except ValueError:
+                    pass
             ds = sorted(_inv_by.get(o["name"], []))
             if not ds:
                 if limite >= today:
@@ -2888,12 +2892,11 @@ def extract_operaciones(models, uid):
         s["prom_total"] = prom_total
         s["prom_ok"] = prom_ok
         s["prom_pct"] = round(prom_ok / prom_total * 100) if prom_total else 0
-        s["prom_pre11"] = pre11
-        s["prom_post11"] = post11
+        s["prom_preorders"] = preorders
         s["prom_en_curso"] = en_curso
         s["prom_incumplidas"] = prom_incumplidas[:40]
         s["pedidos_semana"] = len(wk_orders)
-        print(f"  Promesa {wk['label']}: {prom_ok}/{prom_total} a tiempo ({s['prom_pct']}%) | incumplidas: {len(prom_incumplidas)} | pre11: {pre11} post11: {post11} en curso: {en_curso}")
+        print(f"  SLA 24h {wk['label']}: {prom_ok}/{prom_total} a tiempo ({s['prom_pct']}%) | incumplidas: {len(prom_incumplidas)} | preorders: {preorders} | en curso: {en_curso}")
         sla_semanas.append(s)
 
     d_start = today - timedelta(days=29)
