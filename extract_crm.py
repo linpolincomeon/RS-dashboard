@@ -2831,9 +2831,10 @@ def extract_operaciones(models, uid):
         s["week_start"] = wk["start"]
         s["week_end"] = wk["end"]
 
-        # PROMESA COMERCIAL: "entregas el mismo día para el 95% de los pedidos
-        # informados antes de las 11 AM". Universo = pedidos humanos creados en la
-        # semana antes de las 11:00 hora Chile; cumplido = 1ª factura el MISMO día.
+        # PROMESA COMERCIAL (definición Pauline 31-jul): pedido antes de las 11 AM
+        # → entrega el MISMO día; pedido después de las 11 AM → entrega el DÍA
+        # SIGUIENTE. Meta 95%. Universo = TODOS los pedidos humanos de la semana;
+        # cumplido = 1ª factura dentro del plazo según la hora del pedido (hora Chile).
         wk_orders = sr(models, uid, "sale.order", [
             ["state", "in", ["sale", "done"]],
             ["create_date", ">=", fdt_s(ws_d)],
@@ -2851,41 +2852,48 @@ def extract_operaciones(models, uid):
 
         # Odoo guarda create_date en UTC. Chile: UTC-4 en invierno (abr-sep), UTC-3 en verano.
         _cl_offset = 4 if 4 <= today.month <= 8 else 3
-        prom_total = 0; prom_ok = 0; post11 = 0; en_curso = 0
+        prom_total = 0; prom_ok = 0; pre11 = 0; post11 = 0; en_curso = 0
         prom_incumplidas = []
         for o in wk_orders:
             created_cl = datetime.strptime(o["create_date"][:19], "%Y-%m-%d %H:%M:%S") - timedelta(hours=_cl_offset)
             pedido_dia = created_cl.date()
-            ds = sorted(_inv_by.get(o["name"], []))
-            if created_cl.hour >= 11:
+            es_pre11 = created_cl.hour < 11
+            if es_pre11:
+                pre11 += 1
+                limite = pedido_dia                      # mismo día
+            else:
                 post11 += 1
-                continue
+                limite = pedido_dia + timedelta(days=1)  # día siguiente
+            ds = sorted(_inv_by.get(o["name"], []))
             if not ds:
-                if pedido_dia >= today:
-                    en_curso += 1  # pedido de hoy aún en reparto: no evaluar todavía
+                if limite >= today:
+                    en_curso += 1  # plazo aún abierto: no evaluar todavía
                     continue
                 prom_total += 1
                 prom_incumplidas.append({"orden": o["name"], "cliente": safe_name(o.get("partner_id")),
                                          "pedido": created_cl.strftime("%Y-%m-%d %H:%M"),
-                                         "facturado": "—", "dias": (today - pedido_dia).days})
+                                         "limite": fmt(limite), "facturado": "—",
+                                         "dias": (today - limite).days})
                 continue
             prom_total += 1
             first_inv = datetime.strptime(ds[0][:10], "%Y-%m-%d").date()
-            if first_inv <= pedido_dia:
+            if first_inv <= limite:
                 prom_ok += 1
             else:
                 prom_incumplidas.append({"orden": o["name"], "cliente": safe_name(o.get("partner_id")),
                                          "pedido": created_cl.strftime("%Y-%m-%d %H:%M"),
-                                         "facturado": ds[0][:10], "dias": (first_inv - pedido_dia).days})
+                                         "limite": fmt(limite), "facturado": ds[0][:10],
+                                         "dias": (first_inv - limite).days})
         prom_incumplidas.sort(key=lambda x: -x["dias"])
         s["prom_total"] = prom_total
         s["prom_ok"] = prom_ok
         s["prom_pct"] = round(prom_ok / prom_total * 100) if prom_total else 0
+        s["prom_pre11"] = pre11
         s["prom_post11"] = post11
         s["prom_en_curso"] = en_curso
-        s["prom_incumplidas"] = prom_incumplidas[:30]
+        s["prom_incumplidas"] = prom_incumplidas[:40]
         s["pedidos_semana"] = len(wk_orders)
-        print(f"  Promesa {wk['label']}: {prom_ok}/{prom_total} mismo día ({s['prom_pct']}%) | pre-11am incumplidas: {len(prom_incumplidas)} | post-11am: {post11}")
+        print(f"  Promesa {wk['label']}: {prom_ok}/{prom_total} a tiempo ({s['prom_pct']}%) | incumplidas: {len(prom_incumplidas)} | pre11: {pre11} post11: {post11} en curso: {en_curso}")
         sla_semanas.append(s)
 
     d_start = today - timedelta(days=29)
