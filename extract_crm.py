@@ -845,6 +845,11 @@ def extract_sales_data(models, uid, custom_start=None, custom_end=None, label_ov
     margin_by_user_venta = defaultdict(float)
     margin_by_user_costo = defaultdict(float)
 
+    # Inicializar SIEMPRE: si el mes recién empieza sin facturas (ej. 1-ago en fin de
+    # semana), inv_ids viene vacío y el bloque de clientes nuevos usa `lines` igual.
+    # Sin esto el cron crasheaba con UnboundLocalError cada inicio de mes sin ventas.
+    lines = []
+
     if inv_ids:
         lines = sr(models, uid, "account.move.line", [
             ["move_id", "in", inv_ids],
