@@ -40,11 +40,13 @@ def connect():
 
 
 def sr(models, uid, model, domain, fields, limit=5000, offset=0, order="id desc"):
-    # Reintentos ante errores transitorios del server (502/timeout), p.ej. cuando
-    # todo el equipo está en Odoo en horario de reunión. 3 intentos, pausa creciente.
+    # Reintentos ante errores transitorios del server (502/timeout). Las ventanas de
+    # mantención/backup de Odoo duran varios minutos → presupuesto ~4 min (5 intentos,
+    # pausas 15/30/60/120s). Fault (campo inválido, etc.) NO se reintenta: falla al tiro.
     import time as _time
     last_err = None
-    for attempt in range(3):
+    _waits = [15, 30, 60, 120]
+    for attempt in range(5):
         try:
             return models.execute_kw(
                 ODOO_DB, uid, ODOO_KEY, model, "search_read",
@@ -52,21 +54,24 @@ def sr(models, uid, model, domain, fields, limit=5000, offset=0, order="id desc"
             )
         except (xmlrpc.client.ProtocolError, ConnectionError, OSError) as e:
             last_err = e
-            print(f"  [retry {attempt+1}/3] {model}: {e}")
-            _time.sleep(10 * (attempt + 1))
+            print(f"  [retry {attempt+1}/5] {model}: {e}")
+            if attempt < 4:
+                _time.sleep(_waits[attempt])
     raise last_err
 
 
 def s_count(models, uid, model, domain):
     import time as _time
     last_err = None
-    for attempt in range(3):
+    _waits = [15, 30, 60, 120]
+    for attempt in range(5):
         try:
             return models.execute_kw(ODOO_DB, uid, ODOO_KEY, model, "search_count", [domain])
         except (xmlrpc.client.ProtocolError, ConnectionError, OSError) as e:
             last_err = e
-            print(f"  [retry {attempt+1}/3] count {model}: {e}")
-            _time.sleep(10 * (attempt + 1))
+            print(f"  [retry {attempt+1}/5] count {model}: {e}")
+            if attempt < 4:
+                _time.sleep(_waits[attempt])
     raise last_err
 
 
@@ -844,11 +849,6 @@ def extract_sales_data(models, uid, custom_start=None, custom_end=None, label_ov
     litros_by_partner = defaultdict(float)
     margin_by_user_venta = defaultdict(float)
     margin_by_user_costo = defaultdict(float)
-
-    # Inicializar SIEMPRE: si el mes recién empieza sin facturas (ej. 1-ago en fin de
-    # semana), inv_ids viene vacío y el bloque de clientes nuevos usa `lines` igual.
-    # Sin esto el cron crasheaba con UnboundLocalError cada inicio de mes sin ventas.
-    lines = []
 
     if inv_ids:
         lines = sr(models, uid, "account.move.line", [
@@ -3434,4 +3434,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-    
