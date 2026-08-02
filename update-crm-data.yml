@@ -1,28 +1,23 @@
 name: Update CRM Dashboard Data
-
 on:
   schedule:
-    - cron: '0 11,15,19,23 * * *'   # anchor: 8am, 12pm, 4pm, 8pm Chile (UTC-3)
-    - cron: '0 13,17,21 * * 5'      # VIERNES extra: con el diario queda cada ~2h (11,13,15,17,19,21,23 UTC)
-    - cron: '0 14 * * 5'            # VIERNES: 14:00 UTC = 10am GMT-4, dato fresco 1h antes de la reunion (11am GMT-4 = 15:00 UTC)
+    - cron: '0 10 * * *'    # ~6-8 AM Chile (con drift de GitHub) — evita ventana de mantención de Odoo ~05:50
+    - cron: '0 14 * * 5'    # VIERNES 10:00 AM Chile — dato fresco 1h antes de reunion
+    - cron: '50 14 * * 5'   # VIERNES 10:50 AM Chile — refresco final 10 min antes
   workflow_dispatch:
-
 permissions:
   contents: write
-
 jobs:
   update-data:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v5
         with:
           fetch-depth: 0
-
       - name: Set up Python
         uses: actions/setup-python@v6
         with:
           python-version: '3.11'
-
       - name: Fetch CRM data from Odoo
         env:
           ODOO_URL: https://tomenergy.cl
@@ -30,7 +25,6 @@ jobs:
           ODOO_USER: p@tomenergy.cl
           ODOO_KEY: ${{ secrets.ODOO_KEY }}
         run: python extract_crm.py
-
       - name: Commit and push
         run: |
           git config user.name "github-actions[bot]"
