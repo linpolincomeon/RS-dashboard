@@ -31,6 +31,8 @@ jobs:
           ODOO_USER: p@tomenergy.cl
           ODOO_KEY: ${{ secrets.ODOO_KEY }}
         run: python extract_ceo.py
+      - name: Validar plausibilidad del output
+        run: python validate_data.py ceo-data.json riesgo-historico.json
       - name: Commit and push
         run: |
           git config user.name  "github-actions[bot]"
