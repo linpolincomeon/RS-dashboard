@@ -22,7 +22,7 @@ from calendar import monthrange
 ODOO_URL = os.environ.get("ODOO_URL", "https://tomenergy.cl")
 ODOO_DB = os.environ.get("ODOO_DB", "PRODUCCION")
 ODOO_USER = os.environ.get("ODOO_USER", "p@tomenergy.cl")
-ODOO_KEY = os.environ.get("ODOO_KEY", "f4188f3cbe069a9f5ce60325fa17a2c5333176d1")
+ODOO_KEY = os.environ.get("ODOO_KEY", "")  # sin fallback: la key vive en el secret de Actions / ~/.odoo_key local
 
 # Known IDs
 BANCO_CHILE_JOURNAL = 112
@@ -1455,34 +1455,79 @@ def extract_dso(models, uid, n_months=6):
         credit = rg[0].get("credit", 0) if rg else 0
         return abs(credit - debit)
 
-    def get_cxc_at(cutoff_date):
-        """Saldo CxC contable al cutoff."""
-        rg = models.execute_kw(
-            ODOO_DB, uid, ODOO_KEY, "account.move.line", "read_group",
-            [[["account_id", "in", acc_ids],
-              ["parent_state", "=", "posted"],
-              ["date", "<=", cutoff_date]]],
-            {"fields": ["debit", "credit"], "groupby": [], "lazy": False}
-        )
-        debit = rg[0].get("debit", 0) if rg else 0
-        credit = rg[0].get("credit", 0) if rg else 0
-        return max(debit - credit, 0)
+    # ── Saldo "as of" por RECONCILIACIÓN (fix bug DSO, ago-2026) ──
+    # El método anterior sumaba debit−credit por fecha contable (read_group), que no
+    # refleja la reconciliación real de Odoo 18. Método nuevo:
+    #   · Saldo ACTUAL  = Σ amount_residual de líneas posted (residual ≠ 0).
+    #   · Saldo AL CIERRE M = residual actual de líneas con fecha ≤ M
+    #     + reversa de las reconciliaciones aplicadas DESPUÉS de M
+    #     (account.partial.reconcile con max_date > M): se re-abre el lado factura
+    #     (débito, fecha ≤ M) y se re-abre el lado pago/NC (crédito, fecha ≤ M).
+    #     Así un pago de julio no reduce el saldo reportado de mayo.
+    def _fetch_positions(account_ids, oldest_date):
+        """Líneas abiertas hoy + partial.reconcile posteriores a oldest_date,
+        para reconstruir el saldo pendiente a cualquier fecha de corte."""
+        if not account_ids:
+            return [], []
+        open_lines = []
+        offset = 0
+        while True:
+            batch = models.execute_kw(
+                ODOO_DB, uid, ODOO_KEY, "account.move.line", "search_read",
+                [[["account_id", "in", account_ids],
+                  ["parent_state", "=", "posted"],
+                  ["amount_residual", "!=", 0]]],
+                {"fields": ["date", "amount_residual"], "limit": 2000, "offset": offset}
+            )
+            open_lines += [((l.get("date") or ""), l.get("amount_residual", 0)) for l in batch]
+            if len(batch) < 2000:
+                break
+            offset += 2000
 
-    def get_cheques_at(cutoff_date):
-        """Saldo cheques en cartera (cuenta 1.1.05.07) al cutoff.
-        NO usa journal 114 (ese filtro daba 0 — los cheques estan en la cuenta)."""
-        if not cheq_acc_ids:
-            return 0
-        rg = models.execute_kw(
-            ODOO_DB, uid, ODOO_KEY, "account.move.line", "read_group",
-            [[["account_id", "in", cheq_acc_ids],
-              ["parent_state", "=", "posted"],
-              ["date", "<=", cutoff_date]]],
-            {"fields": ["debit", "credit"], "groupby": [], "lazy": False}
+        partials = models.execute_kw(
+            ODOO_DB, uid, ODOO_KEY, "account.partial.reconcile", "search_read",
+            [[["debit_move_id.account_id", "in", account_ids],
+              ["max_date", ">", oldest_date]]],
+            {"fields": ["amount", "max_date", "debit_move_id", "credit_move_id"], "limit": 50000}
         )
-        debit = rg[0].get("debit", 0) if rg else 0
-        credit = rg[0].get("credit", 0) if rg else 0
-        return max(debit - credit, 0)
+        # fechas de las líneas involucradas en cada reconciliación
+        line_ids = set()
+        for p in partials:
+            if p.get("debit_move_id"):
+                line_ids.add(p["debit_move_id"][0])
+            if p.get("credit_move_id"):
+                line_ids.add(p["credit_move_id"][0])
+        line_date = {}
+        line_ids = list(line_ids)
+        for i in range(0, len(line_ids), 2000):
+            for l in models.execute_kw(
+                ODOO_DB, uid, ODOO_KEY, "account.move.line", "read",
+                [line_ids[i:i+2000]], {"fields": ["date"]}
+            ):
+                line_date[l["id"]] = l.get("date") or ""
+        plist = []
+        for p in partials:
+            d_id = p["debit_move_id"][0] if p.get("debit_move_id") else None
+            c_id = p["credit_move_id"][0] if p.get("credit_move_id") else None
+            plist.append((
+                p.get("amount", 0),
+                (p.get("max_date") or ""),
+                line_date.get(d_id, ""),
+                line_date.get(c_id, ""),
+            ))
+        print(f"    posiciones: {len(open_lines)} líneas abiertas | {len(plist)} reconciliaciones desde {oldest_date}")
+        return open_lines, plist
+
+    def _residual_at(open_lines, partials, cutoff_date):
+        """Saldo pendiente a la fecha de corte, reconstruido desde hoy hacia atrás."""
+        total = sum(r for d, r in open_lines if d and d <= cutoff_date)
+        for amount, max_date, d_date, c_date in partials:
+            if max_date > cutoff_date:
+                if d_date and d_date <= cutoff_date:
+                    total += amount   # la factura seguía abierta al corte
+                if c_date and c_date <= cutoff_date:
+                    total -= amount   # el pago/NC existía y estaba sin aplicar al corte
+        return max(total, 0)
 
     # 2. Generar N+2 meses cerrados (extra para calcular promedio 3m desde el primer mes)
     today = datetime.now()
@@ -1500,11 +1545,15 @@ def extract_dso(models, uid, n_months=6):
         d = d.replace(day=1) - timedelta(days=1)
     months.reverse()
 
-    # 3. Calcular CxC+cheques y ventas para todos los meses
+    # 3. Calcular CxC+cheques y ventas para todos los meses (saldos por reconciliación)
+    oldest = months[0]["first"]
+    cxc_open, cxc_partials = _fetch_positions(acc_ids, oldest)
+    cheq_open, cheq_partials = _fetch_positions(cheq_acc_ids, oldest)
+
     raw = []
     for mo in months:
-        cxc_acc = get_cxc_at(mo["last"])
-        cheq = get_cheques_at(mo["last"])
+        cxc_acc = _residual_at(cxc_open, cxc_partials, mo["last"])
+        cheq = _residual_at(cheq_open, cheq_partials, mo["last"])
         cxc_total = cxc_acc + cheq
 
         # Revenue bruto = venta neta (4.1.01.01) * 1.19 + IEC (4.2.01.02)
@@ -1531,12 +1580,51 @@ def extract_dso(models, uid, n_months=6):
             "dso": dso,
         })
 
-    # 5. CxC hoy (planta actual)
-    today_str = today.strftime("%Y-%m-%d")
-    cxc_hoy = get_cxc_at(today_str) + get_cheques_at(today_str)
-    print(f"  CxC hoy (planta): ${cxc_hoy:,.0f}")
+    # 5. CxC hoy (planta actual) = suma directa de residuales abiertos
+    cxc_hoy = sum(r for _, r in cxc_open) + sum(r for _, r in cheq_open)
+    print(f"  CxC hoy (planta, residual): ${cxc_hoy:,.0f}")
 
     return {"months": results, "cxc_hoy": round(cxc_hoy)}
+
+
+# ── VALIDACIÓN DE SANIDAD DEL OUTPUT ──
+def validate_output(data):
+    """Si el dato es implausible, el script FALLA antes de escribir ceo-data.json:
+    así el cron de GitHub Actions manda aviso de error en vez de publicar un
+    número malo al directorio. Umbrales definidos por Pauline (ago-2026):
+      · DSO del último mes fuera de [5, 90] días → fallar.
+      · Saldo CxC hoy difiere >50% del último ceo-data.json publicado → fallar."""
+    import sys
+    errores = []
+    dso_data = data.get("dso") or {}
+    months = dso_data.get("months") or []
+    if months:
+        last = months[-1]
+        dso_val = last.get("dso") or 0
+        if not (5 <= dso_val <= 90):
+            errores.append(f"DSO implausible en {last.get('month')}: {dso_val}d (rango esperado 5-90)")
+    else:
+        errores.append("DSO sin meses calculados (¿cuentas CxC no encontradas?)")
+    cxc_hoy = dso_data.get("cxc_hoy") or 0
+    prev_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "ceo-data.json")
+    try:
+        with open(prev_path, "r", encoding="utf-8") as f:
+            prev_cxc = ((json.load(f).get("dso") or {}).get("cxc_hoy")) or 0
+    except (FileNotFoundError, json.JSONDecodeError):
+        prev_cxc = 0
+    if prev_cxc and cxc_hoy and abs(cxc_hoy - prev_cxc) / prev_cxc > 0.5:
+        errores.append(
+            f"Saldo CxC hoy ${cxc_hoy:,.0f} difiere "
+            f"{abs(cxc_hoy - prev_cxc) / prev_cxc * 100:.0f}% del último publicado ${prev_cxc:,.0f} (umbral 50%)"
+        )
+    if errores:
+        print("\n" + "=" * 64)
+        print("VALIDACIÓN DE SANIDAD FALLÓ — ceo-data.json NO se escribe:")
+        for e in errores:
+            print(f"  ✗ {e}")
+        print("=" * 64)
+        sys.exit(1)
+    print("Validación de sanidad OK (DSO y saldo CxC en rangos plausibles)")
 
 
 # ── MAIN ──
@@ -1586,6 +1674,9 @@ def main():
             "sla_target": 95,
         },
     }
+
+    # Sanidad ANTES de escribir: dato implausible → exit 1 (Actions avisa, no se commitea)
+    validate_output(data)
 
     path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "ceo-data.json")
     with open(path, "w", encoding="utf-8") as f:
