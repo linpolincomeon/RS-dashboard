@@ -1755,6 +1755,23 @@ function renderCS() {
   }
   document.getElementById('csKpiRow').innerHTML = kh;
 
+  // Litros de un ganado: estimado del lead → si está vacío, litros reales de su 1ª
+  // factura (clientes nuevos) o promedio histórico (rescates) → si no hay nada, '—'
+  const litrosGanado = (w) => {
+    let l = w.value || w.litros || 0;
+    if (!l) {
+      const nm = (w.name || '').trim().toUpperCase();
+      const nc = (((D.ventas || {}).new_clients || {}).detail || []).find(c => (c.cliente || '').trim().toUpperCase() === nm);
+      if (nc) l = nc.litros || 0;
+    }
+    if (!l) {
+      const nm = (w.name || '').trim().toUpperCase();
+      const resc = [...(churn.rescued_dormant_list || []), ...(churn.rescued_lost_list || [])].find(c => (c.name || '').trim().toUpperCase() === nm);
+      if (resc) l = resc.avg_monthly_litros || 0;
+    }
+    return l ? fL(l) : '<span style="color:var(--dim)" title="Lead ganado sin litros estimados — llenar x_litros_estimados al ganar">—</span>';
+  };
+
   // Populate Clientes Ganados tables
   const ganados = wonAll.filter(w => {
     if (!isCSGestion(w.exec)) return false;
@@ -1776,8 +1793,7 @@ function renderCS() {
     noSemanal.style.display = 'none';
     ganados.forEach(w => {
       const tr = document.createElement('tr');
-      const litros = (w.value || w.litros || 0);
-      tr.innerHTML = `<td class="bold">${H(w.name)}</td><td>${H(w.exec)}</td><td>${fL(litros)}</td><td>${wonDate(w) || ''}</td>`;
+      tr.innerHTML = `<td class="bold">${H(w.name)}</td><td>${H(w.exec)}</td><td>${litrosGanado(w)}</td><td>${wonDate(w) || ''}</td>`;
       semanalBody.appendChild(tr);
     });
   }
@@ -1792,8 +1808,7 @@ function renderCS() {
     noAcumulado.style.display = 'none';
     ganados.forEach(w => {
       const tr = document.createElement('tr');
-      const litros = (w.value || w.litros || 0);
-      tr.innerHTML = `<td class="bold">${H(w.name)}</td><td>${H(w.exec)}</td><td>${fL(litros)}</td><td>${wonDate(w) || ''}</td>`;
+      tr.innerHTML = `<td class="bold">${H(w.name)}</td><td>${H(w.exec)}</td><td>${litrosGanado(w)}</td><td>${wonDate(w) || ''}</td>`;
       acumuladoBody.appendChild(tr);
     });
   }
