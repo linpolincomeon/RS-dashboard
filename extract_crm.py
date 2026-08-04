@@ -3319,26 +3319,33 @@ def main():
         for i in range(0, len(pid_list), 200):
             batch = pid_list[i:i+200]
             for pid in batch:
-                # Find FIRST ever invoice for this partner
-                first_inv = sr(models, uid, "account.move", [
+                # Primera factura del CICLO ACTUAL: la primera posterior al último
+                # gap >= 270 días sin facturar (misma definición de "perdido").
+                # Un rescate de perdido cuenta como cliente NUEVO, y las facturas
+                # históricas migradas (create_date 2025-09-30) no queman la ventana.
+                # Misma regla que la acción de servidor 1243 en Odoo (fix 2026-08-04).
+                invs_p = sr(models, uid, "account.move", [
                     ["move_type", "=", "out_invoice"],
                     ["state", "=", "posted"],
                     ["partner_id", "=", pid],
-                ], ["invoice_date", "partner_id"], limit=1, order="invoice_date asc")
-                if not first_inv:
-                    continue
-                first_date = first_inv[0].get("invoice_date", "")
-                if not first_date:
+                ], ["invoice_date", "partner_id"], limit=5000, order="invoice_date asc")
+                inv_dates = [i["invoice_date"] for i in invs_p if i.get("invoice_date")]
+                if not inv_dates:
                     continue
                 try:
-                    first_dt = datetime.strptime(first_date, "%Y-%m-%d").date()
+                    dts = [datetime.strptime(d, "%Y-%m-%d").date() for d in inv_dates]
                 except Exception:
                     continue
+                first_dt = dts[0]
+                for j in range(1, len(dts)):
+                    if (dts[j] - dts[j - 1]).days >= 270:
+                        first_dt = dts[j]
+                first_date = fmt(first_dt)
                 days = (today - first_dt).days
-                # Only include if their FIRST invoice is within the 150-210d window
+                # Only include if their cycle-start invoice is within the 150-210d window
                 if days < 150 or days > 210:
                     continue
-                pname = safe_name(first_inv[0].get("partner_id"))
+                pname = safe_name(invs_p[0].get("partner_id"))
                 # Get vendedor from res.partner.user_id (canonical rule)
                 partner_rec = sr(models, uid, "res.partner", [["id", "=", pid]], ["user_id"], limit=1)
                 vendedor = ""
