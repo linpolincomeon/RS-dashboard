@@ -1902,7 +1902,9 @@ function renderMesVencido(){
   h+=mkKpi('c-yellow','Litros Freelancer',fL(litrosFreelancer),'Suma freelancers del mes',null,null);
   h+=mkKpi('c-blue','Clientes Nuevos',(ncP.count||0),'primera factura del mes');
   h+=mkKpi('c-blue','Ruta (visitas)',rutaVisitasMes,'visitas en etapa Ruta · semanas del mes',null,null);
+  h+=mkKpi('c-green','Litros Retail',fL(TP.retail_litros||0),'clientes retail del mes',null,null);
   h+=mkKpi(mrA>=mrGoal?'c-green':'c-red','Margen Retail',mrA+'%','Meta: '+mrGoal+'%',mrA,mrGoal);
+  h+=mkKpi('c-blue','Litros Volumen',fL(TP.volume_litros||0),'clientes volumen del mes',null,null);
   h+=mkKpi(mvA>=mvGoal?'c-green':'c-red','Margen Volumen',mvA+'%','Meta: '+mvGoal+'%',mvA,mvGoal);
   h+='</div>';
 
