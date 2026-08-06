@@ -451,7 +451,8 @@ def extract_crm_data(models, uid):
               "enrichment could", "no company data", "meeting scheduled",
               "ganado autom", "oportunidad ganada", "opportunity won", "facturas pendientes",
               "proximo recordatorio", "próximo recordatorio", "cierre masivo de backlog",
-              "reemplazo automatico", "lista de precios cambiada"]
+              "reemplazo automatico", "lista de precios cambiada",
+              "alerta:", "dias sin comprar", "días sin comprar"]
 
     msg_list = []
     last_msg_by_lead = {}  # lead_id → latest REAL message (skip auto-generated noise)
@@ -1298,7 +1299,8 @@ def gather_latest_note(models, uid, pids):
              "cambio de etapa", "oportunidad ganada", "oportunidad perdida", "se crea un nuevo canal",
              "ganado autom", "facturas pendientes", "proximo recordatorio", "próximo recordatorio",
              "fecha del proximo", "fecha del próximo", "opportunity won", "recordatorio ser",
-             "cierre masivo de backlog", "reemplazo automatico", "lista de precios cambiada"]
+             "cierre masivo de backlog", "reemplazo automatico", "lista de precios cambiada",
+             "alerta:", "dias sin comprar", "días sin comprar"]
 
     def _clean(b):
         # Odoo 18 registra notas/actividades como envoltura; extraer la gestión real.
@@ -1375,7 +1377,7 @@ def gather_latest_note(models, uid, pids):
                     [["res_model", "=", "res.partner"], ["res_id", "in", chunk]],
                     ["res_id", "summary", "note", "write_date", "user_id"], limit=8000):
             b = (a.get("summary") or "").strip() or strip_html(a.get("note") or "")
-            if b:
+            if _ok(b):
                 consider(a.get("res_id"), (a.get("write_date") or "")[:10], b,
                          safe_name(a.get("user_id")) if a.get("user_id") else "Actividad")
     # 4. Actividades planeadas en crm.lead
@@ -1384,7 +1386,7 @@ def gather_latest_note(models, uid, pids):
                     [["res_model", "=", "crm.lead"], ["res_id", "in", chunk]],
                     ["res_id", "summary", "note", "write_date", "user_id"], limit=8000):
             b = (a.get("summary") or "").strip() or strip_html(a.get("note") or "")
-            if b:
+            if _ok(b):
                 consider(lead_to_pid.get(a.get("res_id")), (a.get("write_date") or "")[:10], b,
                          safe_name(a.get("user_id")) if a.get("user_id") else "Actividad")
     return res
@@ -2695,7 +2697,8 @@ def extract_credit_risk(models, uid):
 
     # ── Last vendor note for credit risk clients (same pattern as dormants) ──
     _noise_cr = ["lead enrichment", "nuevo lead para el equipo", "new lead for", "stage changed",
-                 "enrichment could", "no company data", "meeting scheduled"]
+                 "enrichment could", "no company data", "meeting scheduled",
+                 "alerta:", "dias sin comprar", "días sin comprar"]
     cr_pids = [e["_pid"] for e in score_table if e.get("_pid")]
     cr_note_by_pid = {}
     if cr_pids:
