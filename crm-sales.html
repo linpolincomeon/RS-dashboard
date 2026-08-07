@@ -208,7 +208,7 @@ tr:hover td{background:#fafaf8}
 
       <!-- Nuevos Perdidos del Mes (fecha real de cambio de etapa vía tracking) -->
       <div class="sec"><div class="sec-h"><h2>💀 Nuevos Perdidos del Mes</h2><span class="badge" id="newLostCount">0</span></div><div class="sec-b" style="max-height:500px;overflow-y:auto">
-        <table><thead><tr><th>Prioridad</th><th>Cliente</th><th>Zona</th><th>Prom. Mensual 8M</th><th>Último vendedor</th><th>Fecha perdido</th><th>Última Nota</th></tr></thead><tbody id="newLostBody"></tbody></table>
+        <table><thead><tr><th>Prioridad</th><th>Cliente</th><th>Zona</th><th title="Litros ÷ meses con compra (no ventana fija)">Prom. Mensual (activo)</th><th>Último vendedor</th><th>Fecha perdido</th><th>Última Nota</th></tr></thead><tbody id="newLostBody"></tbody></table>
         <div class="nodata" id="noNewLost" style="display:none">Sin nuevos perdidos este mes</div></div></div>
 
       <!-- Recuperables ahora (análisis por facturación 2025 vs 2026 — clientes que el CRM no ve) -->
@@ -257,7 +257,7 @@ tr:hover td{background:#fafaf8}
       <!-- Nuevos Durmientes (fecha real de cambio de etapa vía tracking) -->
       <div id="csDurmientesContainer" style="display:none">
         <div class="sec"><div class="sec-h"><h2>😴 Nuevos Durmientes</h2><span class="badge" id="newDormantCount">0</span></div><div class="sec-b" style="max-height:500px;overflow-y:auto">
-          <table><thead><tr><th>Prioridad</th><th>Cliente</th><th>Prom. Mensual 8M</th><th>Responsable</th><th>Fecha durmiente</th><th>Última Nota</th></tr></thead><tbody id="newDormantBody"></tbody></table>
+          <table><thead><tr><th>Prioridad</th><th>Cliente</th><th title="Litros ÷ meses con compra (no ventana fija)">Prom. Mensual (activo)</th><th>Responsable</th><th>Fecha durmiente</th><th>Última Nota</th></tr></thead><tbody id="newDormantBody"></tbody></table>
           <div class="nodata" id="noNewDormant" style="display:none">Sin nuevos durmientes en el período</div></div></div>
       </div>
 
