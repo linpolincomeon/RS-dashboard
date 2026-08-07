@@ -1742,7 +1742,9 @@ function renderCS() {
     for (const [u, v] of Object.entries(TP_cs.margin_by_user || {})) { if (isCS(u)) { margenPrevCS = v; break; } }
     const ncPrevCS = ((VP_cs.new_clients || {}).detail || []).filter(c => isCSGestion(c.vendedor)).length;
     const prevLabel = VP_cs.month_label || 'Mes Anterior';
-    kh += mkKpi('c-red', '💧 Litros CS', fL(litrosPrevCS), prevLabel, litrosPrevCS, csGoal);
+    const csGoalPrev = CG_cs.litros_cs_mes_prev || csGoalMes; // meta del mes cerrado, no la del mes actual
+    const csPctPrev = csGoalPrev > 0 ? Math.round((litrosPrevCS / csGoalPrev) * 100) : 0;
+    kh += mkKpi('c-red', '💧 Litros CS', fL(litrosPrevCS), prevLabel + ' · Meta: ' + fL(csGoalPrev) + ' (' + csPctPrev + '%)', litrosPrevCS, csGoalPrev);
     kh += mkKpi('c-yellow', 'Venta Neta', '$' + fL(ventaPrevCS), prevLabel, null, null);
     kh += mkKpi('c-blue', 'Margen', margenPrevCS > 0 ? margenPrevCS + '%' : '—', 'Porcentaje neto', null, null);
     kh += mkKpi('c-green', 'Nuevos Clientes', ncPrevCS, 'Primera factura', null, null);

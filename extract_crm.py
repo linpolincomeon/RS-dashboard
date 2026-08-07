@@ -3017,6 +3017,10 @@ def main():
 
     # Part 3c: Historial mensual (resumen tab Mes Vencido) — reusa extract_sales_data
     # por mes para que litros/venta/márgenes cuadren con el titular (no suma semanas).
+    # Meta mensual de litros MANTENCIÓN (Comber/CS) — la actualiza Pauline cada mes
+    CS_META_MES = {"2026-07": 547687}
+    CS_META_DEFAULT = 526505
+
     BUDGET_2026 = {1: 1065753, 2: 1090372, 3: 1135242, 4: 1305689, 5: 1035293, 6: 866750,
                    7: 1107706, 8: 1084934, 9: 1052901, 10: 1354911, 11: 1394823, 12: 1754688}
     BUDGET_2025 = {1: 637139, 2: 645973, 3: 673983, 4: 846275, 5: 600862, 6: 451928,
@@ -3338,7 +3342,10 @@ def main():
         "vendor_goals": vendor_goals,
         "company_goals": {
             "litros_mes": _meta_mes(today),
-            "litros_cs_mes": 526505,
+            # Meta mantención (Comber/CS) POR MES — la define Pauline mensualmente.
+            # Meses sin entrada usan CS_META_DEFAULT.
+            "litros_cs_mes": CS_META_MES.get(f"{today.year}-{today.month:02d}", CS_META_DEFAULT),
+            "litros_cs_mes_prev": CS_META_MES.get(f"{prev_m_start.year}-{prev_m_start.month:02d}", CS_META_DEFAULT),
             "margen_retail": 8.5,
             "margen_volumen": 6.0,
             "month": f"{MESES_ES[today.month].lower()} {today.year}",
