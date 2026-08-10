@@ -438,9 +438,18 @@ function renderVentas(){
         ? `${dsoCur.label} · vs ${dsoPrev.label}: ${dsoDelta > 0 ? '+' : ''}${dsoDelta.toFixed(1)}d`
         : `${dsoCur.label} · promedio 3m / ventas × 30d`;
     h += kpi('DSO Mensual', dsoCur.dso.toFixed(1) + 'd', null, dsoCls, dsoSub);
-    if (cxcHoy != null) {
-        const cxcM = (cxcHoy / 1e6).toFixed(1) + 'M';
-        h += kpi('Planta CxC', '$' + cxcM, null, 'c-purple', 'Impago hoy: CxC + cheques cartera');
+    // Planta CxC por SEMANA (saldo al cierre de la semana seleccionada);
+    // para la semana en curso muestra el saldo de hoy.
+    const cxcSemMap = (!Array.isArray(dsoRaw) && dsoRaw.por_semana) ? dsoRaw.por_semana : null;
+    const cxcSel = (selW === 0) ? cxcHoy : (cxcSemMap ? cxcSemMap[last.end] : null);
+    const cxcVal = cxcSel != null ? cxcSel : cxcHoy;
+    if (cxcVal != null) {
+        const cxcPrev = cxcSemMap ? cxcSemMap[prev.end] : null;
+        const cxcM = (cxcVal / 1e6).toFixed(1) + 'M';
+        const cxcSub = (selW === 0 || cxcSemMap == null)
+            ? 'Impago hoy: CxC + cheques cartera'
+            : 'saldo impago al cierre de la semana';
+        h += kpi('Planta CxC', '$' + cxcM, (cxcPrev ? pD(cxcVal, cxcPrev) : null), 'c-purple', cxcSub);
     }
     h+='</div>';
     // Charts: Litros Retail vs Ppto, Litros Volumen vs Ppto

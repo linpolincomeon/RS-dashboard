@@ -1386,7 +1386,7 @@ IEC_ACCOUNT_CODE = "4.2.01.02"       # IMPUESTO ESPECIFICO VENTAS (IEC)
 IVA_RATE = 1.19                      # IVA 19% aplicado sobre la venta neta
 
 
-def extract_dso(models, uid, n_months=6):
+def extract_dso(models, uid, n_months=6, weeks=None):
     """Rotacion CxC = promedio_CxC_3m / Revenue_bruto_mes * 30.
 
     Replica exacta de la hoja del directorio (celda CD28).
@@ -1584,7 +1584,19 @@ def extract_dso(models, uid, n_months=6):
     cxc_hoy = sum(r for _, r in cxc_open) + sum(r for _, r in cheq_open)
     print(f"  CxC hoy (planta, residual): ${cxc_hoy:,.0f}")
 
-    return {"months": results, "cxc_hoy": round(cxc_hoy)}
+    # 6. Planta CxC POR SEMANA (saldo impago al cierre de cada semana comercial).
+    # Antes la card mostraba solo el saldo de HOY y quedaba "pegada" en todas
+    # las semanas del selector (reporte Pauline 2026-08-10).
+    por_semana = {}
+    for w in (weeks or []):
+        we = w.get("end")
+        if we:
+            por_semana[we] = round(_residual_at(cxc_open, cxc_partials, we)
+                                   + _residual_at(cheq_open, cheq_partials, we))
+    if por_semana:
+        print(f"  Planta CxC por semana: {len(por_semana)} cierres calculados")
+
+    return {"months": results, "cxc_hoy": round(cxc_hoy), "por_semana": por_semana}
 
 
 # ── VALIDACIÓN DE SANIDAD DEL OUTPUT ──
@@ -1651,7 +1663,7 @@ def main():
     churn = extract_churn(models, uid)
     enap = extract_enap_compliance(models, uid)
     operaciones = extract_operaciones(models, uid)
-    dso = extract_dso(models, uid)
+    dso = extract_dso(models, uid, weeks=weeks)
 
     data = {
         "updated": datetime.now().isoformat(),
