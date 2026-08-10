@@ -27,6 +27,11 @@ from datetime import datetime, timedelta, timezone
 FRESCURA_HORAS = 26            # `updated` debe ser de las últimas N horas
 ENCOGIMIENTO_MAX = 0.50        # falla si el archivo pesa menos del 50% que ayer
 
+# route-data.json son los pedidos DEL DÍA: fin de semana o madrugada sin
+# pedidos lo dejan casi vacío (≈85 bytes vs ~7k de un día normal) y el check
+# de encogimiento botaba el cron sábado/domingo/lunes temprano (runs 118-120).
+SIN_CHECK_ENCOGIMIENTO = {"route-data.json"}
+
 # crm-data.json (histórico jul-2026: semanas completas 116k–257k litros,
 # 1.415 clientes activos, 27 ejecutivos, funnel 7 etapas / ~1.278 leads)
 CRM_MIN_LITROS_SEMANA_COMPLETA = 50_000   # última semana ENAP cerrada
@@ -244,7 +249,8 @@ def validar(archivo):
         fail(archivo, f"JSON inválido: {e}")
         return
 
-    check_encogimiento(archivo, raw)
+    if archivo not in SIN_CHECK_ENCOGIMIENTO:
+        check_encogimiento(archivo, raw)
 
     checker = CHECKS.get(archivo)
     if checker:
