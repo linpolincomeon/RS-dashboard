@@ -2085,6 +2085,44 @@ def extract_recovery_clients(models, uid):
     # ── 7. Gestión de cliente MÁS RECIENTE (chatter + actividades planeadas, por fecha) ──
     last_note = gather_latest_note(models, uid, candidates)
 
+    # ── 7b. Exclusión: compra reciente PROPIA o del GRUPO (90 días) ──
+    # Un "recuperable" que él mismo o su grupo compró hace poco NO es lead asignable
+    # (auditoría Pauline 2026-08-07: Patacón/Invina/Vivanco compraban ellos mismos;
+    # Morales Palma vía grupo Agroservicios JR; Ismael Vergara vía su hermano).
+    recent_cut = fmt(today - timedelta(days=90))
+    _own_recent = set()
+    for i in range(0, len(candidates), 200):
+        for v in sr(models, uid, "account.move", [
+            ["move_type", "=", "out_invoice"], ["state", "=", "posted"],
+            ["partner_id", "in", candidates[i:i+200]],
+            ["invoice_date", ">=", recent_cut],
+        ], ["partner_id"], limit=5000):
+            _own_recent.add(safe_id(v.get("partner_id")))
+    _cand_group = {}
+    for i in range(0, len(candidates), 200):
+        for _p in sr(models, uid, "res.partner", [["id", "in", candidates[i:i+200]]],
+                     ["id", "group_consultek_id"], limit=500):
+            _g = safe_id(_p.get("group_consultek_id"))
+            if _g:
+                _cand_group[_p["id"]] = _g
+    _groups_recent = set()
+    _gids = sorted(set(_cand_group.values()))
+    if _gids:
+        _members = sr(models, uid, "res.partner", [["group_consultek_id", "in", _gids]],
+                      ["id", "group_consultek_id"], limit=5000)
+        _mem_group = {m["id"]: safe_id(m.get("group_consultek_id")) for m in _members}
+        _mem_ids = list(_mem_group)
+        for i in range(0, len(_mem_ids), 200):
+            for v in sr(models, uid, "account.move", [
+                ["move_type", "=", "out_invoice"], ["state", "=", "posted"],
+                ["partner_id", "in", _mem_ids[i:i+200]],
+                ["invoice_date", ">=", recent_cut],
+            ], ["partner_id"], limit=5000):
+                _g = _mem_group.get(safe_id(v.get("partner_id")))
+                if _g:
+                    _groups_recent.add(_g)
+    _excl_reciente = 0
+
     # ── 8. Clasificar cada candidato: recoverable vs seasonal ──
     SPANISH_MONTHS = ["", "ene", "feb", "mar", "abr", "may", "jun",
                       "jul", "ago", "sep", "oct", "nov", "dic"]
@@ -2098,6 +2136,9 @@ def extract_recovery_clients(models, uid):
             continue
         pname = p.get("name", "") or ""
         if not pname or "Predeterminado" in pname:
+            continue
+        if pid in _own_recent or _cand_group.get(pid) in _groups_recent:
+            _excl_reciente += 1
             continue
 
         lpm = avg_lpm_2025[pid]
