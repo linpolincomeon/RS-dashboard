@@ -1495,7 +1495,8 @@ function renderFidelizacion() {
   // \u2500\u2500 Nuevos Perdidos del Mes \u2500\u2500 fecha real de cambio de etapa; gestiona el equipo COMERCIAL (todos los vendedores)
   const _isGenericName = n => { if (!n || n === '?') return true; const nl = n.trim().toLowerCase(); return nl.length < 3 || nl === 'sin asignar' || nl.includes('sin nombre'); };
   const _dedup = (list) => { const m = new Map(); list.forEach(c => { const k = (c.name || '').toUpperCase(); const prev = m.get(k); if (!prev || (c.last_update || '') > (prev.last_update || '')) m.set(k, c); }); return [...m.values()]; };
-  const newLost = _dedup((churn.lost_list || []).filter(c => !_isGenericName(c.name) && !isExcluded(c.user) && (c.last_update || '') >= monthStartStr));
+  // Incluye la cohorte churn del mes cerrado fijada por Pauline (c.churn_mes)
+  const newLost = _dedup((churn.lost_list || []).filter(c => !_isGenericName(c.name) && !isExcluded(c.user) && ((c.last_update || '') >= monthStartStr || c.churn_mes)));
   newLost.sort((a, b) => (b.avg_monthly_litros || 0) - (a.avg_monthly_litros || 0));
   document.getElementById('newLostCount').textContent = newLost.length;
   const nlb = document.getElementById('newLostBody'); nlb.innerHTML = '';
@@ -1511,7 +1512,8 @@ function renderFidelizacion() {
       const priority = l >= 5000 ? '\u{1F534}' : l >= 1000 ? '\u{1F7E1}' : '\u26AA';
       const noteHtml = c.last_note ? '<span style="font-size:11px;color:var(--dim)">' + H(c.last_note) + '</span>' : '<span style="color:var(--dim)">\u2014</span>';
       const tr = document.createElement('tr');
-      tr.innerHTML = '<td>' + priority + '</td><td class="bold">' + H(c.name) + '</td><td>' + H(c.zona || '\u2014') + '</td><td>' + lTag + '</td><td>' + H(c.user || '\u2014') + '</td><td>' + (c.last_update || '\u2014') + '</td><td style="max-width:260px;white-space:normal">' + noteHtml + '</td>';
+      const fechaCell = c.churn_mes ? '<span class="tag tag-y">churn ' + H(c.churn_mes) + '</span>' : (c.last_update || '\u2014');
+      tr.innerHTML = '<td>' + priority + '</td><td class="bold">' + H(c.name) + '</td><td>' + H(c.zona || '\u2014') + '</td><td>' + lTag + '</td><td>' + H(c.user || '\u2014') + '</td><td>' + fechaCell + '</td><td style="max-width:260px;white-space:normal">' + noteHtml + '</td>';
       nlb.appendChild(tr);
     });
   }
