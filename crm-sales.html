@@ -192,9 +192,6 @@ tr:hover td{background:#fafaf8}
 
     <!-- ═══ TAB: GESTIÓN COMERCIAL RECUPERACIÓN ═══ -->
     <div class="tab-panel" id="tab-fidelizacion">
-      <!-- Selector de semana (para revisar asignaciones del remate) -->
-      <div id="fidWeekSelector" style="display:flex;gap:6px;margin-bottom:18px;flex-wrap:wrap"></div>
-
       <!-- KPI Row: resumen de cartera de la empresa -->
       <div class="kpi-row" id="churnKpiRow"></div>
 
@@ -494,7 +491,6 @@ function selectWeek(idx) {
   if (document.getElementById('tab-funnel').classList.contains('active')) renderFunnel();
   if (document.getElementById('tab-cs').classList.contains('active')) renderCS();
   if (document.getElementById('tab-operaciones').classList.contains('active')) renderOperaciones();
-  if (document.getElementById('tab-fidelizacion').classList.contains('active')) renderFidelizacion();
 }
 
 const EXEC_COUNT = 3;
@@ -1520,17 +1516,9 @@ function renderFidelizacion() {
     });
   }
 
-  // Selector de semana + asignaciones del remate
-  const fwFid = D.funnel_weeks || [];
-  const fidSel = document.getElementById('fidWeekSelector');
-  if (fidSel) {
-    fidSel.innerHTML = fwFid.map((w, i) =>
-      '<button class="btn"' + (i === selectedWeek ? ' style="border-color:var(--red);color:var(--red)"' : '') + ' onclick="selectWeek(' + i + ')">' + w.label + (w.is_current ? ' \u25cf' : '') + '</button>'
-    ).join('');
-  }
-  const wSel = fwFid[selectedWeek] || {};
-  const asigAll = D.asignaciones || [];
-  const asig = asigAll.filter(a => (wSel.week_start && wSel.week_end) ? (a.fecha >= wSel.week_start && a.fecha <= wSel.week_end) : true);
+  // Asignaciones del remate: TODAS las vigentes (últimas 5 semanas del tracking) en una
+  // sola tabla — pedido Pauline 12-ago. Se agrupan por ejecutivo en el orden de abajo.
+  const asig = D.asignaciones || [];
   document.getElementById('asigCount').textContent = asig.length;
   const ab = document.getElementById('asigBody'); ab.innerHTML = '';
   const noA = document.getElementById('noAsig');
