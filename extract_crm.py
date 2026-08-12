@@ -2123,6 +2123,12 @@ def extract_recovery_clients(models, uid):
                     _groups_recent.add(_g)
     _excl_reciente = 0
 
+    # Ejecutivos .ext (para la regla "ya asignado a ejecutivo no es recuperable")
+    _ext_users = sr(models, uid, "res.users", [["login", "like", ".ext@"], ["active", "=", True]], ["id", "name"], limit=50)
+    _ext_uids = {u["id"] for u in _ext_users}
+    _ext_names = {canonical_vendedor(u["name"]) for u in _ext_users}
+    _excl_asignado = 0
+
     # ── 8. Clasificar cada candidato: recoverable vs seasonal ──
     SPANISH_MONTHS = ["", "ene", "feb", "mar", "abr", "may", "jun",
                       "jul", "ago", "sep", "oct", "nov", "dic"]
@@ -2137,9 +2143,21 @@ def extract_recovery_clients(models, uid):
         pname = p.get("name", "") or ""
         if not pname or "Predeterminado" in pname:
             continue
+        # Regla Pauline 12-ago: quebrados y siniestrados no son recuperables
+        if re.search(r"quebr|siniestr", pname, re.I):
+            continue
         if pid in _own_recent or _cand_group.get(pid) in _groups_recent:
             _excl_reciente += 1
             continue
+        # Regla Pauline 12-ago: ya asignado a un ejecutivo (ficha o lead) = tiene dueño,
+        # NO es recuperable — salvo que lleve 3+ meses sin gestión (vuelve al pool).
+        _uid_p = safe_id((pmap.get(pid) or {}).get("user_id"))
+        _lead_exec = canonical_vendedor((last_lead.get(pid) or {}).get("exec") or "")
+        if _uid_p in _ext_uids or (_lead_exec and _lead_exec in _ext_names):
+            _nd = (last_note.get(pid) or {}).get("date") or ""
+            if _nd and _nd >= fmt(today - timedelta(days=90)):
+                _excl_asignado += 1
+                continue
 
         lpm = avg_lpm_2025[pid]
         litros_2025_total = litros_partner_2025[pid]
@@ -2238,6 +2256,79 @@ def extract_recovery_clients(models, uid):
 
     print(f"  Recoverable: {len(recoverable)} (top 50 in output)")
     print(f"  Seasonal:    {len(seasonal)} (top 50 in output)")
+
+    # ── Lista MANUAL de Pauline (12-ago-2026): clientes churn que SIEMPRE van en
+    # Recuperación, aunque los filtros automáticos los excluyan. Van con manual=True
+    # (el frontend les pone 📌 y les salta los filtros de exclusión).
+    RECUPERABLES_MANUAL = [
+        "JUAN FLORENTINO LEIVA LARA",
+        "ALFREDO ROSALINO MUÑOZ ENCINA",
+        "ISMAEL DE LA CRUZ VERGARA CISTERNA",
+        "JORGE LUIS GALLARDO LANZELLOTE",
+        "JHOVANY ALEXANDER MOLINA GOMEZ",
+        "OCTAVIO SEGUNDO ORTEGA VILLALOBOS",
+        "JOSE BENITO MAURO MEDINA",
+        "RAMON PARRAGUEZ LOPEZ",
+        "RAQUEL ROJAS SEPULVEDA",
+        "SERVICIOS E INVERSIONES KOALA S.A.",
+        "AGRICOLA EL MEMBRILLO SPA",
+        "AGRICOLA VILLASECA LIMITADA",
+        "COMERCIALIZACIONES DE MADERAS Y FERRETERIA DYS SPA",
+        "AGROCONSTRUCCION SPA",
+        "TRANSPORTE DE CARGA PRESTACION DE SERVCIO SPA",
+        "HUGO HERNAN DONOSO POBLETE",
+    ]
+    _ya = { (r.get("name") or "").strip().upper() for r in recoverable }
+    _man_rows = []
+    for _nm in RECUPERABLES_MANUAL:
+        if _nm.strip().upper() in _ya:
+            for r in recoverable:
+                if (r.get("name") or "").strip().upper() == _nm.strip().upper():
+                    r["manual"] = True
+            continue
+        _p = sr(models, uid, "res.partner", [["name", "=", _nm]], ["id", "name", "delivery_zone_id", "is_volume_client", "user_id"], limit=1)
+        if not _p:
+            _p = sr(models, uid, "res.partner", [["name", "ilike", _nm.replace("  ", " ")[:30]]], ["id", "name", "delivery_zone_id", "is_volume_client", "user_id"], limit=1)
+        if not _p:
+            print(f"  Manual NO encontrado en Odoo: {_nm}")
+            continue
+        _p = _p[0]
+        _pid = _p["id"]
+        _ll = last_lead.get(_pid) or {}
+        _man_rows.append({
+            "id": _pid,
+            "name": _p.get("name") or _nm,
+            "zone": safe_name(_p.get("delivery_zone_id")) if _p.get("delivery_zone_id") else "",
+            "is_volume": bool(_p.get("is_volume_client")),
+            "litros_2025": round(litros_partner_2025.get(_pid, 0)),
+            "lpm_2025": 0,  # se rellena abajo con promedio de meses activos
+            "litros_2026": round(litros_partner_2026.get(_pid, 0)),
+            "caida_pct": 0,
+            "months_active_2025": 0,
+            "months_pattern": [],
+            "crm_stage": _ll.get("stage") or "",
+            "crm_exec": _ll.get("exec") or "",
+            "crm_last": _ll.get("last_crm") or "",
+            "manual": True,
+        })
+    if _man_rows:
+        _man_pids = [r["id"] for r in _man_rows]
+        _man_avg = avg_monthly_litros_activos(models, uid, _man_pids, fmt(today - timedelta(days=730)))
+        _man_notas = gather_latest_note(models, uid, _man_pids)
+        for r in _man_rows:
+            r["lpm_2025"] = _man_avg.get(r["id"], 0)
+            _n = _man_notas.get(r["id"]) or {}
+            r["last_note"] = _n.get("body", "")
+            r["note_date"] = (_n.get("date") or "")[:10]
+            r["note_author"] = _n.get("author", "")
+        recoverable.extend(_man_rows)
+        recoverable.sort(key=lambda x: -(x.get("lpm_2025") or 0))
+        # re-slice garantizando que TODOS los manuales entren al output
+        _man_out = [r for r in recoverable if r.get("manual")]
+        _auto_out = [r for r in recoverable if not r.get("manual")]
+        recoverable_top = sorted(_man_out + _auto_out[:max(0, 50 - len(_man_out))],
+                                 key=lambda x: -(x.get("lpm_2025") or 0))
+        print(f"  Lista manual: {len(_man_rows)} clientes agregados a recuperables")
 
     return {
         "recoverable": recoverable_top,
@@ -3001,6 +3092,48 @@ def extract_asignaciones(models, uid):
                 "desde": t.get("old_value_char") or "(sin vendedor)",
                 "fecha": (m.get("date") or "")[:10],
                 "por": quien,
+                "_via": "ficha",
+            })
+
+        # 2) Asignaciones hechas sobre el LEAD del CRM (el remate del 07-ago se hizo así)
+        trk_l = sr(models, uid, "mail.tracking.value", [
+            ["mail_message_id.model", "=", "crm.lead"],
+            ["field_id.name", "=", "user_id"],
+            ["create_date", ">=", since],
+        ], ["mail_message_id", "old_value_char", "new_value_integer", "new_value_char"], limit=5000)
+        mids_l = list({safe_id(t.get("mail_message_id")) for t in trk_l if t.get("mail_message_id")})
+        mmap_l = {}
+        for i in range(0, len(mids_l), 500):
+            for m in sr(models, uid, "mail.message", [["id", "in", mids_l[i:i+500]]], ["res_id", "author_id", "date"], limit=1000):
+                mmap_l[m["id"]] = m
+        _lead_ids2 = list({m["res_id"] for m in mmap_l.values() if m.get("res_id")})
+        _lead_info = {}
+        for i in range(0, len(_lead_ids2), 400):
+            for l in sr(models, uid, "crm.lead", [["id", "in", _lead_ids2[i:i+400]], ["active", "in", [True, False]]],
+                        ["id", "partner_id", "user_id"], limit=500):
+                _lead_info[l["id"]] = l
+        for t in trk_l:
+            m = mmap_l.get(safe_id(t.get("mail_message_id")))
+            if not m:
+                continue
+            quien = author_partner.get(safe_id(m.get("author_id")))
+            if not quien:
+                continue
+            if t.get("new_value_integer") not in ext_ids:
+                continue
+            l = _lead_info.get(m.get("res_id"))
+            pid = safe_id((l or {}).get("partner_id"))
+            if not pid:
+                continue
+            rows.append({
+                "pid": pid,
+                "ejecutivo": canonical_vendedor(t.get("new_value_char") or ""),
+                "_dest_uid": t.get("new_value_integer"),
+                "desde": t.get("old_value_char") or "(sin vendedor)",
+                "fecha": (m.get("date") or "")[:10],
+                "por": quien,
+                "_via": "lead",
+                "_lead_id": m.get("res_id"),
             })
 
         # dedup por partner (última asignación gana) y enriquecer
@@ -3013,10 +3146,23 @@ def extract_asignaciones(models, uid):
         for i in range(0, len(pids), 400):
             for p in sr(models, uid, "res.partner", [["id", "in", pids[i:i+400]]], ["name", "user_id"], limit=500):
                 pmap[p["id"]] = p
-        # Solo asignaciones VIGENTES: si el cliente ya no está con ese ejecutivo
-        # (p.ej. asignación revertida), no se muestra.
-        rows = [r for r in rows if safe_id((pmap.get(r["pid"]) or {}).get("user_id")) == r["_dest_uid"]]
+        # Solo asignaciones VIGENTES: ficha → el partner sigue con ese ejecutivo;
+        # lead → el lead sigue con ese ejecutivo.
+        def _vigente(r):
+            if r.get("_via") == "lead":
+                l = _lead_info.get(r.get("_lead_id")) or {}
+                return safe_id(l.get("user_id")) == r["_dest_uid"]
+            return safe_id((pmap.get(r["pid"]) or {}).get("user_id")) == r["_dest_uid"]
+        rows = [r for r in rows if _vigente(r)]
         pids = [r["pid"] for r in rows]
+
+        # Estado COMPRÓ: facturó (posted) después de la fecha de asignación
+        for r in rows:
+            inv = sr(models, uid, "account.move", [
+                ["move_type", "=", "out_invoice"], ["state", "=", "posted"],
+                ["partner_id", "=", r["pid"]], ["invoice_date", ">=", r["fecha"]],
+            ], ["invoice_date"], limit=1, order="invoice_date asc")
+            r["compro"] = inv[0]["invoice_date"] if inv else ""
         notas = gather_latest_note(models, uid, pids) if pids else {}
         for r in rows:
             r["cliente"] = (pmap.get(r["pid"]) or {}).get("name") or "?"
@@ -3026,6 +3172,8 @@ def extract_asignaciones(models, uid):
             r["nota_fecha"] = (n.get("date") or "")[:10]
             r["gestionado"] = bool(r["nota_fecha"] and r["nota_fecha"] >= r["fecha"])
             r.pop("pid", None)
+            r.pop("_via", None)
+            r.pop("_lead_id", None)
         rows.sort(key=lambda x: (x["fecha"], x["ejecutivo"]), reverse=True)
         print(f"  Asignaciones últimas 5 semanas: {len(rows)}")
         return rows

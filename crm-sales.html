@@ -1539,9 +1539,11 @@ function renderFidelizacion() {
     noA.style.display = 'none';
     // Orden: por ejecutivo, luego fecha
     asig.slice().sort((a, b) => (a.ejecutivo || '').localeCompare(b.ejecutivo || '') || (b.fecha || '').localeCompare(a.fecha || '')).forEach(a => {
-      const gest = a.gestionado
-        ? '<span class="tag tag-g" title="' + H(a.nota || '') + '">\u2705 ' + (a.nota_fecha || '') + '</span>'
-        : '<span class="tag tag-r">\u274c Sin gesti\u00f3n</span>';
+      const gest = a.compro
+        ? '<span class="tag tag-g">\ud83d\uded2 Compr\u00f3 \u00b7 ' + a.compro + '</span>'
+        : (a.gestionado
+          ? '<span class="tag tag-g" title="' + H(a.nota || '') + '">\u2705 ' + (a.nota_fecha || '') + '</span>'
+          : '<span class="tag tag-r">\u274c Sin gesti\u00f3n</span>');
       const tr = document.createElement('tr');
       tr.innerHTML = '<td class="bold">' + H(a.cliente) + '</td><td>' + H(a.ejecutivo) + '</td><td>' + (a.fecha || '\u2014') + '</td><td>' + H(a.por || '\u2014') + '</td><td style="font-size:11px;color:var(--dim)">' + H(a.desde || '\u2014') + '</td><td>' + gest + '</td>';
       ab.appendChild(tr);
@@ -1564,9 +1566,12 @@ function renderRecuperables(containerId, soloDurmientes, titulo, hint) {
   const esDurm = c => /durmiente/i.test(c.crm_stage || '');
   // "compra por otra razón social" en la nota → fuera de los asignables (regla Pauline)
   const otraRS = c => /compra[n]?\s+por\s|otra raz[oó]n social|factura[n]?\s+por\s/i.test(c.last_note || '');
-  const recBase = ((D.recovery && D.recovery.recoverable) || []).filter(c => soloDurmientes ? esDurm(c) : !esDurm(c));
-  const exclRS = soloDurmientes ? 0 : recBase.filter(otraRS).length;
-  const rec = soloDurmientes ? recBase : recBase.filter(c => !otraRS(c));
+  // quebrados/siniestrados fuera; la lista MANUAL de Pauline (c.manual) salta todos los filtros
+  const quebrado = c => /quebr|siniestr/i.test((c.name || '') + ' ' + (c.last_note || ''));
+  const recBase = ((D.recovery && D.recovery.recoverable) || []).filter(c =>
+    c.manual ? !soloDurmientes : ((soloDurmientes ? esDurm(c) : !esDurm(c)) && !quebrado(c)));
+  const exclRS = soloDurmientes ? 0 : recBase.filter(c => !c.manual && otraRS(c)).length;
+  const rec = soloDurmientes ? recBase : recBase.filter(c => c.manual || !otraRS(c));
   const sum = { recoverable_count: recBase.length };
 
   // Cruce con actividades CRM para estado de gesti\u00f3n
@@ -1633,7 +1638,7 @@ function renderRecuperables(containerId, soloDurmientes, titulo, hint) {
       const caidaCell = (c.caida_pct >= 100) ? '<span class="tag tag-r">100%</span>' : `<span class="tag ${c.caida_pct >= 70 ? 'tag-r' : 'tag-y'}">${c.caida_pct}%</span>`;
       h += `<tr ${i < 10 ? 'style="background:#fff8f7"' : ''}>
         <td style="color:var(--dim);font-size:11px">${i + 1}</td>
-        <td class="bold">${H(c.name)}</td><td style="font-size:12px">${H(c.zone || '\u2014')}</td>
+        <td class="bold">${c.manual ? '\ud83d\udccc ' : ''}${H(c.name)}</td><td style="font-size:12px">${H(c.zone || '\u2014')}</td>
         <td style="text-align:right;font-weight:600">${(c.litros_2025 || 0).toLocaleString('es-CL')}</td>
         <td style="text-align:right">${(c.lpm_2025 || 0).toLocaleString('es-CL')}</td>
         <td style="text-align:right;color:var(--dim)">${(c.litros_2026 || 0).toLocaleString('es-CL')}</td>
