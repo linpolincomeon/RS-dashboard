@@ -934,23 +934,33 @@ function renderRiesgo(){
         return m?parseInt(m[1]):null;
     }
     // ── Calculadora excepción (replica hoja Mantenedor con fórmula exacta) ──
-    // Valores pre-calculados (Mantenedor!I/K/M) por zona y tipo de venta. Actualizar cuando ENAP cambie.
+    // Mantenedor ago-2026: precios NETOS (sin IVA/IEC). Mínimos = ENAP/(1−margen_min):
+    //   Crédito 7.5% (col I) · Volumen 5.5% (col K) · Contado 6.5% (col M)
     // Fórmula real: D17 = VLOOKUP(zona, base_min, col_tipo) + (-días_real + 30) × C10/30
     //   donde C10 = -16 (costo financiero base por 30 días)
-    //   col_tipo: 5=Crédito (CredMin 7%), 7=Volumen (VolMin 8%), 9=Contado (ContMin 4.5%)
-    const ZONAS_PRECIOS={
-        // bomba: precio bomba referencia · cred/vol/cont: mínimos pre-calculados
-        'Rancagua':            {bomba:1561, cred:1504, vol:1465, cont:1488},
-        'San Fernando':        {bomba:1551, cred:1504, vol:1465, cont:1488},
-        'San Fdo':             {bomba:1551, cred:1504, vol:1465, cont:1488},
-        'VI Costa':            {bomba:1526, cred:1504, vol:1465, cont:1488},
-        'Talca':               {bomba:1503, cred:1494, vol:1454, cont:1478},
-        'Curico':              {bomba:1503, cred:1494, vol:1454, cont:1478},
-        'Curicó':              {bomba:1503, cred:1494, vol:1454, cont:1478},
-        'Chillan':             {bomba:1503, cred:1494, vol:1454, cont:1478},
-        'Chillán':             {bomba:1503, cred:1494, vol:1454, cont:1478},
-        'Región Metropolitana':{bomba:1561, cred:1504, vol:1465, cont:1488},
+    // Actualizar bomba/enap cuando ENAP cambie (Mantenedor!F/G); los mínimos se recalculan solos.
+    const MARGEN_MIN={cred:0.075, vol:0.055, cont:0.065};
+    const ZONAS_NETO={
+        // bomba: precio bomba NETO referencia · enap: costo ENAP neto
+        'Rancagua':            {bomba:1254, enap:1092},
+        'San Fernando':        {bomba:1244, enap:1092},
+        'San Fdo':             {bomba:1244, enap:1092},
+        'VI Costa':            {bomba:1219, enap:1092},
+        'Talca':               {bomba:1195, enap:1081},
+        'Curico':              {bomba:1195, enap:1081},
+        'Curicó':              {bomba:1195, enap:1081},
+        'Chillan':             {bomba:1195, enap:1081},
+        'Chillán':             {bomba:1195, enap:1081},
+        // RM sin fila propia en Mantenedor: "Paine y Lampa se cotizan a precio San Fernando"
+        'Región Metropolitana':{bomba:1244, enap:1092},
     };
+    const ZONAS_PRECIOS={};
+    for(const [zn,v] of Object.entries(ZONAS_NETO)){
+        ZONAS_PRECIOS[zn]={bomba:v.bomba,
+            cred:v.enap/(1-MARGEN_MIN.cred),
+            vol: v.enap/(1-MARGEN_MIN.vol),
+            cont:v.enap/(1-MARGEN_MIN.cont)};
+    }
     const COSTO_FIN_30=-16;  // $/L NEGATIVO: cada día más allá de 30 sube el costo
     function calcExcepcion(zona,tipo,dias){
         const z=ZONAS_PRECIOS[zona];
@@ -1081,7 +1091,7 @@ function renderRiesgo(){
                     if(margen<=0){dot='🔴';clr='#a32d2d';bg='#fcebeb';}
                     else if(margen<10){dot='🟡';clr='#854f0b';bg='#faeeda';}
                 }
-                excepHtml=`<span title="Zona ${zonaCli} · ${tipoCli} · ${diasReal}d → excep $${calc.excepcion}/L (bomba zona $${calc.bombaZona})" style="display:inline-block;background:${bg};color:${clr};font-weight:700;padding:3px 8px;border-radius:6px;font-size:11px;white-space:nowrap">${dot} ${excepLabel}</span>`;
+                excepHtml=`<span title="Zona ${zonaCli} · ${tipoCli} · ${diasReal}d → excep $${calc.excepcion}/L neto (bomba zona $${calc.bombaZona} neto)" style="display:inline-block;background:${bg};color:${clr};font-weight:700;padding:3px 8px;border-radius:6px;font-size:11px;white-space:nowrap">${dot} ${excepLabel}</span>`;
             }
             const zonaShort=zonaCli==='Región Metropolitana'?'RM':zonaCli==='San Fernando'?'San Fdo':zonaCli;
             let sugHtml='<span style="color:var(--green);font-weight:600">OK</span>';

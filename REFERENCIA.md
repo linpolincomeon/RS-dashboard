@@ -51,16 +51,17 @@ Matriz del origen real de cada dato del Excel original. Referencia obligada ante
 
 ## 2. Calculadora de excepción — detalle Mantenedor
 
-La fórmula vigente está en CLAUDE.md. Detalle adicional:
+La fórmula vigente está en CLAUDE.md. Detalle adicional (actualizado ago-2026, Mantenedor en NETOS):
 
-- `base_min_zona` viene de tabla Mantenedor según tipo: Crédito (margen mín 7%) = col I · Volumen (8%) = col K · Contado (4.5%) = col M.
+- `base_min_zona` = `ENAP_neto/(1−margen_min)` según tipo: Crédito (7,5%) = col I · Volumen (5,5%) = col K · Contado (6,5%) = col M. Desde ago-2026 las columnas I/K/M del Mantenedor SON esa fórmula (antes eran valores pre-calculados en bruto — la advertencia vieja de "no calcular precio implícito" ya no aplica).
 - **Inferencia de tipo_venta** (acordada mayo 2026): `is_volume_client = true` → Volumen (flag gana) · `avg_payment_days ≤ 7` → Contado · 8–60 días → Crédito.
 - Días usados = REALES (`avg_payment_days`), no pactados. Semáforo estricto por diseño.
-- **NO calcular precio implícito** como `enap/(1−margen)`: usar los valores pre-calculados Mantenedor I/K/M directos.
+- RM sin fila propia en Mantenedor → usa precio San Fernando ("Paine y Lampa se cotizan a precio San Fernando").
 
-Sanity checks validados contra la calculadora oficial:
-- VI Costa / Crédito / 60 días → Excepción $1.510 / B−16 ✓
-- Curicó / Volumen / 7 días → Excepción $1.432 / B−71 ✓
+Sanity checks validados contra las fórmulas del Sheet (ago-2026, netos):
+- San Fernando / Crédito / 30 días → Mínimo $1.181 / Excepción $1.171 / B−73 ✓
+- Talca / Crédito / 30 días → Mínimo $1.169 / Excepción $1.159 / B−36 ✓
+- (Históricos pre-ago-2026, tabla bruta: VI Costa/Crédito/60d → $1.510 B−16 · Curicó/Volumen/7d → $1.432 B−71 — ya no reproducibles con la tabla nueva.)
 
 ---
 
