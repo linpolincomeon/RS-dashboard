@@ -2115,7 +2115,7 @@ function renderOperaciones() {
   const incumplidas = sla.prom_incumplidas || [];
   h += '<div class="kpi-row">';
   h += mkKpi((sla.prom_pct || 0) >= 95 ? 'c-green' : (sla.prom_pct || 0) >= 85 ? 'c-yellow' : 'c-red', '\u{1F69A} SLA Entrega 24h', (sla.prom_pct || 0) + '%', 'facturado \u226424h del pedido (o fecha acordada) \u00b7 meta 95%', sla.prom_pct || 0, 95);
-  h += mkKpi('c-blue', 'Pedidos de la Semana', sla.pedidos_semana || 0, (sla.prom_total || 0) + ' evaluados \u00b7 ' + (sla.prom_preorders || 0) + ' preorder' + ((sla.prom_en_curso || 0) ? ' \u00b7 ' + sla.prom_en_curso + ' en reparto' : ''), null, null);
+  h += mkKpi('c-blue', 'Pedidos de la Semana', sla.pedidos_semana || 0, (sla.prom_total || 0) + ' evaluados \u00b7 ' + (sla.prom_preorders || 0) + ' preorder' + ((sla.prom_en_curso || 0) ? ' \u00b7 ' + sla.prom_en_curso + ' en reparto' : '') + ((sla.prom_movidos || 0) ? ' \u00b7 \u26a0 ' + sla.prom_movidos + ' plazo movido' : ''), null, null);
   h += mkKpi(incumplidas.length > 0 ? 'c-red' : 'c-green', '\u23f0 Fuera de Plazo', incumplidas.length, 'facturados despu\u00e9s del plazo comprometido', null, null);
   h += mkKpi('c-blue', 'Litros Entregados', fL(litrosSem), 'semana seleccionada', null, null);
   h += mkKpi('c-green', 'Camiones Activos', camiones.filter(c => c !== 'Sin cami\u00f3n').length, 'con entregas en la semana', null, null);
@@ -2148,14 +2148,17 @@ function renderOperaciones() {
   h += matriz('Litros diarios por cami\u00f3n', '\u{1F69B}', camiones, rows, r => r.camion);
   h += matriz('Litros diarios por zona', '\u{1F5FA}\uFE0F', zonas, rowsZ, r => r.zona);
 
-  // Fuera de plazo: facturados despu\u00e9s de las 24h (o de la fecha acordada si fue preorder)
+  // Fuera de plazo: facturados despu\u00e9s de las 24h (o de la fecha acordada si fue
+  // preorder). El plazo es el ORIGINAL del snapshot; si la fecha sugerida se corri\u00f3
+  // despu\u00e9s en Odoo, aparece "\u26a0 movido" con el antes \u2192 despu\u00e9s.
   h += '<div class="sec"><div class="sec-h"><h2>\u23f0 Fuera de Plazo \u2014 ' + H(sla.label || 'semana') + '</h2><span class="badge">' + incumplidas.length + '</span></div><div class="sec-b" style="padding:0;overflow-x:auto"><table><thead><tr><th>Cliente</th><th>Orden</th><th>Pedido (hora Chile)</th><th>Plazo</th><th>Facturado el</th><th>D\u00edas despu\u00e9s</th></tr></thead><tbody>';
   if (incumplidas.length === 0) {
     h += '<tr><td colspan="6" class="nodata">Todos los pedidos dentro de plazo \u{1F389}</td></tr>';
   } else {
     incumplidas.forEach(r => {
       const dc = r.dias > 2 ? 'color:var(--red);font-weight:700' : 'color:var(--yellow);font-weight:600';
-      h += '<tr><td class="bold">' + H(r.cliente) + '</td><td>' + H(r.orden) + '</td><td>' + r.pedido + '</td><td>' + (r.limite || '\u2014') + '</td><td>' + r.facturado + '</td><td style="' + dc + '">+' + r.dias + 'd</td></tr>';
+      const mv = r.movido ? ' <span class="tag tag-y" title="fecha sugerida cambiada en Odoo despu\u00e9s del pedido">\u26a0 movido ' + H(r.movido) + '</span>' : '';
+      h += '<tr><td class="bold">' + H(r.cliente) + '</td><td>' + H(r.orden) + '</td><td>' + r.pedido + '</td><td>' + (r.limite || '\u2014') + mv + '</td><td>' + r.facturado + '</td><td style="' + dc + '">+' + r.dias + 'd</td></tr>';
     });
   }
   h += '</tbody></table></div></div>';

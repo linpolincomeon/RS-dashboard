@@ -2950,6 +2950,19 @@ def extract_operaciones(models, uid):
     # SLA por semana comercial ENAP (mismas 4 semanas del selector del dashboard)
     # + LEAD TIME REAL: create_date del pedido → primera factura (fechas INMUTABLES,
     #   a diferencia de shipping_date que se fija cuando el despacho ya está resuelto).
+    #
+    # ── Snapshot de plazos (anti-manipulación, 2026-08-13) ─────────────────────
+    # shipping_date es editable sin tracking (campo base, no se puede auditar en
+    # Odoo sin módulo custom). La primera vez que el extract ve un pedido guarda
+    # su shipping_date en plazos-snapshot.json; el SLA se evalúa SIEMPRE contra
+    # ese plazo ORIGINAL. Si la fecha se corre después, el pedido queda "movido".
+    _SNAP_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "plazos-snapshot.json")
+    try:
+        with open(_SNAP_FILE) as _f:
+            _snap = json.load(_f)
+    except (FileNotFoundError, ValueError):
+        _snap = {}
+    _today_s = fmt(today)
     sla_semanas = []
     for offset in range(4):
         wk = get_enap_week(offset)
@@ -2981,14 +2994,23 @@ def extract_operaciones(models, uid):
 
         # Odoo guarda create_date en UTC. Chile: UTC-4 en invierno (abr-sep), UTC-3 en verano.
         _cl_offset = 4 if 4 <= today.month <= 8 else 3
-        prom_total = 0; prom_ok = 0; en_curso = 0; preorders = 0
+        prom_total = 0; prom_ok = 0; en_curso = 0; preorders = 0; movidos = 0
         prom_incumplidas = []
         for o in wk_orders:
             created_cl = datetime.strptime(o["create_date"][:19], "%Y-%m-%d %H:%M:%S") - timedelta(hours=_cl_offset)
             pedido_dia = created_cl.date()
             limite = pedido_dia + timedelta(days=1)  # dentro de 24 hrs
-            # Preorder: si la entrega sugerida es posterior, ese es el compromiso
-            _ship = (o.get("shipping_date") or "")[:10]
+            # Plazo ORIGINAL desde el snapshot (lo que decía shipping_date la primera
+            # vez que el pipeline vio el pedido). El valor live solo sirve para
+            # detectar si alguien lo corrió después.
+            _ship_live = (o.get("shipping_date") or "")[:10]
+            if o["name"] not in _snap:
+                _snap[o["name"]] = {"visto": _today_s, "plazo": _ship_live}
+            _ship = _snap[o["name"]].get("plazo") or ""
+            _movido = ""
+            if _ship_live != _ship:
+                movidos += 1
+                _movido = (_ship or "—") + " → " + (_ship_live or "—")
             if _ship:
                 try:
                     _ship_d = datetime.strptime(_ship, "%Y-%m-%d").date()
@@ -3006,7 +3028,7 @@ def extract_operaciones(models, uid):
                 prom_incumplidas.append({"orden": o["name"], "cliente": safe_name(o.get("partner_id")),
                                          "pedido": created_cl.strftime("%Y-%m-%d %H:%M"),
                                          "limite": fmt(limite), "facturado": "—",
-                                         "dias": (today - limite).days})
+                                         "dias": (today - limite).days, "movido": _movido})
                 continue
             prom_total += 1
             first_inv = datetime.strptime(ds[0][:10], "%Y-%m-%d").date()
@@ -3016,17 +3038,26 @@ def extract_operaciones(models, uid):
                 prom_incumplidas.append({"orden": o["name"], "cliente": safe_name(o.get("partner_id")),
                                          "pedido": created_cl.strftime("%Y-%m-%d %H:%M"),
                                          "limite": fmt(limite), "facturado": ds[0][:10],
-                                         "dias": (first_inv - limite).days})
+                                         "dias": (first_inv - limite).days, "movido": _movido})
         prom_incumplidas.sort(key=lambda x: -x["dias"])
         s["prom_total"] = prom_total
         s["prom_ok"] = prom_ok
         s["prom_pct"] = round(prom_ok / prom_total * 100) if prom_total else 0
         s["prom_preorders"] = preorders
         s["prom_en_curso"] = en_curso
+        s["prom_movidos"] = movidos
         s["prom_incumplidas"] = prom_incumplidas[:40]
         s["pedidos_semana"] = len(wk_orders)
-        print(f"  SLA 24h {wk['label']}: {prom_ok}/{prom_total} a tiempo ({s['prom_pct']}%) | incumplidas: {len(prom_incumplidas)} | preorders: {preorders} | en curso: {en_curso}")
+        print(f"  SLA 24h {wk['label']}: {prom_ok}/{prom_total} a tiempo ({s['prom_pct']}%) | incumplidas: {len(prom_incumplidas)} | preorders: {preorders} | movidos: {movidos} | en curso: {en_curso}")
         sla_semanas.append(s)
+
+    # Persistir snapshot (podado a 45 días — cubre las 4 semanas ENAP con holgura).
+    # El workflow lo commitea junto a crm-data.json.
+    _cut45 = fmt(today - timedelta(days=45))
+    _snap = {k: v for k, v in _snap.items() if v.get("visto", "9999-99-99") >= _cut45}
+    with open(_SNAP_FILE, "w") as _f:
+        json.dump(_snap, _f, ensure_ascii=False, indent=1)
+    print(f"  Snapshot plazos: {len(_snap)} pedidos registrados")
 
     d_start = today - timedelta(days=29)
     print(f"\nExtracting litros por camión ({fmt(d_start)} → {fmt(today)})...")
