@@ -1698,8 +1698,11 @@ function renderCS() {
   const V_cs = D.ventas || {};
   const hist_cs = (V_cs.weekly_history || []).slice().reverse();
   const wkData_cs = hist_cs[selectedWeek] || {};
-  const lbu_cs_src = (csSubTab === 'semanal' && Object.keys(wkData_cs.litros_by_user || {}).length > 0)
-    ? wkData_cs.litros_by_user
+  // Semanal usa SIEMPRE la semana seleccionada (aunque venga vacía: una semana
+  // recién iniciada tiene 0 L de verdad). El fallback a totals mostraba el
+  // acumulado del MES como si fuera la semana (reporte Madelaine 13-ago).
+  const lbu_cs_src = csSubTab === 'semanal'
+    ? (wkData_cs.litros_by_user || {})
     : (V_cs.totals?.litros_by_user || {});
   let litrosCS = 0;
   for (const [u, v] of Object.entries(lbu_cs_src)) { if (isCS(u)) litrosCS += v; }
