@@ -197,7 +197,7 @@ tr:hover td{background:#fafaf8}
 
       <!-- Clientes asignados a ejecutivos (remate) — revisar gestión la semana siguiente -->
       <div class="sec"><div class="sec-h"><h2>🎯 Clientes Asignados a Ejecutivos</h2><span class="badge" id="asigCount">0</span></div><div class="sec-b" style="max-height:500px;overflow-x:auto">
-        <table><thead><tr><th>Cliente</th><th>Asignado a</th><th>Fecha</th><th>Por</th><th>Venía de</th><th>Gestión</th></tr></thead><tbody id="asigBody"></tbody></table>
+        <table><thead><tr><th>Cliente</th><th>Asignado a</th><th>Fecha</th><th>Venía de</th><th>Gestión</th></tr></thead><tbody id="asigBody"></tbody></table>
         <div class="nodata" id="noAsig" style="display:none">Sin asignaciones en la semana seleccionada</div></div></div>
 
       <!-- Explanation notes -->
@@ -1528,14 +1528,20 @@ function renderFidelizacion() {
   else {
     noA.style.display = 'none';
     // Orden: por ejecutivo, luego fecha
-    asig.slice().sort((a, b) => (a.ejecutivo || '').localeCompare(b.ejecutivo || '') || (b.fecha || '').localeCompare(a.fecha || '')).forEach(a => {
+    // Orden por FECHA (nuevas arriba) con bandas alternadas por semana comercial ENAP (jue-mié)
+    const enapWeek = f => { const d = new Date((f || '2000-01-01') + 'T12:00:00'); const diff = (d.getDay() - 4 + 7) % 7; d.setDate(d.getDate() - diff); return d.toISOString().slice(0, 10); };
+    let _wkPrev = null, _sombra = false;
+    asig.slice().sort((a, b) => (b.fecha || '').localeCompare(a.fecha || '') || (a.ejecutivo || '').localeCompare(b.ejecutivo || '')).forEach(a => {
       const gest = a.compro
         ? '<span class="tag tag-g">\ud83d\uded2 Compr\u00f3 \u00b7 ' + a.compro + '</span>'
         : (a.gestionado
           ? '<span class="tag tag-g" title="' + H(a.nota || '') + '">\u2705 ' + (a.nota_fecha || '') + '</span>'
           : '<span class="tag tag-r">\u274c Sin gesti\u00f3n</span>');
       const tr = document.createElement('tr');
-      tr.innerHTML = '<td class="bold">' + H(a.cliente) + '</td><td>' + H(a.ejecutivo) + '</td><td>' + (a.fecha || '\u2014') + '</td><td>' + H(a.por || '\u2014') + '</td><td style="font-size:11px;color:var(--dim)">' + H(a.desde || '\u2014') + '</td><td>' + gest + '</td>';
+      const _wk = enapWeek(a.fecha);
+      if (_wk !== _wkPrev) { if (_wkPrev !== null) _sombra = !_sombra; _wkPrev = _wk; }
+      if (_sombra) tr.style.background = '#f2f1ee';
+      tr.innerHTML = '<td class="bold">' + H(a.cliente) + '</td><td>' + H(a.ejecutivo) + '</td><td>' + (a.fecha || '\u2014') + '</td><td style="font-size:11px;color:var(--dim)">' + H(a.desde || '\u2014') + '</td><td>' + gest + '</td>';
       ab.appendChild(tr);
     });
   }
