@@ -2214,13 +2214,16 @@ def extract_recovery_clients(models, uid):
             continue
         # Regla Pauline 12-ago: ya asignado a un ejecutivo (ficha o lead) = tiene dueño,
         # NO es recuperable — salvo que lleve 3+ meses sin gestión (vuelve al pool).
+        # OJO: excluye solo del REMATE (recoverable); los estacionales son un
+        # recordatorio de temporada y se mantienen aunque tengan dueño
+        # (reporte Madelaine 13-ago: desaparecieron 4 estacionales por este filtro).
+        _asignado_activo = False
         _uid_p = safe_id((pmap.get(pid) or {}).get("user_id"))
         _lead_exec = canonical_vendedor((last_lead.get(pid) or {}).get("exec") or "")
         if _uid_p in _ext_uids or (_lead_exec and _lead_exec in _ext_names):
             _nd = (last_note.get(pid) or {}).get("date") or ""
             if _nd and _nd >= fmt(today - timedelta(days=90)):
-                _excl_asignado += 1
-                continue
+                _asignado_activo = True
 
         lpm = avg_lpm_2025[pid]
         litros_2025_total = litros_partner_2025[pid]
@@ -2306,6 +2309,8 @@ def extract_recovery_clients(models, uid):
             item["season_start_month"] = season_start_month
             item["season_start_label"] = SPANISH_MONTHS[season_start_month] if season_start_month else ""
             seasonal.append(item)
+        elif _asignado_activo:
+            _excl_asignado += 1  # tiene dueño con gestión reciente: fuera del remate
         else:
             recoverable.append(item)
 
