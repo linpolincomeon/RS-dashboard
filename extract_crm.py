@@ -2428,6 +2428,37 @@ def extract_credit_risk(models, uid):
     if not credit_partners:
         return {"linea_insuficiente": [], "score_table": [], "summary": {}}
 
+    # ── 1a-bis. Ampliación de universo (Madelaine 14-ago): el reporte evaluaba solo
+    # clientes con tiene_credito=True — Fuels Energy y otros de margen bajo SIN línea
+    # formal eran invisibles en las bandas de margen. Se suman los clientes con
+    # compras en la ventana de 3m aunque no tengan línea; para ellos la utilización
+    # no aplica (monto=0 → score_util 0) y pesan mora/cobranza/margen/DICOM.
+    # Piso 1.000 L/mes para los sin línea (no inundar el reporte con micro-clientes).
+    _known = {p["id"] for p in credit_partners}
+    _buyer_ids = set()
+    for v in sr(models, uid, "account.move", [
+        ["move_type", "=", "out_invoice"], ["state", "=", "posted"],
+        ["invoice_date", ">=", fmt(three_months_ago)],
+        ["invoice_date", "<=", fmt(today)],
+    ], ["partner_id"], limit=20000):
+        _bpid = safe_id(v.get("partner_id"))
+        if _bpid and _bpid not in _known:
+            _buyer_ids.add(_bpid)
+    _sin_linea_ids = set()
+    if _buyer_ids:
+        _extra = sr(models, uid, "res.partner", [
+            ["id", "in", sorted(_buyer_ids)], ["customer_rank", ">", 0],
+        ], ["id", "name", "user_id", "monto_credito", "saldo_credito",
+            "property_payment_term_id", "property_product_pricelist",
+            "credit", "category_id", "delivery_zone_id", "is_volume_client",
+            "group_consultek_id"], limit=2000)
+        for _ep in _extra:
+            if "Predeterminado" in (_ep.get("name") or ""):
+                continue
+            credit_partners.append(_ep)
+            _sin_linea_ids.add(_ep["id"])
+    print(f"  Sin línea con compras 3m: {len(_sin_linea_ids)} agregados al universo")
+
     partner_map = {p["id"]: p for p in credit_partners}
     partner_ids = list(partner_map.keys())
 
@@ -2773,10 +2804,14 @@ def extract_credit_risk(models, uid):
             },
         }
 
+        # Sin línea y volumen marginal: fuera del reporte (piso 1.000 L/mes)
+        if pid in _sin_linea_ids and avg_monthly_litros < 1000:
+            continue
         score_table.append(entry)
 
         # Flag insufficient credit line (projected > 80% of line, or already > 80% utilized)
-        if linea_ratio > 80 or utilizacion > 80:
+        # Solo aplica a clientes CON línea: sin monto, linea_ratio=999 es degenerado.
+        if monto > 0 and (linea_ratio > 80 or utilizacion > 80):
             linea_insuficiente.append(entry)
 
     # Sort
@@ -2830,7 +2865,7 @@ def extract_credit_risk(models, uid):
 
     return {
         "linea_insuficiente": linea_insuficiente[:50],
-        "score_table": score_table[:100],
+        "score_table": score_table,  # tabla completa: el corte [:100] escondía a los de margen bajo con score bajo (Fuels Energy)
         "summary": {
             "total_evaluados": len(score_table),
             "criticos": criticos,
