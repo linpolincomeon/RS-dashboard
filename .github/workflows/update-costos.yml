@@ -1,0 +1,43 @@
+name: Update Costos Data
+
+on:
+  schedule:
+    - cron: '30 8 * * *'   # 4:30 AM Chile (UTC-4 en invierno) — escalonado tras route/ceo/crm
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  update-data:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Fetch costos data from Odoo
+        env:
+          ODOO_URL: https://tomenergy.cl
+          ODOO_DB: PRODUCCION
+          ODOO_USER: p@tomenergy.cl
+          ODOO_KEY: ${{ secrets.ODOO_KEY }}
+        run: python extract_costos.py
+
+      - name: Validar plausibilidad del output
+        run: python validate_data.py costos-data.json
+
+      - name: Commit and push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add costos-data.json
+          git diff --cached --quiet && echo "No changes" && exit 0
+          git commit -m "Update costos data $(date -u +'%Y-%m-%d %H:%M UTC')"
+          git pull --rebase -X theirs origin main
+          git push

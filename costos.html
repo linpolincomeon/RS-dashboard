@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Costos por Camión — TomEnergy</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+  :root {
+    --bg: #f7f6f3;
+    --card: #ffffff;
+    --accent: #c8360e;
+    --muted: #6b6b6b;
+    --border: #e7e5e0;
+    --ok: #1e7d3c;
+    --warn: #b45309;
+    --bad: #c8360e;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: 'DM Sans', sans-serif; background: var(--bg); color: #1a1a1a; padding: 24px; }
+  h1 { margin: 0 0 4px; font-size: 28px; }
+  h2 { font-size: 18px; margin: 0 0 12px; }
+  .subtitle { color: var(--muted); margin-bottom: 24px; font-size: 14px; }
+  .card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin-bottom: 20px; }
+  .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; margin-bottom: 20px; }
+  .kpi { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 16px 18px; }
+  .kpi .label { color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; }
+  .kpi .value { font-size: 26px; font-weight: 700; margin-top: 4px; font-variant-numeric: tabular-nums; }
+  .kpi .sub { color: var(--muted); font-size: 12px; margin-top: 2px; }
+  .ok { color: var(--ok); } .warn { color: var(--warn); } .bad { color: var(--bad); }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th, td { text-align: left; padding: 8px 8px; border-bottom: 1px solid var(--border); white-space: nowrap; }
+  th { color: var(--muted); font-weight: 500; text-transform: uppercase; font-size: 11px; letter-spacing: 0.5px; }
+  td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
+  tr.total td { font-weight: 700; border-top: 2px solid #1a1a1a; }
+  .scroll { overflow-x: auto; }
+  .chart-box { position: relative; height: 320px; }
+  .truck-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 16px; }
+  .truck-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 16px 18px; }
+  .truck-head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 8px; }
+  .truck-name { font-size: 17px; font-weight: 700; }
+  .badge { font-size: 11px; padding: 2px 8px; border-radius: 10px; background: #f0efec; color: var(--muted); }
+  .badge.nobudget { background: #fdf0e7; color: var(--warn); }
+  .bar-row { display: flex; align-items: center; gap: 8px; font-size: 12px; margin: 3px 0; }
+  .bar-row .cat { width: 110px; color: var(--muted); overflow: hidden; text-overflow: ellipsis; }
+  .bar-row .bar { flex: 1; height: 12px; background: #f0efec; border-radius: 6px; overflow: hidden; }
+  .bar-row .bar > div { height: 100%; background: var(--accent); opacity: 0.75; border-radius: 6px; }
+  .bar-row .amt { width: 90px; text-align: right; font-variant-numeric: tabular-nums; }
+  .truck-chart { height: 120px; position: relative; margin: 10px 0 6px; }
+  details summary { cursor: pointer; color: var(--accent); font-size: 13px; margin-top: 8px; }
+  details table { margin-top: 8px; font-size: 12px; }
+  .note { color: var(--muted); font-size: 12px; margin-top: 10px; line-height: 1.5; }
+  .generated { color: var(--muted); font-size: 12px; margin-top: 32px; text-align: center; }
+  select { font-family: inherit; font-size: 14px; padding: 6px 10px; border: 1px solid var(--border); border-radius: 8px; background: #fff; }
+</style>
+</head>
+<body>
+
+<h1>🚛 Costos por Camión 2026</h1>
+<div class="subtitle">Gasto real (Odoo, plan analítico Camiones) vs Presupuesto Operaciones 2026 aprobado por directorio · <span id="rango"></span></div>
+
+<div class="kpi-grid" id="kpis"></div>
+
+<div class="card">
+  <h2>Flota: real vs presupuesto por mes</h2>
+  <div class="chart-box"><canvas id="chartFlota"></canvas></div>
+  <div class="scroll"><table id="tablaFlota"></table></div>
+  <div class="note">Presupuesto camiones = fijos (seguros, sitios, TAG, petróleo a $7/litro plan) + variable por camión. El Plan Directorio (línea "Transporte" del Plan 2026) incluye además las camionetas. Meses en curso comparan contra presupuesto completo del mes.</div>
+</div>
+
+<div class="card">
+  <h2>Cumplimiento por camión — presupuesto variable (mantención, neumáticos, permisos…)</h2>
+  <div class="note" style="margin:0 0 12px">Compara el gasto asignado a cada camión (excluyendo petróleo, TAG/peajes, seguros y arriendo de sitios, que se presupuestan a nivel flota) contra su presupuesto variable de la planilla. Acumulado enero–<span class="mesActual"></span>.</div>
+  <div class="truck-grid" id="trucks"></div>
+</div>
+
+<div class="card">
+  <h2>📅 Gantt: mantenciones y vencimientos por camión</h2>
+  <div class="note" style="margin:0 0 12px">Eventos de la hoja Vencimientos de "Proyectos y Control". Rojo = vencido u ocurre este mes. Se actualiza regenerando <code>presupuesto-camiones.json</code>.</div>
+  <div class="scroll" id="gantt"></div>
+  <div id="ganttLeyenda" class="note"></div>
+</div>
+
+<div class="card">
+  <h2>⚠ Gasto sin asignar a camión</h2>
+  <div class="note" style="margin:0 0 12px">Asientos en cuentas de flota SIN distribución analítica: están en el total flota pero no aparecen en ningún camión. Si esto crece, pedir a contabilidad que asigne el centro de costo al contabilizar.</div>
+  <div class="scroll"><table id="tablaSinAsignar"></table></div>
+</div>
+
+<div class="generated" id="generated"></div>
+
+<script>
+const CLP = new Intl.NumberFormat('es-CL', { maximumFractionDigits: 0 });
+const $ = id => document.getElementById(id);
+const fmt = v => '$' + CLP.format(Math.round(v));
+const fmtM = v => '$' + CLP.format(Math.round(v / 1000) * 1000);
+const MESES_L = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+const sum = a => a.reduce((s, x) => s + x, 0);
+
+function cumplClass(pct) { return pct <= 100 ? 'ok' : (pct <= 115 ? 'warn' : 'bad'); }
+
+async function load() {
+  const [dataRes, presRes] = await Promise.all([
+    fetch('costos-data.json?ts=' + Date.now()),
+    fetch('presupuesto-camiones.json?ts=' + Date.now()),
+  ]);
+  const D = await dataRes.json();
+  const P = await presRes.json();
+
+  // último mes con gasto real
+  const totalGLMes = D.meses.map((_, i) => sum(Object.values(D.flota_gl).map(v => v[i])));
+  let mesUlt = 11;
+  while (mesUlt > 0 && totalGLMes[mesUlt] === 0) mesUlt--;
+  const N = mesUlt + 1; // meses a considerar (YTD)
+  $('rango').textContent = `Enero – ${MESES_L[mesUlt]} 2026`;
+  document.querySelectorAll('.mesActual').forEach(e => e.textContent = MESES_L[mesUlt]);
+
+  // presupuesto flota mensual: fijos + variable camiones
+  const fijosMes = D.meses.map((_, i) => sum(Object.values(P.fijos_mensual).map(v => v[i])));
+  const varCamionesMes = D.meses.map((_, i) => sum(Object.values(P.camiones).map(c => c.total_mensual[i])));
+  const presFlotaMes = fijosMes.map((f, i) => f + varCamionesMes[i]);
+  const planDirMes = P.plan_directorio_transporte;
+
+  const realYTD = sum(totalGLMes.slice(0, N));
+  const presYTD = sum(presFlotaMes.slice(0, N));
+  const planYTD = sum(planDirMes.slice(0, N));
+  const litrosYTD = sum(D.litros_flota.slice(0, N));
+  const sinAsigYTD = sum(Object.values(D.sin_asignar).map(v => sum(v.slice(0, N))));
+  const pctPres = presYTD ? realYTD / presYTD * 100 : 0;
+  const pctPlan = planYTD ? realYTD / planYTD * 100 : 0;
+  const gxlReal = litrosYTD ? realYTD / litrosYTD : 0;
+  const gxlPlan = sum(P.litros_plan.slice(0, N)) ? planYTD / sum(P.litros_plan.slice(0, N)) : 0;
+
+  $('kpis').innerHTML = `
+    <div class="kpi"><div class="label">Gasto Real Flota YTD</div><div class="value">${fmtM(realYTD)}</div><div class="sub">${Object.keys(D.camiones).length} camiones + sin asignar</div></div>
+    <div class="kpi"><div class="label">Presupuesto Camiones YTD</div><div class="value">${fmtM(presYTD)}</div><div class="sub">fijos + variable por camión</div></div>
+    <div class="kpi"><div class="label">Cumplimiento vs Presupuesto</div><div class="value ${cumplClass(pctPres)}">${pctPres.toFixed(0)}%</div><div class="sub">${realYTD > presYTD ? fmtM(realYTD - presYTD) + ' sobre' : fmtM(presYTD - realYTD) + ' bajo'} presupuesto</div></div>
+    <div class="kpi"><div class="label">vs Plan Directorio</div><div class="value ${cumplClass(pctPlan)}">${pctPlan.toFixed(0)}%</div><div class="sub">plan Transporte ${fmtM(planYTD)} (incl. camionetas)</div></div>
+    <div class="kpi"><div class="label">$ / Litro Vendido</div><div class="value">$${gxlReal.toFixed(1)}</div><div class="sub">plan: $${gxlPlan.toFixed(1)} por litro</div></div>
+    <div class="kpi"><div class="label">Sin Asignar a Camión</div><div class="value ${sinAsigYTD / realYTD > 0.25 ? 'bad' : 'warn'}">${fmtM(sinAsigYTD)}</div><div class="sub">${(sinAsigYTD / realYTD * 100).toFixed(0)}% del gasto real</div></div>`;
+
+  // ---- chart flota ----
+  new Chart($('chartFlota'), {
+    data: {
+      labels: MESES_L,
+      datasets: [
+        { type: 'bar', label: 'Real (GL)', data: totalGLMes.map((v, i) => i < N ? v : null), backgroundColor: 'rgba(200,54,14,0.75)' },
+        { type: 'bar', label: 'Presupuesto camiones', data: presFlotaMes, backgroundColor: 'rgba(26,26,26,0.25)' },
+        { type: 'line', label: 'Plan Directorio (incl. camionetas)', data: planDirMes, borderColor: '#1a1a1a', borderWidth: 2, borderDash: [6, 4], pointRadius: 2, fill: false },
+      ],
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { labels: { boxWidth: 14, font: { family: 'DM Sans' } } },
+        tooltip: { callbacks: { label: c => ` ${c.dataset.label}: ${fmt(c.raw)}` } } },
+      scales: { y: { ticks: { callback: v => '$' + (v / 1e6).toFixed(0) + 'M' } } },
+    },
+  });
+
+  // ---- tabla flota mensual ----
+  let rows = `<tr><th>Mes</th><th class="num">Real (GL)</th><th class="num">Presup. Camiones</th><th class="num">Cumpl.</th><th class="num">Plan Directorio</th><th class="num">vs Plan</th></tr>`;
+  for (let i = 0; i < 12; i++) {
+    const real = i < N ? totalGLMes[i] : null;
+    const p1 = real !== null && presFlotaMes[i] ? real / presFlotaMes[i] * 100 : null;
+    const p2 = real !== null && planDirMes[i] ? real / planDirMes[i] * 100 : null;
+    rows += `<tr${i === mesUlt ? ' style="background:#faf9f6"' : ''}>
+      <td>${MESES_L[i]}${i === mesUlt ? ' (en curso)' : ''}</td>
+      <td class="num">${real !== null ? fmt(real) : '—'}</td>
+      <td class="num">${fmt(presFlotaMes[i])}</td>
+      <td class="num ${p1 !== null ? cumplClass(p1) : ''}">${p1 !== null ? p1.toFixed(0) + '%' : '—'}</td>
+      <td class="num">${fmt(planDirMes[i])}</td>
+      <td class="num ${p2 !== null ? cumplClass(p2) : ''}">${p2 !== null ? p2.toFixed(0) + '%' : '—'}</td></tr>`;
+  }
+  rows += `<tr class="total"><td>YTD</td><td class="num">${fmt(realYTD)}</td><td class="num">${fmt(presYTD)}</td>
+    <td class="num ${cumplClass(pctPres)}">${pctPres.toFixed(0)}%</td><td class="num">${fmt(planYTD)}</td>
+    <td class="num ${cumplClass(pctPlan)}">${pctPlan.toFixed(0)}%</td></tr>`;
+  $('tablaFlota').innerHTML = rows;
+
+  // ---- por camión ----
+  // categorías presupuestadas a nivel flota (fijos): se excluyen del variable del camión
+  const FIJAS = new Set(['Petróleo', 'TAG y Peajes', 'Seguros', 'Arriendo Sitios']);
+  const cont = $('trucks');
+  const patentes = Object.keys(D.camiones).sort((a, b) => {
+    const va = variableYTD(D.camiones[a]), vb = variableYTD(D.camiones[b]);
+    return vb - va;
+  });
+  function variableYTD(cam) {
+    return sum(Object.entries(cam.por_categoria)
+      .filter(([c]) => !FIJAS.has(c))
+      .map(([, v]) => sum(v.slice(0, N))));
+  }
+  for (const pat of patentes) {
+    const cam = D.camiones[pat];
+    const pres = P.camiones[pat]; // puede no existir (TYDG-23)
+    const varMes = D.meses.map((_, i) => sum(Object.entries(cam.por_categoria)
+      .filter(([c]) => !FIJAS.has(c)).map(([, v]) => v[i])));
+    const realVar = sum(varMes.slice(0, N));
+    const presVar = pres ? sum(pres.total_mensual.slice(0, N)) : 0;
+    const pct = presVar ? realVar / presVar * 100 : null;
+
+    const cats = Object.entries(cam.por_categoria)
+      .map(([c, v]) => [c, sum(v.slice(0, N))])
+      .filter(([, v]) => v > 0)
+      .sort((a, b) => b[1] - a[1]);
+    const maxCat = Math.max(...cats.map(c => c[1]), 1);
+    const movs = D.movimientos.filter(m => m.camion === pat && !FIJAS.has(m.cat))
+      .sort((a, b) => b.d.localeCompare(a.d)).slice(0, 40);
+
+    // meses con actividad (para no diluir $/km en camiones que entraron durante el año)
+    const mesesActivos = cam.total.slice(0, N).filter(v => v > 0).length || N;
+    const kmMes = pres ? pres.km_prom_mensual : 0;
+    const kmYTD = kmMes * mesesActivos;
+    const costoKmVar = kmYTD ? realVar / kmYTD : null;
+    const costoKmTotal = kmYTD ? sum(cam.total.slice(0, N)) / kmYTD : null;
+
+    const card = document.createElement('div');
+    card.className = 'truck-card';
+    card.innerHTML = `
+      <div class="truck-head">
+        <span class="truck-name">${pat}</span>
+        ${pres && !pres.estimado
+          ? `<span class="badge ${pct !== null ? cumplClass(pct) : ''}" style="font-size:13px;font-weight:700">${pct.toFixed(0)}% del presupuesto</span>`
+          : pres
+            ? `<span class="badge nobudget" title="${pres.nota || ''}">${pct !== null && presVar ? pct.toFixed(0) + '% de presup. ESTIMADO' : 'presupuesto estimado'}</span>`
+            : `<span class="badge nobudget">sin presupuesto en planilla</span>`}
+      </div>
+      <div style="font-size:13px;color:var(--muted)">Variable YTD: <b style="color:#1a1a1a">${fmtM(realVar)}</b>${presVar ? ` / presupuesto ${fmtM(presVar)}${pres.estimado ? ' (est.)' : ''}` : ''} · Gasto total YTD (con petróleo y peajes): <b style="color:#1a1a1a">${fmtM(sum(cam.total.slice(0, N)))}</b></div>
+      ${kmMes ? `<div style="font-size:13px;color:var(--muted);margin-top:2px">🛣 ≈ ${CLP.format(kmMes)} km/mes (${pres.estimado ? 'est.' : 'planilla'}) · <b style="color:#1a1a1a">$${costoKmTotal.toFixed(0)}/km</b> total · $${costoKmVar.toFixed(0)}/km variable</div>` : ''}
+      <div class="truck-chart"><canvas></canvas></div>
+      ${cats.map(([c, v]) => `<div class="bar-row"><span class="cat">${c}</span><span class="bar"><div style="width:${(v / maxCat * 100).toFixed(0)}%"></div></span><span class="amt">${fmtM(v)}</span></div>`).join('')}
+      <details><summary>Últimos movimientos (${movs.length})</summary>
+        <div class="scroll"><table><tr><th>Fecha</th><th>Cat.</th><th>Glosa</th><th class="num">Monto</th></tr>
+        ${movs.map(m => `<tr><td>${m.d.slice(5)}</td><td>${m.cat}</td><td style="white-space:normal">${m.glosa}</td><td class="num">${fmt(m.monto)}</td></tr>`).join('')}
+        </table></div></details>`;
+    cont.appendChild(card);
+
+    new Chart(card.querySelector('canvas'), {
+      data: {
+        labels: MESES_L,
+        datasets: [
+          { type: 'bar', label: 'Real variable', data: varMes.map((v, i) => i < N ? v : null), backgroundColor: 'rgba(200,54,14,0.75)' },
+          { type: 'bar', label: 'Presupuesto', data: pres ? pres.total_mensual : [], backgroundColor: 'rgba(26,26,26,0.25)' },
+        ],
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { display: false },
+          tooltip: { callbacks: { label: c => ` ${c.dataset.label}: ${fmt(c.raw)}` } } },
+        scales: { y: { ticks: { display: false }, grid: { display: false } },
+                  x: { ticks: { font: { size: 9 } }, grid: { display: false } } },
+      },
+    });
+  }
+
+  // ---- gantt de eventos ----
+  const EVENT_ICON = {
+    'Revisión Técnica': '🔧', 'Hermeticidad': '🛢', 'Permiso Circulación': '📄',
+    'SOAP': '🛡', 'Extintores': '🧯', 'Recertificación Estanque': '✅', 'Mantenimiento': '⚙️',
+  };
+  const hoy = new Date().toISOString().slice(0, 10);
+  const evs = (P.eventos || []).filter(e => e.fecha && e.fecha <= '2027-12-31');
+  // ventana: mes actual - 1 hasta dic 2027
+  const gMeses = [];
+  {
+    let y = 2026, m = new Date().getMonth(); // mes anterior como inicio
+    if (m === 0) { y = 2025; m = 12; }
+    while (y < 2027 || (y === 2027 && m <= 12)) {
+      gMeses.push(`${y}-${String(m).padStart(2, '0')}`);
+      m++; if (m > 12) { m = 1; y++; }
+    }
+  }
+  const gLabel = ym => MESES_L[parseInt(ym.slice(5), 10) - 1] + ' ' + ym.slice(2, 4);
+  const camsG = [...new Set(evs.map(e => e.camion))].sort();
+  let gh = `<table><tr><th>Camión</th>${gMeses.map(m => `<th style="text-align:center">${gLabel(m)}</th>`).join('')}</tr>`;
+  for (const camG of camsG) {
+    gh += `<tr><td><b>${camG}</b></td>`;
+    for (const m of gMeses) {
+      const cell = evs.filter(e => e.camion === camG && e.fecha.slice(0, 7) === m);
+      if (!cell.length) { gh += '<td></td>'; continue; }
+      gh += `<td style="text-align:center">` + cell.map(e => {
+        const vencido = e.fecha < hoy;
+        const esteMes = e.fecha.slice(0, 7) === hoy.slice(0, 7);
+        return `<span title="${e.tipo} — ${e.fecha}" style="display:inline-block;padding:1px 4px;border-radius:6px;font-size:11px;white-space:nowrap;${vencido ? 'background:#fde8e2;color:var(--bad);font-weight:700' : esteMes ? 'background:#fdf0e7;color:var(--warn);font-weight:700' : 'background:#f0efec'}">${EVENT_ICON[e.tipo] || '•'} ${e.fecha.slice(8)}</span>`;
+      }).join('<br>') + '</td>';
+    }
+    gh += '</tr>';
+  }
+  gh += '</table>';
+  $('gantt').innerHTML = gh;
+  $('ganttLeyenda').innerHTML = Object.entries(EVENT_ICON).map(([t, i]) => `${i} ${t}`).join(' · ')
+    + (evs.some(e => e.fecha < hoy) ? `<br><b class="bad">⚠ Vencidos: ${evs.filter(e => e.fecha < hoy).map(e => `${e.camion} ${e.tipo} (${e.fecha})`).join(' · ')}</b>` : '');
+
+  // ---- sin asignar ----
+  let sa = `<tr><th>Cuenta</th>${MESES_L.slice(0, N).map(m => `<th class="num">${m}</th>`).join('')}<th class="num">YTD</th></tr>`;
+  for (const [code, vals] of Object.entries(D.sin_asignar)) {
+    sa += `<tr><td>${code} ${D.cuentas[code]}</td>${vals.slice(0, N).map(v => `<td class="num">${v ? fmt(v) : '—'}</td>`).join('')}<td class="num"><b>${fmt(sum(vals.slice(0, N)))}</b></td></tr>`;
+  }
+  sa += `<tr class="total"><td>Total</td>${MESES_L.slice(0, N).map((_, i) =>
+    `<td class="num">${fmt(sum(Object.values(D.sin_asignar).map(v => v[i])))}</td>`).join('')}<td class="num">${fmt(sinAsigYTD)}</td></tr>`;
+  $('tablaSinAsignar').innerHTML = sa;
+
+  $('generated').textContent = `Datos Odoo: ${D.generated_utc.replace('T', ' ').replace('+00:00', ' UTC')} · Presupuesto: ${P.fuente}`;
+}
+
+load().catch(e => {
+  $('kpis').innerHTML = `<div class="kpi"><div class="label">Error</div><div class="value bad" style="font-size:15px">${e.message}</div></div>`;
+  console.error(e);
+});
+</script>
+
+</body>
+</html>

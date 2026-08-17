@@ -46,6 +46,12 @@ CEO_MIN_SEMANAS = 10
 CEO_MIN_LITROS_SEMANA_COMPLETA = 50_000
 CEO_MIN_CXC_TOTAL = 50_000_000
 CEO_MIN_FACTURAS_ABIERTAS = 40
+
+# costos-data.json (histórico ago-2026: gasto flota YTD ~$120M, 7 camiones,
+# ~560 movimientos analíticos, litros YTD ~6.4M)
+COSTOS_MIN_GASTO_YTD = 10_000_000
+COSTOS_MIN_CAMIONES = 5
+COSTOS_MIN_MOVIMIENTOS = 50
 # -----------------------------------------------------------------------------
 
 errores = []
@@ -228,8 +234,25 @@ def check_riesgo_historico(archivo, d):
                       f"— jamás debe perder entradas")
 
 
+def check_costos(archivo, d):
+    check_frescura(archivo, d.get("generated_utc"))
+    camiones = d.get("camiones") or {}
+    if len(camiones) < COSTOS_MIN_CAMIONES:
+        fail(archivo, f"solo {len(camiones)} camiones con gasto "
+                      f"(mínimo {COSTOS_MIN_CAMIONES})")
+    gasto_ytd = sum(sum(v) for v in (d.get("flota_gl") or {}).values())
+    if gasto_ytd < COSTOS_MIN_GASTO_YTD:
+        fail(archivo, f"gasto flota YTD implausible: ${gasto_ytd:,.0f} "
+                      f"(mínimo ${COSTOS_MIN_GASTO_YTD:,.0f})")
+    if len(d.get("movimientos") or []) < COSTOS_MIN_MOVIMIENTOS:
+        fail(archivo, f"solo {len(d.get('movimientos') or [])} movimientos analíticos")
+    if len(d.get("meses") or []) != 12:
+        fail(archivo, "bloque `meses` no tiene 12 meses")
+
+
 CHECKS = {
     "crm-data.json": check_crm,
+    "costos-data.json": check_costos,
     "ceo-data.json": check_ceo,
     "route-data.json": check_route,
     "riesgo-historico.json": check_riesgo_historico,
