@@ -969,10 +969,11 @@ function renderRiesgo(){
         if(!colKey) return null;
         const base=z[colKey];
         // Replica exacta: minimo = base + (-dias + 30) × C10 / 30
-        const minimo=base+(-dias+30)*COSTO_FIN_30/30;
-        const excepcion=Math.round(minimo-10);
-        const bombaDiff=Math.round(excepcion-z.bomba);
-        return {excepcion, bombaZona:z.bomba, bombaDiff};
+        // Desde 2026-08-18 (pedido Pauline) se muestra el MÍNIMO (D17 de la hoja),
+        // ya no la excepción (mínimo−10) — los mínimos del reporte suben 10.
+        const minimo=Math.round(base+(-dias+30)*COSTO_FIN_30/30);
+        const bombaDiff=Math.round(minimo-z.bomba);
+        return {excepcion:minimo, bombaZona:z.bomba, bombaDiff};
     }
     // ── Inferir tipo_venta desde días reales (criterio Pauline 8-may-2026) ──
     //   is_volume_client=true → Volumen (flag explícita gana)
@@ -1065,12 +1066,12 @@ function renderRiesgo(){
         h+=`<span>${band.label} — ${clients.length} clientes</span>`;
         h+=`<span style="font-weight:500;font-size:11px">Bomba esperada: ${band.targetBomba}${avgB!=null?' · Promedio actual: B'+(avgB>=0?'+':'')+avgB:''} · ${needCount} requieren ajuste</span>`;
         h+='</div>';
-        h+='<div class="table-scroll" style="max-height:350px;border-radius:0 0 8px 8px;margin-bottom:0"><table><thead><tr><th>Cliente</th><th>Zona</th><th>Ejecutivo</th><th>Score</th><th>Actual</th><th style="text-align:center">Excep. mín</th><th class="r">Plazo</th><th class="r">Paga en</th><th class="r">Atraso</th><th class="r">+Mora</th><th class="r">+Margen</th><th class="r">+Flag</th><th class="r">L/mes</th><th style="text-align:center">Sugerencia</th></tr></thead><tbody>';
+        h+='<div class="table-scroll" style="max-height:350px;border-radius:0 0 8px 8px;margin-bottom:0"><table><thead><tr><th>Cliente</th><th>Zona</th><th>Ejecutivo</th><th>Score</th><th>Actual</th><th style="text-align:center">Mín. calc</th><th class="r">Plazo</th><th class="r">Paga en</th><th class="r">Atraso</th><th class="r">+Mora</th><th class="r">+Margen</th><th class="r">+Flag</th><th class="r">L/mes</th><th style="text-align:center">Sugerencia</th></tr></thead><tbody>';
         clients.forEach(c=>{
             const lv=c.risk_level||riskLevel(c.risk_score);
             const diffCls=c._diff>15?'bad':c._diff>0?'':'ok';
             const actLabel=c._bombaAct!=null?'B'+(c._bombaAct>=0?'+':'')+c._bombaAct:(c.pricelist||'—');
-            // ── Cálculo excepción ──
+            // ── Cálculo mínimo calculadora ──
             const zonaCli=c.zona||'—';
             const tipoCli=inferTipoVenta(c);
             // Días reales: usar avg_payment_days exactamente (incluso si es 0). Solo fallback si null/undefined.
@@ -1078,10 +1079,10 @@ function renderRiesgo(){
             const calc=calcExcepcion(zonaCli,tipoCli,diasReal);
             let excepHtml='<span style="color:var(--text3);font-size:11px">—</span>';
             if(calc){
-                // Semáforo: bombaActual vs bombaDiff de excepción
-                // OK si bomba_cliente > excepcion_diff por ≥10
-                // Cerca límite si diferencia entre -10 y +10
-                // Bajo mínimo si bomba_cliente ≤ excepcion_diff
+                // Semáforo: bombaActual vs bombaDiff del MÍNIMO
+                // OK si bomba_cliente > minimo_diff por ≥10
+                // Cerca límite si diferencia entre 0 y +10
+                // Bajo mínimo si bomba_cliente ≤ minimo_diff
                 const bombaCli=c._bombaAct;
                 const excepDiff=calc.bombaDiff;  // ej -29
                 const excepLabel='B'+(excepDiff>=0?'+':'')+excepDiff;
@@ -1091,7 +1092,7 @@ function renderRiesgo(){
                     if(margen<=0){dot='🔴';clr='#a32d2d';bg='#fcebeb';}
                     else if(margen<10){dot='🟡';clr='#854f0b';bg='#faeeda';}
                 }
-                excepHtml=`<span title="Zona ${zonaCli} · ${tipoCli} · ${diasReal}d → excep $${calc.excepcion}/L neto (bomba zona $${calc.bombaZona} neto)" style="display:inline-block;background:${bg};color:${clr};font-weight:700;padding:3px 8px;border-radius:6px;font-size:11px;white-space:nowrap">${dot} ${excepLabel}</span>`;
+                excepHtml=`<span title="Zona ${zonaCli} · ${tipoCli} · ${diasReal}d → mínimo $${calc.excepcion}/L neto (bomba zona $${calc.bombaZona} neto)" style="display:inline-block;background:${bg};color:${clr};font-weight:700;padding:3px 8px;border-radius:6px;font-size:11px;white-space:nowrap">${dot} ${excepLabel}</span>`;
             }
             const zonaShort=zonaCli==='Región Metropolitana'?'RM':zonaCli==='San Fernando'?'San Fdo':zonaCli;
             let sugHtml='<span style="color:var(--green);font-weight:600">OK</span>';
