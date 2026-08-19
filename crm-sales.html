@@ -306,6 +306,7 @@ tr:hover td{background:#fafaf8}
             <tr><td class="bold">Litros Ejecutivos</td><td>Litros de vendedores internos (no freelance, no CS): Labbe, Isabel, etc.</td><td>res.partner.user_id</td></tr>
             <tr><td class="bold">Litros Fidelización</td><td>Litros vendidos por equipo CS (Comber, Mauro, TomEnergy)</td><td>res.partner.user_id</td></tr>
             <tr><td class="bold">Litros Freelancer</td><td>Litros de freelancers .ext: Toro, Muñoz, Avilés, Márquez, etc.</td><td>res.partner.user_id</td></tr>
+            <tr><td class="bold">Mix Volumen</td><td>% de los litros del período vendidos a clientes Volumen (is_volume_client). Más volumen = menos margen compañía (meta vol 6% vs retail 8,5%). Semáforo vs mix presupuestado: 🟢 ≤ppto+3pt · 🟡 ≤ppto+10pt · 🔴 sobre eso</td><td>account.move + is_volume_client</td></tr>
             <tr style="border-top:2px solid #e5e4df"><td class="bold">Leads</td><td>Oportunidades CREADAS esa semana en CRM (create_date dentro de la semana). No incluye leads existentes con actividad.</td><td>crm.lead create_date</td></tr>
             <tr><td class="bold">Cotizaciones</td><td>Cotizaciones (sale.order) creadas esa semana en cualquier estado (borrador, enviada o confirmada). Incluye las que ya pasaron a pedido.</td><td>sale.order create_date</td></tr>
             <tr><td class="bold">Nuevos Clientes</td><td>Clientes cuya PRIMERA factura de Diesel B1 fue esta semana/mes. No cuenta facturas por intereses o servicios.</td><td>account.move + product_id=14</td></tr>
@@ -1330,6 +1331,26 @@ function renderVentas() {
   // KPI "En Riesgo" eliminado (jul 2026): la tabla de detalle ya no existe aquí — el riesgo crediticio vive en el CEO dashboard
   kh += mkKpi('c-blue', 'Margen Retail', mRetail + '%', 'Meta: ' + (CG.margen_retail || 8.5) + '%', mRetail, CG.margen_retail || 8.5);
   kh += mkKpi('c-red', 'Margen Volumen', mVol + '%', 'Meta: ' + (CG.margen_volumen || 6) + '%', mVol, CG.margen_volumen || 6);
+  // Mix Retail/Volumen (pedido Pauline 19-ago-2026: en julio el mix saltó a 57% volumen
+  // y el margen compañía cayó de 8,4% a 7,2% — más volumen = menos margen).
+  // Semáforo vs mix presupuestado (ppto_retail/ppto_volumen de las semanas CEO): 🟢 ≤ppto+3 · 🟡 ≤ppto+10 · 🔴 resto
+  let mixR = T.retail_litros || 0, mixV = T.volume_litros || 0;
+  if (!isAccum && ceoWeek && ((ceoWeek.litros_retail || 0) + (ceoWeek.litros_volumen || 0)) > 0) {
+    mixR = ceoWeek.litros_retail || 0; mixV = ceoWeek.litros_volumen || 0;
+  }
+  const mixTot = mixR + mixV;
+  const volShare = mixTot ? Math.round(mixV / mixTot * 100) : 0;
+  const mhPrev = (D.monthly_history || [])[1] || {};
+  const prevTot = (mhPrev.retail_litros || 0) + (mhPrev.volume_litros || 0);
+  const prevShare = prevTot ? Math.round((mhPrev.volume_litros || 0) / prevTot * 100) : null;
+  const pptoW = ceoWeek || ((CEO && CEO.weeks) ? CEO.weeks[0] : null);
+  const pptoTot = pptoW ? (pptoW.ppto_retail || 0) + (pptoW.ppto_volumen || 0) : 0;
+  const pptoShare = pptoTot ? Math.round((pptoW.ppto_volumen || 0) / pptoTot * 100) : null;
+  const mixDot = pptoShare == null ? '' : (volShare <= pptoShare + 3 ? '🟢 ' : volShare <= pptoShare + 10 ? '🟡 ' : '🔴 ');
+  let mixDet = 'Retail ' + (100 - volShare) + '%';
+  if (prevShare != null) mixDet += ' · mes ant: ' + prevShare + '% vol';
+  if (pptoShare != null) mixDet += ' · ppto: ' + pptoShare + '% vol';
+  kh += mkKpi('c-yellow', 'Mix Volumen', mixDot + volShare + '%', mixDet, null, null);
   kh += mkKpi('c-yellow', 'Ruta (visitas)', wRuta, isAccum ? 'Mes' : 'Esta semana', null, null);
   document.getElementById('kpiRow').innerHTML = kh;
 
@@ -1944,6 +1965,14 @@ function renderMesVencido(){
   h+=mkKpi(mrA>=mrGoal?'c-green':'c-red','Margen Retail',mrA+'%','Meta: '+mrGoal+'%',mrA,mrGoal);
   h+=mkKpi('c-blue','Litros Volumen',fL(TP.volume_litros||0),'clientes volumen del mes',null,null);
   h+=mkKpi(mvA>=mvGoal?'c-green':'c-red','Margen Volumen',mvA+'%','Meta: '+mvGoal+'%',mvA,mvGoal);
+  // Mix Volumen del mes cerrado vs el mes anterior a ese (monthly_history: [0]=actual, [1]=cerrado, [2]=anterior)
+  const mixTotMV=(TP.retail_litros||0)+(TP.volume_litros||0);
+  const volShareMV=mixTotMV?Math.round((TP.volume_litros||0)/mixTotMV*100):0;
+  const mhAnt=(D.monthly_history||[])[2]||{};
+  const antTot=(mhAnt.retail_litros||0)+(mhAnt.volume_litros||0);
+  const antShare=antTot?Math.round((mhAnt.volume_litros||0)/antTot*100):null;
+  const mvDot=antShare==null?'':(volShareMV<=antShare+3?'🟢 ':volShareMV<=antShare+10?'🟡 ':'🔴 ');
+  h+=mkKpi('c-yellow','Mix Volumen',mvDot+volShareMV+'%','Retail '+(100-volShareMV)+'%'+(antShare!=null?' · mes ant: '+antShare+'% vol':''),null,null);
   h+='</div>';
 
   // SLA
