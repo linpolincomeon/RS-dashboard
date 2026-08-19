@@ -3367,6 +3367,37 @@ def main():
         monthly_history.append(_month_row(_vh, _cur))
     print(f"  Historial mensual: {len(monthly_history)} meses")
 
+    # ── Congelar mix retail/volumen de meses CERRADOS (mix-snapshot.json) ──
+    # is_volume_client se recalcula a diario (regla comité 13-ago-2026; antes cron 88),
+    # lo que re-escribía el mix de meses cerrados (julio pasó de 40% a 57% volumen al
+    # reclasificar 27 clientes). Regla: la primera vez que un mes aparece cerrado se
+    # guarda su mix y de ahí en adelante monthly_history usa SIEMPRE el valor congelado.
+    # El mes en curso (parcial) nunca se congela. Los márgenes NO se congelan (la
+    # contabilidad tardía es corrección legítima).
+    _mix_snap_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "mix-snapshot.json")
+    try:
+        with open(_mix_snap_path, "r", encoding="utf-8") as f:
+            _mix_snap = json.load(f)
+    except (FileNotFoundError, json.JSONDecodeError):
+        _mix_snap = {}
+    _snap_dirty = False
+    for _row in monthly_history:
+        if _row.get("parcial"):
+            continue
+        _lbl = _row["label"]
+        if _lbl not in _mix_snap:
+            _mix_snap[_lbl] = {"retail_litros": _row["retail_litros"],
+                               "volume_litros": _row["volume_litros"],
+                               "frozen": today.strftime("%Y-%m-%d")}
+            _snap_dirty = True
+        else:
+            _row["retail_litros"] = _mix_snap[_lbl]["retail_litros"]
+            _row["volume_litros"] = _mix_snap[_lbl]["volume_litros"]
+    if _snap_dirty:
+        with open(_mix_snap_path, "w", encoding="utf-8") as f:
+            json.dump(_mix_snap, f, ensure_ascii=False, indent=1)
+        print(f"  mix-snapshot.json actualizado ({len(_mix_snap)} meses congelados)")
+
     # Part 4: Churn & Rescue
     churn = extract_churn_data(models, uid)
 
