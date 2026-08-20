@@ -306,6 +306,7 @@ tr:hover td{background:#fafaf8}
             <tr><td class="bold">Litros Ejecutivos</td><td>Litros de vendedores internos (no freelance, no CS): Labbe, Isabel, etc.</td><td>res.partner.user_id</td></tr>
             <tr><td class="bold">Litros Fidelización</td><td>Litros vendidos por equipo CS (Comber, Mauro, TomEnergy)</td><td>res.partner.user_id</td></tr>
             <tr><td class="bold">Litros Freelancer</td><td>Litros de freelancers .ext: Toro, Muñoz, Avilés, Márquez, etc.</td><td>res.partner.user_id</td></tr>
+            <tr><td class="bold">Margen Compañía</td><td>Margen ponderado por venta neta de retail + volumen. Meta ponderada = mezcla de metas (retail 8,5% · volumen 6%) según el mix real de venta del período. El $/L es el margen en pesos por litro (también en los boxes Retail y Volumen)</td><td>margin_zone ponderado</td></tr>
             <tr><td class="bold">Mix Retail/Volumen</td><td>Ratio retail/volumen de los litros del período (retail primero; clasificación por is_volume_client). Más volumen = menos margen compañía (meta vol 6% vs retail 8,5%). Semáforo vs mix presupuestado: 🟢 ≤ppto+3pt · 🟡 ≤ppto+10pt · 🔴 sobre eso. El mix de meses CERRADOS queda congelado al cierre (mix-snapshot.json) — las reclasificaciones posteriores de clientes no reescriben la historia</td><td>account.move + is_volume_client</td></tr>
             <tr style="border-top:2px solid #e5e4df"><td class="bold">Leads</td><td>Oportunidades CREADAS esa semana en CRM (create_date dentro de la semana). No incluye leads existentes con actividad.</td><td>crm.lead create_date</td></tr>
             <tr><td class="bold">Cotizaciones</td><td>Cotizaciones (sale.order) creadas esa semana en cualquier estado (borrador, enviada o confirmada). Incluye las que ya pasaron a pedido.</td><td>sale.order create_date</td></tr>
@@ -1295,6 +1296,27 @@ function renderVentas() {
     if (ceoWeek.margin_retail != null && ceoWeek.margin_retail > 0) mRetail = Math.round(ceoWeek.margin_retail * 1000) / 10;
     if (ceoWeek.margin_volumen != null && ceoWeek.margin_volumen > 0) mVol = Math.round(ceoWeek.margin_volumen * 1000) / 10;
   }
+  // Margen ponderado compañía + margen $/L por segmento (pedido Pauline 20-ago-2026).
+  // Mensual: split real de venta (retail_venta/volume_venta). Semanal: las semanas CEO no
+  // traen venta por segmento — se despeja de los márgenes: neto_r = neto·(m−mv)/(mr−mv).
+  let _vR = 0, _vV = 0, _litR = 0, _litV = 0, _mgR = mRetail / 100, _mgV = mVol / 100, _mgComp = null;
+  if (isAccum || !ceoWeek) {
+    _vR = T.retail_venta || 0; _vV = T.volume_venta || 0;
+    _litR = T.retail_litros || 0; _litV = T.volume_litros || 0;
+    if (_vR + _vV > 0) _mgComp = (_mgR * _vR + _mgV * _vV) / (_vR + _vV);
+  } else {
+    _litR = ceoWeek.litros_retail || 0; _litV = ceoWeek.litros_volumen || 0;
+    _mgR = ceoWeek.margin_retail || 0; _mgV = ceoWeek.margin_volumen || 0;
+    const _neto = ceoWeek.neto || 0, _m = ceoWeek.margin || 0;
+    if (_neto > 0 && _m > 0) _mgComp = _m;
+    if (Math.abs(_mgR - _mgV) > 1e-6) {
+      _vR = Math.max(0, Math.min(_neto, _neto * (_m - _mgV) / (_mgR - _mgV))); _vV = _neto - _vR;
+    } else { const _tl = _litR + _litV; _vR = _tl ? _neto * _litR / _tl : 0; _vV = _neto - _vR; }
+  }
+  const _plR = (_litR > 0 && _vR > 0) ? Math.round(_mgR * _vR / _litR) : null;   // margen $/L retail
+  const _plV = (_litV > 0 && _vV > 0) ? Math.round(_mgV * _vV / _litV) : null;   // margen $/L volumen
+  const _plC = (_litR + _litV > 0 && _mgComp != null) ? Math.round(_mgComp * (_vR + _vV) / (_litR + _litV)) : null;
+  const _metaPond = (_vR + _vV) > 0 ? Math.round((((CG.margen_retail || 8.5) * _vR + (CG.margen_volumen || 6) * _vV) / (_vR + _vV)) * 10) / 10 : null;
 
   // 10. Retención (from selected week)
   const retWeek = (fw[selectedWeek] || fw[0] || {}).stages?.retencion || {};
@@ -1329,8 +1351,11 @@ function renderVentas() {
     : ncAllForKpi.filter(c => ws && we && c.fecha >= ws && c.fecha <= we).length;
   kh += mkKpi('c-green', 'Nuevos Clientes', wNuevos, 'Meta: 6 · ' + fL(litrosNuevos), null, null);
   // KPI "En Riesgo" eliminado (jul 2026): la tabla de detalle ya no existe aquí — el riesgo crediticio vive en el CEO dashboard
-  kh += mkKpi('c-blue', 'Margen Retail', mRetail + '%', 'Meta: ' + (CG.margen_retail || 8.5) + '%', mRetail, CG.margen_retail || 8.5);
-  kh += mkKpi('c-red', 'Margen Volumen', mVol + '%', 'Meta: ' + (CG.margen_volumen || 6) + '%', mVol, CG.margen_volumen || 6);
+  kh += mkKpi('c-blue', 'Margen Retail', mRetail + '%', 'Meta: ' + (CG.margen_retail || 8.5) + '%' + (_plR != null ? ' · $' + _plR + '/L' : ''), mRetail, CG.margen_retail || 8.5);
+  kh += mkKpi('c-red', 'Margen Volumen', mVol + '%', 'Meta: ' + (CG.margen_volumen || 6) + '%' + (_plV != null ? ' · $' + _plV + '/L' : ''), mVol, CG.margen_volumen || 6);
+  kh += mkKpi('c-green', 'Margen Compañía', _mgComp != null ? (Math.round(_mgComp * 1000) / 10) + '%' : '—',
+    'Ponderado · Meta: ' + (_metaPond != null ? _metaPond + '%' : '—') + (_plC != null ? ' · $' + _plC + '/L' : ''),
+    _mgComp != null ? _mgComp * 100 : null, _metaPond || 1);
   // Mix Retail/Volumen (pedido Pauline 19-ago-2026: en julio el mix saltó a 57% volumen
   // y el margen compañía cayó de 8,4% a 7,2% — más volumen = menos margen).
   // Semáforo vs mix presupuestado (ppto_retail/ppto_volumen de las semanas CEO): 🟢 ≤ppto+3 · 🟡 ≤ppto+10 · 🔴 resto
@@ -1961,10 +1986,18 @@ function renderMesVencido(){
   h+=mkKpi('c-yellow','Litros Freelancer',fL(litrosFreelancer),'Suma freelancers del mes',null,null);
   h+=mkKpi('c-blue','Clientes Nuevos',(ncP.count||0),'primera factura del mes');
   h+=mkKpi('c-blue','Ruta (visitas)',rutaVisitasMes,'visitas en etapa Ruta · semanas del mes',null,null);
+  // Margen ponderado + $/L del mes cerrado (split real de venta por segmento)
+  const vRmv=TP.retail_venta||0, vVmv=TP.volume_venta||0;
+  const mgCompMV=(vRmv+vVmv)>0?(mrA*vRmv+mvA*vVmv)/(vRmv+vVmv):null;
+  const plRmv=(TP.retail_litros>0&&vRmv>0)?Math.round(mrA/100*vRmv/TP.retail_litros):null;
+  const plVmv=(TP.volume_litros>0&&vVmv>0)?Math.round(mvA/100*vVmv/TP.volume_litros):null;
+  const plCmv=((TP.retail_litros||0)+(TP.volume_litros||0)>0&&mgCompMV!=null)?Math.round(mgCompMV/100*(vRmv+vVmv)/((TP.retail_litros||0)+(TP.volume_litros||0))):null;
+  const metaPondMV=(vRmv+vVmv)>0?Math.round(((mrGoal*vRmv+mvGoal*vVmv)/(vRmv+vVmv))*10)/10:null;
   h+=mkKpi('c-green','Litros Retail',fL(TP.retail_litros||0),'clientes retail del mes',null,null);
-  h+=mkKpi(mrA>=mrGoal?'c-green':'c-red','Margen Retail',mrA+'%','Meta: '+mrGoal+'%',mrA,mrGoal);
+  h+=mkKpi(mrA>=mrGoal?'c-green':'c-red','Margen Retail',mrA+'%','Meta: '+mrGoal+'%'+(plRmv!=null?' · $'+plRmv+'/L':''),mrA,mrGoal);
   h+=mkKpi('c-blue','Litros Volumen',fL(TP.volume_litros||0),'clientes volumen del mes',null,null);
-  h+=mkKpi(mvA>=mvGoal?'c-green':'c-red','Margen Volumen',mvA+'%','Meta: '+mvGoal+'%',mvA,mvGoal);
+  h+=mkKpi(mvA>=mvGoal?'c-green':'c-red','Margen Volumen',mvA+'%','Meta: '+mvGoal+'%'+(plVmv!=null?' · $'+plVmv+'/L':''),mvA,mvGoal);
+  h+=mkKpi(mgCompMV!=null&&metaPondMV!=null&&mgCompMV>=metaPondMV?'c-green':'c-red','Margen Compañía',mgCompMV!=null?(Math.round(mgCompMV*10)/10)+'%':'—','Ponderado · Meta: '+(metaPondMV!=null?metaPondMV+'%':'—')+(plCmv!=null?' · $'+plCmv+'/L':''),mgCompMV,metaPondMV||1);
   // Mix Volumen del mes cerrado vs el mes anterior a ese (monthly_history: [0]=actual, [1]=cerrado, [2]=anterior).
   // Se usa monthly_history (mix CONGELADO al cierre vía mix-snapshot.json), no TP:
   // el recálculo live reclasifica meses cerrados cuando cambia is_volume_client.
