@@ -182,6 +182,9 @@ async function load() {
   const FIJAS = new Set(['Petróleo', 'TAG y Peajes', 'Seguros', 'Arriendo Sitios']);
   const cont = $('trucks');
   const patentes = Object.keys(D.camiones).sort((a, b) => {
+    // CAMIONETAS siempre al final
+    if (a === 'CAMIONETAS') return 1;
+    if (b === 'CAMIONETAS') return -1;
     const va = variableYTD(D.camiones[a]), vb = variableYTD(D.camiones[b]);
     return vb - va;
   });
