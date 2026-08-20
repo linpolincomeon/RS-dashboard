@@ -84,7 +84,7 @@
 
 <div class="card">
   <h2>⚠ Gasto sin asignar a camión</h2>
-  <div class="note" style="margin:0 0 12px">Asientos en cuentas de flota SIN distribución analítica: están en el total flota pero no aparecen en ningún camión. Si esto crece, pedir a contabilidad que asigne el centro de costo al contabilizar.</div>
+  <div class="note" style="margin:0 0 12px">Asientos en cuentas de flota SIN distribución analítica: están en el total flota pero no aparecen en ningún camión. Reglas automáticas activas desde 17-ago (HDI/GPS → 1/7 por camión · peajes urbanos RM → Camionetas · descuentos COPEC → proporcional): lo que queda aquí son facturas de taller sin patente — asignarlas en Odoo (Distribución Analítica en la línea de la factura).</div>
   <div class="scroll"><table id="tablaSinAsignar"></table></div>
 </div>
 
@@ -192,7 +192,16 @@ async function load() {
   }
   for (const pat of patentes) {
     const cam = D.camiones[pat];
-    const pres = P.camiones[pat]; // puede no existir (TYDG-23)
+    let pres = P.camiones[pat]; // puede no existir
+    // CAMIONETAS: cuenta analítica agregada 2026-08-17; su presupuesto es la
+    // suma de las camionetas de la planilla
+    if (pat === 'CAMIONETAS') {
+      pres = {
+        total_mensual: D.meses.map((_, i) => sum(Object.values(P.camionetas).map(c => c.total_mensual[i]))),
+        km_prom_mensual: 0,
+        estimado: false,
+      };
+    }
     const varMes = D.meses.map((_, i) => sum(Object.entries(cam.por_categoria)
       .filter(([c]) => !FIJAS.has(c)).map(([, v]) => v[i])));
     const realVar = sum(varMes.slice(0, N));
@@ -218,7 +227,7 @@ async function load() {
     card.className = 'truck-card';
     card.innerHTML = `
       <div class="truck-head">
-        <span class="truck-name">${pat}</span>
+        <span class="truck-name">${pat === 'CAMIONETAS' ? '🚙 CAMIONETAS' : pat}</span>
         ${pres && !pres.estimado
           ? `<span class="badge ${pct !== null ? cumplClass(pct) : ''}" style="font-size:13px;font-weight:700">${pct.toFixed(0)}% del presupuesto</span>`
           : pres
