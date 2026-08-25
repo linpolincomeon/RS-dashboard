@@ -50,6 +50,14 @@
   .truck-chart { height: 120px; position: relative; margin: 10px 0 6px; }
   details summary { cursor: pointer; color: var(--accent); font-size: 13px; margin-top: 8px; }
   details table { margin-top: 8px; font-size: 12px; }
+  .tl { position: relative; height: 20px; min-width: 260px; background: #f4f3f0; border-radius: 5px; overflow: hidden; }
+  .tl > div { position: absolute; top: 0; bottom: 0; }
+  .tl .muerto { background: repeating-linear-gradient(45deg, #dedad3, #dedad3 3px, #eeebe6 3px, #eeebe6 7px); }
+  .tl .act { background: var(--accent); opacity: 0.8; }
+  .tl-eje { position: relative; height: 14px; min-width: 260px; font-size: 10px; color: var(--muted); }
+  .tl-eje span { position: absolute; transform: translateX(-50%); }
+  .leyenda { display: flex; gap: 16px; align-items: center; font-size: 12px; color: var(--muted); margin-top: 10px; flex-wrap: wrap; }
+  .leyenda i { display: inline-block; width: 14px; height: 10px; border-radius: 3px; margin-right: 5px; vertical-align: -1px; }
   .note { color: var(--muted); font-size: 12px; margin-top: 10px; line-height: 1.5; }
   .generated { color: var(--muted); font-size: 12px; margin-top: 32px; text-align: center; }
   select { font-family: inherit; font-size: 14px; padding: 6px 10px; border: 1px solid var(--border); border-radius: 8px; background: #fff; }
@@ -73,6 +81,17 @@
   <h2>Cumplimiento por camión — presupuesto variable (mantención, neumáticos, permisos…)</h2>
   <div class="note" style="margin:0 0 12px">Compara el gasto asignado a cada camión (excluyendo petróleo, TAG/peajes, seguros y arriendo de sitios, que se presupuestan a nivel flota) contra su presupuesto variable de la planilla. Acumulado enero–<span class="mesActual"></span>.</div>
   <div class="truck-grid" id="trucks"></div>
+</div>
+
+<div class="card">
+  <h2>👷 Productividad de choferes — anatomía de la jornada</h2>
+  <div class="note" style="margin:0 0 12px">Desde la planilla de bodegas que llenan los choferes (<code>Bodegas_por_Camion_v2</code>), no desde Odoo. La jornada de cada camión se parte en tres tramos: <b>arranque</b> (INICIO → 1ª venta), <b>activo</b> (1ª → última venta) y <b>cola</b> (última venta → CIERRE). Arranque y cola son horas con el camión y el chofer en marcha sin facturar. Valores = mediana del día típico en la ventana <span id="chofRango"></span>.</div>
+  <div class="scroll"><table id="tablaChoferes"></table></div>
+  <div class="leyenda">
+    <span><i class="act" style="background:var(--accent);opacity:.8"></i>Activo (vendiendo)</span>
+    <span><i class="muerto" style="background:repeating-linear-gradient(45deg,#dedad3,#dedad3 3px,#eeebe6 3px,#eeebe6 7px)"></i>Arranque y cola (sin vender)</span>
+  </div>
+  <div id="chofNota" class="note"></div>
 </div>
 
 <div class="card">
@@ -101,12 +120,14 @@ const sum = a => a.reduce((s, x) => s + x, 0);
 function cumplClass(pct) { return pct <= 100 ? 'ok' : (pct <= 115 ? 'warn' : 'bad'); }
 
 async function load() {
-  const [dataRes, presRes] = await Promise.all([
+  const [dataRes, presRes, chofRes] = await Promise.all([
     fetch('costos-data.json?ts=' + Date.now()),
     fetch('presupuesto-camiones.json?ts=' + Date.now()),
+    fetch('choferes-data.json?ts=' + Date.now()),
   ]);
   const D = await dataRes.json();
   const P = await presRes.json();
+  if (chofRes.ok) renderChoferes(await chofRes.json());
 
   // último mes con gasto real
   const totalGLMes = D.meses.map((_, i) => sum(Object.values(D.flota_gl).map(v => v[i])));
@@ -313,6 +334,71 @@ async function load() {
   $('tablaSinAsignar').innerHTML = sa;
 
   $('generated').textContent = `Datos Odoo: ${D.generated_utc.replace('T', ' ').replace('+00:00', ' UTC')} · Presupuesto: ${P.fuente}`;
+}
+
+// ---- productividad de choferes (planilla de bodegas, no Odoo) ----
+const T0 = 6 * 60, T1 = 21 * 60;  // eje de la barra: 06:00 a 21:00
+const hhmm = m => String(Math.floor(m / 60)).padStart(2, '0') + ':' + String(Math.round(m % 60)).padStart(2, '0');
+const dur = m => m >= 60 ? (m / 60).toFixed(1) + ' h' : Math.round(m) + ' min';
+const pos = m => Math.max(0, Math.min(100, (m - T0) / (T1 - T0) * 100));
+
+function barra(c) {
+  const seg = (a, b, cls) => `<div class="${cls}" style="left:${pos(a)}%;width:${Math.max(pos(b) - pos(a), 0.4)}%"></div>`;
+  return `<div class="tl">${seg(c.inicio, c.primera_venta, 'muerto')}${seg(c.primera_venta, c.ultima_venta, 'act')}${seg(c.ultima_venta, c.fin, 'muerto')}</div>`;
+}
+
+function renderChoferes(C) {
+  const dd = iso => new Date(iso + 'T12:00').toLocaleDateString('es-CL', { day: 'numeric', month: 'short' });
+  $('chofRango').textContent = `${dd(C.desde)} – ${dd(C.hasta)}`;
+
+  const medibles = C.choferes.filter(c => c.confiable);
+  if (!medibles.length) return;
+  const mejor = medibles.reduce((a, b) => (b.litros_hora > a.litros_hora ? b : a), medibles[0]);
+
+  let eje = '<div class="tl-eje">';
+  for (let h = 6; h <= 21; h += 3) eje += `<span style="left:${pos(h * 60)}%">${h}:00</span>`;
+  eje += '</div>';
+
+  let r = `<tr><th>Chofer</th><th>Zona</th><th class="num">Días</th><th>Inicio</th><th>1ª venta</th>
+    <th>Última</th><th>Cierre</th><th class="num">Jornada</th><th class="num">Sin vender</th>
+    <th style="min-width:280px">Jornada típica ${eje}</th>
+    <th class="num">Vtas/día</th><th class="num">Litros/día</th><th class="num">Litros/h</th></tr>`;
+
+  for (const c of medibles) {
+    const muerto = c.arranque + c.cola;
+    const cls = c.activo_pct >= 0.75 ? 'ok' : (c.activo_pct >= 0.6 ? 'warn' : 'bad');
+    r += `<tr>
+      <td><b>${c.chofer}</b><div style="color:var(--muted);font-size:11px">${c.patente}</div></td>
+      <td>${c.zona}</td>
+      <td class="num">${c.dias_habiles}<div style="color:var(--muted);font-size:11px">de ${C.dias_habiles}</div></td>
+      <td>${hhmm(c.inicio)}</td><td>${hhmm(c.primera_venta)}</td>
+      <td>${hhmm(c.ultima_venta)}</td><td>${hhmm(c.fin)}</td>
+      <td class="num">${c.jornada_h.toFixed(1)} h</td>
+      <td class="num ${cls}">${dur(muerto)}<div style="color:var(--muted);font-size:11px">${Math.round(100 - c.activo_pct * 100)}% de la jornada</div></td>
+      <td>${barra(c)}</td>
+      <td class="num">${c.ventas_dia.toFixed(1)}</td>
+      <td class="num">${CLP.format(c.litros_dia)}</td>
+      <td class="num ${c.litros_hora >= mejor.litros_hora * 0.75 ? 'ok' : 'bad'}">${CLP.format(c.litros_hora)}</td></tr>`;
+  }
+  $('tablaChoferes').innerHTML = r;
+
+  // brecha: litros que se dejan de mover con las MISMAS horas de jornada ya pagadas
+  const brecha = medibles.filter(c => c.cam !== mejor.cam)
+    .map(c => ({ c, lts: (mejor.litros_hora - c.litros_hora) * c.jornada_h * c.dias_habiles }))
+    .filter(x => x.lts > 0)
+    .sort((a, b) => b.lts - a.lts);
+  const totalBrecha = sum(brecha.map(x => x.lts));
+  const noConf = C.choferes.filter(c => !c.confiable);
+
+  $('chofNota').innerHTML = `
+    <b>Brecha de productividad:</b> al ritmo de ${CLP.format(mejor.litros_hora)} litros/hora de ${mejor.corto},
+    el resto habría movido <b>${CLP.format(Math.round(totalBrecha))} litros más</b> en la ventana
+    (${brecha.map(x => `${x.c.corto} ${CLP.format(Math.round(x.lts / 1000))}k`).join(' · ')})
+    con exactamente las mismas horas de jornada que ya se pagan. Ojo: parte de la brecha es distancia de la zona, no solo gestión.
+    ${noConf.length ? `<br><b>Sin medición de horas:</b> ${noConf.map(c => `${c.corto} (${c.patente})`).join(', ')} —
+    cargan las ventas a la planilla en bloque al final del día, así que sus horas no reflejan la operación real.
+    Sus litros y entregas sí son válidos: ${noConf.map(c => `${c.corto} ${CLP.format(c.litros_dia)} L/día en ${c.ventas_dia} entregas (${c.dias} días)`).join(' · ')}.` : ''}
+    <br>Fuente: ${C.fuente} · ventana de ${C.dias_habiles} días hábiles · actualizar con <code>python3 extract_choferes.py &lt;xlsx&gt;</code>.`;
 }
 
 load().catch(e => {
