@@ -362,22 +362,33 @@ function renderChoferes(C) {
   let r = `<tr><th>Chofer</th><th>Zona</th><th class="num">Días</th><th>Inicio</th><th>1ª venta</th>
     <th>Última</th><th>Cierre</th><th class="num">Jornada</th><th class="num">Sin vender</th>
     <th style="min-width:280px">Jornada típica ${eje}</th>
-    <th class="num">Vtas/día</th><th class="num">Litros/día</th><th class="num">Litros/h</th></tr>`;
+    <th class="num">Vtas/día</th><th class="num">L/entrega</th><th class="num">Litros/día</th><th class="num">Litros/h</th></tr>`;
 
-  for (const c of medibles) {
+  // los no medibles van igual en la tabla (sus litros y entregas sí son válidos),
+  // pero con las columnas de hora en blanco para no inventar una jornada
+  for (const c of C.choferes) {
+    const nom = `<td><b>${c.chofer}</b>${c.confiable ? '' : ' <span class="badge nobudget">sin horas</span>'}
+      <div style="color:var(--muted);font-size:11px">${c.patente}</div></td>
+      <td>${c.zona}</td>
+      <td class="num">${c.dias_habiles}<div style="color:var(--muted);font-size:11px">de ${C.dias_habiles}</div></td>`;
+    const fin = `<td class="num">${c.ventas_dia.toFixed(1)}</td>
+      <td class="num">${CLP.format(c.entrega_med)}</td>
+      <td class="num">${CLP.format(c.litros_dia)}</td>`;
+    if (!c.confiable) {
+      r += `<tr>${nom}<td colspan="7" style="color:var(--muted);font-size:12px">
+        Carga las ventas a la planilla en bloque al final del día — sus horas no reflejan la operación real</td>
+        ${fin}<td class="num">—</td></tr>`;
+      continue;
+    }
     const muerto = c.arranque + c.cola;
     const cls = c.activo_pct >= 0.75 ? 'ok' : (c.activo_pct >= 0.6 ? 'warn' : 'bad');
-    r += `<tr>
-      <td><b>${c.chofer}</b><div style="color:var(--muted);font-size:11px">${c.patente}</div></td>
-      <td>${c.zona}</td>
-      <td class="num">${c.dias_habiles}<div style="color:var(--muted);font-size:11px">de ${C.dias_habiles}</div></td>
+    r += `<tr>${nom}
       <td>${hhmm(c.inicio)}</td><td>${hhmm(c.primera_venta)}</td>
       <td>${hhmm(c.ultima_venta)}</td><td>${hhmm(c.fin)}</td>
       <td class="num">${c.jornada_h.toFixed(1)} h</td>
       <td class="num ${cls}">${dur(muerto)}<div style="color:var(--muted);font-size:11px">${Math.round(100 - c.activo_pct * 100)}% de la jornada</div></td>
       <td>${barra(c)}</td>
-      <td class="num">${c.ventas_dia.toFixed(1)}</td>
-      <td class="num">${CLP.format(c.litros_dia)}</td>
+      ${fin}
       <td class="num ${c.litros_hora >= mejor.litros_hora * 0.75 ? 'ok' : 'bad'}">${CLP.format(c.litros_hora)}</td></tr>`;
   }
   $('tablaChoferes').innerHTML = r;
@@ -395,9 +406,9 @@ function renderChoferes(C) {
     el resto habría movido <b>${CLP.format(Math.round(totalBrecha))} litros más</b> en la ventana
     (${brecha.map(x => `${x.c.corto} ${CLP.format(Math.round(x.lts / 1000))}k`).join(' · ')})
     con exactamente las mismas horas de jornada que ya se pagan. Ojo: parte de la brecha es distancia de la zona, no solo gestión.
-    ${noConf.length ? `<br><b>Sin medición de horas:</b> ${noConf.map(c => `${c.corto} (${c.patente})`).join(', ')} —
-    cargan las ventas a la planilla en bloque al final del día, así que sus horas no reflejan la operación real.
-    Sus litros y entregas sí son válidos: ${noConf.map(c => `${c.corto} ${CLP.format(c.litros_dia)} L/día en ${c.ventas_dia} entregas (${c.dias} días)`).join(' · ')}.` : ''}
+    ${noConf.length ? `<br><b>Filas "sin horas"</b> (${noConf.map(c => c.corto).join(', ')}): registran todas las ventas del día
+    de una sola vez al cerrar, así que no se les puede medir arranque ni cola. Sus litros y entregas sí son válidos y quedan
+    fuera del cálculo de brecha. Para medirlos hay que pedirles que carguen cada venta en el momento.` : ''}
     <br>Fuente: ${C.fuente} · ventana de ${C.dias_habiles} días hábiles · actualizar con <code>python3 extract_choferes.py &lt;xlsx&gt;</code>.`;
 }
 

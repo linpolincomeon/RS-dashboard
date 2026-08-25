@@ -22,14 +22,14 @@ import openpyxl
 VENTANA_DIAS = 56           # ventana de análisis hacia atrás desde el último dato
 MIN_VENTAS_DIA = 2          # días con 1 sola venta no permiten medir jornada
 
-# hoja "conductores y sus zonas" del mismo Sheet
 CHOFERES = {
-    'TJ': ('TJVS-53', 'José Luis Valenzuela', 'Curicó', 'José Luis'),
-    'VD': ('VDKT-95', 'Nino Aguilera / F. Garroz', 'San Fernando · VI Costa', 'Nino'),
-    'TY': ('TYDG-23', 'Patricio Garrido', 'Linares al sur', 'Patricio'),
-    'PY': ('PYHK-28', 'Mario Marín', 'Linares', 'Mario'),
+    # hoja "conductores y sus zonas" del mismo Sheet
+    'TJ': ('TJVS-53', 'Jose Luis Valenzuela', 'San Fernando', 'José Luis'),
+    'VD': ('VDKT-95', 'Nino Aguilera', 'San Fernando', 'Nino'),
+    'TY': ('TYDG-23', 'Patricio Garrido', 'Linares', 'Patricio'),
+    'PY': ('PYHK-28', 'Mario Marin', 'Linares', 'Mario'),
     'SH': ('SHGP-60', 'Roberto Urrutia', 'Linares', 'Roberto'),
-    'PH': ('PHXC-44', 'Jorge Aguilera "Tato"', 'Rancagua · Mostazal', 'Tato'),
+    'PH': ('PHXC-44', 'Jorge Aguilera "Tato"', 'San Fernando', 'Tato'),
     'HH': ('HHPT-71', 'Sin conductor (spare)', 'San Fernando', 'HH (spare)'),
 }
 ORDEN = ['TJ', 'VD', 'TY', 'PY', 'SH', 'PH', 'HH']
