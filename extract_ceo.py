@@ -1599,6 +1599,165 @@ def extract_dso(models, uid, n_months=6, weeks=None):
     return {"months": results, "cxc_hoy": round(cxc_hoy), "por_semana": por_semana}
 
 
+# ── CUENTAS POR PAGAR COMBUSTIBLE (ENAP + ADQUIM + ADGREEN) ──
+def extract_payables(models, uid, supplier_ids, n_months=6):
+    """Saldo por pagar a los proveedores de diésel, espejo de extract_receivables.
+
+    · Facturas abiertas (in_invoice/in_refund posted con residual > 0) → total,
+      aging por fecha de vencimiento y desglose por proveedor. Las NC de
+      proveedor (in_refund) restan.
+    · Saldo contable al cierre de cada mes, reconstruido por reconciliación
+      (mismo método que el DSO: residual de las líneas ≤ corte + reversa de las
+      reconciliaciones aplicadas después del corte). En cuentas por pagar los
+      roles se invierten: la factura es el lado CRÉDITO y el pago el DÉBITO.
+    · DPO = promedio 3m del saldo al cierre / compras del mes × 30, para leerlo
+      contra el DSO (si DPO < DSO, el capital de trabajo lo financia TomEnergy).
+    """
+    print("Extracting accounts payable (ENAP + Adquim)...")
+    today = datetime.now()
+    today_str = today.strftime("%Y-%m-%d")
+
+    # ENAP = partner propio · Adquim = Adquim + AdGreen (mismo proveedor comercial)
+    groups = {
+        "ENAP": [ENAP_PARTNER],
+        "Adquim": [p for p in supplier_ids if p != ENAP_PARTNER],
+    }
+    group_of = {pid: g for g, pids in groups.items() for pid in pids}
+
+    # ── 1. Facturas abiertas ──
+    bills = fetch_all(models, uid, "account.move",
+        [["move_type", "in", ["in_invoice", "in_refund"]], ["state", "=", "posted"],
+         ["payment_state", "in", ["not_paid", "partial"]], ["amount_residual", ">", 0],
+         ["partner_id", "in", supplier_ids]],
+        ["partner_id", "invoice_date", "invoice_date_due", "amount_total", "amount_residual", "move_type"])
+    print(f"  {len(bills)} facturas de proveedor abiertas")
+
+    aging = {"por_vencer": 0, "0-30": 0, "31-60": 0, "61-90": 0, "90+": 0}
+    total_due = overdue = 0
+    by_group = {g: {"name": g, "total_due": 0, "overdue": 0, "bills": 0,
+                    "oldest_due": None, "next_due": None} for g in groups}
+    for b in bills:
+        res = (b["amount_residual"] or 0) * (-1 if b["move_type"] == "in_refund" else 1)
+        total_due += res
+        due = b.get("invoice_date_due") or b.get("invoice_date") or today_str
+        days = (today - datetime.strptime(due, "%Y-%m-%d")).days
+        if days > 0:
+            overdue += res
+            if days <= 30: aging["0-30"] += res
+            elif days <= 60: aging["31-60"] += res
+            elif days <= 90: aging["61-90"] += res
+            else: aging["90+"] += res
+        else:
+            aging["por_vencer"] += res
+        pid = b["partner_id"][0] if b.get("partner_id") else None
+        g = group_of.get(pid)
+        if g:
+            gd = by_group[g]
+            gd["total_due"] += res
+            gd["bills"] += 1
+            if days > 0:
+                gd["overdue"] += res
+                if gd["oldest_due"] is None or due < gd["oldest_due"]:
+                    gd["oldest_due"] = due
+            elif gd["next_due"] is None or due < gd["next_due"]:
+                gd["next_due"] = due
+
+    # ── 2. Saldo al cierre de los últimos meses (por reconciliación) ──
+    months = []
+    d = today.replace(day=1) - timedelta(days=1)
+    for _ in range(n_months + 2):
+        y, m = d.year, d.month
+        _, last = monthrange(y, m)
+        months.append({"first": f"{y}-{m:02d}-01", "last": f"{y}-{m:02d}-{last:02d}",
+                       "label": f"{y}-{m:02d}"})
+        d = d.replace(day=1) - timedelta(days=1)
+    months.reverse()
+    oldest = months[0]["first"]
+
+    base_domain = [["partner_id", "in", supplier_ids],
+                   ["account_id.account_type", "=", "liability_payable"],
+                   ["parent_state", "=", "posted"]]
+    open_lines, offset = [], 0
+    while True:
+        batch = sr(models, uid, "account.move.line",
+                   base_domain + [["amount_residual", "!=", 0]],
+                   ["date", "amount_residual"], limit=2000, offset=offset)
+        # el saldo por pagar vive como crédito → amount_residual negativo
+        open_lines += [((l.get("date") or ""), -(l.get("amount_residual", 0) or 0)) for l in batch]
+        if len(batch) < 2000:
+            break
+        offset += 2000
+
+    partials = sr(models, uid, "account.partial.reconcile",
+                  [["credit_move_id.partner_id", "in", supplier_ids],
+                   ["credit_move_id.account_id.account_type", "=", "liability_payable"],
+                   ["max_date", ">", oldest]],
+                  ["amount", "max_date", "debit_move_id", "credit_move_id"], limit=50000)
+    line_ids = set()
+    for p in partials:
+        for k in ("debit_move_id", "credit_move_id"):
+            if p.get(k):
+                line_ids.add(p[k][0])
+    line_date = {}
+    line_ids = list(line_ids)
+    for i in range(0, len(line_ids), 2000):
+        for l in models.execute_kw(ODOO_DB, uid, ODOO_KEY, "account.move.line", "read",
+                                   [line_ids[i:i + 2000]], {"fields": ["date"]}):
+            line_date[l["id"]] = l.get("date") or ""
+    print(f"    posiciones CxP: {len(open_lines)} líneas abiertas | {len(partials)} reconciliaciones desde {oldest}")
+
+    def _saldo_at(cutoff):
+        total = sum(v for dt, v in open_lines if dt and dt <= cutoff)
+        for p in partials:
+            if (p.get("max_date") or "") <= cutoff:
+                continue
+            amount = p.get("amount", 0) or 0
+            c_date = line_date.get(p["credit_move_id"][0], "") if p.get("credit_move_id") else ""
+            d_date = line_date.get(p["debit_move_id"][0], "") if p.get("debit_move_id") else ""
+            if c_date and c_date <= cutoff:
+                total += amount      # la factura seguía abierta al corte
+            if d_date and d_date <= cutoff:
+                total -= amount      # el pago existía y estaba sin aplicar al corte
+        return max(total, 0)
+
+    def _compras_mes(first, last):
+        moves = sr(models, uid, "account.move",
+                   [["move_type", "in", ["in_invoice", "in_refund"]], ["state", "=", "posted"],
+                    ["partner_id", "in", supplier_ids],
+                    ["invoice_date", ">=", first], ["invoice_date", "<=", last]],
+                   ["amount_total_in_currency_signed", "move_type"], limit=5000)
+        return sum(abs(m.get("amount_total_in_currency_signed", 0) or 0)
+                   * (-1 if m["move_type"] == "in_refund" else 1) for m in moves)
+
+    raw = [{"label": mo["label"], "saldo": _saldo_at(mo["last"]),
+            "compras": _compras_mes(mo["first"], mo["last"])} for mo in months]
+    cierres = []
+    for i in range(2, len(raw)):
+        cur = raw[i]
+        avg_saldo = round((raw[i]["saldo"] + raw[i - 1]["saldo"] + raw[i - 2]["saldo"]) / 3)
+        dpo = round(avg_saldo / cur["compras"] * 30, 1) if cur["compras"] > 0 else 0
+        print(f"  {cur['label']}: CxP=${cur['saldo']:,.0f} | Compras=${cur['compras']:,.0f} | DPO={dpo}d")
+        cierres.append({"month": cur["label"], "saldo": round(cur["saldo"]),
+                        "avg_saldo_3m": avg_saldo, "compras": round(cur["compras"]), "dpo": dpo})
+
+    saldo_hoy = round(_saldo_at(today_str))
+    print(f"  CxP hoy (contable): ${saldo_hoy:,.0f} | facturas abiertas: ${total_due:,.0f}")
+
+    return {
+        "fecha": today_str,
+        "open_bills": len(bills),
+        "total_due": round(total_due),
+        "saldo_contable_hoy": saldo_hoy,
+        "overdue": round(overdue),
+        "pct_overdue": round(overdue / total_due * 100, 1) if total_due > 0 else 0,
+        "aging": {k: round(v) for k, v in aging.items()},
+        "by_supplier": sorted(({**by_group[g], "total_due": round(by_group[g]["total_due"]),
+                                "overdue": round(by_group[g]["overdue"])} for g in by_group),
+                              key=lambda x: -x["total_due"]),
+        "cierres": cierres,
+    }
+
+
 # ── VALIDACIÓN DE SANIDAD DEL OUTPUT ──
 def validate_output(data):
     """Si el dato es implausible, el script FALLA antes de escribir ceo-data.json:
@@ -1664,6 +1823,14 @@ def main():
     enap = extract_enap_compliance(models, uid)
     operaciones = extract_operaciones(models, uid)
     dso = extract_dso(models, uid, weeks=weeks)
+    # CxP combustible: bloque nuevo (ago-2026). Va en try/except a propósito —
+    # si falla, el dashboard pierde la tarjeta de CxP pero NO se cae la corrida
+    # completa del CEO (recaudación, DSO, riesgo siguen publicándose).
+    try:
+        payables = extract_payables(models, uid, supplier_ids)
+    except Exception as e:
+        print(f"  WARNING: CxP no extraída ({type(e).__name__}: {e})")
+        payables = {}
 
     data = {
         "updated": datetime.now().isoformat(),
@@ -1678,6 +1845,7 @@ def main():
         "enap": enap,
         "operaciones": operaciones,
         "dso": dso,
+        "payables": payables,
         "gerencia_goals": {
             "margen_contado_meta": 0.085,
             "margen_credito_meta": 0.06,

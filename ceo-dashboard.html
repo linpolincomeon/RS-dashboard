@@ -1219,6 +1219,77 @@ function resetCFPrecio(){
     localStorage.removeItem('cf_precio_enap');
     renderCashflow();
 }
+// ── Cuentas por Cobrar / por Pagar (posición al día) ──
+// CxC sale de D.receivables (facturas de cliente abiertas) y CxP de D.payables
+// (facturas ENAP/Adquim abiertas). Ambos bloques son opcionales: si el extract
+// no los trajo, la sección simplemente no se dibuja.
+function renderCxcCxp(){
+    const R=D.receivables||null, P=D.payables||null;
+    if(!R&&!P) return '';
+    const dsoMonths=Array.isArray(D.dso)?D.dso:((D.dso||{}).months||[]);
+    const dsoCur=dsoMonths.length?dsoMonths[dsoMonths.length-1]:null;
+    let h='<div class="section-label">🧾 Posición CxC / CxP</div>';
+    h+='<div class="kpis">';
+    if(R){
+        const ag=R.aging||{};
+        const over30=(ag['31-60']||0)+(ag['61-90']||0)+(ag['90+']||0);
+        const top=(R.top_debtors||[]);
+        const top5=top.slice(0,5).reduce((s,d)=>s+(d.amount||0),0);
+        const conc=R.total_due>0?top5/R.total_due*100:0;
+        h+=kpi('CxC abierta',fM(R.total_due),null,'c-blue',(R.open_invoices||0)+' facturas de cliente');
+        h+=kpi('CxC vencida',fM(R.overdue),null,(R.pct_overdue||0)<=15?'c-green':(R.pct_overdue||0)<=25?'c-amber':'c-red',(R.pct_overdue||0).toFixed(1)+'% de la cartera');
+        h+=kpi('Vencida +30d',fM(over30),null,over30/(R.total_due||1)<=0.05?'c-green':over30/(R.total_due||1)<=0.10?'c-amber':'c-red',(over30/(R.total_due||1)*100).toFixed(1)+'% de la cartera · '+(R.overdue?(over30/R.overdue*100).toFixed(0):'—')+'% de la mora');
+        h+=kpi('Concentración top 5',conc.toFixed(1)+'%',null,conc<=25?'c-green':conc<=40?'c-amber':'c-red',top.length?('mayor: '+top[0].name.slice(0,26)+' ('+fM(top[0].amount)+')'):'');
+    }
+    if(P&&P.total_due!=null){
+        const sup=(P.by_supplier||[]);
+        const dpoCur=(P.cierres||[]).length?P.cierres[P.cierres.length-1]:null;
+        const subSup=sup.map(s=>s.name+': '+fM(s.total_due)).join(' · ');
+        h+=kpi('CxP combustible',fM(P.total_due),null,'c-amber',subSup||((P.open_bills||0)+' facturas de proveedor'));
+        h+=kpi('CxP vencida',fM(P.overdue),null,(P.pct_overdue||0)<=5?'c-green':(P.pct_overdue||0)<=20?'c-amber':'c-red',(P.pct_overdue||0).toFixed(1)+'% de la CxP');
+        if(dpoCur&&dsoCur){
+            const brecha=(dsoCur.dso||0)-(dpoCur.dpo||0);
+            h+=kpi('DSO vs DPO',(dsoCur.dso||0).toFixed(1)+'d / '+(dpoCur.dpo||0).toFixed(1)+'d',null,brecha<=0?'c-green':brecha<=10?'c-amber':'c-red',brecha>0?('financias '+brecha.toFixed(1)+'d de capital de trabajo'):'cobras antes de pagar');
+        }
+    }
+    h+='</div>';
+    // Aging CxC + top deudores
+    if(R){
+        const ag=R.aging||{};
+        h+='<div class="chart-row two" style="margin-top:14px">';
+        h+='<div class="table-card"><div class="chart-title">CxC por antigüedad de la mora</div><table><thead><tr><th>Tramo</th><th class="r">Monto</th><th class="r">% cartera</th></tr></thead><tbody>';
+        const tramos=[['Al día',R.current||0],['Vencida 1-30d',ag['0-30']||0],['Vencida 31-60d',ag['31-60']||0],['Vencida 61-90d',ag['61-90']||0],['Vencida +90d',ag['90+']||0]];
+        tramos.forEach(([lab,val])=>{
+            h+='<tr><td>'+lab+'</td><td class="r">'+fM(val)+'</td><td class="r">'+(R.total_due>0?(val/R.total_due*100).toFixed(1):'0.0')+'%</td></tr>';
+        });
+        h+='</tbody></table></div>';
+        h+='<div class="table-card"><div class="chart-title">Top 5 deudores</div><table><thead><tr><th>Cliente</th><th class="r">Saldo</th><th class="r">% cartera</th></tr></thead><tbody>';
+        (R.top_debtors||[]).slice(0,5).forEach(dd=>{
+            h+='<tr><td>'+dd.name+'</td><td class="r">'+fM(dd.amount)+'</td><td class="r">'+(R.total_due>0?(dd.amount/R.total_due*100).toFixed(1):'0.0')+'%</td></tr>';
+        });
+        h+='</tbody></table></div></div>';
+        const cxcCont=(Array.isArray(D.dso)?null:(D.dso||{}).cxc_hoy)||0;
+        if(cxcCont>R.total_due){
+            h+='<div class="note">CxC abierta = facturas de cliente impagas ('+fM(R.total_due)+'). El saldo contable de CxC (tarjeta «Planta CxC», '+fM(cxcCont)+') es mayor porque además de las facturas incluye las cuentas 1.1.04.05 + 1.1.04.11 (documentos por cobrar) y los cheques en cartera. La mora y la concentración de esta sección se miden sobre la cartera de facturas.</div>';
+        }
+    }
+    // CxP por proveedor + serie de cierres con DSO/DPO
+    if(P&&(P.by_supplier||[]).length){
+        h+='<div class="chart-row two" style="margin-top:14px">';
+        h+='<div class="table-card"><div class="chart-title">CxP combustible por proveedor</div><table><thead><tr><th>Proveedor</th><th class="r">Saldo</th><th class="r">Vencido</th><th class="r">Facturas</th><th>Próx. vence</th></tr></thead><tbody>';
+        P.by_supplier.forEach(s=>{
+            h+='<tr><td>'+s.name+'</td><td class="r">'+fM(s.total_due)+'</td><td class="r">'+fM(s.overdue)+'</td><td class="r">'+fNum(s.bills)+'</td><td>'+(s.next_due||s.oldest_due||'—')+'</td></tr>';
+        });
+        h+='</tbody></table><div class="note">Saldo contable hoy: '+fM(P.saldo_contable_hoy||0)+' (incluye pagos aún no aplicados).</div></div>';
+        h+='<div class="table-card"><div class="chart-title">Cierres mensuales · CxP, compras y DPO</div><table><thead><tr><th>Mes</th><th class="r">CxP cierre</th><th class="r">Compras</th><th class="r">DPO</th><th class="r">DSO</th></tr></thead><tbody>';
+        (P.cierres||[]).forEach(c=>{
+            const dm=dsoMonths.find(m=>(m.month||m.label)===c.month);
+            h+='<tr><td>'+c.month+'</td><td class="r">'+fM(c.saldo)+'</td><td class="r">'+fM(c.compras)+'</td><td class="r">'+(c.dpo||0).toFixed(1)+'d</td><td class="r">'+(dm&&dm.dso!=null?dm.dso.toFixed(1)+'d':'—')+'</td></tr>';
+        });
+        h+='</tbody></table><div class="note">DPO = promedio 3m del saldo / compras del mes × 30, mismo método que el DSO.</div></div></div>';
+    }
+    return h;
+}
 function renderCashflow(){
     const el=document.getElementById('p-cashflow');
     const W=D.weeks||[];
@@ -1265,7 +1336,8 @@ function renderCashflow(){
     // Helper: format M without leading $ (since we add $ ourselves)
     const fNoSign=n=>!n&&n!==0?'—':(n/1e6).toFixed(1)+'M';
 
-    let h='<div class="section-label">💰 Cash Flow — Proyección Capital de Trabajo</div>';
+    let h=renderCxcCxp();
+    h+='<div class="section-label" style="margin-top:22px">💰 Cash Flow — Proyección Capital de Trabajo</div>';
     h+='<div class="note" style="margin-bottom:16px">Tendencia 4 semanas cerradas. Los lunes este tablero te dice cuánta caja necesitas para cubrir compras a proveedores antes de que entren los cobros de la semana. Modelo: proyección = promedio últimas 4 semanas. Próxima fase: ajuste estacional YoY.</div>';
 
     // ── Parameters bar ──
