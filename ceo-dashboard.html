@@ -358,7 +358,11 @@
 let D=null, curTab='ventas', fN=16, selW=0;
 const charts={};
 const C={accent:'#c8360e',blue:'#1a5fb4',green:'#0f6e56',amber:'#854f0b',red:'#a32d2d',purple:'#6b3fa0',teal:'#0f7b6c'};
-const fM=n=>!n&&n!==0?'—':'$'+(n/1e6).toFixed(1)+'M';
+// Millones con formato chileno: bajo $1.000M con 1 decimal ($560,3M), sobre
+// $1.000M sin decimal y con separador de miles ($1.106M) — «1106.2M» no se lee.
+const fMM=n=>Math.abs(n)>=1e9?(n/1e6).toLocaleString('es-CL',{maximumFractionDigits:0})
+                            :(n/1e6).toLocaleString('es-CL',{minimumFractionDigits:1,maximumFractionDigits:1});
+const fM=n=>!n&&n!==0?'—':'$'+fMM(n)+'M';
 const fK=n=>!n&&n!==0?'—':Math.round(n/1000).toLocaleString('es-CL')+'K';
 const fNum=n=>!n&&n!==0?'—':Math.round(n).toLocaleString('es-CL');
 const fP=n=>!n&&n!==0?'—':(n*100).toFixed(1)+'%';
@@ -445,7 +449,7 @@ function renderVentas(){
     const cxcVal = cxcSel != null ? cxcSel : cxcHoy;
     if (cxcVal != null) {
         const cxcPrev = cxcSemMap ? cxcSemMap[prev.end] : null;
-        const cxcM = (cxcVal / 1e6).toFixed(1) + 'M';
+        const cxcM = fMM(cxcVal) + 'M';
         const cxcSub = (selW === 0 || cxcSemMap == null)
             ? 'Impago hoy: CxC + cheques cartera'
             : 'saldo impago al cierre de la semana';
@@ -1137,7 +1141,7 @@ function renderRiesgo(){
             ]},
             options:{responsive:true,maintainAspectRatio:false,
                 plugins:{legend:{position:'bottom',labels:{font:{family:'DM Sans',size:10}}},
-                    tooltip:{callbacks:{afterLabel:ctx=>{if(ctx.datasetIndex>0)return'';const w=last16[ctx.dataIndex];return'No cubierto: $'+(w.no_cubierto/1e6).toFixed(1)+'M\nCubierto: $'+(w.cubierto/1e6).toFixed(1)+'M'}}}},
+                    tooltip:{callbacks:{afterLabel:ctx=>{if(ctx.datasetIndex>0)return'';const w=last16[ctx.dataIndex];return'No cubierto: '+fM(w.no_cubierto)+'\nCubierto: '+fM(w.cubierto)}}}},
                 scales:{x:{ticks:{color:'#9c9b96',font:{size:9}},grid:{display:false}},
                     y:{beginAtZero:true,max:20,ticks:{callback:v=>v+'%',color:'#9c9b96',font:{size:9}},grid:{color:'rgba(0,0,0,.04)'}}}
             }});
@@ -1378,7 +1382,7 @@ function renderCashflow(){
     };
 
     // Helper: format M without leading $ (since we add $ ourselves)
-    const fNoSign=n=>!n&&n!==0?'—':(n/1e6).toFixed(1)+'M';
+    const fNoSign=n=>!n&&n!==0?'—':fMM(n)+'M';
 
     let h=renderCxcCxp();
     h+='<div class="section-label" style="margin-top:22px">💰 Cash Flow — Proyección Capital de Trabajo</div>';
