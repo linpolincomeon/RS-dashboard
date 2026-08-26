@@ -1599,6 +1599,125 @@ def extract_dso(models, uid, n_months=6, weeks=None):
     return {"months": results, "cxc_hoy": round(cxc_hoy), "por_semana": por_semana}
 
 
+# ── EXPOSICIÓN CxC CONTABLE (incluye documentos cedidos a factoring) ──
+def extract_receivables_contable(models, uid):
+    """Riesgo de crédito REAL por cliente = saldo de las cuentas CxC
+    (1.1.04.05 facturas + 1.1.04.11 documentos por cobrar), no solo las
+    facturas que siguen abiertas.
+
+    Por qué: una factura cedida a factoring queda PAGADA en Odoo y desaparece
+    de extract_receivables(), pero el factoring de TomEnergy es CON
+    responsabilidad (confirmado por Pauline, 26-ago-2026): si el cliente no
+    paga, la factura vuelve. Mientras eso sea así, la mora y la concentración
+    hay que medirlas sobre esta base, no sobre la cartera de facturas.
+
+    Aging por date_maturity (fallback: fecha contable). Los cheques en cartera
+    (1.1.05.07) NO entran acá: son documentos ya recibidos, no deuda vigente
+    del cliente — por eso este total es algo menor que el `cxc_hoy` del DSO.
+    """
+    print("Extracting CxC contable (exposición con documentos cedidos)...")
+    acc = models.execute_kw(ODOO_DB, uid, ODOO_KEY, "account.account", "search_read",
+                            [[["code", "in", CXC_ACCOUNT_CODES]]], {"fields": ["id", "code", "name"]})
+    if not acc:
+        print("  WARNING: cuentas CxC no encontradas, exposición contable omitida")
+        return {}
+    acc_ids = [a["id"] for a in acc]
+    acc_code = {a["id"]: a["code"] for a in acc}
+
+    lines = fetch_all(models, uid, "account.move.line",
+        [["account_id", "in", acc_ids], ["parent_state", "=", "posted"],
+         ["amount_residual", "!=", 0]],
+        ["partner_id", "account_id", "date", "date_maturity", "amount_residual"])
+    print(f"  {len(lines)} líneas CxC abiertas")
+
+    today = datetime.now()
+    total = current = overdue = 0
+    aging = {"0-30": 0, "31-60": 0, "61-90": 0, "90+": 0}
+    by_account = {a["code"]: 0 for a in acc}
+    debtor_map = {}
+    sin_partner = 0
+    for l in lines:
+        res = l.get("amount_residual", 0) or 0
+        total += res
+        code = acc_code.get(l["account_id"][0]) if l.get("account_id") else None
+        by_account[code] = by_account.get(code, 0) + res
+        due = l.get("date_maturity") or l.get("date")
+        days = (today - datetime.strptime(due, "%Y-%m-%d")).days if due else 0
+        if days > 0 and res > 0:
+            overdue += res
+            if days <= 30: aging["0-30"] += res
+            elif days <= 60: aging["31-60"] += res
+            elif days <= 90: aging["61-90"] += res
+            else: aging["90+"] += res
+        else:
+            current += res
+        if l.get("partner_id"):
+            pid, pname = l["partner_id"][0], l["partner_id"][1]
+            d = debtor_map.setdefault(pid, {"name": pname, "amount": 0})
+            d["amount"] += res
+        else:
+            sin_partner += res
+
+    debtors_all = sorted(debtor_map.values(), key=lambda x: -x["amount"])
+    debtors = [{"name": d["name"], "amount": round(d["amount"])} for d in debtors_all[:20]]
+
+    # ── Cobertura AVLA sobre la exposición COMPLETA ──
+    # extract_riesgo() mide la cobertura sobre las facturas abiertas y alimenta
+    # la serie de riesgo-historico.json — no se toca (romperlo crea otro quiebre
+    # de metodología como el de jul-2026). Acá se recalcula lo mismo sobre la
+    # exposición con documentos cedidos, que es el riesgo real mientras el
+    # factoring sea con responsabilidad. Cubierto = min(deuda, línea AVLA
+    # efectiva del RUT), o sea la línea ya trae aplicado el 80/90%.
+    avla = {}
+    try:
+        avla_lines, avla_fecha = load_avla_lines()
+        pids = list(debtor_map.keys())
+        partner_vat = {}
+        for off in range(0, len(pids), 200):
+            for p in sr(models, uid, "res.partner", [["id", "in", pids[off:off + 200]]],
+                        ["id", "vat"], limit=200):
+                partner_vat[p["id"]] = normalize_rut(p.get("vat"))
+        cubierto = no_cubierto = 0
+        matched = sin_linea = 0
+        for pid, d in debtor_map.items():
+            if d["amount"] <= 0:
+                continue
+            info = avla_lines.get(partner_vat.get(pid)) if partner_vat.get(pid) else None
+            cob = min(d["amount"], info.get("cobertura_clp", 0)) if info else 0
+            if info:
+                matched += 1
+            else:
+                sin_linea += d["amount"]
+            cubierto += cob
+            no_cubierto += d["amount"] - cob
+        avla = {
+            "cubierto": round(cubierto),
+            "no_cubierto": round(no_cubierto),
+            "pct_no_cubierto": round(no_cubierto / (cubierto + no_cubierto) * 100, 1) if (cubierto + no_cubierto) > 0 else 0,
+            "sin_linea": round(sin_linea),
+            "clientes_con_linea": matched,
+            "clientes_con_deuda": sum(1 for d in debtor_map.values() if d["amount"] > 0),
+            "fecha_descarga": avla_fecha,
+        }
+        print(f"  AVLA sobre exposición total: cubierto ${cubierto:,.0f} | "
+              f"NO cubierto ${no_cubierto:,.0f} ({avla['pct_no_cubierto']}%)")
+    except Exception as e:
+        print(f"  WARNING: cobertura AVLA sobre exposición no calculada ({type(e).__name__}: {e})")
+    print(f"  Exposición contable: ${total:,.0f} | vencida ${overdue:,.0f} | "
+          + " · ".join(f"{c}: ${v:,.0f}" for c, v in by_account.items() if c))
+    return {
+        "total_due": round(total),
+        "current": round(current),
+        "overdue": round(overdue),
+        "pct_overdue": round(overdue / total * 100, 1) if total > 0 else 0,
+        "aging": {k: round(v) for k, v in aging.items()},
+        "by_account": {k: round(v) for k, v in by_account.items() if k},
+        "sin_partner": round(sin_partner),
+        "open_lines": len(lines),
+        "top_debtors": debtors,
+        "avla": avla,
+    }
+
 # ── CUENTAS POR PAGAR COMBUSTIBLE (ENAP + ADQUIM + ADGREEN) ──
 def extract_payables(models, uid, supplier_ids, n_months=6):
     """Saldo por pagar a los proveedores de diésel, espejo de extract_receivables.
@@ -1814,6 +1933,13 @@ def main():
     banks = extract_bank_balances(models, uid)
     total_cash = sum(b["balance"] for b in banks)
     receivables = extract_receivables(models, uid)
+    # Exposición contable (facturas + documentos cedidos): el factoring es CON
+    # responsabilidad, así que las cedidas siguen siendo riesgo nuestro.
+    try:
+        receivables_contable = extract_receivables_contable(models, uid)
+    except Exception as e:
+        print(f"  WARNING: exposición CxC contable no extraída ({type(e).__name__}: {e})")
+        receivables_contable = {}
 
     # Gerencia sections
     weeks = get_week_ranges(16)
@@ -1839,6 +1965,7 @@ def main():
         "banks": banks,
         "total_cash": total_cash,
         "receivables": receivables,
+        "receivables_contable": receivables_contable,
         "sla": sla,
         "riesgo": riesgo,
         "churn": churn,

@@ -1227,7 +1227,11 @@ function resetCFPrecio(){
 // si aparecen, es que quedó una factura de proveedor sin pagar.
 function renderCxcCxp(){
     const R=D.receivables||null, P=D.payables||null;
-    if(!R&&!P) return '';
+    // Exposición contable = facturas abiertas + documentos cedidos a factoring.
+    // El factoring es CON responsabilidad: si el cliente no paga, la factura
+    // vuelve → la mora y la concentración se miden sobre esta base.
+    const X=(D.receivables_contable&&D.receivables_contable.total_due)?D.receivables_contable:null;
+    if(!R&&!P&&!X) return '';
     const dsoMonths=Array.isArray(D.dso)?D.dso:((D.dso||{}).months||[]);
     const dsoCur=dsoMonths.length?dsoMonths[dsoMonths.length-1]:null;
     const hasCxP=!!(P&&(P.total_due||0)>0);
@@ -1273,8 +1277,45 @@ function renderCxcCxp(){
         h+='</tbody></table></div></div>';
         const cxcCont=(Array.isArray(D.dso)?null:(D.dso||{}).cxc_hoy)||0;
         if(cxcCont>R.total_due){
-            h+='<div class="note">CxC abierta = facturas de cliente impagas ('+fM(R.total_due)+'). El saldo contable de CxC (tarjeta «Planta CxC», '+fM(cxcCont)+') es mayor porque además de las facturas incluye las cuentas 1.1.04.05 + 1.1.04.11 (documentos por cobrar) y los cheques en cartera. La mora y la concentración de esta sección se miden sobre la cartera de facturas.</div>';
+            h+='<div class="note">CxC abierta = facturas de cliente impagas ('+fM(R.total_due)+'). El saldo contable de CxC (tarjeta «Planta CxC», '+fM(cxcCont)+') es mayor porque además incluye los documentos por cobrar (1.1.04.11, facturas cedidas a factoring) y los cheques en cartera. Como el factoring es <strong>con responsabilidad</strong>, esas facturas cedidas siguen siendo riesgo de TomEnergy: la medida de riesgo es la exposición total de abajo, no esta tabla.</div>';
         }
+    }
+    // Exposición total por cliente (facturas + documentos cedidos)
+    if(X){
+        const ag=X.aging||{};
+        const over30=(ag['31-60']||0)+(ag['61-90']||0)+(ag['90+']||0);
+        const top=(X.top_debtors||[]);
+        const top5=top.slice(0,5).reduce((s,d)=>s+(d.amount||0),0);
+        const conc=X.total_due>0?top5/X.total_due*100:0;
+        h+='<div class="section-label" style="margin-top:20px">🎯 Exposición total por cliente <span class="badge">incluye facturas cedidas a factoring</span></div>';
+        h+='<div class="note" style="margin-bottom:12px">Saldo de las cuentas 1.1.04.05 (facturas) + 1.1.04.11 (documentos por cobrar). El factoring es con responsabilidad: si el cliente no paga, la factura vuelve a TomEnergy. Esta es la base correcta para medir mora y concentración de riesgo.</div>';
+        h+='<div class="kpis">';
+        h+=kpi('Exposición total',fM(X.total_due),null,'c-purple',(X.open_lines||0)+' líneas · '+Object.entries(X.by_account||{}).map(([c,v])=>c+': '+fM(v)).join(' · '));
+        h+=kpi('Vencida',fM(X.overdue),null,(X.pct_overdue||0)<=15?'c-green':(X.pct_overdue||0)<=25?'c-amber':'c-red',(X.pct_overdue||0).toFixed(1)+'% de la exposición');
+        h+=kpi('Vencida +30d',fM(over30),null,over30/(X.total_due||1)<=0.05?'c-green':over30/(X.total_due||1)<=0.10?'c-amber':'c-red',(over30/(X.total_due||1)*100).toFixed(1)+'% de la exposición');
+        h+=kpi('Concentración top 5',conc.toFixed(1)+'%',null,conc<=25?'c-green':conc<=40?'c-amber':'c-red',top.length?('mayor: '+top[0].name.slice(0,26)+' ('+fM(top[0].amount)+')'):'');
+        // Riesgo neto de AVLA: la línea AVLA ya trae aplicado el 80% (innominados)
+        // o 90% (nominados), y cubre hasta el monto aprobado por RUT — no el 80%
+        // de toda la deuda. Lo que excede la línea, o el cliente sin línea, es
+        // pérdida directa de TomEnergy si no paga.
+        const A=X.avla||null;
+        if(A&&(A.cubierto||A.no_cubierto)){
+            const pctNC=A.pct_no_cubierto||0;
+            h+=kpi('Expuesto neto (sin AVLA)',fM(A.no_cubierto),null,pctNC<=15?'c-green':pctNC<=30?'c-amber':'c-red',pctNC.toFixed(1)+'% de la exposición · cubierto '+fM(A.cubierto));
+            h+=kpi('Clientes sin línea AVLA',fNum((A.clientes_con_deuda||0)-(A.clientes_con_linea||0)),null,'c-amber',fM(A.sin_linea)+' de deuda sin cobertura · '+fNum(A.clientes_con_linea)+' de '+fNum(A.clientes_con_deuda)+' con línea');
+        }
+        h+='</div>';
+        h+='<div class="chart-row two" style="margin-top:14px">';
+        h+='<div class="table-card"><div class="chart-title">Exposición por antigüedad</div><table><thead><tr><th>Tramo</th><th class="r">Monto</th><th class="r">% exposición</th></tr></thead><tbody>';
+        [['Al día',X.current||0],['Vencida 1-30d',ag['0-30']||0],['Vencida 31-60d',ag['31-60']||0],['Vencida 61-90d',ag['61-90']||0],['Vencida +90d',ag['90+']||0]].forEach(([lab,val])=>{
+            h+='<tr><td>'+lab+'</td><td class="r">'+fM(val)+'</td><td class="r">'+(X.total_due>0?(val/X.total_due*100).toFixed(1):'0.0')+'%</td></tr>';
+        });
+        h+='</tbody></table></div>';
+        h+='<div class="table-card"><div class="chart-title">Top 10 por exposición</div><table><thead><tr><th>Cliente</th><th class="r">Saldo</th><th class="r">% exp.</th></tr></thead><tbody>';
+        top.slice(0,10).forEach(dd=>{
+            h+='<tr><td>'+dd.name+'</td><td class="r">'+fM(dd.amount)+'</td><td class="r">'+(X.total_due>0?(dd.amount/X.total_due*100).toFixed(1):'0.0')+'%</td></tr>';
+        });
+        h+='</tbody></table></div></div>';
     }
     // CxP por proveedor + serie de cierres con DSO/DPO
     if(hasCxP&&(P.by_supplier||[]).length){
