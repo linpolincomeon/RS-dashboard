@@ -1221,14 +1221,17 @@ function resetCFPrecio(){
 }
 // ── Cuentas por Cobrar / por Pagar (posición al día) ──
 // CxC sale de D.receivables (facturas de cliente abiertas) y CxP de D.payables
-// (facturas ENAP/Adquim abiertas). Ambos bloques son opcionales: si el extract
-// no los trajo, la sección simplemente no se dibuja.
+// (facturas ENAP/Adquim abiertas). ⚠ A ENAP y Adquim se les paga al contado
+// (confirmado por Pauline 26-ago-2026), así que lo normal es CxP = 0: las
+// tarjetas y tablas de CxP solo se dibujan si hay saldo abierto de verdad —
+// si aparecen, es que quedó una factura de proveedor sin pagar.
 function renderCxcCxp(){
     const R=D.receivables||null, P=D.payables||null;
     if(!R&&!P) return '';
     const dsoMonths=Array.isArray(D.dso)?D.dso:((D.dso||{}).months||[]);
     const dsoCur=dsoMonths.length?dsoMonths[dsoMonths.length-1]:null;
-    let h='<div class="section-label">🧾 Posición CxC / CxP</div>';
+    const hasCxP=!!(P&&(P.total_due||0)>0);
+    let h='<div class="section-label">🧾 '+(hasCxP?'Posición CxC / CxP':'Cuentas por Cobrar')+'</div>';
     h+='<div class="kpis">';
     if(R){
         const ag=R.aging||{};
@@ -1241,7 +1244,7 @@ function renderCxcCxp(){
         h+=kpi('Vencida +30d',fM(over30),null,over30/(R.total_due||1)<=0.05?'c-green':over30/(R.total_due||1)<=0.10?'c-amber':'c-red',(over30/(R.total_due||1)*100).toFixed(1)+'% de la cartera · '+(R.overdue?(over30/R.overdue*100).toFixed(0):'—')+'% de la mora');
         h+=kpi('Concentración top 5',conc.toFixed(1)+'%',null,conc<=25?'c-green':conc<=40?'c-amber':'c-red',top.length?('mayor: '+top[0].name.slice(0,26)+' ('+fM(top[0].amount)+')'):'');
     }
-    if(P&&P.total_due!=null){
+    if(hasCxP){
         const sup=(P.by_supplier||[]);
         const dpoCur=(P.cierres||[]).length?P.cierres[P.cierres.length-1]:null;
         const subSup=sup.map(s=>s.name+': '+fM(s.total_due)).join(' · ');
@@ -1274,7 +1277,7 @@ function renderCxcCxp(){
         }
     }
     // CxP por proveedor + serie de cierres con DSO/DPO
-    if(P&&(P.by_supplier||[]).length){
+    if(hasCxP&&(P.by_supplier||[]).length){
         h+='<div class="chart-row two" style="margin-top:14px">';
         h+='<div class="table-card"><div class="chart-title">CxP combustible por proveedor</div><table><thead><tr><th>Proveedor</th><th class="r">Saldo</th><th class="r">Vencido</th><th class="r">Facturas</th><th>Próx. vence</th></tr></thead><tbody>';
         P.by_supplier.forEach(s=>{
