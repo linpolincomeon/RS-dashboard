@@ -2475,29 +2475,42 @@ def extract_credit_risk(models, uid):
             pid_to_group[p["id"]] = gid
     print(f"  Groups found: {len(group_to_pids)} (covering {len(pid_to_group)} partners)")
 
-    # ── 1b. Resolve tag names to detect DICOM ──
+    # ── 1b. Resolve tag names: DICOM y clientes que no permiten cesión ──
     all_tag_ids = set()
     for p in credit_partners:
         for tid in (p.get("category_id") or []):
             all_tag_ids.add(tid)
 
     dicom_tag_ids = set()
+    no_cesion_tag_ids = set()
     if all_tag_ids:
         tags = sr(models, uid, "res.partner.category", [
             ["id", "in", list(all_tag_ids)],
         ], ["id", "name"], limit=500)
         for t in tags:
-            if "dicom" in (t.get("name") or "").lower():
+            n = (t.get("name") or "").lower()
+            if "dicom" in n:
                 dicom_tag_ids.add(t["id"])
+            if any(pat in n for pat in NO_CESION_TAG_PATTERNS):
+                no_cesion_tag_ids.add(t["id"])
         print(f"  DICOM tag IDs: {dicom_tag_ids}")
+        print(f"  Tags 'no cede facturas': {no_cesion_tag_ids}")
+        if not no_cesion_tag_ids:
+            # el nombre del tag manda: si no calza ningún patrón se listan todos
+            # para poder ajustar NO_CESION_TAG_PATTERNS sin adivinar.
+            print("  WARNING: ningún tag calzó con NO_CESION_TAG_PATTERNS. Tags disponibles: "
+                  + ", ".join(sorted((t.get("name") or "?") for t in tags)))
 
     # Flag partners with DICOM
     partner_has_dicom = {}
+    partner_no_cede = {}
     for p in credit_partners:
-        has = bool(set(p.get("category_id") or []) & dicom_tag_ids)
-        partner_has_dicom[p["id"]] = has
+        tids = set(p.get("category_id") or [])
+        partner_has_dicom[p["id"]] = bool(tids & dicom_tag_ids)
+        partner_no_cede[p["id"]] = bool(tids & no_cesion_tag_ids)
     dicom_count = sum(1 for v in partner_has_dicom.values() if v)
     print(f"  Partners with DICOM tag: {dicom_count}")
+    print(f"  Partners que NO permiten cesión de facturas: {sum(1 for v in partner_no_cede.values() if v)}")
 
     # ── 2. Get invoices last 3 months for these partners ──
     batch_size = 200
@@ -2788,6 +2801,7 @@ def extract_credit_risk(models, uid):
             "siniestro_count": cons_stats["siniestro_count"],
             "excepcion_count": cons_stats["excepcion_count"],
             "has_dicom": has_dicom,
+            "cede_facturas": not partner_no_cede.get(pid, False),
             "avg_margin_pct": avg_margin,
             "avg_price_rango": avg_price_rango,
             "pricelist": pricelist or "—",
@@ -2858,6 +2872,24 @@ def extract_credit_risk(models, uid):
         except Exception as e:
             print(f"  Credit risk notes skipped: {e}")
 
+    # ── Colateral disponible: cartera cedible vs no cedible ──
+    # Las filas del score_table vienen consolidadas por grupo empresarial, así que
+    # sumarlas directo duplicaría a los grupos: se cuenta una sola vez por grupo.
+    _visto, ced, no_ced, no_ced_n, no_ced_venta = set(), 0, 0, 0, 0
+    for e in score_table:
+        _p = e.get("_pid")
+        _key = pid_to_group.get(_p) or ("p%s" % _p)
+        if _key in _visto:
+            continue
+        _visto.add(_key)
+        if e.get("cede_facturas"):
+            ced += e.get("ar_balance", 0) or 0
+        else:
+            no_ced += e.get("ar_balance", 0) or 0
+            no_ced_venta += e.get("avg_monthly_venta", 0) or 0
+            no_ced_n += 1
+    print(f"  CxC cedible: ${ced:,.0f} | no cedible: ${no_ced:,.0f} ({no_ced_n} clientes)")
+
     for e in score_table:
         e["last_note"] = cr_note_by_pid.get(e.get("_pid"), "")
         e.pop("_pid", None)
@@ -2877,9 +2909,25 @@ def extract_credit_risk(models, uid):
             "total_siniestros": total_siniestros,
             "total_overdue_amount": round(total_overdue),
             "avg_utilizacion": avg_util,
+            # Colateral disponible: la cartera de los clientes que no permiten
+            # ceder facturas no sirve como garantía en factoring ni ante el banco.
+            "cxc_cedible": round(ced),
+            "cxc_no_cedible": round(no_ced),
+            "clientes_no_cedible": no_ced_n,
+            "venta_mes_no_cedible": round(no_ced_venta),
         },
     }
 
+
+
+# Nombres de tag en Odoo que marcan a un cliente que NO permite ceder facturas
+# (factoring o cesión en garantía). Se compara en minúsculas por substring; si
+# el tag real tiene otro nombre, el extract lista todos los tags encontrados.
+NO_CESION_TAG_PATTERNS = [
+    "no cede", "no cesion", "no cesión", "sin cesion", "sin cesión",
+    "no ceder", "prohibe cesion", "prohíbe cesión", "no factoring",
+    "no factorizable", "no factoriza",
+]
 
 # ==============================================================
 # PART 7: SLA DE ENTREGA
