@@ -2688,12 +2688,21 @@ def extract_credit_risk(models, uid):
         zona = safe_name(p.get("delivery_zone_id")) or "Sin zona"
         is_volume = is_volume_group  # usar flag consolidada del grupo
 
-        # Parse payment term days (e.g., "30 Days", "Plazo 30 días")
+        # Parse payment term days (e.g., "30 Days", "Plazo 30 días").
+        # Prepago/contado/inmediato = plazo 0 (antes caían al default 30 y las columnas
+        # Plazo/Atraso mentían — reporte Pauline 20-ago-2026). Para el SCORE de morosidad
+        # se mantiene base 30 (pt_days_score): con denominador ~1 el mora_ratio explota
+        # y un prepago que paga a 2 días marcaría 40/40 igual que uno a 294 días.
         pt_days = 30  # default
+        pt_days_score = 30
         if payment_term:
-            pt_match = re.search(r'(\d+)', payment_term)
-            if pt_match:
-                pt_days = int(pt_match.group(1))
+            if re.search(r'prepago|contado|inmediat', payment_term, re.I):
+                pt_days = 0
+            else:
+                pt_match = re.search(r'(\d+)', payment_term)
+                if pt_match:
+                    pt_days = int(pt_match.group(1))
+                    pt_days_score = pt_days
 
         # Tipo de venta (para calculadora excepción): Volumen si is_volume,
         # Contado si plazo ≤1d o término menciona "prepago", Crédito en otro caso
@@ -2730,7 +2739,7 @@ def extract_credit_risk(models, uid):
 
         # ── RISK SCORE (0-100, higher = worse) ──
         # Component 1: Morosidad (0-40 pts)
-        mora_ratio = avg_payment_days / max(pt_days, 1)
+        mora_ratio = avg_payment_days / max(pt_days_score, 1)
         score_mora = min(40, round(mora_ratio * 20))  # ratio 2.0 → 40pts
 
         # Component 2: Utilización crédito (0-25 pts)
