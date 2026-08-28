@@ -137,6 +137,8 @@ _CANONICAL_VENDORS = [
     ({"cristian", "jiroz"}, "Cristian Jiroz"),
     ({"diego", "varas"}, "Diego Varas"),
     ({"abraham", "urrutia"}, "Abraham Urrutia"),
+    ({"ernesto", "parot"}, "Ernesto Parot"),
+    ({"juan", "naour"}, "Juan Naour"),
 ]
 
 def canonical_vendedor(name):
@@ -3558,7 +3560,7 @@ def main():
             "sebastian toro", "joaquin muñoz",  # cuentas .ext (nombre corto, no canonicaliza al largo)
             "carolina avilés", "marcela márquez", "raúl bisquertt", "rodrigo retamal",
             "manuel lópez", "nicolás gonzalez", "cristian jiroz", "diego varas",
-            "abraham urrutia",
+            "abraham urrutia", "ernesto parot", "juan naour",
         ]
 
         # Get all invoices in the window (candidates for first invoice)
