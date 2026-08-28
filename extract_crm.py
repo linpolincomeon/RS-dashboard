@@ -2702,6 +2702,9 @@ def extract_credit_risk(models, uid):
                 pt_match = re.search(r'(\d+)', payment_term)
                 if pt_match:
                     pt_days = int(pt_match.group(1))
+                    # "2 Meses" → 60d, no 2d (término definido en Odoo, sin uso a la fecha)
+                    if re.search(r'mes', payment_term, re.I):
+                        pt_days *= 30
                     pt_days_score = pt_days
 
         # Tipo de venta (para calculadora excepción): Volumen si is_volume,
