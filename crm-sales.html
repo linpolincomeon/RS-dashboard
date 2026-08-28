@@ -214,6 +214,9 @@ tr:hover td{background:#fafaf8}
       <!-- Transición a Fidelización (clientes nuevos con 6+ meses, se traspasan a CS) -->
       <div class="sec"><div class="sec-h"><h2>🔄 Transición a Fidelización</h2><span style="font-size:12px;color:var(--dim)">Clientes con 6+ meses (180 días) desde primera compra</span></div>
         <div class="sec-b" style="padding:0;overflow-x:auto" id="csGraduatingContainer"></div></div>
+
+      <!-- Estacionales con temporada próxima (≤2 meses): ir a capturar AHORA -->
+      <div id="fidEstacionalesContainer"></div>
     </div>
 
     <!-- ═══ TAB: CS ═══ -->
@@ -1599,6 +1602,7 @@ function renderFidelizacion() {
   renderRecuperables('recuperablesContainer', false, '🔁 Recuperables ahora — asignables',
     'Solo perdidos / sin lead: oportunidades para asignar a ejecutivos en el remate. Los durmientes se gestionan desde Gestión Fidelización.');
   renderGraduating();
+  renderEstacionalesComercial();
 }
 
 // Recuperables ahora: clientes con ca\u00edda de facturaci\u00f3n 2025\u21922026 (\u2265500 L/mes 2025, cero YTD o ca\u00edda >70%).
@@ -2343,12 +2347,21 @@ function renderPipeline() {
 // ═══════════════════════════════════════
 // RECOVERY TAB — Quick Wins (clientes 2025 caídos en 2026)
 // ═══════════════════════════════════════
+// Meses hasta el inicio de temporada (0 = este mes; maneja el cruce dic→ene).
+// Split de estacionales: temporada PRÓXIMA (≤2 meses) → tab comercial, ir a capturar;
+// temporada lejana → tab fidelización, esperar/agendar recordatorio.
+function seasonDist(c) {
+  const m = c.season_start_month;
+  if (!m) return 99;
+  return (m - (new Date().getMonth() + 1) + 12) % 12;
+}
+
 function renderEstacionalesCS(show) {
   const cont = document.getElementById('csEstacionalesContainer');
   if (!cont) return;
   cont.style.display = show ? 'block' : 'none';
   if (!show) return;
-  const sea = (D.recovery && D.recovery.seasonal) || [];
+  const sea = ((D.recovery && D.recovery.seasonal) || []).filter(c => seasonDist(c) > 2);
   const sum = (D.recovery && D.recovery.summary) || {};
   const totalLpmSea = sea.reduce((s, c) => s + (c.lpm_2025 || 0), 0);
 
@@ -2357,8 +2370,8 @@ function renderEstacionalesCS(show) {
     + ' \u00b7 ' + totalLpmSea.toLocaleString('es-CL') + ' L/mes hist\u00f3ricos</span></div>'
     + '<div class="sec-b" style="padding:0;overflow-x:auto">'
     + '<div style="padding:12px 16px;border-left:3px solid #d97706;font-size:12px;color:var(--dim);line-height:1.6">'
-    + 'Compraron solo en ciertos meses de 2025 que a\u00fan no llegan en 2026. No perseguir todav\u00eda \u2014 '
-    + 'agendar recordatorio para el mes de inicio de temporada.</div>';
+    + 'Compraron solo en ciertos meses de 2025 que a\u00fan no llegan en 2026 y su temporada est\u00e1 LEJOS (>2 meses). '
+    + 'No perseguir todav\u00eda \u2014 agendar recordatorio. Los de temporada pr\u00f3xima est\u00e1n en Gesti\u00f3n Comercial Recuperaci\u00f3n.</div>';
 
   if (sea.length === 0) {
     h += '<div class="nodata">No se detectaron clientes estacionales</div>';
@@ -2374,6 +2387,50 @@ function renderEstacionalesCS(show) {
         + '<td style="text-align:right">' + fL(c.lpm_2025 || 0) + '</td>'
         + '<td style="font-size:11px;color:var(--dim)">' + H(patron) + '</td>'
         + '<td>' + startLbl + '</td><td>' + tipo + '</td></tr>';
+    });
+    h += '</tbody></table>';
+  }
+  h += '</div></div>';
+  cont.innerHTML = h;
+}
+
+// Estacionales con temporada PRÓXIMA (parte este mes, el próximo o el subsiguiente):
+// oportunidades para que los ejecutivos vayan a capturar antes de que compren en otro lado.
+function renderEstacionalesComercial() {
+  const cont = document.getElementById('fidEstacionalesContainer');
+  if (!cont) return;
+  const sea = ((D.recovery && D.recovery.seasonal) || []).filter(c => seasonDist(c) <= 2)
+    .sort((a, b) => seasonDist(a) - seasonDist(b) || (b.lpm_2025 || 0) - (a.lpm_2025 || 0));
+  const totalLpm = sea.reduce((s, c) => s + (c.lpm_2025 || 0), 0);
+
+  let h = '<div class="sec"><div class="sec-h"><h2>\u{1F343} Estacionales — temporada por partir</h2>'
+    + '<span style="font-size:12px;color:var(--dim)">' + sea.length + ' clientes · '
+    + totalLpm.toLocaleString('es-CL') + ' L/mes históricos en juego</span></div>'
+    + '<div class="sec-b" style="padding:0;overflow-x:auto">'
+    + '<div style="padding:12px 16px;border-left:3px solid var(--green);font-size:12px;color:var(--dim);line-height:1.6">'
+    + 'Su temporada 2025 parte en ≤2 meses: ir a capturarlos AHORA, antes de que compren en otro lado. '
+    + 'Los sin ejecutivo son candidatos al remate; los asignados, para empujar en el comité.</div>';
+
+  if (sea.length === 0) {
+    h += '<div class="nodata">Sin estacionales con temporada próxima</div>';
+  } else {
+    h += '<table><thead><tr><th>Cliente</th><th>Zona</th><th style="text-align:right">L 2025</th>'
+      + '<th style="text-align:right">L/mes</th><th>Patrón mensual 2025</th><th>Empieza</th><th>Ejecutivo CRM</th><th>Tipo</th></tr></thead><tbody>';
+    sea.forEach(c => {
+      const tipo = c.is_volume ? '<span class="tag tag-blue">Volumen</span>' : '<span class="tag tag-g">Retail</span>';
+      const patron = (c.months_pattern || []).join(' · ');
+      const d = seasonDist(c);
+      const cuando = d === 0 ? 'este mes' : d === 1 ? 'próximo mes' : 'en 2 meses';
+      const startLbl = c.season_start_label
+        ? '<span class="tag tag-g">' + H(c.season_start_label) + ' · ' + cuando + '</span>' : '—';
+      const ejec = c.crm_exec
+        ? H(c.crm_exec)
+        : '<span class="tag tag-y">Sin asignar · al remate</span>';
+      h += '<tr><td class="bold">' + H(c.name) + '</td><td>' + H(c.zone || '—') + '</td>'
+        + '<td style="text-align:right">' + fL(c.litros_2025 || 0) + '</td>'
+        + '<td style="text-align:right">' + fL(c.lpm_2025 || 0) + '</td>'
+        + '<td style="font-size:11px;color:var(--dim)">' + H(patron) + '</td>'
+        + '<td>' + startLbl + '</td><td style="font-size:12px">' + ejec + '</td><td>' + tipo + '</td></tr>';
     });
     h += '</tbody></table>';
   }
