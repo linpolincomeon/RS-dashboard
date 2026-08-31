@@ -2232,8 +2232,12 @@ def extract_recovery_clients(models, uid):
         litros_2025_total = litros_partner_2025[pid]
         litros_2026_total = litros_partner_2026.get(pid, 0)
 
-        # Patrón mensual 2025: meses en que compró
-        months_active_2025 = sorted(litros_partner_month_2025[pid].keys())
+        # Patrón mensual 2025: meses en que compró de verdad (materialidad ≥ max(300 L, 5%
+        # del año) — sin esto una gotera de 44 L cuenta como "mes activo" y un estacional
+        # oct–mar con goteras parece cliente de 8 meses; caso TERRANDES, Pauline 28-ago).
+        _mat_floor = max(300, 0.05 * litros_2025_total)
+        months_active_2025 = sorted(m for m, q in litros_partner_month_2025[pid].items()
+                                    if q >= _mat_floor)
         months_count_2025 = len(months_active_2025)
 
         # Caída % vs período comparable: 2025 mismos meses transcurridos vs 2026 YTD
@@ -2271,8 +2275,12 @@ def extract_recovery_clients(models, uid):
                     season_start_month = min(months_active_2025)  # próximo año
 
         # ── Filtro de inclusión ──
-        # Sólo incluir si: no activo en 2026, O caída > 70% vs período comparable
-        if pid in active_2026 and caida_pct < 70:
+        # Sólo incluir si: no activo en 2026, O caída > 70% vs período comparable.
+        # EXCEPTO estacionales: una temporada que cruza el año (oct–mar) hace que el
+        # YTD 2026 parezca "creciendo" vs los meses valle de 2025 y los ocultaba
+        # (caso TERRANDES: compró ene–mar 2026 y su temporada nueva parte en oct).
+        # Los compradores de los últimos 90 días ya quedaron fuera arriba (7b).
+        if pid in active_2026 and caida_pct < 70 and not is_seasonal:
             continue  # Sigue comprando bien, no es recuperación
 
         note = last_note.get(pid, {})
