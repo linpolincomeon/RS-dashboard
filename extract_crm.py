@@ -2473,6 +2473,65 @@ def extract_credit_risk(models, uid):
     partner_map = {p["id"]: p for p in credit_partners}
     partner_ids = list(partner_map.keys())
 
+    # ── 1a-ter. Factoring por cliente (hallazgo Pauline 28-ago-2026) ──
+    # TomEnergy factoriza facturas: el pago llega de Fingo/Go Capital/Factoring
+    # Security al ceder la factura, así que avg_payment_days mide AL FACTOR, no al
+    # cliente ("paga en 2d" siendo crédito 30d; 54 de 61 'prepagos misteriosos' de
+    # la auditoría eran esto). Se marca is_factoring (≥50% de pagos vía factor,
+    # últimos 6m, siguiendo la conciliación) para que el dashboard lo muestre y la
+    # calculadora use el plazo pactado en vez de los días del factor.
+    print("  Detectando factoring (conciliaciones últimos 6 meses)...")
+    _fact_cut = fmt(today - timedelta(days=180))
+    _fact_invs = []
+    for i in range(0, len(partner_ids), 200):
+        _fact_invs += sr(models, uid, "account.move", [
+            ["partner_id", "in", partner_ids[i:i+200]],
+            ["move_type", "=", "out_invoice"], ["state", "=", "posted"],
+            ["invoice_date", ">=", _fact_cut],
+            ["payment_state", "in", ["paid", "in_payment", "partial"]],
+        ], ["id", "partner_id"], limit=20000)
+    _inv_partner = {v["id"]: safe_id(v.get("partner_id")) for v in _fact_invs}
+    _inv_ids = list(_inv_partner)
+    _recv = []
+    for i in range(0, len(_inv_ids), 200):
+        _recv += sr(models, uid, "account.move.line", [
+            ["move_id", "in", _inv_ids[i:i+200]],
+            ["account_id.account_type", "=", "asset_receivable"],
+        ], ["move_id", "matched_credit_ids"], limit=20000)
+    _pr_ids = sorted({x for l in _recv for x in (l.get("matched_credit_ids") or [])})
+    _pr_credit = {}
+    for i in range(0, len(_pr_ids), 500):
+        for _pr in sr(models, uid, "account.partial.reconcile",
+                      [["id", "in", _pr_ids[i:i+500]]], ["id", "credit_move_id"], limit=1000):
+            _pr_credit[_pr["id"]] = safe_id(_pr.get("credit_move_id"))
+    _cl_ids = sorted({v for v in _pr_credit.values() if v})
+    # Ningún banco propio es Security (bancos: Chile/Itaú/Estado/Caja/BCI/Santander/
+    # De Crédito) — 'security' en el pago es el factor, no cuenta corriente propia.
+    _FACT_RE = re.compile(r"fingo|factoring|go capital|security|otro banco via spav", re.I)
+    _line_fact = {}
+    for i in range(0, len(_cl_ids), 500):
+        for _cl in sr(models, uid, "account.move.line", [["id", "in", _cl_ids[i:i+500]]],
+                      ["id", "name", "ref", "partner_id", "journal_id"], limit=1000):
+            _txt = " ".join([str(_cl.get("name") or ""), str(_cl.get("ref") or ""),
+                             safe_name(_cl.get("partner_id")) or "",
+                             safe_name(_cl.get("journal_id")) or ""])
+            _line_fact[_cl["id"]] = bool(_FACT_RE.search(_txt))
+    _fact_stats = {}  # pid → [pagos_factor, pagos_total]
+    for l in _recv:
+        _fpid = _inv_partner.get(safe_id(l.get("move_id")))
+        if not _fpid:
+            continue
+        for _prid in (l.get("matched_credit_ids") or []):
+            _clid = _pr_credit.get(_prid)
+            if not _clid:
+                continue
+            _st = _fact_stats.setdefault(_fpid, [0, 0])
+            _st[1] += 1
+            if _line_fact.get(_clid):
+                _st[0] += 1
+    factoring_pct_map = {p_: round(f_ / t_ * 100) for p_, (f_, t_) in _fact_stats.items() if t_}
+    print(f"  Factoring: {sum(1 for v in factoring_pct_map.values() if v >= 50)} clientes con ≥50% de pagos vía factor")
+
     # ── Build group map: group_id → list of partner_ids ──
     # Partners in the same group share risk exposure (holding structure)
     group_to_pids = {}  # group_id → [pid, ...]
@@ -2803,6 +2862,8 @@ def extract_credit_risk(models, uid):
             "linea_ratio": linea_ratio,
             "avg_payment_days": avg_payment_days,
             "plazo_pago_dias": pt_days,
+            "factoring_pct": factoring_pct_map.get(pid, 0),
+            "is_factoring": factoring_pct_map.get(pid, 0) >= 50,
             "plazo_pago_label": payment_term or "—",
             "mora_ratio": round(mora_ratio, 2),
             "overdue_count": cons_stats["overdue_count"],

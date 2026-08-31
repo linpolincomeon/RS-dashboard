@@ -981,6 +981,9 @@ function renderRiesgo(){
     //   avg_payment_days 8-60 → Crédito
     function inferTipoVenta(c){
         if(c.is_volume_client||c.tipo_venta==='Volumen') return 'Volumen';
+        // Factorizado: su avg mide al FACTOR (paga al ceder la factura), no al cliente —
+        // usar el tipo según término pactado, nunca "Contado por pagar al tiro"
+        if(c.is_factoring) return c.tipo_venta==='Contado'?'Contado':'Crédito';
         const d=c.avg_payment_days;
         if(d==null) return 'Crédito';  // fallback seguro
         return d<=7?'Contado':'Crédito';
@@ -1076,7 +1079,9 @@ function renderRiesgo(){
             const zonaCli=c.zona||'—';
             const tipoCli=inferTipoVenta(c);
             // Días reales: usar avg_payment_days exactamente (incluso si es 0). Solo fallback si null/undefined.
-            const diasReal=(c.avg_payment_days!=null)?c.avg_payment_days:(c.plazo_pago_dias!=null?c.plazo_pago_dias:30);
+            // Factorizado: días reales miden al factor → la calculadora usa el plazo PACTADO
+            const diasReal=c.is_factoring?(c.plazo_pago_dias!=null?c.plazo_pago_dias:30)
+                :(c.avg_payment_days!=null)?c.avg_payment_days:(c.plazo_pago_dias!=null?c.plazo_pago_dias:30);
             const calc=calcExcepcion(zonaCli,tipoCli,diasReal);
             let excepHtml='<span style="color:var(--text3);font-size:11px">—</span>';
             if(calc){
@@ -1106,7 +1111,7 @@ function renderRiesgo(){
                     sugHtml=`<span style="color:var(--red);font-weight:700">+${c._adj}</span>`;
                 }
             }
-            h+=`<tr><td class="hi">${c.name}</td><td style="font-size:11px;color:var(--text2)">${zonaShort}</td><td style="font-size:11px;color:var(--text2)">${c.vendedor||'—'}</td><td>${scoreBadge(c.risk_score,lv)}</td><td style="font-size:11px;white-space:nowrap">${actLabel}</td><td style="text-align:center">${excepHtml}</td><td class="r">${c.plazo_pago_dias===0?(c.plazo_pago_label||'0d'):c.plazo_pago_dias+'d'}</td><td class="r ${diffCls}">${c.avg_payment_days}d</td><td class="r ${diffCls}">${c._diff>0?'+':''}${c._diff}d</td>`;
+            h+=`<tr><td class="hi">${c.name}</td><td style="font-size:11px;color:var(--text2)">${zonaShort}</td><td style="font-size:11px;color:var(--text2)">${c.vendedor||'—'}</td><td>${scoreBadge(c.risk_score,lv)}</td><td style="font-size:11px;white-space:nowrap">${actLabel}</td><td style="text-align:center">${excepHtml}</td><td class="r">${c.plazo_pago_dias===0?(c.plazo_pago_label||'0d'):c.plazo_pago_dias+'d'}</td><td class="r ${c.is_factoring?'':diffCls}">${c.is_factoring?`<span title="Cliente factorizado (${c.factoring_pct}% de pagos vía Fingo/Go Capital/Security): la fecha de pago es del FACTOR, no del cliente" style="display:inline-block;background:#e8f0fc;color:#1a5fb4;font-weight:700;padding:2px 7px;border-radius:6px;font-size:10px;white-space:nowrap">🏦 FACTOR ${c.avg_payment_days}d</span>`:c.avg_payment_days+'d'}</td><td class="r ${c.is_factoring?'':diffCls}">${c.is_factoring?'—':(c._diff>0?'+':'')+c._diff+'d'}</td>`;
             h+=`<td class="r" style="color:${c._adjMora?'var(--red)':'var(--text3)'}">${c._adjMora||'—'}</td>`;
             h+=`<td class="r" style="color:${c._adjMargen?'var(--amber)':'var(--text3)'}">${c._adjMargen||'—'}</td>`;
             h+=`<td class="r" style="color:${c._adjFlag?'var(--red)':'var(--text3)'}">${c._adjFlag||'—'}</td>`;
