@@ -61,6 +61,10 @@
   .note { color: var(--muted); font-size: 12px; margin-top: 10px; line-height: 1.5; }
   .generated { color: var(--muted); font-size: 12px; margin-top: 32px; text-align: center; }
   select { font-family: inherit; font-size: 14px; padding: 6px 10px; border: 1px solid var(--border); border-radius: 8px; background: #fff; }
+  [hidden] { display: none !important; }
+  .tabs { display: flex; gap: 8px; margin-bottom: 20px; }
+  .tab { font-family: inherit; font-size: 14px; padding: 8px 18px; border: 1px solid var(--border); border-radius: 20px; background: #fff; cursor: pointer; color: var(--muted); }
+  .tab.active { background: var(--accent); border-color: var(--accent); color: #fff; font-weight: 700; }
 </style>
 </head>
 <body>
@@ -68,22 +72,27 @@
 <h1>🚛 Costos por Camión 2026</h1>
 <div class="subtitle">Gasto real (Odoo, plan analítico Camiones) vs Presupuesto Operaciones 2026 aprobado por directorio · <span id="rango"></span></div>
 
-<div class="kpi-grid" id="kpis"></div>
+<div class="tabs">
+  <button class="tab active" data-tab="costos" onclick="switchTab('costos')">💰 Costos</button>
+  <button class="tab" data-tab="mant" onclick="switchTab('mant')">🔧 Mantención</button>
+</div>
 
-<div class="card">
+<div class="kpi-grid vw-costos" id="kpis"></div>
+
+<div class="card vw-costos">
   <h2>Flota: real vs presupuesto por mes</h2>
   <div class="chart-box"><canvas id="chartFlota"></canvas></div>
   <div class="scroll"><table id="tablaFlota"></table></div>
   <div class="note">Presupuesto camiones = fijos (seguros, sitios, TAG, petróleo a $7/litro plan) + variable por camión. El Plan Directorio (línea "Transporte" del Plan 2026) incluye además las camionetas. Meses en curso comparan contra presupuesto completo del mes.</div>
 </div>
 
-<div class="card">
+<div class="card vw-costos">
   <h2>Cumplimiento por camión — presupuesto variable (mantención, neumáticos, permisos…)</h2>
   <div class="note" style="margin:0 0 12px">Compara el gasto asignado a cada camión (excluyendo petróleo, TAG/peajes, seguros y arriendo de sitios, que se presupuestan a nivel flota) contra su presupuesto variable de la planilla. Acumulado enero–<span class="mesActual"></span>.</div>
   <div class="truck-grid" id="trucks"></div>
 </div>
 
-<div class="card">
+<div class="card vw-costos">
   <h2>👷 Productividad de choferes — anatomía de la jornada</h2>
   <div class="note" style="margin:0 0 12px">Desde la planilla de bodegas que llenan los choferes (<code>Bodegas_por_Camion_v2</code>), no desde Odoo. La jornada de cada camión se parte en tres tramos: <b>arranque</b> (INICIO → 1ª venta), <b>activo</b> (1ª → última venta) y <b>cola</b> (última venta → CIERRE). Arranque y cola son horas con el camión y el chofer en marcha sin facturar. Valores = mediana del día típico en la ventana <span id="chofRango"></span>.</div>
   <div class="scroll"><table id="tablaChoferes"></table></div>
@@ -94,21 +103,21 @@
   <div id="chofNota" class="note"></div>
 </div>
 
-<div class="card">
-  <h2>🔧 Plan de mantención preventiva — cuándo entrar vs cuándo entramos</h2>
-  <div class="note" style="margin:0 0 12px">Cada ítem con su frecuencia; <b>últ</b> = última vez detectada en las glosas de Odoo (desde dic-2025) y <b>próx</b> = última + frecuencia. Rojo = vencido · naranjo = vence dentro de 30 días · verde = al día · gris = sin registro (agendar y/o anotar la fecha conocida en <code>plan-mantencion.json</code>). El plan es editable en ese mismo JSON.</div>
+<div class="card vw-mant" hidden>
+  <h2>🔧 Próximas entradas al taller — plan vs real</h2>
+  <div class="note" style="margin:0 0 12px">Solo ítems con historia: <b>última</b> = última vez detectada en las glosas de Odoo (desde dic-2025), <b>próxima</b> = última + frecuencia del plan. Vencidos arriba. Los ítems sin registro van colapsados al final — se activan solos con la primera factura con glosa clara, o anotando la fecha conocida en <code>plan-mantencion.json</code> (ahí también se editan ítems y frecuencias).</div>
   <div class="scroll" id="planMant"></div>
   <div id="planMantNota" class="note"></div>
 </div>
 
-<div class="card">
+<div class="card vw-mant" hidden>
   <h2>📅 Gantt: mantenciones y vencimientos por camión</h2>
   <div class="note" style="margin:0 0 12px">Eventos de la hoja Vencimientos de "Proyectos y Control". Rojo = vencido u ocurre este mes. Se actualiza regenerando <code>presupuesto-camiones.json</code>.</div>
   <div class="scroll" id="gantt"></div>
   <div id="ganttLeyenda" class="note"></div>
 </div>
 
-<div class="card">
+<div class="card vw-costos">
   <h2>⚠ Gasto sin asignar a camión</h2>
   <div class="note" style="margin:0 0 12px">Asientos en cuentas de flota SIN distribución analítica: están en el total flota pero no aparecen en ningún camión. Reglas automáticas activas desde 17-ago (HDI/GPS → 1/8 entre camiones y camionetas · peajes urbanos RM → Camionetas · descuentos COPEC → proporcional): lo que queda aquí son facturas de taller sin patente — asignarlas en Odoo (Distribución Analítica en la línea de la factura).</div>
   <div class="scroll"><table id="tablaSinAsignar"></table></div>
@@ -384,30 +393,54 @@ function renderPlanMantencion(PLAN, D) {
   };
   const fmtF = iso => iso ? iso.slice(8, 10) + '-' + iso.slice(5, 7) + '-' + iso.slice(2, 4) : '—';
 
-  let vencidos = 0, sinReg = 0;
-  let h = `<table><tr><th>Ítem</th><th>Frecuencia</th>${cams.map(c => `<th style="text-align:center">${c.slice(0, 4)}</th>`).join('')}</tr>`;
+  // lista plana: solo ítems con historia; el resto va colapsado por camión
+  const filas = [];
+  const sinReg = {};
   for (const it of PLAN.items) {
-    const freq = `${it.freq_meses} m${it.freq_km ? ' / ' + CLP.format(it.freq_km) + ' km' : ''}`;
-    h += `<tr><td${it.nota ? ` title="${it.nota}"` : ''}><b>${it.nombre}</b>${it.nota ? ' <span style="color:var(--muted)">ⓘ</span>' : ''}</td><td style="color:var(--muted)">cada ${freq}</td>`;
     for (const cam of cams) {
       const u = ult[it.id + '|' + cam];
       if (!u) {
-        sinReg++;
-        h += `<td style="text-align:center;background:#f0efec;color:var(--muted)" title="sin registro en Odoo desde dic-2025">agendar</td>`;
+        (sinReg[cam] = sinReg[cam] || []).push(it.nombre);
         continue;
       }
       const prox = addM(u.d, it.freq_meses);
-      const cls = prox < hoy ? 'bad' : (prox <= en30d ? 'warn' : 'ok');
-      if (prox < hoy) vencidos++;
-      h += `<td style="text-align:center" title="${u.glosa}${u.monto ? ' · ' + fmt(u.monto) : ''}">
-        <span style="color:var(--muted);font-size:11px">últ ${fmtF(u.d)}</span><br>
-        <b class="${cls}">próx ${fmtF(prox)}</b></td>`;
+      filas.push({ prox, cam, it, u });
     }
-    h += '</tr>';
+  }
+  filas.sort((a, b) => a.prox.localeCompare(b.prox));
+  const vencidos = filas.filter(f => f.prox < hoy).length;
+
+  const freqTxt = it => `cada ${it.freq_meses} m${it.freq_km ? ' / ' + CLP.format(it.freq_km) + ' km' : ''}`;
+  let h = `<table><tr><th>Estado</th><th>Próxima</th><th>Camión</th><th>Ítem</th><th>Frecuencia</th><th>Última vez</th><th>Detalle última</th></tr>`;
+  for (const f of filas) {
+    const estado = f.prox < hoy
+      ? '<b class="bad">🔴 VENCIDO</b>'
+      : (f.prox <= en30d ? '<b class="warn">🟠 este mes</b>' : '<span class="ok">🟢 al día</span>');
+    h += `<tr>
+      <td>${estado}</td>
+      <td><b class="${f.prox < hoy ? 'bad' : (f.prox <= en30d ? 'warn' : 'ok')}">${fmtF(f.prox)}</b></td>
+      <td><b>${f.cam}</b></td>
+      <td${f.it.nota ? ` title="${f.it.nota}"` : ''}>${f.it.nombre}</td>
+      <td style="color:var(--muted)">${freqTxt(f.it)}</td>
+      <td>${fmtF(f.u.d)}</td>
+      <td style="white-space:normal;color:var(--muted)">${f.u.glosa.slice(0, 55)}${f.u.monto ? ' · ' + fmt(f.u.monto) : ''}</td></tr>`;
   }
   h += '</table>';
+  const totSinReg = Object.values(sinReg).reduce((s, v) => s + v.length, 0);
+  h += `<details style="margin-top:12px"><summary>Sin registro todavía (${totSinReg}) — la primera factura con glosa clara los activa</summary>
+    <table style="margin-top:8px">${cams.map(c =>
+      `<tr><td style="vertical-align:top"><b>${c}</b></td><td style="white-space:normal;color:var(--muted)">${(sinReg[c] || []).join(' · ') || '—'}</td></tr>`).join('')}
+    </table></details>`;
   $('planMant').innerHTML = h;
-  $('planMantNota').innerHTML = `<b class="bad">${vencidos} vencidos</b> · ${sinReg} sin registro. La detección es por palabra clave en la glosa: si un trabajo se facturó con glosa genérica ("Del Giro") no aparece — anotar la fecha en <code>ultima_manual</code> del JSON.`;
+  $('planMantNota').innerHTML = filas.length
+    ? `<b class="bad">${vencidos} vencidos</b> de ${filas.length} ítems con historia. Detección por palabra clave en la glosa: trabajos facturados con glosa genérica ("Del Giro") no aparecen — anotar la fecha en <code>ultima_manual</code> del JSON.`
+    : 'Sin datos del plan.';
+}
+
+function switchTab(t) {
+  document.querySelectorAll('.vw-costos').forEach(e => e.hidden = t !== 'costos');
+  document.querySelectorAll('.vw-mant').forEach(e => e.hidden = t !== 'mant');
+  document.querySelectorAll('.tab').forEach(b => b.classList.toggle('active', b.dataset.tab === t));
 }
 
 function barra(c) {
