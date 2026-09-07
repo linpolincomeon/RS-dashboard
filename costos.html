@@ -95,6 +95,13 @@
 </div>
 
 <div class="card">
+  <h2>🔧 Plan de mantención preventiva — cuándo entrar vs cuándo entramos</h2>
+  <div class="note" style="margin:0 0 12px">Cada ítem con su frecuencia; <b>últ</b> = última vez detectada en las glosas de Odoo (desde dic-2025) y <b>próx</b> = última + frecuencia. Rojo = vencido · naranjo = vence dentro de 30 días · verde = al día · gris = sin registro (agendar y/o anotar la fecha conocida en <code>plan-mantencion.json</code>). El plan es editable en ese mismo JSON.</div>
+  <div class="scroll" id="planMant"></div>
+  <div id="planMantNota" class="note"></div>
+</div>
+
+<div class="card">
   <h2>📅 Gantt: mantenciones y vencimientos por camión</h2>
   <div class="note" style="margin:0 0 12px">Eventos de la hoja Vencimientos de "Proyectos y Control". Rojo = vencido u ocurre este mes. Se actualiza regenerando <code>presupuesto-camiones.json</code>.</div>
   <div class="scroll" id="gantt"></div>
@@ -120,14 +127,16 @@ const sum = a => a.reduce((s, x) => s + x, 0);
 function cumplClass(pct) { return pct <= 100 ? 'ok' : (pct <= 115 ? 'warn' : 'bad'); }
 
 async function load() {
-  const [dataRes, presRes, chofRes] = await Promise.all([
+  const [dataRes, presRes, chofRes, planRes] = await Promise.all([
     fetch('costos-data.json?ts=' + Date.now()),
     fetch('presupuesto-camiones.json?ts=' + Date.now()),
     fetch('choferes-data.json?ts=' + Date.now()),
+    fetch('plan-mantencion.json?ts=' + Date.now()),
   ]);
   const D = await dataRes.json();
   const P = await presRes.json();
   if (chofRes.ok) renderChoferes(await chofRes.json());
+  if (planRes.ok) renderPlanMantencion(await planRes.json(), D);
 
   // último mes con gasto real
   const totalGLMes = D.meses.map((_, i) => sum(Object.values(D.flota_gl).map(v => v[i])));
@@ -341,6 +350,65 @@ const T0 = 6 * 60, T1 = 21 * 60;  // eje de la barra: 06:00 a 21:00
 const hhmm = m => String(Math.floor(m / 60)).padStart(2, '0') + ':' + String(Math.round(m % 60)).padStart(2, '0');
 const dur = m => m >= 60 ? (m / 60).toFixed(1) + ' h' : Math.round(m) + ' min';
 const pos = m => Math.max(0, Math.min(100, (m - T0) / (T1 - T0) * 100));
+
+function renderPlanMantencion(PLAN, D) {
+  const norm = s => (s || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
+  const hoy = new Date().toISOString().slice(0, 10);
+  const en30d = new Date(Date.now() + 30 * 864e5).toISOString().slice(0, 10);
+  const cams = Object.keys(D.camiones).filter(c => c !== 'CAMIONETAS').sort();
+
+  // última ejecución real por (ítem, camión) desde las glosas
+  const ult = {};
+  for (const m of D.movimientos) {
+    if (m.camion === 'CAMIONETAS' || m.monto <= 0) continue;
+    const g = norm(m.glosa);
+    for (const it of PLAN.items) {
+      if (!it.keywords.some(k => g.includes(k))) continue;
+      if ((it.excluir || []).some(k => g.includes(k))) continue;
+      const key = it.id + '|' + m.camion;
+      if (!ult[key] || m.d > ult[key].d) ult[key] = m;
+    }
+  }
+  // overrides manuales del JSON
+  for (const [cam, items] of Object.entries(PLAN.ultima_manual || {})) {
+    for (const [id, fecha] of Object.entries(items)) {
+      const key = id + '|' + cam;
+      if (!ult[key] || fecha > ult[key].d) ult[key] = { d: fecha, glosa: 'fecha manual (plan-mantencion.json)', monto: 0 };
+    }
+  }
+
+  const addM = (iso, meses) => {
+    const d = new Date(iso + 'T12:00:00');
+    d.setMonth(d.getMonth() + meses);
+    return d.toISOString().slice(0, 10);
+  };
+  const fmtF = iso => iso ? iso.slice(8, 10) + '-' + iso.slice(5, 7) + '-' + iso.slice(2, 4) : '—';
+
+  let vencidos = 0, sinReg = 0;
+  let h = `<table><tr><th>Ítem</th><th>Frecuencia</th>${cams.map(c => `<th style="text-align:center">${c.slice(0, 4)}</th>`).join('')}</tr>`;
+  for (const it of PLAN.items) {
+    const freq = `${it.freq_meses} m${it.freq_km ? ' / ' + CLP.format(it.freq_km) + ' km' : ''}`;
+    h += `<tr><td${it.nota ? ` title="${it.nota}"` : ''}><b>${it.nombre}</b>${it.nota ? ' <span style="color:var(--muted)">ⓘ</span>' : ''}</td><td style="color:var(--muted)">cada ${freq}</td>`;
+    for (const cam of cams) {
+      const u = ult[it.id + '|' + cam];
+      if (!u) {
+        sinReg++;
+        h += `<td style="text-align:center;background:#f0efec;color:var(--muted)" title="sin registro en Odoo desde dic-2025">agendar</td>`;
+        continue;
+      }
+      const prox = addM(u.d, it.freq_meses);
+      const cls = prox < hoy ? 'bad' : (prox <= en30d ? 'warn' : 'ok');
+      if (prox < hoy) vencidos++;
+      h += `<td style="text-align:center" title="${u.glosa}${u.monto ? ' · ' + fmt(u.monto) : ''}">
+        <span style="color:var(--muted);font-size:11px">últ ${fmtF(u.d)}</span><br>
+        <b class="${cls}">próx ${fmtF(prox)}</b></td>`;
+    }
+    h += '</tr>';
+  }
+  h += '</table>';
+  $('planMant').innerHTML = h;
+  $('planMantNota').innerHTML = `<b class="bad">${vencidos} vencidos</b> · ${sinReg} sin registro. La detección es por palabra clave en la glosa: si un trabajo se facturó con glosa genérica ("Del Giro") no aparece — anotar la fecha en <code>ultima_manual</code> del JSON.`;
+}
 
 function barra(c) {
   const seg = (a, b, cls) => `<div class="${cls}" style="left:${pos(a)}%;width:${Math.max(pos(b) - pos(a), 0.4)}%"></div>`;

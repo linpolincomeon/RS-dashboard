@@ -130,26 +130,29 @@ def main():
             flota_gl[acc_code[l["account_id"][0]]][i] += l["balance"]
 
     # -- Analítica: gasto por camión × cuenta × mes + movimientos ----------
+    # movimientos parten en dic-2025 (inicio de la analítica) para que el plan
+    # de mantención detecte eventos previos al año; los agregados siguen 2026.
     al = sr(models, uid, "account.analytic.line",
             [["general_account_id", "in", list(acc_code)],
-             ["date", ">=", f"{YEAR}-01-01"], ["date", "<=", f"{YEAR}-12-31"]],
+             ["date", ">=", f"{YEAR - 1}-12-01"], ["date", "<=", f"{YEAR}-12-31"]],
             ["date", "amount", "name", "account_id", "general_account_id"],
             order="date asc")
     camiones = {}
     asignado = {c: [0.0] * 12 for c in CUENTAS_FLOTA}
     movimientos = []
     for l in al:
-        i = mes_idx(l["date"])
-        if i is None or not l["account_id"]:
+        if not l["account_id"]:
             continue
+        i = mes_idx(l["date"])
         patente = l["account_id"][1]
         codigo = acc_code[l["general_account_id"][0]]
         monto = -l["amount"]  # analítica de gasto viene negativa
         cat = categoria(codigo, l["name"] or "")
-        cam = camiones.setdefault(patente, {"por_categoria": {}, "total": [0.0] * 12})
-        cam["por_categoria"].setdefault(cat, [0.0] * 12)[i] += monto
-        cam["total"][i] += monto
-        asignado[codigo][i] += monto
+        if i is not None:
+            cam = camiones.setdefault(patente, {"por_categoria": {}, "total": [0.0] * 12})
+            cam["por_categoria"].setdefault(cat, [0.0] * 12)[i] += monto
+            cam["total"][i] += monto
+            asignado[codigo][i] += monto
         movimientos.append({
             "d": l["date"], "camion": patente, "cat": cat,
             "glosa": (l["name"] or "").replace("\n", " ").strip()[:80],

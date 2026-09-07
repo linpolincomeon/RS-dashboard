@@ -1,0 +1,18 @@
+{
+ "nota": "Plan de mantención preventiva por camión (manual, editable). freq_meses = cada cuántos meses corresponde; freq_km es referencial (con 3.000-6.700 km/mes los meses mandan). keywords/excluir: cómo se detecta el evento REAL en las glosas de Odoo (minúsculas, sin tildes). ultima_manual: fecha de última ejecución conocida cuando no hay registro en Odoo (ej. se hizo antes de dic-2025 o se pagó sin detalle); el dashboard usa la más reciente entre lo detectado y lo manual.",
+ "items": [
+  {"id": "meter", "nombre": "Calibración cuentalitros (Meter)", "freq_meses": 6, "keywords": ["calibracion", "cuenta litros", "cuentalitros"]},
+  {"id": "manguera", "nombre": "Manguera descarga — inspección/prueba presión", "freq_meses": 12, "keywords": ["manguera"], "excluir": ["agua", "compresor"], "nota": "recambio cada 24-36 meses"},
+  {"id": "pauta", "nombre": "Pauta motor (aceite + filtros + engrase)", "freq_meses": 4, "freq_km": 20000, "keywords": ["pauta", "kit filtros", "aceite motor", "rimula", "valvoline profleet", "mobil 15w40", "delvac"]},
+  {"id": "caja", "nombre": "Aceite caja de cambios", "freq_meses": 24, "freq_km": 60000, "keywords": ["aceite caja", "caja de cambio", "valvulina"]},
+  {"id": "diferencial", "nombre": "Aceite diferencial", "freq_meses": 24, "freq_km": 60000, "keywords": ["diferencial"]},
+  {"id": "secador", "nombre": "Secador de aire (filtro desecante)", "freq_meses": 12, "keywords": ["secador", "desecante"]},
+  {"id": "refrigerante", "nombre": "Refrigerante — cambio completo", "freq_meses": 24, "keywords": ["refrigerante", "anticongelante", "coolant"], "nota": "el goteo correctivo no cuenta como cambio completo, revisar glosa"},
+  {"id": "alineacion", "nombre": "Alineación", "freq_meses": 6, "freq_km": 25000, "keywords": ["alineacion"], "nota": "también al montar neumáticos nuevos"},
+  {"id": "frenos", "nombre": "Regulación frenos + medición balatas", "freq_meses": 4, "freq_km": 15000, "keywords": ["freno", "balata"]},
+  {"id": "baterias", "nombre": "Baterías — prueba de carga", "freq_meses": 6, "keywords": ["bateria"]},
+  {"id": "masas", "nombre": "Reengrase masas / rodamientos rueda", "freq_meses": 24, "freq_km": 50000, "keywords": ["rodamiento", "reengrase", "masa de rueda"]},
+  {"id": "embrague", "nombre": "Embrague — inspección juego/agarre", "freq_meses": 6, "keywords": ["embrague", "clutch"], "nota": "reemplazo dura 150-250.000 km; provisionar $1,2-1,8M"}
+ ],
+ "ultima_manual": {}
+}
