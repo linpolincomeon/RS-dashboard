@@ -1173,6 +1173,39 @@ function renderRiesgo(){
         });
         h+='</tbody></table></div>';
         h+='<div style="font-size:11px;color:var(--text3);margin:6px 2px 0">Etapas según la línea de tiempo 4.2 de la Política Comercial (sep-2026): 15d corte + DICOM · 60d siniestro/judicial · 180d castigo. Cobertura AVLA = min(deuda vencida, cobertura efectiva del RUT)'+(cob.avla_fecha?' · export AVLA del '+cob.avla_fecha:'')+'. Las facturas factorizadas (🏦) no se publican en DICOM: el derecho de cobro está cedido al factor.</div>';
+        // ── 🚨 Alerta DICOM: debiesen estar publicados y su ficha no tiene la etiqueta ──
+        // "Publicado" = la ficha Odoo tiene la etiqueta DICOM (has_dicom del score_table).
+        // Se excluyen los factorizados (derecho de cobro cedido, regla de oro 4.4).
+        // DICOM_MANUAL: casos que Pauline agrega a mano aunque su CxC en Odoo esté en 0
+        // (ej. facturas reversadas con deuda en disputa fuera de cuentas por cobrar).
+        const DICOM_MANUAL=[
+            {name:'EL PARRON SPA',rut:'77407571-2',nota:'Agregado manual (09-sep-2026): facturas may–jun 2026 por ~$86M quedaron reversadas en Odoo — deuda en disputa fuera de CxC'}
+        ];
+        const dicomMap={}; scoreData.forEach(c=>{dicomMap[c.name]=!!c.has_dicom});
+        const pendDicom=cob.clientes.filter(c=>c.dias>=15&&!factSet.has(c.name)&&!dicomMap[c.name]);
+        const yaPub=cob.clientes.filter(c=>c.dias>=15&&!factSet.has(c.name)&&dicomMap[c.name]).length;
+        const totalAlerta=pendDicom.length+DICOM_MANUAL.length;
+        if(totalAlerta){
+            h+='<div class="section-label" style="margin-top:22px;color:#a32d2d">🚨 Debiesen estar publicados en DICOM ('+totalAlerta+')</div>';
+            h+='<div class="table-scroll" style="max-height:380px;border:1px solid #f0c4c4;border-radius:8px"><table><thead><tr>';
+            h+='<th>Cliente</th><th class="r">RUT</th><th class="r">Deuda vencida</th><th class="r">Días mora</th><th style="text-align:center">Etapa</th><th>Nota</th></tr></thead><tbody>';
+            pendDicom.forEach(c=>{
+                const e=ETAPAS[c.etapa]||{label:c.etapa,cls:'s-medio'};
+                h+='<tr><td>'+c.name+'</td><td class="r" style="color:var(--text3)">'+(c.rut||'—')+'</td>';
+                h+='<td class="r" style="font-weight:600">'+fMon(c.monto)+'</td>';
+                h+='<td class="r" style="font-weight:700;color:var(--red)">'+c.dias+'d</td>';
+                h+='<td style="text-align:center"><span class="sbadge '+e.cls+'">'+e.label+'</span></td>';
+                h+='<td style="font-size:11px;color:var(--text2)">Sin etiqueta DICOM en la ficha — publicar tras aviso previo por correo</td></tr>';
+            });
+            DICOM_MANUAL.forEach(m=>{
+                h+='<tr><td>📌 '+m.name+'</td><td class="r" style="color:var(--text3)">'+(m.rut||'—')+'</td>';
+                h+='<td class="r" style="color:var(--text3)">—</td><td class="r" style="color:var(--text3)">—</td>';
+                h+='<td style="text-align:center"><span class="sbadge s-critico">Manual</span></td>';
+                h+='<td style="font-size:11px;color:var(--text2)">'+m.nota+'</td></tr>';
+            });
+            h+='</tbody></table></div>';
+            h+='<div style="font-size:11px;color:var(--text3);margin:6px 2px 0">Criterio: mora ≥15 días (línea de tiempo 4.2), sin etiqueta DICOM en la ficha de Odoo, excluyendo factorizados. Ya publicados según etiqueta: '+yaPub+'. Al publicar: avisar antes por correo y dejar la etiqueta DICOM en la ficha para que salga de esta alerta. 📌 = agregado manual.</div>';
+        }
     }
     el.innerHTML=h;
     // ── Chart 1: Donut with percentages ──
