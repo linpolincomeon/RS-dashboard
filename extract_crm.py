@@ -13,6 +13,20 @@ import json
 import os
 import re
 from datetime import datetime, timedelta
+
+# --- Hora local de Chile -------------------------------------------------
+# El runner de GitHub Actions corre en UTC. Con las corridas movidas a la
+# noche de Chile (00:xx-01:xx UTC) un datetime.now() ingenuo devuelve el DIA
+# SIGUIENTE, lo que desplaza los cortes de semana, el mes vencido y los
+# umbrales de dormancia. now_cl() devuelve la hora de Chile como datetime
+# naive, para no romper las comparaciones con el resto del codigo.
+from zoneinfo import ZoneInfo
+CL_TZ = ZoneInfo("America/Santiago")
+
+def now_cl():
+    return datetime.now(CL_TZ).replace(tzinfo=None)
+# -------------------------------------------------------------------------
+
 from collections import defaultdict, Counter
 
 ODOO_URL = os.environ.get("ODOO_URL", "https://tomenergy.cl")
@@ -184,7 +198,7 @@ def merge_by_user_lists(d):
 
 # ── ENAP week: Thursday to Wednesday ──
 def get_enap_week(offset=0):
-    today = datetime.now()
+    today = now_cl()
     days_since_thu = (today.weekday() - 3) % 7
     thu = today - timedelta(days=days_since_thu) - timedelta(weeks=offset)
     thu = thu.replace(hour=0, minute=0, second=0, microsecond=0)
@@ -198,7 +212,7 @@ def get_enap_week(offset=0):
     }
 
 def get_month_range():
-    today = datetime.now().date()
+    today = now_cl().date()
     first = today.replace(day=1)
     if today.month == 12:
         last = today.replace(year=today.year + 1, month=1, day=1) - timedelta(days=1)
@@ -254,7 +268,7 @@ def classify_stage(name):
 def extract_crm_data(models, uid):
     print("Extracting CRM pipeline data...")
     week = get_enap_week()
-    now = datetime.now()
+    now = now_cl()
     week_start = week["start"]
 
     cf = detect_custom_fields(models, uid)
@@ -1457,7 +1471,7 @@ def avg_monthly_litros_activos(models, uid, pids, start_date):
 
 def extract_churn_data(models, uid):
     print("\nExtracting Churn & Rescue data...")
-    today = datetime.now().date()
+    today = now_cl().date()
 
     stages = sr(models, uid, "crm.stage", [], ["name"], limit=50)
     stage_map = {s["id"]: s["name"] for s in stages}
@@ -1870,7 +1884,7 @@ def extract_rescued_clients(models, uid):
     Returns litros, vendedor (from this month's invoice), and client name.
     """
     print("\nExtracting Rescued Clients (frecuencia-based)...")
-    today = datetime.now().date()
+    today = now_cl().date()
     month_start = today.replace(day=1)
 
     # 1. Get all invoices this month with partner + salesperson
@@ -2040,7 +2054,7 @@ def extract_rescued_clients(models, uid):
 def extract_recovery_clients(models, uid):
     print("\nExtracting Recovery (Quick Wins)...")
     from collections import defaultdict
-    today = datetime.now().date()
+    today = now_cl().date()
     current_month = today.month  # mes actual en 2026
 
     # ── 1. Facturas 2025 (sólo posted, sólo venta) ──
@@ -2415,7 +2429,7 @@ def extract_credit_risk(models, uid):
     2. Credit risk score per client (morosidad + volume + margin + cobranza)
     """
     print("\nExtracting Credit Risk data...")
-    today = datetime.now().date()
+    today = now_cl().date()
     month_start = today.replace(day=1)
 
     # ── 3-month window for consumption trend ──
@@ -3067,7 +3081,7 @@ def extract_sla_data(models, uid, m_start, m_end):
 def extract_operaciones(models, uid):
     """Camión = stock.warehouse de la sale.order (HHPT-71, PHXC-44, ...).
     Entrega = factura posted, unida a la orden vía invoice_origin (mismo join del SLA)."""
-    today = datetime.now().date()
+    today = now_cl().date()
     m_start = today.replace(day=1)
     sla_actual = extract_sla_data(models, uid, m_start, today)
 
@@ -3264,7 +3278,7 @@ def extract_asignaciones(models, uid):
         ext_users = sr(models, uid, "res.users", [["login", "like", ".ext@"], ["active", "=", True]], ["id", "name"])
         ext_ids = {u["id"]: u["name"] for u in ext_users}
 
-        since = (datetime.now() - timedelta(days=35)).strftime("%Y-%m-%d %H:%M:%S")
+        since = (now_cl() - timedelta(days=35)).strftime("%Y-%m-%d %H:%M:%S")
         trk = sr(models, uid, "mail.tracking.value", [
             ["mail_message_id.model", "=", "res.partner"],
             ["field_id.name", "=", "user_id"],
@@ -3400,7 +3414,7 @@ def main():
     ventas = extract_sales_data(models, uid)
 
     # Part 3b: Sales KPIs (previous month = cierre mes vencido)
-    today = datetime.now().date()
+    today = now_cl().date()
     prev_m_end = today.replace(day=1) - timedelta(days=1)
     prev_m_start = prev_m_end.replace(day=1)
     ventas_prev = extract_sales_data(models, uid, prev_m_start, prev_m_end, prev_m_start.strftime("%B %Y"))
@@ -3736,7 +3750,7 @@ def main():
 
     # Merge everything into one JSON
     data = {
-        "updated": datetime.now().isoformat(),
+        "updated": now_cl().isoformat(),
         "week": {"start": get_enap_week()["start"], "end": get_enap_week()["end"], "label": get_enap_week()["label"]},
         # Original CRM fields (backward compatible)
         "has_litros": True,  # expected_revenue stores litros in TomEnergy's Odoo

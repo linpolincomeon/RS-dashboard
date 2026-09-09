@@ -1,12 +1,12 @@
 name: Update CEO Data
 on:
   schedule:
-    - cron: '30 7 * * *'      # 3:30 AM Chile (UTC-4) — escalonado tras Route (3:00)
+    - cron: '29 0 * * *'   # 21:29 Chile (verano) / 20:29 (invierno) — minuto impar para esquivar la cola de GitHub
   workflow_dispatch:           # trigger manual
 permissions:
   contents: write              # imprescindible para que el bot haga push
 concurrency:
-  group: update-ceo-data       # evita que dos runs se pisen
+  group: odoo-extractors      # compartido por los 4: nunca dos contra Odoo a la vez
   cancel-in-progress: false
 jobs:
   update-ceo:

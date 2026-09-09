@@ -1,12 +1,15 @@
 name: Update CRM Dashboard Data
 on:
   schedule:
-    - cron: '0 10 * * *'    # ~6-8 AM Chile (con drift de GitHub) — evita ventana de mantención de Odoo ~05:50, escalonado tras Route/CEO
-    - cron: '0 14 * * 5'    # VIERNES 10:00 AM Chile — dato fresco 1h antes de reunion
-    - cron: '50 14 * * 5'   # VIERNES 10:50 AM Chile — refresco final 10 min antes
+    - cron: '13 1 * * *'   # 22:13 Chile (verano) / 21:13 (invierno) — minuto impar para esquivar la cola de GitHub
+    - cron: '0 14 * * 5'    # VIERNES — 11:00 Chile desde el cambio de hora (era 10:00 en invierno)
+    - cron: '50 14 * * 5'   # VIERNES — 11:50 Chile desde el cambio de hora (era 10:50 en invierno)
   workflow_dispatch:
 permissions:
   contents: write
+concurrency:
+  group: odoo-extractors      # compartido por los 4: nunca dos contra Odoo a la vez
+  cancel-in-progress: false
 jobs:
   update-data:
     runs-on: ubuntu-latest

@@ -2,11 +2,14 @@ name: Update Costos Data
 
 on:
   schedule:
-    - cron: '30 8 * * *'   # 4:30 AM Chile (UTC-4 en invierno) — escalonado tras route/ceo/crm
+    - cron: '51 0 * * *'   # 21:51 Chile (verano) / 20:51 (invierno) — minuto impar para esquivar la cola de GitHub
   workflow_dispatch:
 
 permissions:
   contents: write
+concurrency:
+  group: odoo-extractors      # compartido por los 4: nunca dos contra Odoo a la vez
+  cancel-in-progress: false
 
 jobs:
   update-data:
