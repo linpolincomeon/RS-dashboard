@@ -22,15 +22,18 @@ import openpyxl
 VENTANA_DIAS = 56           # ventana de análisis hacia atrás desde el último dato
 MIN_VENTAS_DIA = 2          # días con 1 sola venta no permiten medir jornada
 
+# (patente, chofer, zona, nombre corto, desde) — tabla de Pauline 09-sep-2026.
+# `desde`: si el camión cambió de chofer, los días ANTERIORES a esa fecha se
+# excluyen de la ventana para no mezclar la historia del chofer saliente
+# (Tato jubiló sep-2026 -> Jorge Rojas; HH era spare -> Fernando Garroz).
 CHOFERES = {
-    # hoja "conductores y sus zonas" del mismo Sheet
-    'TJ': ('TJVS-53', 'Jose Luis Valenzuela', 'San Fernando', 'José Luis'),
-    'VD': ('VDKT-95', 'Nino Aguilera', 'San Fernando', 'Nino'),
-    'TY': ('TYDG-23', 'Patricio Garrido', 'Linares', 'Patricio'),
-    'PY': ('PYHK-28', 'Mario Marin', 'Linares', 'Mario'),
-    'SH': ('SHGP-60', 'Roberto Urrutia', 'Linares', 'Roberto'),
-    'PH': ('PHXC-44', 'Jorge Aguilera "Tato"', 'San Fernando', 'Tato'),
-    'HH': ('HHPT-71', 'Sin conductor (spare)', 'San Fernando', 'HH (spare)'),
+    'TJ': ('TJVS-53', 'Jose Luis Valenzuela', 'San Fernando', 'José Luis', None),
+    'VD': ('VDKT-95', 'Nino Aguilera', 'San Fernando', 'Nino', None),
+    'TY': ('TYDG-23', 'Patricio Garrido', 'Linares', 'Patricio', None),
+    'PY': ('PYHK-28', 'Mario Marin', 'Linares', 'Mario', None),
+    'SH': ('SHGP-60', 'Roberto Urrutia', 'Linares', 'Roberto', None),
+    'PH': ('PHXC-44', 'Jorge Rojas', 'Maipú', 'Jorge R.', '2026-09-01'),
+    'HH': ('HHPT-71', 'Fernando Garroz', 'Mostazal', 'Fernando', '2026-09-01'),
 }
 ORDEN = ['TJ', 'VD', 'TY', 'PY', 'SH', 'PH', 'HH']
 
@@ -83,10 +86,13 @@ def main():
 
     choferes, diario = [], []
     for c in ORDEN:
+        desde_c = dt.date.fromisoformat(CHOFERES[c][4]) if CHOFERES[c][4] else None
         dias = []
         for (cc, d), evs in sorted(byday.items()):
             if cc != c:
                 continue
+            if desde_c and d < desde_c:
+                continue  # días del chofer anterior
             evs.sort()
             ventas = [e for e in evs if e[1] == 'VENTA']
             if not ventas:
