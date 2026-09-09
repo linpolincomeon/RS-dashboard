@@ -470,7 +470,7 @@ function renderChoferes(C) {
   for (const c of C.choferes) {
     const nom = `<td><b>${c.chofer}</b>${c.confiable ? '' : ' <span class="badge nobudget">sin horas</span>'}
       <div style="color:var(--muted);font-size:11px">${c.patente}</div></td>
-      <td>${c.zona}</td>
+      <td${c.cobertura ? ` title="Cobertura: ${c.cobertura}"` : ''}>${c.zona}${c.cobertura ? ' <span style="color:var(--muted)">ⓘ</span>' : ''}</td>
       <td class="num">${c.dias_habiles}<div style="color:var(--muted);font-size:11px">de ${C.dias_habiles}</div></td>`;
     const fin = `<td class="num">${c.ventas_dia.toFixed(1)}</td>
       <td class="num">${CLP.format(c.entrega_med)}</td>

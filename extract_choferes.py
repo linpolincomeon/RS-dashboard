@@ -22,20 +22,43 @@ import openpyxl
 VENTANA_DIAS = 56           # ventana de análisis hacia atrás desde el último dato
 MIN_VENTAS_DIA = 2          # días con 1 sola venta no permiten medir jornada
 
-# (patente, chofer, zona, nombre corto, desde) — tabla de Pauline 09-sep-2026.
-# `desde`: si el camión cambió de chofer, los días ANTERIORES a esa fecha se
-# excluyen de la ventana para no mezclar la historia del chofer saliente
-# (Tato jubiló sep-2026 -> Jorge Rojas; HH era spare -> Fernando Garroz).
-CHOFERES = {
-    'TJ': ('TJVS-53', 'Jose Luis Valenzuela', 'San Fernando', 'José Luis', None),
-    'VD': ('VDKT-95', 'Nino Aguilera', 'San Fernando', 'Nino', None),
-    'TY': ('TYDG-23', 'Patricio Garrido', 'Linares', 'Patricio', None),
-    'PY': ('PYHK-28', 'Mario Marin', 'Linares', 'Mario', None),
-    'SH': ('SHGP-60', 'Roberto Urrutia', 'Linares', 'Roberto', None),
-    'PH': ('PHXC-44', 'Jorge Rojas', 'Maipú', 'Jorge R.', '2026-09-01'),
-    'HH': ('HHPT-71', 'Fernando Garroz', 'Mostazal', 'Fernando', '2026-09-01'),
-}
+# Chofer/zona/cobertura se leen de la hoja "conductores y sus zonas" del MISMO
+# Sheet (columnas Patente/Conductor/Zona/Cobertura) — un cambio de chofer se
+# hace ahí, no aquí. Acá solo queda lo que la hoja no tiene:
+PATENTES = {'TJ': 'TJVS-53', 'VD': 'VDKT-95', 'TY': 'TYDG-23', 'PY': 'PYHK-28',
+            'SH': 'SHGP-60', 'PH': 'PHXC-44', 'HH': 'HHPT-71'}
+# nombre corto para tablas (default: primer nombre del conductor)
+CORTOS = {'TJ': 'José Luis'}
+# `desde`: si el camión cambió de chofer, los días ANTERIORES se excluyen de la
+# ventana para no mezclar la historia del saliente (Tato jubiló sep-2026 ->
+# Jorge Rojas; HH era spare -> Fernando Garroz). Actualizar en cada cambio.
+DESDE = {'PH': '2026-09-01', 'HH': '2026-09-01'}
 ORDEN = ['TJ', 'VD', 'TY', 'PY', 'SH', 'PH', 'HH']
+
+CHOFERES = {}  # cam -> dict(patente, chofer, zona, corto, cobertura, desde); se llena en leer()
+
+
+def leer_conductores(wb):
+    """Construye CHOFERES desde la hoja 'conductores y sus zonas'."""
+    if 'conductores y sus zonas' not in wb.sheetnames:
+        sys.exit("ERROR: el archivo no tiene hoja 'conductores y sus zonas'")
+    for r in wb['conductores y sus zonas'].iter_rows(min_row=2, values_only=True):
+        cam = str(r[0] or '').strip().upper()
+        if cam not in PATENTES:
+            continue
+        chofer = str(r[1] or '').strip()
+        zona = str(r[3] or '').strip()
+        if 'mostazal' in zona.lower():
+            zona = 'Mostazal'
+        CHOFERES[cam] = dict(
+            patente=PATENTES[cam], chofer=chofer, zona=zona,
+            corto=CORTOS.get(cam, chofer.split()[0] if chofer else cam),
+            cobertura=str(r[5] or '').strip(),
+            desde=DESDE.get(cam),
+        )
+    faltan = set(PATENTES) - set(CHOFERES)
+    if faltan:
+        sys.exit(f"ERROR: camiones sin fila en 'conductores y sus zonas': {faltan}")
 
 
 def mins(h):
@@ -46,6 +69,7 @@ def leer(path):
     wb = openpyxl.load_workbook(path, data_only=True)
     if 'Movimientos' not in wb.sheetnames:
         sys.exit('ERROR: el archivo no tiene hoja "Movimientos"')
+    leer_conductores(wb)
     out = []
     for r in wb['Movimientos'].iter_rows(min_row=2, values_only=True):
         f, h, cam, tipo, lts = r[0], r[1], r[2], r[3], r[4]
@@ -86,7 +110,7 @@ def main():
 
     choferes, diario = [], []
     for c in ORDEN:
-        desde_c = dt.date.fromisoformat(CHOFERES[c][4]) if CHOFERES[c][4] else None
+        desde_c = dt.date.fromisoformat(CHOFERES[c]['desde']) if CHOFERES[c]['desde'] else None
         dias = []
         for (cc, d), evs in sorted(byday.items()):
             if cc != c:
@@ -117,8 +141,9 @@ def main():
         batch = st.mean([x['batch'] for x in dias])
         confiable = batch < 0.30 and len(med) >= 5
         fila = dict(
-            cam=c, patente=CHOFERES[c][0], chofer=CHOFERES[c][1], zona=CHOFERES[c][2],
-            corto=CHOFERES[c][3],
+            cam=c, patente=CHOFERES[c]['patente'], chofer=CHOFERES[c]['chofer'],
+            zona=CHOFERES[c]['zona'], corto=CHOFERES[c]['corto'],
+            cobertura=CHOFERES[c]['cobertura'],
             dias=len(dias),
             dias_habiles=len({dt.date.fromisoformat(x['d']) for x in dias} & habiles),
             ventas_dia=round(st.mean([x['nv'] for x in dias]), 1),
