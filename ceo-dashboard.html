@@ -295,6 +295,7 @@
         .sbadge.s-alto{background:#faeeda;color:#854f0b}
         .sbadge.s-medio{background:#e8f0fc;color:#1a5fb4}
         .sbadge.s-bajo{background:#e1f5ee;color:#0f6e56}
+        .sbadge.s-castigo{background:#efe6f7;color:#6b21a8}
         /* Scrollable table with proper sticky headers */
         .table-scroll{max-height:500px;overflow-y:auto;background:var(--surface);border:1px solid var(--border);border-radius:8px;margin-bottom:1.5rem}
         .table-scroll table{margin:0}
@@ -419,6 +420,12 @@ function renderVentas(){
     if(hasNM){
         h+=kpi('Margen Retail',fP(mcrRetail),pD(mcrRetail,prev.margin_retail||0),mcrRetail>=mRetail?'c-green':mcrRetail>=mRetail*.9?'c-amber':'c-red',`meta ${fP(mRetail)}`);
         h+=kpi('Margen Volumen',fP(mcVol),pD(mcVol,prev.margin_volumen||0),mcVol>=mVol?'c-green':mcVol>=mVol*.9?'c-amber':'c-red',`meta ${fP(mVol)}`);
+        // Margen Compañía: ponderado (w.margin) vs meta ponderada según mix real (pedido Pauline 03-sep-2026)
+        const mComp=last.margin||0, mpond=metaPondSemana(last,mRetail,mVol);
+        const plComp=(last.litros>0&&last.neto>0)?Math.round(mComp*last.neto/last.litros):null;
+        h+=kpi('Margen Compañía',fP(mComp),pD(mComp,prev.margin||0),
+            mpond!=null?(mComp>=mpond?'c-green':mComp>=mpond*.9?'c-amber':'c-red'):'c-blue',
+            `Ponderado · meta ${mpond!=null?fP(mpond):'—'}${plComp!=null?' · $'+plComp+'/L':''}`);
     } else {
         h+=kpi('Margen Bruto',fP(last.margin),pD(last.margin,prev.margin),last.margin>=.085?'c-green':'c-red','margin_zone ponderado');
     }
@@ -549,7 +556,11 @@ function renderGerencia(){
     h+='<div class="kpi-grid">';
     h+=kpi('Margen Retail',fP(wRetail),null,wRetail>=mMeta?'c-green':wRetail>=mMeta*.9?'c-amber':'c-red',`meta ${fP(mMeta)} · ${fc||w.facturas||0} facturas`);
     h+=kpi('Margen Volumen',fP(wVol),null,wVol>=crMeta?'c-green':wVol>=crMeta*.9?'c-amber':'c-red',`meta ${fP(crMeta)}`);
-    h+=kpi('Margen Promedio',fP(wm),null,'c-blue','ponderado por monto');
+    const mpondG=metaPondSemana(w,mMeta,crMeta);
+    const plCompG=(w.litros>0&&w.neto>0)?Math.round(wm*w.neto/w.litros):null;
+    h+=kpi('Margen Compañía',fP(wm),null,
+        mpondG!=null?(wm>=mpondG?'c-green':wm>=mpondG*.9?'c-amber':'c-red'):'c-blue',
+        `ponderado por monto · meta ${mpondG!=null?fP(mpondG):'—'}${plCompG!=null?' · $'+plCompG+'/L':''}`);
     h+='</div>';
     // Per-term detail
     const bt=w.margin_by_term||{};
@@ -1119,6 +1130,50 @@ function renderRiesgo(){
         });
         h+='</tbody></table></div>';
     });
+    // ── ⚖️ Cobranza Escalada — Comité de Crédito y Cobranza ──
+    // Morosos que salieron de la cobranza normal, por etapa de la línea de
+    // tiempo 4.2 de la Política Comercial (sep-2026). La etapa la fija la
+    // factura vencida MÁS ANTIGUA del cliente (dato en D.cobranza, extract_ceo).
+    const cob=D.cobranza;
+    if(cob&&cob.clientes&&cob.clientes.length){
+        const bk=cob.buckets||{};
+        const factSet=new Set(scoreData.filter(c=>c.is_factoring).map(c=>c.name));
+        const ETAPAS={
+            corte_dicom:{label:'Corte + DICOM',cls:'s-alto',accion:'Cortar suministro y publicar en DICOM, con aviso previo por correo'},
+            siniestro:{label:'Siniestro AVLA',cls:'s-critico',accion:'Declarar siniestro a AVLA (plazo máx. 60d — agendar YA) · inicia reversa de comisión'},
+            judicial:{label:'Judicial',cls:'s-critico',accion:'Carta de cobranza judicial (sin cobertura AVLA) · inicia reversa de comisión'},
+            post_siniestro:{label:'Post-siniestro',cls:'s-medio',accion:'Siniestro ya declarado: seguimiento con asesoría legal · provisión de incobrable · no sale de DICOM hasta aceptación AVLA'},
+            castigo:{label:'Castigo',cls:'s-castigo',accion:'Provisión de incobrable · castigo tributario / write-off con expediente completo'}
+        };
+        const bkV=k=>fMon((bk[k]||{}).monto), bkN=k=>((bk[k]||{}).n||0);
+        h+='<div class="section-label" style="margin-top:28px">⚖️ Cobranza Escalada — Comité de Crédito y Cobranza ('+cob.clientes.length+')</div>';
+        h+='<div class="kpi-grid">';
+        h+=kpi('Corte + DICOM',bkV('corte_dicom'),null,'c-amber',bkN('corte_dicom')+' clientes · 15–59d de mora');
+        h+=kpi('Siniestro AVLA',bkV('siniestro'),null,'c-red',bkN('siniestro')+' clientes · 60–179d con cobertura');
+        h+=kpi('Cobranza Judicial',bkV('judicial'),null,'c-red',bkN('judicial')+' clientes · 60–179d sin cobertura');
+        h+=kpi('Post-siniestro',bkV('post_siniestro'),null,'c-purple',bkN('post_siniestro')+' clientes · declarados, en legal');
+        h+=kpi('Castigo / write-off',bkV('castigo'),null,'c-purple',bkN('castigo')+' clientes · ≥180d');
+        h+=kpi('Cobranza normal',bkV('normal'),null,'c-blue',bkN('normal')+' clientes · 1–14d (no listados)');
+        h+='</div>';
+        h+='<div class="table-scroll" style="max-height:520px"><table><thead><tr>';
+        h+='<th>Cliente</th><th class="r">Deuda vencida</th><th class="r">Días mora</th><th class="r">Vencida desde</th><th class="r">Cubierto AVLA</th><th class="r">No cubierto</th><th style="text-align:center">Etapa</th><th>Acción según política</th></tr></thead><tbody>';
+        cob.clientes.forEach(c=>{
+            const e=ETAPAS[c.etapa]||{label:c.etapa,cls:'s-medio',accion:''};
+            const esFact=factSet.has(c.name);
+            let accion=e.accion;
+            if(esFact&&c.etapa==='corte_dicom')accion='Cortar suministro — NO publicar en DICOM (factura cedida al factor)';
+            h+='<tr><td>'+c.name+(esFact?' <span title="Cliente factorizado (≥50% de pagos vía factor)">🏦</span>':'')+'</td>';
+            h+='<td class="r" style="font-weight:600" title="'+c.n_facturas+' factura(s) vencida(s)">'+fMon(c.monto)+'</td>';
+            h+='<td class="r" style="font-weight:700;color:'+(c.dias>=180?'#6b21a8':c.dias>=60?'var(--red)':'var(--amber)')+'">'+c.dias+'d</td>';
+            h+='<td class="r" style="color:var(--text3)">'+(c.oldest_due||'—')+'</td>';
+            h+='<td class="r" style="color:'+(c.cubierto>0?'var(--green)':'var(--text3)')+'">'+(c.cubierto>0?fMon(c.cubierto):'—')+'</td>';
+            h+='<td class="r" style="color:'+(c.no_cubierto>0?'var(--red)':'var(--text3)')+'">'+(c.no_cubierto>0?fMon(c.no_cubierto):'—')+'</td>';
+            h+='<td style="text-align:center"><span class="sbadge '+e.cls+'">'+e.label+'</span></td>';
+            h+='<td style="font-size:11px;color:var(--text2)">'+accion+'</td></tr>';
+        });
+        h+='</tbody></table></div>';
+        h+='<div style="font-size:11px;color:var(--text3);margin:6px 2px 0">Etapas según la línea de tiempo 4.2 de la Política Comercial (sep-2026): 15d corte + DICOM · 60d siniestro/judicial · 180d castigo. Cobertura AVLA = min(deuda vencida, cobertura efectiva del RUT)'+(cob.avla_fecha?' · export AVLA del '+cob.avla_fecha:'')+'. Las facturas factorizadas (🏦) no se publican en DICOM: el derecho de cobro está cedido al factor.</div>';
+    }
     el.innerHTML=h;
     // ── Chart 1: Donut with percentages ──
     dc('cRD');
@@ -1368,6 +1423,17 @@ function renderCashflow(){
 // ── HELPERS ──
 function kpi(label,val,delta,cls,sub){
     return `<div class="kpi ${cls}"><div class="kpi-label">${label}</div><div class="kpi-val">${val}</div>${dH(delta)}${sub?`<div class="kpi-sub">${sub}</div>`:''}</div>`;
+}
+// Meta ponderada del Margen Compañía según mix real de venta de la semana.
+// La venta por segmento se despeja de los márgenes (neto_r = neto·(m−mv)/(mr−mv),
+// mismo método que crm-sales); fallback proporcional a litros si mr≈mv.
+function metaPondSemana(w,mR,mV){
+    const m=w.margin||0,mr=w.margin_retail||0,mv=w.margin_volumen||0,neto=w.neto||0;
+    if(!(neto>0&&m>0)) return null;
+    let vR;
+    if(Math.abs(mr-mv)>1e-6){vR=Math.max(0,Math.min(neto,neto*(m-mv)/(mr-mv)));}
+    else{const tl=(w.litros_retail||0)+(w.litros_volumen||0);vR=tl?neto*(w.litros_retail||0)/tl:0;}
+    return (mR*vR+mV*(neto-vR))/neto;
 }
 function co(tC,gC,fmt){
     return{responsive:true,maintainAspectRatio:false,

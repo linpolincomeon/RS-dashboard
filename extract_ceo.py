@@ -17,6 +17,20 @@ import xmlrpc.client
 import json
 import os
 from datetime import datetime, timedelta
+
+# --- Hora local de Chile -------------------------------------------------
+# El runner de GitHub Actions corre en UTC. Con las corridas movidas a la
+# noche de Chile (00:xx-01:xx UTC) un datetime.now() ingenuo devuelve el DIA
+# SIGUIENTE, lo que desplaza los cortes de semana, el mes vencido y los
+# umbrales de dormancia. now_cl() devuelve la hora de Chile como datetime
+# naive, para no romper las comparaciones con el resto del codigo.
+from zoneinfo import ZoneInfo
+CL_TZ = ZoneInfo("America/Santiago")
+
+def now_cl():
+    return datetime.now(CL_TZ).replace(tzinfo=None)
+# -------------------------------------------------------------------------
+
 from calendar import monthrange
 
 ODOO_URL = os.environ.get("ODOO_URL", "https://tomenergy.cl")
@@ -182,7 +196,7 @@ def lookup_ruta_stage_id(models, uid):
 
 # ── Week ranges: Thursday to Wednesday ──
 def get_week_ranges(n_weeks=16):
-    today = datetime.now()
+    today = now_cl()
     days_since_thu = (today.weekday() - 3) % 7
     this_thu = today - timedelta(days=days_since_thu)
     this_thu = this_thu.replace(hour=0, minute=0, second=0, microsecond=0)
@@ -502,7 +516,7 @@ def extract_daily(models, uid):
     days_es = ["Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"]
     count, d = 0, 0
     while count < 16:
-        dt = datetime.now() - timedelta(days=d)
+        dt = now_cl() - timedelta(days=d)
         d += 1
         if dt.weekday() >= 5:
             continue
@@ -554,7 +568,7 @@ def extract_receivables(models, uid):
          ["payment_state", "in", ["not_paid", "partial"]], ["amount_residual", ">", 0]],
         ["partner_id", "invoice_date_due", "amount_total", "amount_residual"])
     print(f"  {len(invoices)} open invoices")
-    today = datetime.now()
+    today = now_cl()
     total_due = overdue = current = 0
     aging = {"0-30": 0, "31-60": 0, "61-90": 0, "90+": 0}
     debtor_map = {}
@@ -593,7 +607,7 @@ def extract_sla(models, uid, weeks):
     Para la semana actual: excluye pedidos con shipping_date > hoy (aún en curso).
     Ignora facturas con invoice_date < 2020-01-01 (datos corruptos)."""
     print("Extracting SLA delivery data (all weeks)...")
-    today_str = datetime.now().strftime("%Y-%m-%d")
+    today_str = now_cl().strftime("%Y-%m-%d")
     sla_data = []
 
     for i, wd in enumerate(weeks):
@@ -724,7 +738,7 @@ def extract_churn(models, uid):
     """
     import re
     print("Extracting Churn (definiciones correctas TomEnergy)...")
-    today = datetime.now()
+    today = now_cl()
     today_str = today.strftime("%Y-%m-%d")
 
     # ── 1. Traer TODO el historial necesario ──
@@ -1011,7 +1025,7 @@ def extract_enap_compliance(models, uid):
     """MTD purchases from ENAP + ADQUIM/ADGREEN vs monthly targets by plant, with projection."""
     import calendar
     print("Extracting supplier compliance (ENAP + ADQUIM)...")
-    today = datetime.now()
+    today = now_cl()
     month_start = today.replace(day=1).strftime("%Y-%m-%d")
     month_key = today.strftime("%Y-%m")
     today_str = today.strftime("%Y-%m-%d")
@@ -1166,7 +1180,7 @@ def extract_operaciones(models, uid):
     """Extract transport expenses (last 6 months) vs budget."""
     import calendar
     print("Extracting operaciones (transport expenses)...")
-    today = datetime.now()
+    today = now_cl()
 
     # Build list of account IDs for these codes
     account_codes = TRANSPORT_ACCOUNTS
@@ -1271,6 +1285,77 @@ def normalize_rut(rut_str):
         return None
     s = str(rut_str).upper().replace("CL", "").replace(".", "").replace("-", "").replace(" ", "").strip()
     return s if s else None
+
+
+def extract_cobranza_escalada(models, uid):
+    """Cobranza escalada para el Comité de Crédito y Cobranza (tab Riesgo).
+    Clasifica a cada cliente moroso en la etapa de la línea de tiempo 4.2 de la
+    Política Comercial (sep-2026) según los días de mora de su factura vencida
+    MÁS ANTIGUA: 1-14 gestión directa · 15-59 corte de suministro + DICOM ·
+    60-179 siniestro AVLA (si tiene cobertura) o cobranza judicial (si no),
+    con reversa de comisión · >=180 castigo tributario / write-off.
+    Cobertura AVLA = min(deuda vencida, cobertura efectiva del RUT)."""
+    print("Extracting cobranza escalada (comité)...")
+    avla_lines, avla_fecha = load_avla_lines()
+    invoices = fetch_all(models, uid, "account.move",
+        [["move_type", "=", "out_invoice"], ["state", "=", "posted"],
+         ["payment_state", "in", ["not_paid", "partial"]], ["amount_residual", ">", 0]],
+        ["partner_id", "invoice_date_due", "amount_residual"])
+    today = now_cl()
+    per = {}
+    for inv in invoices:
+        if not inv.get("partner_id") or not inv.get("invoice_date_due"):
+            continue
+        days = (today - datetime.strptime(inv["invoice_date_due"], "%Y-%m-%d")).days
+        if days <= 0:
+            continue
+        pid, pname = inv["partner_id"][0], inv["partner_id"][1]
+        d = per.setdefault(pid, {"name": pname, "monto": 0, "n": 0, "dias": 0, "oldest": None})
+        d["monto"] += inv["amount_residual"] or 0
+        d["n"] += 1
+        if days > d["dias"]:
+            d["dias"] = days
+            d["oldest"] = inv["invoice_date_due"]
+    # RUT por partner, para cruzar la cobertura AVLA
+    pids = list(per.keys())
+    vat = {}
+    for off in range(0, len(pids), 200):
+        for p in sr(models, uid, "res.partner", [["id", "in", pids[off:off+200]]], ["id", "vat"], limit=200):
+            vat[p["id"]] = p.get("vat") or ""
+    buckets = {k: {"monto": 0, "n": 0} for k in ["normal", "corte_dicom", "siniestro", "judicial", "post_siniestro", "castigo"]}
+    clientes = []
+    for pid, d in per.items():
+        rut = normalize_rut(vat.get(pid, ""))
+        cobertura = (avla_lines.get(rut) or {}).get("cobertura_clp", 0) if rut else 0
+        cubierto = min(d["monto"], cobertura)
+        # Convención TomEnergy: las fichas de siniestrados se renombran con
+        # "SINIESTRO"/"siniestrado" — ya declararon, van a Post-siniestro
+        # (su línea AVLA se cancela, por eso salen con cobertura $0).
+        ya_siniestrado = "siniestr" in (d["name"] or "").lower()
+        if d["dias"] < 15:
+            etapa = "normal"
+        elif d["dias"] >= 180:
+            etapa = "castigo"
+        elif ya_siniestrado:
+            etapa = "post_siniestro"
+        elif d["dias"] < 60:
+            etapa = "corte_dicom"
+        else:
+            etapa = "siniestro" if cubierto > 0 else "judicial"
+        buckets[etapa]["monto"] += d["monto"]
+        buckets[etapa]["n"] += 1
+        if etapa != "normal":
+            clientes.append({
+                "name": d["name"], "rut": vat.get(pid, ""), "monto": round(d["monto"]),
+                "n_facturas": d["n"], "dias": d["dias"], "oldest_due": d["oldest"],
+                "etapa": etapa, "cubierto": round(cubierto),
+                "no_cubierto": round(d["monto"] - cubierto),
+            })
+    clientes.sort(key=lambda c: -c["dias"])
+    for k in buckets:
+        buckets[k]["monto"] = round(buckets[k]["monto"])
+    print(f"  {len(per)} clientes en mora · escalados (>=15d): {len(clientes)}")
+    return {"avla_fecha": avla_fecha, "buckets": buckets, "clientes": clientes}
 
 
 def load_avla_lines():
@@ -1530,7 +1615,7 @@ def extract_dso(models, uid, n_months=6, weeks=None):
         return max(total, 0)
 
     # 2. Generar N+2 meses cerrados (extra para calcular promedio 3m desde el primer mes)
-    today = datetime.now()
+    today = now_cl()
     months = []
     d = today.replace(day=1) - timedelta(days=1)
     for _ in range(n_months + 2):
@@ -1655,6 +1740,7 @@ def main():
     banks = extract_bank_balances(models, uid)
     total_cash = sum(b["balance"] for b in banks)
     receivables = extract_receivables(models, uid)
+    cobranza = extract_cobranza_escalada(models, uid)
 
     # Gerencia sections
     weeks = get_week_ranges(16)
@@ -1666,12 +1752,13 @@ def main():
     dso = extract_dso(models, uid, weeks=weeks)
 
     data = {
-        "updated": datetime.now().isoformat(),
+        "updated": now_cl().isoformat(),
         "weeks": weekly,
         "daily": daily,
         "banks": banks,
         "total_cash": total_cash,
         "receivables": receivables,
+        "cobranza": cobranza,
         "sla": sla,
         "riesgo": riesgo,
         "churn": churn,
@@ -1699,7 +1786,7 @@ def main():
     # Convención del archivo: una fila por semana, fecha = domingo de la semana.
     # Si ya existe esa semana, se actualiza (último valor del run del día gana).
     hist_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "riesgo-historico.json")
-    today = datetime.now()
+    today = now_cl()
     days_to_sunday = (today.weekday() + 1) % 7  # weekday(): Mon=0..Sun=6
     week_sunday = today - timedelta(days=days_to_sunday)
     week_sunday_str = week_sunday.strftime("%Y-%m-%d")
