@@ -1,23 +1,23 @@
 {
-  "updated": "2026-09-09T12:29:42.432595",
+  "updated": "2026-09-09T15:27:57.862367",
   "weeks": [
     {
       "label": "03sep-09sep",
       "start": "2026-09-03",
       "end": "2026-09-09",
-      "ventas": 305029531,
-      "neto": 284176992,
-      "litros": 236437,
-      "litros_retail": 157921,
+      "ventas": 326336457,
+      "neto": 304061512,
+      "litros": 253042,
+      "litros_retail": 174526,
       "litros_volumen": 78516,
       "precio_neto": 1202,
-      "precio_bruto": 1279,
-      "margin": 0.08188,
-      "margin_retail": 0.09003,
+      "precio_bruto": 1280,
+      "margin": 0.08163,
+      "margin_retail": 0.0889,
       "margin_volumen": 0.06509,
-      "facturas": 130,
+      "facturas": 143,
       "nc": 1,
-      "clientes": 101,
+      "clientes": 111,
       "recaud": 481659578,
       "cheques": 12732160,
       "transf": 271040748,
@@ -25,8 +25,8 @@
       "compras_odoo": 296408884,
       "cheq_cartera_saldo": 0,
       "cheq_recibidos": 0,
-      "facturas_contado": 23,
-      "facturas_credito": 107,
+      "facturas_contado": 25,
+      "facturas_credito": 118,
       "margin_by_term": {
         "Prepago": {
           "margin": 0.05131,
@@ -35,9 +35,9 @@
           "days": 0
         },
         "1 Día": {
-          "margin": 0.07894,
-          "normalizado": 0.0886,
-          "count": 18,
+          "margin": 0.07855,
+          "normalizado": 0.08822,
+          "count": 20,
           "days": 1
         },
         "7 Días": {
@@ -47,15 +47,15 @@
           "days": 7
         },
         "15 Días": {
-          "margin": 0.0585,
-          "normalizado": 0.0635,
-          "count": 1,
+          "margin": 0.07218,
+          "normalizado": 0.07718,
+          "count": 2,
           "days": 15
         },
         "30 Días": {
-          "margin": 0.08899,
-          "normalizado": 0.08899,
-          "count": 74,
+          "margin": 0.08803,
+          "normalizado": 0.08803,
+          "count": 84,
           "days": 30
         },
         "45 Días": {
@@ -72,7 +72,7 @@
         }
       },
       "cotiz_canceladas": 17,
-      "visitas": 0,
+      "visitas": 2,
       "clientes_nuevos": 5,
       "ppto": 217111,
       "ppto_retail": 138951,
@@ -864,7 +864,7 @@
         }
       },
       "cotiz_canceladas": 7,
-      "visitas": 97,
+      "visitas": 96,
       "clientes_nuevos": 5,
       "ppto": 178726,
       "ppto_retail": 125108,
@@ -1260,8 +1260,8 @@
     {
       "date": "09sep",
       "day": "Mié",
-      "litros": 7900,
-      "neto": 9418678
+      "litros": 24505,
+      "neto": 29303198
     },
     {
       "date": "08sep",
@@ -1386,11 +1386,11 @@
   ],
   "total_cash": 40406744,
   "receivables": {
-    "open_invoices": 267,
-    "total_due": 524324296,
-    "current": 416820828,
+    "open_invoices": 279,
+    "total_due": 544981722,
+    "current": 437478254,
     "overdue": 107503468,
-    "pct_overdue": 20.5,
+    "pct_overdue": 19.7,
     "aging": {
       "0-30": 65139081,
       "31-60": 12344103,
@@ -1486,31 +1486,25 @@
       "zones": {
         "Chillan": {
           "total": 21,
-          "on_time": 14,
-          "late": 7,
-          "pct": 66.67,
+          "on_time": 17,
+          "late": 4,
+          "pct": 80.95,
           "late_clients": [
             "AGRICOLA MIGUEL TORRES SPA (prom: 2026-09-09, fact: sin factura)",
             "SOCIEDAD AGRICOLA GANADERA DE TRANSPORTE Y DE PRESTACION DE SERVICIOS DE MAQUINARIA AGRICOLA SAN LORENZO LIMITADA (prom: 2026-09-09, fact: sin factura)",
-            "LUIS HUMBERTO RETAMAL MOLINA (prom: 2026-09-09, fact: sin factura)",
             "SOC. DE TRANSPORTES Y AGRICOLA ESPINAZA RIVERA LIMITADA (prom: 2026-09-07, fact: 2026-09-08)",
-            "VALENTIN GONZALO HERNANDEZ ESPINOZA (prom: 2026-09-09, fact: sin factura)",
-            "JUAN CARLOS HERNANDEZ ESPINOZA (prom: 2026-09-09, fact: sin factura)",
             "SAMUEL SEGUNDO HERNANDEZ NORAMBUENA (prom: 2026-09-09, fact: sin factura)"
           ]
         },
         "Curico": {
-          "total": 25,
-          "on_time": 19,
-          "late": 6,
-          "pct": 76.0,
+          "total": 27,
+          "on_time": 24,
+          "late": 3,
+          "pct": 88.89,
           "late_clients": [
-            "BEPATAGONIA MAQUINARIA S.A. (prom: 2026-09-09, fact: sin factura)",
+            "AGROPECUARIA WAPRI SA (prom: 2026-09-09, fact: sin factura)",
             "SOCIEDAD AGRÍCOLA JJR SPA (prom: 2026-09-09, fact: sin factura)",
-            "AGRICOLA Y TRANSPORTE RENACER SPA (prom: 2026-09-09, fact: sin factura)",
-            "SERGIO DEL CARMEN MENESES MIRANDA (prom: 2026-09-09, fact: sin factura)",
-            "AGROSERVICIOS VALVE LIMITADA (prom: 2026-09-09, fact: sin factura)",
-            "AGRICOLA LAS PERDICES LTDA (prom: 2026-09-09, fact: sin factura)"
+            "SERGIO DEL CARMEN MENESES MIRANDA (prom: 2026-09-09, fact: sin factura)"
           ]
         },
         "Rancagua": {
@@ -1530,12 +1524,12 @@
             "AGRICOLA AGROBOSQUES SAN ISIDRO S.A. (prom: 2026-09-07, fact: 2026-09-08)",
             "Agricola el remanso y Cia (prom: 2026-09-08, fact: 2026-09-09)",
             "AGRICOLA EL CABRINO LIMITADA (prom: 2026-09-09, fact: sin factura)",
-            "AGRICOLA TRICAHUE LIMITADA (prom: 2026-09-08, fact: sin factura)",
+            "AGRICOLA TRICAHUE LIMITADA (prom: 2026-09-08, fact: 2026-09-09)",
             "AGRICOLA EUGENIO LIRA ESPINOZA E.I.R.L. (prom: 2026-09-08, fact: 2026-09-09)",
             "SUGAL CHILE LIMITADA (prom: 2026-09-07, fact: 2026-09-08)",
             "SUGAL CHILE LIMITADA (prom: 2026-09-07, fact: 2026-09-08)",
             "INVERSIONES VB SPA (prom: 2026-09-07, fact: 2026-09-08)",
-            "CBARRIOS CONSTRUCTORA SPA (prom: 2026-09-08, fact: sin factura)",
+            "CBARRIOS CONSTRUCTORA SPA (prom: 2026-09-08, fact: 2026-09-09)",
             "Agroindustrial San Francisco (prom: 2026-09-03, fact: 2026-09-04)",
             "AGRICOLA A Y C SPA (prom: 2026-09-03, fact: 2026-09-04)",
             "AGRICOLA PIUCHEN LIMITADA (prom: 2026-09-03, fact: 2026-09-02)"
@@ -1543,29 +1537,29 @@
         },
         "San Fernando": {
           "total": 26,
-          "on_time": 21,
-          "late": 5,
-          "pct": 80.77,
+          "on_time": 22,
+          "late": 4,
+          "pct": 84.62,
           "late_clients": [
             "MANUEL ANTONIO MAGNA OLIVARES (prom: 2026-09-09, fact: sin factura)",
             "AGRICOLA TRICAHUE LIMITADA (prom: 2026-09-09, fact: sin factura)",
-            "SOCIEDAD AGRICOLA PINO TOLEDO LIMITADA (prom: 2026-09-09, fact: sin factura)",
             "Soc. Agrícola Libertad SPA (prom: 2026-09-08, fact: sin factura)",
             "RODRIGO VALDERRAMA LABRA (prom: 2026-09-07, fact: 2026-09-08)"
           ]
         },
         "Talca": {
-          "total": 36,
-          "on_time": 23,
-          "late": 13,
-          "pct": 63.89,
+          "total": 38,
+          "on_time": 24,
+          "late": 14,
+          "pct": 63.16,
           "late_clients": [
+            "AGRICOLA LOS ALPES LTDA (prom: 2026-09-09, fact: sin factura)",
             "PROTERRA SPA (prom: 2026-09-09, fact: sin factura)",
             "MATIAS ANTONIO RIVERA MORAGA (prom: 2026-09-09, fact: sin factura)",
             "TRANSPORTES EL POLILLA SPA (prom: 2026-09-09, fact: sin factura)",
-            "AGRICOLA LOS ALPES LTDA (prom: 2026-09-09, fact: sin factura)",
             "HECTOR RODRIGO TRONCOSO ZAPATA (prom: 2026-09-09, fact: sin factura)",
             "TRANSPORTES OSSES ROJAS SPA (prom: 2026-09-09, fact: sin factura)",
+            "EDUARDO ALEJANDRO CABRERA FAUNDEZ (prom: 2026-09-09, fact: sin factura)",
             "EXPRESO SUDAMERICANO SPA (prom: 2026-09-09, fact: sin factura)",
             "SOC. AGRIC. Y FOR. TRES CANALES LTDA (prom: 2026-09-08, fact: sin factura)",
             "Francisco Antonio Méndez Leiva (prom: 2026-09-09, fact: sin factura)",
@@ -1577,15 +1571,14 @@
         },
         "VI Costa": {
           "total": 14,
-          "on_time": 7,
-          "late": 7,
-          "pct": 50.0,
+          "on_time": 8,
+          "late": 6,
+          "pct": 57.14,
           "late_clients": [
             "EDUARDO ANDRES DUARTE GONZALEZ, EDUARDO ANDRES DUARTE GONZALEZ (prom: 2026-09-07, fact: 2026-09-08)",
             "LUIS ANTONIO REYES FUENTES (prom: 2026-09-08, fact: sin factura)",
             "AGRICOLA LO BELTRAN LIMITADA (prom: 2026-09-08, fact: sin factura)",
             "ARCE LIZANA FRANCISCO ROLANDO (prom: 2026-09-09, fact: sin factura)",
-            "AGRICOLA PRINCIPIO SPA (prom: 2026-09-09, fact: sin factura)",
             "APICOLA PATRICIA SUSANA BUSTOS ARCE EIRL. (prom: 2026-09-09, fact: sin factura)",
             "RENACER SPA (prom: 2026-09-07, fact: 2026-09-08)"
           ]
@@ -2471,18 +2464,18 @@
     }
   ],
   "riesgo": {
-    "cubierto": 398608564,
-    "cubierto_count": 230,
-    "no_cubierto": 125715732,
+    "cubierto": 417821090,
+    "cubierto_count": 242,
+    "no_cubierto": 127160632,
     "no_cubierto_count": 60,
-    "pct_monto": 23.98,
-    "pct_count": 20.69,
+    "pct_monto": 23.33,
+    "pct_count": 19.87,
     "avla_fecha_descarga": "2026-08-03",
-    "avla_ruts_matched": 98,
+    "avla_ruts_matched": 106,
     "avla_ruts_total": 735
   },
   "churn": {
-    "dormant_count": 44,
+    "dormant_count": 42,
     "lost_count": 184,
     "newly_lost_this_month": 3,
     "churn_pct": 3.1,
@@ -2728,18 +2721,6 @@
         "gestion": null
       },
       {
-        "partner_id": 16409,
-        "name": "VALENTIN GONZALO HERNANDEZ ESPINOZA",
-        "last_invoice": "2026-07-28",
-        "days_since": 43,
-        "freq_days": 7,
-        "threshold": 10.5,
-        "litros_prom_mes": 1333,
-        "ejecutivo": "TomEnergy",
-        "crm_lead": null,
-        "gestion": null
-      },
-      {
         "partner_id": 5396,
         "name": "TRANSPORTES VICTOR VALDIVIA LOPEZ EIRL",
         "last_invoice": "2026-07-29",
@@ -2930,18 +2911,6 @@
         "ejecutivo": "Nicolás Gonzalez",
         "crm_lead": null,
         "gestion": null
-      },
-      {
-        "partner_id": 4872,
-        "name": "AGRICOLA TRICAHUE LIMITADA",
-        "last_invoice": "2026-08-25",
-        "days_since": 15,
-        "freq_days": 9,
-        "threshold": 13.5,
-        "litros_prom_mes": 3677,
-        "ejecutivo": "TomEnergy",
-        "crm_lead": null,
-        "gestion": "⏰ ALERTA: AGRICOLA TRICAHUE LIMITADA lleva 11 dias sin comprar (freq: 7d) · 2026-07-21"
       },
       {
         "partner_id": 17939,
@@ -3828,14 +3797,14 @@
         "month": "2026-09",
         "label": "Sep 2026",
         "budget": 12280892,
-        "actual": 9468354,
-        "compliance_pct": 77.1,
+        "actual": 9753657,
+        "compliance_pct": 79.4,
         "categories": {
           "Petróleo": 5807072,
           "Mantención y Reparación": 1531998,
-          "Gastos Traslados (TAG)": 1152001,
+          "Gastos Traslados (TAG)": 1220376,
           "Seguros": 209930,
-          "Gastos Vehículos": 349413,
+          "Gastos Vehículos": 566341,
           "Arriendo": 350000,
           "EPP": 67940,
           "Mantenciones Varias": 0
@@ -3900,10 +3869,10 @@
         "dso": 21.7
       }
     ],
-    "cxc_hoy": 1255684512,
+    "cxc_hoy": 1279859938,
     "por_semana": {
-      "2026-09-09": 1255684512,
-      "2026-09-02": 1164989159,
+      "2026-09-09": 1279859938,
+      "2026-09-02": 1167225159,
       "2026-08-26": 1078326899,
       "2026-08-19": 1017640981,
       "2026-08-12": 919826942,
