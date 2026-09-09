@@ -1,23 +1,23 @@
 {
-  "updated": "2026-09-09T15:27:57.862367",
+  "updated": "2026-09-09T13:06:06.088953",
   "weeks": [
     {
       "label": "03sep-09sep",
       "start": "2026-09-03",
       "end": "2026-09-09",
-      "ventas": 326336457,
-      "neto": 304061512,
-      "litros": 253042,
-      "litros_retail": 174526,
+      "ventas": 338317269,
+      "neto": 315262069,
+      "litros": 262543,
+      "litros_retail": 184027,
       "litros_volumen": 78516,
-      "precio_neto": 1202,
-      "precio_bruto": 1280,
-      "margin": 0.08163,
-      "margin_retail": 0.0889,
+      "precio_neto": 1201,
+      "precio_bruto": 1279,
+      "margin": 0.08098,
+      "margin_retail": 0.08761,
       "margin_volumen": 0.06509,
-      "facturas": 143,
+      "facturas": 146,
       "nc": 1,
-      "clientes": 111,
+      "clientes": 114,
       "recaud": 481659578,
       "cheques": 12732160,
       "transf": 271040748,
@@ -26,7 +26,7 @@
       "cheq_cartera_saldo": 0,
       "cheq_recibidos": 0,
       "facturas_contado": 25,
-      "facturas_credito": 118,
+      "facturas_credito": 121,
       "margin_by_term": {
         "Prepago": {
           "margin": 0.05131,
@@ -53,9 +53,9 @@
           "days": 15
         },
         "30 Días": {
-          "margin": 0.08803,
-          "normalizado": 0.08803,
-          "count": 84,
+          "margin": 0.08643,
+          "normalizado": 0.08643,
+          "count": 87,
           "days": 30
         },
         "45 Días": {
@@ -71,7 +71,7 @@
           "days": 60
         }
       },
-      "cotiz_canceladas": 17,
+      "cotiz_canceladas": 18,
       "visitas": 2,
       "clientes_nuevos": 5,
       "ppto": 217111,
@@ -494,13 +494,13 @@
       "ventas": 263039379,
       "neto": 235034471,
       "litros": 231696,
-      "litros_retail": 105078,
-      "litros_volumen": 126618,
+      "litros_retail": 110078,
+      "litros_volumen": 121618,
       "precio_neto": 1014,
       "precio_bruto": 1136,
       "margin": 0.06668,
-      "margin_retail": 0.0911,
-      "margin_volumen": 0.04487,
+      "margin_retail": 0.08491,
+      "margin_volumen": 0.04897,
       "facturas": 114,
       "nc": 3,
       "clientes": 95,
@@ -878,13 +878,13 @@
       "ventas": 286479205,
       "neto": 219020002,
       "litros": 217738,
-      "litros_retail": 118108,
-      "litros_volumen": 99630,
+      "litros_retail": 123148,
+      "litros_volumen": 94590,
       "precio_neto": 1006,
       "precio_bruto": 1318,
       "margin": 0.07956,
-      "margin_retail": 0.09411,
-      "margin_volumen": 0.06085,
+      "margin_retail": 0.09351,
+      "margin_volumen": 0.05993,
       "facturas": 129,
       "nc": 3,
       "clientes": 108,
@@ -1260,8 +1260,8 @@
     {
       "date": "09sep",
       "day": "Mié",
-      "litros": 24505,
-      "neto": 29303198
+      "litros": 34006,
+      "neto": 40503755
     },
     {
       "date": "08sep",
@@ -1386,13 +1386,13 @@
   ],
   "total_cash": 40406744,
   "receivables": {
-    "open_invoices": 279,
-    "total_due": 544981722,
-    "current": 437478254,
-    "overdue": 107503468,
-    "pct_overdue": 19.7,
+    "open_invoices": 283,
+    "total_due": 556955534,
+    "current": 450734066,
+    "overdue": 106221468,
+    "pct_overdue": 19.1,
     "aging": {
-      "0-30": 65139081,
+      "0-30": 63857081,
       "31-60": 12344103,
       "61-90": 0,
       "90+": 30020284
@@ -1475,8 +1475,127 @@
         "amount": 7508852
       },
       {
-        "name": "AGRÍCOLA CANCEL LIMITADA",
-        "amount": 7436665
+        "name": "EDUARDO ALEJANDRO CABRERA FAUNDEZ",
+        "amount": 7469999
+      }
+    ]
+  },
+  "cobranza": {
+    "avla_fecha": "2026-08-03",
+    "buckets": {
+      "normal": {
+        "monto": 56792080,
+        "n": 21
+      },
+      "corte_dicom": {
+        "monto": 19409104,
+        "n": 2
+      },
+      "siniestro": {
+        "monto": 0,
+        "n": 0
+      },
+      "judicial": {
+        "monto": 1778500,
+        "n": 1
+      },
+      "post_siniestro": {
+        "monto": 19691220,
+        "n": 2
+      },
+      "castigo": {
+        "monto": 8550564,
+        "n": 3
+      }
+    },
+    "clientes": [
+      {
+        "name": "PERLITA CHAMORRO ARRIENDO DE MAQUINARIAS EIRL (SINIESTRO)",
+        "rut": "76700641-1",
+        "monto": 4875000,
+        "n_facturas": 1,
+        "dias": 476,
+        "oldest_due": "2025-05-21",
+        "etapa": "castigo",
+        "cubierto": 0,
+        "no_cubierto": 4875000
+      },
+      {
+        "name": "MIGUEL ANGEL DEL C. LECAROS MELO SERVICIOS AGRICOLAS EIRL",
+        "rut": "76596621-3",
+        "monto": 1930999,
+        "n_facturas": 2,
+        "dias": 285,
+        "oldest_due": "2025-11-28",
+        "etapa": "castigo",
+        "cubierto": 0,
+        "no_cubierto": 1930999
+      },
+      {
+        "name": "MOVIMIENTO DE TIERRA ERRAZURIZ SPA (SINIESTRADO)",
+        "rut": "77527077-2",
+        "monto": 1744565,
+        "n_facturas": 1,
+        "dias": 246,
+        "oldest_due": "2026-01-06",
+        "etapa": "castigo",
+        "cubierto": 0,
+        "no_cubierto": 1744565
+      },
+      {
+        "name": "AGRICOLA POCH S.A. (siniestrado)",
+        "rut": "96778800-7",
+        "monto": 947220,
+        "n_facturas": 2,
+        "dias": 135,
+        "oldest_due": "2026-04-27",
+        "etapa": "post_siniestro",
+        "cubierto": 0,
+        "no_cubierto": 947220
+      },
+      {
+        "name": "VICTOR FAVIO VILCHES MARDONES",
+        "rut": "19274357-5",
+        "monto": 1778500,
+        "n_facturas": 1,
+        "dias": 107,
+        "oldest_due": "2026-05-25",
+        "etapa": "judicial",
+        "cubierto": 0,
+        "no_cubierto": 1778500
+      },
+      {
+        "name": "EMM SERVICIOS SPA (SINIESTRO)",
+        "rut": "77800537-9",
+        "monto": 18744000,
+        "n_facturas": 1,
+        "dias": 95,
+        "oldest_due": "2026-06-06",
+        "etapa": "post_siniestro",
+        "cubierto": 0,
+        "no_cubierto": 18744000
+      },
+      {
+        "name": "ARESTI CHILE WINE SA",
+        "rut": "76041000-4",
+        "monto": 926100,
+        "n_facturas": 1,
+        "dias": 52,
+        "oldest_due": "2026-07-19",
+        "etapa": "corte_dicom",
+        "cubierto": 0,
+        "no_cubierto": 926100
+      },
+      {
+        "name": "JOSE RODRIGO ORMAZABAL VIDAL",
+        "rut": "14464809-9",
+        "monto": 18483004,
+        "n_facturas": 5,
+        "dias": 39,
+        "oldest_due": "2026-08-01",
+        "etapa": "corte_dicom",
+        "cubierto": 18483004,
+        "no_cubierto": 0
       }
     ]
   },
@@ -1549,17 +1668,15 @@
         },
         "Talca": {
           "total": 38,
-          "on_time": 24,
-          "late": 14,
-          "pct": 63.16,
+          "on_time": 26,
+          "late": 12,
+          "pct": 68.42,
           "late_clients": [
             "AGRICOLA LOS ALPES LTDA (prom: 2026-09-09, fact: sin factura)",
             "PROTERRA SPA (prom: 2026-09-09, fact: sin factura)",
-            "MATIAS ANTONIO RIVERA MORAGA (prom: 2026-09-09, fact: sin factura)",
             "TRANSPORTES EL POLILLA SPA (prom: 2026-09-09, fact: sin factura)",
             "HECTOR RODRIGO TRONCOSO ZAPATA (prom: 2026-09-09, fact: sin factura)",
             "TRANSPORTES OSSES ROJAS SPA (prom: 2026-09-09, fact: sin factura)",
-            "EDUARDO ALEJANDRO CABRERA FAUNDEZ (prom: 2026-09-09, fact: sin factura)",
             "EXPRESO SUDAMERICANO SPA (prom: 2026-09-09, fact: sin factura)",
             "SOC. AGRIC. Y FOR. TRES CANALES LTDA (prom: 2026-09-08, fact: sin factura)",
             "Francisco Antonio Méndez Leiva (prom: 2026-09-09, fact: sin factura)",
@@ -1571,14 +1688,13 @@
         },
         "VI Costa": {
           "total": 14,
-          "on_time": 8,
-          "late": 6,
-          "pct": 57.14,
+          "on_time": 9,
+          "late": 5,
+          "pct": 64.29,
           "late_clients": [
             "EDUARDO ANDRES DUARTE GONZALEZ, EDUARDO ANDRES DUARTE GONZALEZ (prom: 2026-09-07, fact: 2026-09-08)",
             "LUIS ANTONIO REYES FUENTES (prom: 2026-09-08, fact: sin factura)",
             "AGRICOLA LO BELTRAN LIMITADA (prom: 2026-09-08, fact: sin factura)",
-            "ARCE LIZANA FRANCISCO ROLANDO (prom: 2026-09-09, fact: sin factura)",
             "APICOLA PATRICIA SUSANA BUSTOS ARCE EIRL. (prom: 2026-09-09, fact: sin factura)",
             "RENACER SPA (prom: 2026-09-07, fact: 2026-09-08)"
           ]
@@ -2464,14 +2580,14 @@
     }
   ],
   "riesgo": {
-    "cubierto": 417821090,
-    "cubierto_count": 242,
-    "no_cubierto": 127160632,
+    "cubierto": 431076902,
+    "cubierto_count": 246,
+    "no_cubierto": 125878632,
     "no_cubierto_count": 60,
-    "pct_monto": 23.33,
-    "pct_count": 19.87,
+    "pct_monto": 22.6,
+    "pct_count": 19.61,
     "avla_fecha_descarga": "2026-08-03",
-    "avla_ruts_matched": 106,
+    "avla_ruts_matched": 110,
     "avla_ruts_total": 735
   },
   "churn": {
@@ -3869,10 +3985,10 @@
         "dso": 21.7
       }
     ],
-    "cxc_hoy": 1279859938,
+    "cxc_hoy": 1248083930,
     "por_semana": {
-      "2026-09-09": 1279859938,
-      "2026-09-02": 1167225159,
+      "2026-09-09": 1248083930,
+      "2026-09-02": 1164989159,
       "2026-08-26": 1078326899,
       "2026-08-19": 1017640981,
       "2026-08-12": 919826942,
