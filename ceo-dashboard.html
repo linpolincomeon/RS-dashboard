@@ -945,25 +945,25 @@ function renderRiesgo(){
         return m?parseInt(m[1]):null;
     }
     // ── Calculadora excepción (replica hoja Mantenedor con fórmula exacta) ──
-    // Mantenedor ago-2026: precios NETOS (sin IVA/IEC). Mínimos = ENAP/(1−margen_min):
-    //   Crédito 7.5% (col I) · Volumen 5.5% (col K) · Contado 6.5% (col M)
+    // Mantenedor sep-2026 (actualizado 10-sep tras alza de costo): precios NETOS (sin IVA/IEC).
+    // Mínimos = ENAP/(1−margen_min): Crédito 7.5% (col I) · Volumen 5.5% (col K) · Contado 6.5% (col M)
     // Fórmula real: D17 = VLOOKUP(zona, base_min, col_tipo) + (-días_real + 30) × C10/30
     //   donde C10 = -16 (costo financiero base por 30 días)
     // Actualizar bomba/enap cuando ENAP cambie (Mantenedor!F/G); los mínimos se recalculan solos.
     const MARGEN_MIN={cred:0.075, vol:0.055, cont:0.065};
     const ZONAS_NETO={
         // bomba: precio bomba NETO referencia · enap: costo ENAP neto
-        'Rancagua':            {bomba:1254, enap:1092},
-        'San Fernando':        {bomba:1244, enap:1092},
-        'San Fdo':             {bomba:1244, enap:1092},
-        'VI Costa':            {bomba:1219, enap:1092},
-        'Talca':               {bomba:1195, enap:1081},
-        'Curico':              {bomba:1195, enap:1081},
-        'Curicó':              {bomba:1195, enap:1081},
-        'Chillan':             {bomba:1195, enap:1081},
-        'Chillán':             {bomba:1195, enap:1081},
+        'Rancagua':            {bomba:1441, enap:1279},
+        'San Fernando':        {bomba:1431, enap:1279},
+        'San Fdo':             {bomba:1431, enap:1279},
+        'VI Costa':            {bomba:1406, enap:1279},
+        'Talca':               {bomba:1382, enap:1268},
+        'Curico':              {bomba:1382, enap:1268},
+        'Curicó':              {bomba:1382, enap:1268},
+        'Chillan':             {bomba:1382, enap:1268},
+        'Chillán':             {bomba:1382, enap:1268},
         // RM sin fila propia en Mantenedor: "Paine y Lampa se cotizan a precio San Fernando"
-        'Región Metropolitana':{bomba:1244, enap:1092},
+        'Región Metropolitana':{bomba:1431, enap:1279},
     };
     const ZONAS_PRECIOS={};
     for(const [zn,v] of Object.entries(ZONAS_NETO)){

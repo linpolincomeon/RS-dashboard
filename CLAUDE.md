@@ -102,15 +102,17 @@ Las dos Paulines: **Vial Comber** = CEO (NO aparece en dashboards de ventas) · 
 
 ## Tabla de zonas Mantenedor (hardcoded en ceo-dashboard.html)
 
-⚠ **Desde ago-2026 el Mantenedor trabaja en NETOS (sin IVA/IEC)** — antes la tabla estaba en brutos. En el HTML solo se hardcodean `bomba`/`enap` por zona (`ZONAS_NETO`); los mínimos se calculan como `ENAP/(1−margen_min)` con Crédito 7,5% · Volumen 5,5% · Contado 6,5%. Actualizar aquí Y en el HTML cuando ENAP cambie precios. Valores de agosto 2026 — verificar vigencia contra el Sheet Mantenedor antes de usar.
+⚠ **Desde ago-2026 el Mantenedor trabaja en NETOS (sin IVA/IEC)** — antes la tabla estaba en brutos. En el HTML solo se hardcodean `bomba`/`enap` por zona (`ZONAS_NETO`); los mínimos se calculan como `ENAP/(1−margen_min)` con Crédito 7,5% · Volumen 5,5% · Contado 6,5%. Actualizar aquí Y en el HTML cuando ENAP cambie precios. Verificar vigencia contra el Sheet Mantenedor antes de usar.
 
 | Zona | Bomba (neto) | ENAP (neto) |
 |---|---|---|
-| Rancagua | 1254 | 1092 |
-| San Fernando | 1244 | 1092 |
-| VI Costa | 1219 | 1092 |
-| Talca / Curicó / Chillán | 1195 | 1081 |
-| Región Metropolitana | 1244 | 1092 |
+| Rancagua | 1441 | 1279 |
+| San Fernando | 1431 | 1279 |
+| VI Costa | 1406 | 1279 |
+| Talca / Curicó / Chillán | 1382 | 1268 |
+| Región Metropolitana | 1431 | 1279 |
+
+Valores de **septiembre 2026** (alza de costo ~+$187 neto acumulada ago→sep, actualizado 10-sep). Los de agosto eran 1254/1244/1219/1195 bomba y 1092/1081 ENAP.
 
 RM no tiene fila propia en el Mantenedor: "Paine y Lampa se cotizan a precio San Fernando" (nota de la hoja) → RM usa San Fernando.
 
