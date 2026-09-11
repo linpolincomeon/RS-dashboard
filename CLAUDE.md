@@ -76,7 +76,7 @@ Frontend sin framework. Fuente DM Sans. Background `#f7f6f3`, cards blancas, ace
 
 ## Equipo activo (junio 2026 — `ALLOWED_VENDORS`)
 
-Formales: Joaquín (Muñoz Encalada), Comber Sigall Pauline (fidelización/CS; meta mantención cambia mensualmente). Carlos Labbe también cuenta como ejecutivo formal en la KPI "Litros Ejecutivos".
+Formales: Joaquín (Muñoz Encalada), Comber Sigall Pauline (fidelización/CS; meta mantención cambia mensualmente — sep-2026: 605.942 L). Carlos Labbe también cuenta como ejecutivo formal en la KPI "Litros Ejecutivos". **Gonzalo Vásquez (desde sep-2026): vendedor INTERNO de nómina** (user 294, login sin `.ext` a propósito), meta sep 30.000 L; está en `ALLOWED_VENDORS`/`_CANONICAL_VENDORS`/vendor-goals pero NO en `FREELANCERS` ni `EJECUTIVOS_ALL` (sus litros caen en "Litros Ejecutivos" por residuo, como Labbe).
 Manuel Santana: **removido de los dashboards el 2026-07-10** (quitado de `ALLOWED_VENDORS`, `EJECUTIVOS`, `EXEC_COUNT` 4→3 y canonical de `extract_crm.py`). No tenía facturas de julio, sin impacto en números del mes.
 Freelancers: Sebastián Toro (sin meta), Cristian Jiroz, Manuel López Allende, Carolina Avilés, Diego Varas, Marcela Márquez, Raúl Bisquertt, Nicolás Gonzalez, Rodrigo Retamal.
 Removidos de TODA referencia: Fernando Jullian, Yeniré Ron, André De Trenqualye, Vanessa Vázquez, Julio Phillipi, Turner Fabres Antonio.

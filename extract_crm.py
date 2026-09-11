@@ -153,6 +153,7 @@ _CANONICAL_VENDORS = [
     ({"abraham", "urrutia"}, "Abraham Urrutia"),
     ({"ernesto", "parot"}, "Ernesto Parot"),
     ({"juan", "naour"}, "Juan Naour"),
+    ({"gonzalo", "vasquez"}, "Gonzalo Vásquez"),  # interno nómina, sep-2026
 ]
 
 def canonical_vendedor(name):
