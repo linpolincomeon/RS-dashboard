@@ -3135,6 +3135,10 @@ def extract_operaciones(models, uid):
         _cl_offset = 4 if 4 <= today.month <= 8 else 3
         prom_total = 0; prom_ok = 0; en_curso = 0; preorders = 0; movidos = 0
         prom_incumplidas = []
+        # Entrega→Factura (pedido Pauline 11-sep): días entre la fecha de entrega
+        # ORIGINAL (snapshot, no la editada) y la 1ª factura. Facturado antes o el
+        # mismo día = 0 días de espera.
+        ent_n = 0; ent_sum = 0; ent_0d = 0; ent_1d = 0
         for o in wk_orders:
             created_cl = datetime.strptime(o["create_date"][:19], "%Y-%m-%d %H:%M:%S") - timedelta(hours=_cl_offset)
             pedido_dia = created_cl.date()
@@ -3171,6 +3175,15 @@ def extract_operaciones(models, uid):
                 continue
             prom_total += 1
             first_inv = datetime.strptime(ds[0][:10], "%Y-%m-%d").date()
+            if _ship:
+                try:
+                    _ent_diff = (first_inv - datetime.strptime(_ship, "%Y-%m-%d").date()).days
+                    ent_n += 1
+                    ent_sum += max(0, _ent_diff)
+                    if _ent_diff <= 0: ent_0d += 1
+                    if _ent_diff <= 1: ent_1d += 1
+                except ValueError:
+                    pass
             if first_inv <= limite:
                 prom_ok += 1
             else:
@@ -3186,6 +3199,10 @@ def extract_operaciones(models, uid):
         s["prom_en_curso"] = en_curso
         s["prom_movidos"] = movidos
         s["prom_incumplidas"] = prom_incumplidas[:40]
+        s["ent_n"] = ent_n
+        s["ent_prom_dias"] = round(ent_sum / ent_n, 2) if ent_n else None
+        s["ent_0d_pct"] = round(ent_0d / ent_n * 100) if ent_n else None
+        s["ent_24h_pct"] = round(ent_1d / ent_n * 100) if ent_n else None
         s["pedidos_semana"] = len(wk_orders)
         print(f"  SLA 24h {wk['label']}: {prom_ok}/{prom_total} a tiempo ({s['prom_pct']}%) | incumplidas: {len(prom_incumplidas)} | preorders: {preorders} | movidos: {movidos} | en curso: {en_curso}")
         sla_semanas.append(s)

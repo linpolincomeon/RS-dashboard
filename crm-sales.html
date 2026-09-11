@@ -309,6 +309,7 @@ tr:hover td{background:#fafaf8}
             <tr><td class="bold">Litros Ejecutivos</td><td>Litros de vendedores internos (no freelance, no CS): Labbe, Isabel, etc.</td><td>res.partner.user_id</td></tr>
             <tr><td class="bold">Litros Fidelización</td><td>Litros vendidos por equipo CS (Comber, Mauro, TomEnergy)</td><td>res.partner.user_id</td></tr>
             <tr><td class="bold">Litros Freelancer</td><td>Litros de freelancers .ext: Toro, Muñoz, Avilés, Márquez, etc.</td><td>res.partner.user_id</td></tr>
+            <tr><td class="bold">Entrega → Factura</td><td>Promedio de días entre la Fecha de Entrega ORIGINAL del pedido (snapshot al primer avistamiento, inmune a ediciones posteriores) y la primera factura. Facturado antes o el mismo día cuenta 0. Es el SLA "despachamos en menos de 24 horas" medido contra la fecha comprometida</td><td>sale.order.shipping_date (snapshot) + account.move</td></tr>
             <tr><td class="bold">Margen Compañía</td><td>Margen ponderado por venta neta de retail + volumen. Meta ponderada = mezcla de metas (retail 8,5% · volumen 6%) según el mix real de venta del período. El $/L es el margen en pesos por litro (también en los boxes Retail y Volumen)</td><td>margin_zone ponderado</td></tr>
             <tr><td class="bold">Mix Retail/Volumen</td><td>Ratio retail/volumen de los litros del período (retail primero; clasificación por is_volume_client). Más volumen = menos margen compañía (meta vol 6% vs retail 8,5%). Semáforo vs mix presupuestado: 🟢 ≤ppto+3pt · 🟡 ≤ppto+10pt · 🔴 sobre eso. El mix de meses CERRADOS queda congelado al cierre (mix-snapshot.json) — las reclasificaciones posteriores de clientes no reescriben la historia</td><td>account.move + is_volume_client</td></tr>
             <tr style="border-top:2px solid #e5e4df"><td class="bold">Leads</td><td>Oportunidades CREADAS esa semana en CRM (create_date dentro de la semana). No incluye leads existentes con actividad.</td><td>crm.lead create_date</td></tr>
@@ -2193,6 +2194,14 @@ function renderOperaciones() {
   h += mkKpi((sla.prom_pct || 0) >= 95 ? 'c-green' : (sla.prom_pct || 0) >= 85 ? 'c-yellow' : 'c-red', '\u{1F69A} SLA Entrega 24h', (sla.prom_pct || 0) + '%', 'facturado \u226424h del pedido (o fecha acordada) \u00b7 meta 95%', sla.prom_pct || 0, 95);
   h += mkKpi('c-blue', 'Pedidos de la Semana', sla.pedidos_semana || 0, (sla.prom_total || 0) + ' evaluados \u00b7 ' + (sla.prom_preorders || 0) + ' preorder' + ((sla.prom_en_curso || 0) ? ' \u00b7 ' + sla.prom_en_curso + ' en reparto' : '') + ((sla.prom_movidos || 0) ? ' \u00b7 \u26a0 ' + sla.prom_movidos + ' plazo movido' : ''), null, null);
   h += mkKpi(incumplidas.length > 0 ? 'c-red' : 'c-green', '\u23f0 Fuera de Plazo', incumplidas.length, 'facturados despu\u00e9s del plazo comprometido', null, null);
+  // Entrega\u2192Factura (pedido Pauline 11-sep): promedio de d\u00edas entre la fecha de
+  // entrega ORIGINAL (snapshot) y la 1\u00aa factura \u2014 el SLA "despachamos en <24h"
+  if (sla.ent_prom_dias != null) {
+    const entOk = (sla.ent_24h_pct || 0) >= 95;
+    h += mkKpi(entOk ? 'c-green' : (sla.ent_24h_pct || 0) >= 85 ? 'c-yellow' : 'c-red',
+      '\u26a1 Entrega \u2192 Factura', sla.ent_prom_dias.toLocaleString('es-CL') + ' d\u00edas prom',
+      (sla.ent_24h_pct || 0) + '% dentro de 24h de la fecha de entrega \u00b7 ' + (sla.ent_0d_pct || 0) + '% mismo d\u00eda \u00b7 ' + (sla.ent_n || 0) + ' pedidos', null, null);
+  }
   h += mkKpi('c-blue', 'Litros Entregados', fL(litrosSem), 'semana seleccionada', null, null);
   h += mkKpi('c-green', 'Camiones Activos', camiones.filter(c => c !== 'Sin cami\u00f3n').length, 'con entregas en la semana', null, null);
   h += '</div>';
