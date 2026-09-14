@@ -1302,7 +1302,13 @@ function renderOperaciones(){
 function getCFParams(){
     const buf=parseFloat(localStorage.getItem('cf_buffer')||'10');
     const pES=parseFloat(localStorage.getItem('cf_precio_enap')||'0');
-    return {buffer:isNaN(buf)?10:buf, precioEnap:isNaN(pES)?0:pES};
+    const gr=localStorage.getItem('cf_growth');  // null = usar tendencia real
+    return {buffer:isNaN(buf)?10:buf, precioEnap:isNaN(pES)?0:pES,
+            growth:(gr==null||gr===''||isNaN(parseFloat(gr)))?null:parseFloat(gr)};
+}
+function resetCFGrowth(){
+    localStorage.removeItem('cf_growth');
+    renderCashflow();
 }
 function setCFParam(k,v){
     const n=parseFloat(v);
@@ -1336,14 +1342,34 @@ function renderCashflow(){
     const P=getCFParams();
     const precioCompra=P.precioEnap>0?P.precioEnap:precioImpl;
 
-    // Projection: 4-week trend (no YoY yet — only 16 weeks of history)
-    const projL=avgL, projV=avgV, projR=avgR;
-    const projC=avgL*precioCompra;  // compras = litros × precio compra ENAP
+    // ── Crecimiento (pedido Pauline 14-sep: caja corta en período de crecimiento) ──
+    // Tendencia real = promedio litros últimas 4 semanas vs las 4 anteriores.
+    // El crecimiento se aplica a LITROS/VENTA/COMPRAS pero NO a la recaudación:
+    // los cobros de esta semana vienen de ventas de hace 30-60 días (rezago) —
+    // por eso crecer aprieta la caja aunque la venta suba.
+    const prev8=W.slice(5,9);
+    let growthAuto=0;
+    if(prev8.length===4){
+        const avgL8=prev8.reduce((s,w)=>s+(w.litros||0),0)/4;
+        if(avgL8>0) growthAuto=Math.round((avgL/avgL8-1)*1000)/10;
+    }
+    const g=(P.growth!=null)?P.growth:growthAuto;
+    const gF=1+g/100;
+
+    // Projection: 4-week trend × crecimiento (recaudación SIN crecimiento, rezago)
+    const projL=avgL*gF, projV=avgV*gF, projR=avgR;
+    const projC=projL*precioCompra;  // compras = litros × precio compra ENAP
 
     // Gap = compras a pagar − recaudación esperada
     const gap=projC-projR;
     const bufFactor=1+(P.buffer/100);
     const saldoReq=Math.max(0,gap)*bufFactor;
+
+    // ── Peor semana real (lote ENAP): gap máximo semanal de las últimas 4 ──
+    // El promedio esconde que ENAP se compra en lotes (semanas de $180M y de $500M).
+    let worstGap=-Infinity, worstWk=null;
+    prev4.forEach(w=>{const wg=(w.compras_odoo||0)-(w.recaud||0); if(wg>worstGap){worstGap=wg;worstWk=w;}});
+    const stressReq=Math.max(0,worstGap*gF)*bufFactor;
 
     // Current cash on hand
     const cajaActual=D.total_cash||0;
@@ -1360,7 +1386,7 @@ function renderCashflow(){
     const fNoSign=n=>!n&&n!==0?'—':(n/1e6).toFixed(1)+'M';
 
     let h='<div class="section-label">💰 Cash Flow — Proyección Capital de Trabajo</div>';
-    h+='<div class="note" style="margin-bottom:16px">Tendencia 4 semanas cerradas. Los lunes este tablero te dice cuánta caja necesitas para cubrir compras a proveedores antes de que entren los cobros de la semana. Modelo: proyección = promedio últimas 4 semanas. Próxima fase: ajuste estacional YoY.</div>';
+    h+='<div class="note" style="margin-bottom:16px">Tendencia 4 semanas cerradas. Los lunes este tablero te dice cuánta caja necesitas para cubrir compras a proveedores antes de que entren los cobros de la semana. Modelo: promedio 4 semanas × crecimiento (las compras crecen con la venta; la recaudación NO — los cobros vienen de ventas de hace 30-60 días). El bloque "Peor Semana" mide contra el lote ENAP real, no contra el promedio.</div>';
 
     // ── Parameters bar ──
     h+='<div class="cf-params">';
@@ -1371,6 +1397,10 @@ function renderCashflow(){
     h+='<div class="cf-param"><label>Colchón seguridad %</label>';
     h+=`<input type="number" value="${P.buffer}" onchange="setCFParam('buffer',this.value)" step="1" min="0" max="50"/>`;
     h+='<span class="cf-hint">Sobre el gap proyectado</span></div>';
+    h+='<div class="cf-param"><label>Crecimiento semanal %</label>';
+    h+=`<input type="number" value="${g}" onchange="setCFParam('growth',this.value)" step="0.5"/>`;
+    h+=`<span class="cf-hint">Tendencia real ${growthAuto>=0?'+':''}${growthAuto}% (4 sem vs 4 previas) · `;
+    h+=`<a href="javascript:void(0)" onclick="resetCFGrowth()" style="color:var(--blue);text-decoration:underline">usar tendencia</a> · aplica a compras, NO a recaudación (rezago de cobro)</span></div>`;
     h+='</div>';
 
     // ── KPIs Esta Semana ──
@@ -1384,15 +1414,27 @@ function renderCashflow(){
     h+=kpi('Caja Actual','$'+fNoSign(cajaActual),null,saldoReq<=0?'c-green':(cobertura>=1.2?'c-green':cobertura>=0.9?'c-amber':'c-red'),saldoReq>0?(cobertura*100).toFixed(0)+'% del requerido':'Sin gap que cubrir');
     h+='</div>';
 
-    // ── Próxima semana (mismo modelo) ──
-    h+='<div class="section-label" style="margin-top:18px">Próxima Semana (proyección)</div>';
-    h+='<div class="note" style="margin-bottom:12px">Sin estacionalidad por ahora — usa el mismo promedio 4-sem. La próxima fase incorporará comparativo año anterior.</div>';
+    // ── Peor semana real (lote ENAP) ──
+    h+='<div class="section-label" style="margin-top:18px">⚠️ Peor Semana (lote ENAP)</div>';
+    h+='<div class="note" style="margin-bottom:12px">El promedio esconde los lotes: ENAP se paga en semanas puntuales. Este bloque usa la PEOR semana real de las últimas 4 (mayor gap compras−recaudación), escalada por crecimiento — es la caja que hay que poder resistir, no el promedio.</div>';
     h+='<div class="kpis">';
-    h+=kpi('Venta Proyectada','$'+fNoSign(projV),null,'c-blue',Math.round(projL).toLocaleString()+' L');
+    h+=kpi('Peor Gap Semanal',(worstGap>=0?'+$':'-$')+fNoSign(Math.abs(worstGap)),null,worstGap>0?'c-red':'c-green',worstWk?worstWk.label+': $'+fNoSign(worstWk.compras_odoo||0)+' compras vs $'+fNoSign(worstWk.recaud||0)+' recaud':'');
+    h+=kpi('Saldo p/ Semana de Lote','$'+fNoSign(stressReq),null,cls(stressReq),'Peor gap × crecimiento × colchón');
+    h+=kpi('Caja vs Peor Semana',stressReq>0?(cajaActual/stressReq*100).toFixed(0)+'%':'—',null,stressReq<=0?'c-green':(cajaActual/stressReq>=1.2?'c-green':cajaActual/stressReq>=0.9?'c-amber':'c-red'),stressReq>0?'$'+fNoSign(cajaActual)+' de $'+fNoSign(stressReq):'Sin gap ni en la peor semana');
+    h+='</div>';
+
+    // ── Próxima semana (crecimiento compuesto) ──
+    const projL2=avgL*gF*gF, projV2=avgV*gF*gF, projC2=projL2*precioCompra;
+    const gap2=projC2-projR;
+    const saldoReq2=Math.max(0,gap2)*bufFactor;
+    h+='<div class="section-label" style="margin-top:18px">Próxima Semana (proyección)</div>';
+    h+='<div class="note" style="margin-bottom:12px">Mismo modelo con crecimiento compuesto ('+(g>=0?'+':'')+g+'% por semana). La recaudación sigue en promedio 4-sem: los cobros de la próxima semana también vienen de ventas pasadas.</div>';
+    h+='<div class="kpis">';
+    h+=kpi('Venta Proyectada','$'+fNoSign(projV2),null,'c-blue',Math.round(projL2).toLocaleString()+' L');
     h+=kpi('Recaudación Esperada','$'+fNoSign(projR),null,'c-green','Promedio 4 sem');
-    h+=kpi('Compras ENAP Proy.','$'+fNoSign(projC),null,'c-amber',Math.round(projL).toLocaleString()+' L × $'+Math.round(precioCompra));
-    h+=kpi('Gap',(gap>=0?'+$':'-$')+fNoSign(Math.abs(gap)),null,gap>0?'c-red':'c-green',null);
-    h+=kpi('Saldo Requerido Lunes','$'+fNoSign(saldoReq),null,cls(saldoReq),'Mismo modelo 4-sem');
+    h+=kpi('Compras ENAP Proy.','$'+fNoSign(projC2),null,'c-amber',Math.round(projL2).toLocaleString()+' L × $'+Math.round(precioCompra));
+    h+=kpi('Gap',(gap2>=0?'+$':'-$')+fNoSign(Math.abs(gap2)),null,gap2>0?'c-red':'c-green',null);
+    h+=kpi('Saldo Requerido Lunes','$'+fNoSign(saldoReq2),null,cls(saldoReq2),'Crecimiento compuesto 2 sem');
     h+='</div>';
 
     // ── Tabla histórica + proyección ──
