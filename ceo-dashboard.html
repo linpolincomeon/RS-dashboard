@@ -1405,7 +1405,7 @@ function renderCashflow(){
 
     // ── KPIs Esta Semana ──
     h+='<div class="section-label" style="margin-top:18px">Esta Semana ('+(cur.label||'')+')</div>';
-    h+='<div class="kpis">';
+    h+='<div class="kpi-grid">';
     h+=kpi('Venta Proyectada','$'+fNoSign(projV),null,'c-blue',Math.round(projL).toLocaleString()+' L');
     h+=kpi('Recaudación Esperada','$'+fNoSign(projR),null,'c-green','Promedio 4 sem');
     h+=kpi('Compras ENAP Proy.','$'+fNoSign(projC),null,'c-amber',Math.round(projL).toLocaleString()+' L × $'+Math.round(precioCompra));
@@ -1417,7 +1417,7 @@ function renderCashflow(){
     // ── Peor semana real (lote ENAP) ──
     h+='<div class="section-label" style="margin-top:18px">⚠️ Peor Semana (lote ENAP)</div>';
     h+='<div class="note" style="margin-bottom:12px">El promedio esconde los lotes: ENAP se paga en semanas puntuales. Este bloque usa la PEOR semana real de las últimas 4 (mayor gap compras−recaudación), escalada por crecimiento — es la caja que hay que poder resistir, no el promedio.</div>';
-    h+='<div class="kpis">';
+    h+='<div class="kpi-grid">';
     h+=kpi('Peor Gap Semanal',(worstGap>=0?'+$':'-$')+fNoSign(Math.abs(worstGap)),null,worstGap>0?'c-red':'c-green',worstWk?worstWk.label+': $'+fNoSign(worstWk.compras_odoo||0)+' compras vs $'+fNoSign(worstWk.recaud||0)+' recaud':'');
     h+=kpi('Saldo p/ Semana de Lote','$'+fNoSign(stressReq),null,cls(stressReq),'Peor gap × crecimiento × colchón');
     h+=kpi('Caja vs Peor Semana',stressReq>0?(cajaActual/stressReq*100).toFixed(0)+'%':'—',null,stressReq<=0?'c-green':(cajaActual/stressReq>=1.2?'c-green':cajaActual/stressReq>=0.9?'c-amber':'c-red'),stressReq>0?'$'+fNoSign(cajaActual)+' de $'+fNoSign(stressReq):'Sin gap ni en la peor semana');
@@ -1429,7 +1429,7 @@ function renderCashflow(){
     const saldoReq2=Math.max(0,gap2)*bufFactor;
     h+='<div class="section-label" style="margin-top:18px">Próxima Semana (proyección)</div>';
     h+='<div class="note" style="margin-bottom:12px">Mismo modelo con crecimiento compuesto ('+(g>=0?'+':'')+g+'% por semana). La recaudación sigue en promedio 4-sem: los cobros de la próxima semana también vienen de ventas pasadas.</div>';
-    h+='<div class="kpis">';
+    h+='<div class="kpi-grid">';
     h+=kpi('Venta Proyectada','$'+fNoSign(projV2),null,'c-blue',Math.round(projL2).toLocaleString()+' L');
     h+=kpi('Recaudación Esperada','$'+fNoSign(projR),null,'c-green','Promedio 4 sem');
     h+=kpi('Compras ENAP Proy.','$'+fNoSign(projC2),null,'c-amber',Math.round(projL2).toLocaleString()+' L × $'+Math.round(precioCompra));
