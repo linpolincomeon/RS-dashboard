@@ -1465,31 +1465,44 @@ function renderCashflow(){
     h+='<td class="r" style="color:'+(gap>0?'var(--red)':'var(--green)')+'">'+(gap>=0?'+$':'-$')+fNoSign(Math.abs(gap))+'</td>';
     h+='<td class="r">'+(projC>0?(projR/projC*100).toFixed(0):'—')+'%</td>';
     h+='</tr>';
-    // Próxima semana proyectada
+    // Próxima semana proyectada (crecimiento compuesto — mismas cifras que los KPIs de arriba)
     h+='<tr class="cf-row-next">';
     h+='<td>🔮 Próx. semana (proy)</td>';
-    h+='<td class="r">'+Math.round(projL).toLocaleString()+'</td>';
-    h+='<td class="r">$'+fNoSign(projV)+'</td>';
+    h+='<td class="r">'+Math.round(projL2).toLocaleString()+'</td>';
+    h+='<td class="r">$'+fNoSign(projV2)+'</td>';
     h+='<td class="r">$'+fNoSign(projR)+'</td>';
-    h+='<td class="r">$'+fNoSign(projC)+'</td>';
-    h+='<td class="r" style="color:'+(gap>0?'var(--red)':'var(--green)')+'">'+(gap>=0?'+$':'-$')+fNoSign(Math.abs(gap))+'</td>';
-    h+='<td class="r">'+(projC>0?(projR/projC*100).toFixed(0):'—')+'%</td>';
+    h+='<td class="r">$'+fNoSign(projC2)+'</td>';
+    h+='<td class="r" style="color:'+(gap2>0?'var(--red)':'var(--green)')+'">'+(gap2>=0?'+$':'-$')+fNoSign(Math.abs(gap2))+'</td>';
+    h+='<td class="r">'+(projC2>0?(projR/projC2*100).toFixed(0):'—')+'%</td>';
     h+='</tr>';
     h+='</tbody></table>';
     h+='<div class="note">Proyección = promedio últimas 4 semanas cerradas. Gap > 0 = compras superan recaudación → necesitas caja para cubrir el desfase. Cobertura = % de compras cubierto por recaudación de la semana.</div></div>';
 
-    // ── Diagnóstico ──
+    // ── Diagnóstico (semana promedio + semana de lote — pueden dar distinto) ──
     h+='<div class="section-label" style="margin-top:18px">Diagnóstico Lunes</div>';
     h+='<div class="cf-diag">';
     if(saldoReq<=0){
-        h+='<div class="cf-ok"><strong>✅ Cubierto sin gap</strong> — La recaudación esperada ($'+fNoSign(projR)+') supera las compras proyectadas ($'+fNoSign(projC)+'). No requiere caja adicional para la semana.</div>';
+        h+='<div class="cf-ok"><strong>✅ Semana promedio cubierta</strong> — La recaudación esperada ($'+fNoSign(projR)+') supera las compras proyectadas ($'+fNoSign(projC)+'). No requiere caja adicional para una semana normal.</div>';
     } else if(cobertura>=1.2){
-        h+='<div class="cf-ok"><strong>✅ Holgado</strong> — Caja actual ($'+fNoSign(cajaActual)+') cubre '+(cobertura*100).toFixed(0)+'% del saldo requerido ($'+fNoSign(saldoReq)+'). Margen amplio para la semana.</div>';
+        h+='<div class="cf-ok"><strong>✅ Semana promedio holgada</strong> — Caja actual ($'+fNoSign(cajaActual)+') cubre '+(cobertura*100).toFixed(0)+'% del saldo requerido ($'+fNoSign(saldoReq)+').</div>';
     } else if(cobertura>=0.9){
-        h+='<div class="cf-warn"><strong>⚠️ Ajustado</strong> — Caja actual ($'+fNoSign(cajaActual)+') cubre '+(cobertura*100).toFixed(0)+'% del requerido ($'+fNoSign(saldoReq)+'). Monitorear cobranza durante la semana, especialmente martes y miércoles.</div>';
+        h+='<div class="cf-warn"><strong>⚠️ Semana promedio ajustada</strong> — Caja actual ($'+fNoSign(cajaActual)+') cubre '+(cobertura*100).toFixed(0)+'% del requerido ($'+fNoSign(saldoReq)+'). Monitorear cobranza durante la semana, especialmente martes y miércoles.</div>';
     } else {
         const falta=saldoReq-cajaActual;
-        h+='<div class="cf-bad"><strong>🚨 Riesgo</strong> — Faltan <strong>$'+fNoSign(falta)+'</strong> para cubrir la semana. Caja actual: $'+fNoSign(cajaActual)+' · Requerido: $'+fNoSign(saldoReq)+'. Acciones: acelerar cobranza Itaú, revisar descuento de cheques en cartera, o postergar compras a ENAP.</div>';
+        h+='<div class="cf-bad"><strong>🚨 Semana promedio en riesgo</strong> — Faltan <strong>$'+fNoSign(falta)+'</strong> para cubrir la semana. Caja actual: $'+fNoSign(cajaActual)+' · Requerido: $'+fNoSign(saldoReq)+'. Acciones: acelerar cobranza Itaú, revisar descuento de cheques en cartera, o postergar compras a ENAP.</div>';
+    }
+    // Semana de lote ENAP (peor caso real de las últimas 4)
+    if(stressReq>0){
+        const covS=cajaActual/stressReq;
+        if(covS>=1.2){
+            h+='<div class="cf-ok"><strong>✅ Resistes una semana de lote</strong> — La peor semana real ('+(worstWk?worstWk.label:'')+') exigiría $'+fNoSign(stressReq)+' y la caja lo cubre ('+(covS*100).toFixed(0)+'%).</div>';
+        } else if(covS>=0.9){
+            h+='<div class="cf-warn"><strong>⚠️ Semana de lote ajustada</strong> — Un lote como el de '+(worstWk?worstWk.label:'')+' exigiría $'+fNoSign(stressReq)+'; la caja cubre '+(covS*100).toFixed(0)+'%. Coordinar el calendario de compras ENAP con cobranza.</div>';
+        } else {
+            h+='<div class="cf-bad"><strong>🚨 Corto para semana de lote</strong> — Un lote como el de '+(worstWk?worstWk.label:'')+' exigiría $'+fNoSign(stressReq)+' y la caja actual es $'+fNoSign(cajaActual)+' ('+(covS*100).toFixed(0)+'%): faltan <strong>$'+fNoSign(stressReq-cajaActual)+'</strong>. Opciones: programar el lote post-recaudación, línea de crédito puente, o factorizar más esa semana.</div>';
+        }
+    } else {
+        h+='<div class="cf-ok"><strong>✅ Sin gap ni en la peor semana</strong> — Incluso la peor semana real de las últimas 4 quedó cubierta por su recaudación.</div>';
     }
     h+='</div>';
 
