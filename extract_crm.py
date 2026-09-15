@@ -3415,6 +3415,56 @@ def extract_asignaciones(models, uid):
         return []
 
 
+def extract_caza(models, uid):
+    """Cuentas Nombradas (etiqueta CRM 'CAZA'): pipeline de caza de cuentas grandes.
+    Convención comité 15-09-2026: probabilidad MANUAL (10 contactado/parado ·
+    25 cotizado/oportunidad · 50 negociación · 75 acuerdo verbal — NO usar la
+    automática de Odoo) y expected_revenue = LITROS MENSUALES esperados.
+    Alimenta la tabla del tab 👥 Equipo del CEO dashboard. Montos >500k L/mes
+    se marcan implausibles y NO ponderan (higiene de datos)."""
+    print("\nExtracting cuentas nombradas (CAZA)...")
+    try:
+        tag = sr(models, uid, "crm.tag", [["name", "=", "CAZA"]], ["id"])
+        if not tag:
+            print("  sin tag CAZA aún — bloque vacío")
+            return {"cuentas": [], "ponderado": 0}
+        leads = sr(models, uid, "crm.lead", [
+            ["tag_ids", "in", [tag[0]["id"]]],
+            ["active", "in", [True, False]],
+        ], ["name", "partner_id", "stage_id", "user_id", "expected_revenue",
+            "probability", "active", "date_last_stage_update", "city",
+            "activity_date_deadline", "activity_summary"], limit=200)
+        cuentas, pond = [], 0.0
+        for l in leads:
+            litros = l.get("expected_revenue") or 0
+            prob = l.get("probability") or 0
+            implausible = litros > 500000
+            stage = l["stage_id"][1] if l.get("stage_id") else "—"
+            if not l.get("active"):
+                stage = "Perdido"
+            elif not implausible:
+                pond += litros * prob / 100
+            cuentas.append({
+                "name": (l["partner_id"][1] if l.get("partner_id") else "") or l.get("name") or "",
+                "stage": stage,
+                "exec": canonical_vendedor(l["user_id"][1]) if l.get("user_id") else "—",
+                "litros": round(litros),
+                "prob": round(prob),
+                "implausible": implausible,
+                "activo": bool(l.get("active")),
+                "last_update": (l.get("date_last_stage_update") or "")[:10],
+                "next_action": l.get("activity_date_deadline") or "",
+                "next_summary": l.get("activity_summary") or "",
+                "city": l.get("city") or "",
+            })
+        cuentas.sort(key=lambda c: -(c["litros"] * c["prob"]))
+        print(f"  {len(cuentas)} cuentas nombradas · pipeline ponderado {pond:,.0f} L/mes")
+        return {"cuentas": cuentas, "ponderado": round(pond)}
+    except Exception as e:
+        print(f"  WARNING caza: {e}")
+        return {"cuentas": [], "ponderado": 0}
+
+
 # ==============================================================
 # MAIN
 # ==============================================================
@@ -3534,6 +3584,9 @@ def main():
 
     # Part 6d: Asignaciones de clientes a ejecutivos (remate)
     asignaciones = extract_asignaciones(models, uid)
+
+    # Part 6e: Cuentas Nombradas — caza de cuentas grandes (tag CAZA)
+    caza = extract_caza(models, uid)
 
     # Part 7: Pauline Comber "mantención" — absorbs the TomEnergy bucket into Comber's row.
     # Liters = TomEnergy liters + Comber liters (simple sum, no subtraction).
@@ -3792,6 +3845,7 @@ def main():
         "graduating": graduating,
         "operaciones": operaciones,
         "asignaciones": asignaciones,
+        "caza": caza,
         "vendor_goals": vendor_goals,
         "company_goals": {
             "litros_mes": _meta_mes(today),

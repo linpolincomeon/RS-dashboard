@@ -1578,8 +1578,10 @@ function renderEquipo(){
         `proy. mes ${eqProy?fK(eqProy):'—'} · meta 30d ${fK(EQ_METAS.litros30)} · 90d ${fK(EQ_METAS.litros90)} (base ago ${fK(EQ_METAS.litrosBase)})`);
     h+=kpi('Freelancers Productivos',prod+' / '+EQ_METAS.equipoN,null,eqSem(prod,EQ_METAS.prod30,EQ_METAS.prod30*.7),
         `con venta o ≥10 movs CRM/30d · meta 30d: ${EQ_METAS.prod30} · 90d: todos o cartera liberada`);
+    const caza=crm.caza||{cuentas:[],ponderado:0};
     h+=kpi('Remate (30 días)',asig.length+' asign.',null,eqSem(pctC,EQ_METAS.rematePct,EQ_METAS.rematePct*.7),
-        `${asigC} compraron (${pctC}%) · ${asigG} con gestión · meta ${EQ_METAS.remateMes}/mes ≥${EQ_METAS.rematePct}%`);
+        `${asigC} compraron (${pctC}%) · ${asigG} con gestión · meta ${EQ_METAS.remateMes}/mes ≥${EQ_METAS.rematePct}%`
+        +(caza.cuentas.length?` · 🎯 caza pond. ${fK(caza.ponderado)} L/mes`:''));
     h+=kpi('Repricing Abierto',repri.length+' casos',null,eqSem(cerrados,EQ_METAS.repri30,EQ_METAS.repri30*.5),
         `${fM(gapTot)}/mes bajo mínimo · cerrados ${cerrados} de base ${EQ_METAS.repriBase} · meta 30d: ${EQ_METAS.repri30}`);
     h+=kpi('Margen Zonas Foco',(mCh!=null?mCh.toFixed(1):'—')+'% / '+(mCu!=null?mCu.toFixed(1):'—')+'%',null,
@@ -1612,6 +1614,20 @@ function renderEquipo(){
     });
     if(!asig.length)h+='<tr><td colspan="6">Sin asignaciones en los últimos 30 días — el remate está detenido.</td></tr>';
     h+='</tbody></table></div>';
+    // ── tabla cuentas nombradas (CAZA) ──
+    h+='<div class="section-label" style="margin-top:16px">🎯 Cuentas Nombradas (CAZA) — pipeline ponderado: '+(caza.cuentas.length?fK(caza.ponderado)+' L/mes sobre '+caza.cuentas.length+' cuentas':'sin datos aún')+'</div>';
+    if(caza.cuentas.length){
+        h+='<div class="table-scroll" style="max-height:340px"><table><thead><tr><th>Cuenta</th><th>Etapa</th><th>Ejecutivo</th><th class="r">L/mes esp.</th><th class="r">Prob.</th><th class="r">Ponderado</th><th>Últ. mov.</th><th>Próx. acción</th></tr></thead><tbody>';
+        caza.cuentas.forEach(c=>{
+            const pnd=c.implausible?null:Math.round(c.litros*c.prob/100);
+            const na=c.next_action?c.next_action+(c.next_summary?' · '+c.next_summary:''):'<span style="color:var(--red)">sin acción ⚠</span>';
+            h+=`<tr><td>${c.name}${c.implausible?' <span class="sbadge s-critico">dato implausible</span>':''}${c.activo?'':' <span class="sbadge s-alto">perdido</span>'}</td><td>${c.stage}</td><td>${c.exec}</td><td class="r">${fNum(c.litros)}</td><td class="r">${c.prob}%</td><td class="r">${pnd!=null?fNum(pnd):'—'}</td><td>${c.last_update}</td><td>${na}</td></tr>`;
+        });
+        h+='</tbody></table></div>';
+        h+='<p style="font-size:11px;color:var(--text3);margin:4px 0 16px">Probabilidad MANUAL (convención: 10% contactado · 25% cotizado · 50% negociación · 75% verbal). Litros esperados según el ejecutivo — validar en primera visita; los &gt;500k se marcan implausibles y no ponderan. La lista se gestiona en el CRM con la etiqueta CAZA (máx ~20 cuentas).</p>';
+    } else {
+        h+='<p style="font-size:12px;color:var(--text3);margin:4px 0 16px">Se llena solo cuando exista la etiqueta CAZA en el CRM y corra el próximo refresh de datos (correr <code>caza_setup.py</code> y luego Run workflow).</p>';
+    }
     // ── tabla repricing ──
     h+='<div class="section-label" style="margin-top:16px">Repricing — clientes bajo el mínimo del Mantenedor (top 15, dedup. por grupo, margen 3 meses)</div>';
     h+='<div class="table-scroll" style="max-height:340px"><table><thead><tr><th>Cliente</th><th>Zona</th><th>Tipo</th><th class="r">Margen 3m</th><th class="r">Mínimo</th><th class="r">L/mes</th><th class="r">Gap $/mes</th></tr></thead><tbody>';
