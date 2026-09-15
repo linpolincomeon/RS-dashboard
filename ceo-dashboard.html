@@ -349,6 +349,7 @@
         <div id="p-operaciones" class="panel"></div>
         <div id="p-riesgo" class="panel"></div>
         <div id="p-cashflow" class="panel"></div>
+        <div id="p-equipo" class="panel"></div>
     </main>
     <div id="loading" style="text-align: center; padding: 3rem;">
         <div style="color: var(--text3);">Cargando datos...</div>
@@ -366,7 +367,7 @@ const fP=n=>!n&&n!==0?'—':(n*100).toFixed(1)+'%';
 const pD=(c,p)=>(!c||!p)?null:((c-p)/Math.abs(p))*100;
 const dH=d=>{if(d==null)return'';const u=d>=0;return`<div class="kpi-delta ${u?'up':'dn'}">${u?'▲':'▼'} ${Math.abs(d).toFixed(1)}%</div>`};
 function setupTabs(){
-    const tabDefs=[['ventas','RS'],['gerencia','Gerencia'],['resumen','Resumen'],['operaciones','Operaciones'],['riesgo','⚠️ Riesgo'],['cashflow','💰 Cash Flow']];
+    const tabDefs=[['ventas','RS'],['gerencia','Gerencia'],['resumen','Resumen'],['operaciones','Operaciones'],['riesgo','⚠️ Riesgo'],['cashflow','💰 Cash Flow'],['equipo','👥 Equipo']];
     document.getElementById('tabs').innerHTML=tabDefs.map(([k,l])=>
         `<button class="tab ${k===curTab?'active':''}" onclick="switchTab('${k}')">${l}</button>`
     ).join('');
@@ -399,6 +400,7 @@ function render(){
     else if(curTab==='operaciones') renderOperaciones();
     else if(curTab==='riesgo') renderRiesgo();
     else if(curTab==='cashflow') renderCashflow();
+    else if(curTab==='equipo') renderEquipo();
     setupTabs();
 }
 // ── RS (was Ventas) ──
@@ -1511,6 +1513,114 @@ function renderCashflow(){
 // ── HELPERS ──
 function kpi(label,val,delta,cls,sub){
     return `<div class="kpi ${cls}"><div class="kpi-label">${label}</div><div class="kpi-val">${val}</div>${dH(delta)}${sub?`<div class="kpi-sub">${sub}</div>`:''}</div>`;
+}
+// ── 👥 GESTIÓN EQUIPO (tablero subgerencia — solo CEO dashboard, no visible a vendedores) ──
+// Metas fijadas 15-09-2026 (doc "Inteligencia de datos — Mandato Subgerencia"). Actualizar aquí al renovarlas.
+const EQ_METAS={litros30:450000,litros90:650000,litrosBase:338000,prod30:9,prod90:13,equipoN:13,
+    remateMes:40,rematePct:35,repri30:15,repri90:30,repriBase:59,
+    mChillan30:7.0,mChillan90:7.5,mCurico90:8.0};
+// Consolidación de cuentas dobles y clasificación (misma convención que crm-sales)
+const EQ_MERGE={'Toro González Sebastian Enrique':'Sebastian Toro','MUÑOZ ENCALADA JOAQUIN':'Joaquin Muñoz'};
+const EQ_CS=['Comber Sigall Pauline','BOCCARDO SALVO MAURO','TomEnergy'];
+const EQ_INTERNOS=['Carlos Labbe','Isabel Muñoz','Gonzalo Vásquez','Belen Muñoz'];
+const EQ_FREELANCERS=['Sebastian Toro','Nicolás Gonzalez','Carolina Avilés','Joaquin Muñoz','Abraham Urrutia',
+    'Rodrigo Retamal','Marcela Márquez','Manuel López','Raúl Bisquertt','Cristian Jiroz','Diego Varas','Juan Naour','Ernesto Parot'];
+const EQ_MIN={'Volumen':5.5,'Crédito':7.5,'Contado':6.5};
+function eqSem(v,ok,warn){return v>=ok?'c-green':v>=warn?'c-amber':'c-red'}
+function renderEquipo(){
+    const el=document.getElementById('p-equipo');
+    const crm=D._crm;
+    if(!crm){el.innerHTML='<div class="table-card">Sin crm-data.json — este tab necesita ambos JSON.</div>';return}
+    const merge=n=>EQ_MERGE[n]||n;
+    const sumBy=(obj)=>{const o={};Object.entries(obj||{}).forEach(([k,v])=>{const n=merge(k);o[n]=(o[n]||0)+v});return o};
+    const litNow=sumBy(crm.ventas?.totals?.litros_by_user), litPrev=sumBy(crm.ventas_prev?.totals?.litros_by_user);
+    // moved_30d por ejecutivo (consolidando cuentas; nombres del CRM difieren en mayúsculas → match case-insensitive por apellido corto)
+    const mv={};(crm.executives||[]).forEach(e=>{
+        let n=e.name;
+        if(/toro/i.test(n))n='Sebastian Toro'; else if(/mu[ñn]oz encalada|^joaquin mu/i.test(n))n='Joaquin Muñoz'; else n=merge(n);
+        mv[n]=(mv[n]||0)+(e.moved_30d||0);
+    });
+    // ── métrica 1: litros equipo comercial (todo lo no-CS) ──
+    const totNow=crm.ventas?.totals?.total_litros||0, totPrev=crm.ventas_prev?.totals?.total_litros||0;
+    const csNow=EQ_CS.reduce((s,n)=>s+(litNow[n]||0),0), csPrev=EQ_CS.reduce((s,n)=>s+(litPrev[n]||0),0);
+    const eqNow=totNow-csNow, eqPrev=totPrev-csPrev;
+    const upd=new Date(crm.updated), dia=upd.getDate(), diasMes=new Date(upd.getFullYear(),upd.getMonth()+1,0).getDate();
+    const eqProy=dia>2?Math.round(eqNow*diasMes/dia):null;
+    // ── métrica 2: freelancers productivos (litros en el mes O ≥10 movs CRM) ──
+    const fila=EQ_FREELANCERS.map(n=>{
+        const lN=litNow[n]||0,lP=litPrev[n]||0,m=mv[n]||0;
+        const estado=(lN>0||m>=10)?(m>=10?'ok':'reg'):((lP>0)?'reg':'off');
+        return {n,lN,lP,m,estado};
+    });
+    const prod=fila.filter(f=>f.estado!=='off'&&(f.lN>0||f.m>=10)).length;
+    // ── métrica 3: remate (asignaciones últimos 30 días) ──
+    const hoy=upd.getTime(), d30=hoy-30*864e5;
+    const asig=(crm.asignaciones||[]).filter(a=>a.fecha&&new Date(a.fecha).getTime()>=d30);
+    const asigC=asig.filter(a=>a.compro).length, asigG=asig.filter(a=>a.gestionado||a.compro).length;
+    const pctC=asig.length?Math.round(100*asigC/asig.length):0;
+    // ── métrica 4: repricing bajo mínimo (dedup por grupo, ventana 3m del score) ──
+    const seen=new Set();let repri=[];
+    (crm.credit_risk?.score_table||[]).forEach(c=>{
+        const t=c.tipo_venta,m=c.avg_margin_pct,v=c.avg_monthly_venta||0;
+        if(!(t in EQ_MIN)||m==null||v<=0||m>=EQ_MIN[t])return;
+        const g=(c.name||'').match(/\[Grupo: (\d+)\]/);
+        if(g){if(seen.has(g[1]))return;seen.add(g[1])}
+        repri.push({name:c.name,zona:c.zona,t,m,min:EQ_MIN[t],gap:(EQ_MIN[t]-m)/100*v,f:c.is_factoring,litros:c.avg_monthly_litros||0});
+    });
+    repri.sort((a,b)=>b.gap-a.gap);
+    const gapTot=repri.reduce((s,r)=>s+r.gap,0), cerrados=Math.max(0,EQ_METAS.repriBase-repri.length);
+    // ── métrica 5: margen zonas foco ──
+    const mzN=crm.ventas?.totals?.margin_by_zone||{}, mzP=crm.ventas_prev?.totals?.margin_by_zone||{};
+    const mCh=mzN['Chillan'], mCu=mzN['Curico'];
+    // ── KPIs ──
+    let h='<div class="kpi-grid">';
+    h+=kpi('Litros Equipo Comercial',fK(eqNow),null,eqProy?eqSem(eqProy,EQ_METAS.litros30,EQ_METAS.litros30*.85):'c-blue',
+        `proy. mes ${eqProy?fK(eqProy):'—'} · meta 30d ${fK(EQ_METAS.litros30)} · 90d ${fK(EQ_METAS.litros90)} (base ago ${fK(EQ_METAS.litrosBase)})`);
+    h+=kpi('Freelancers Productivos',prod+' / '+EQ_METAS.equipoN,null,eqSem(prod,EQ_METAS.prod30,EQ_METAS.prod30*.7),
+        `con venta o ≥10 movs CRM/30d · meta 30d: ${EQ_METAS.prod30} · 90d: todos o cartera liberada`);
+    h+=kpi('Remate (30 días)',asig.length+' asign.',null,eqSem(pctC,EQ_METAS.rematePct,EQ_METAS.rematePct*.7),
+        `${asigC} compraron (${pctC}%) · ${asigG} con gestión · meta ${EQ_METAS.remateMes}/mes ≥${EQ_METAS.rematePct}%`);
+    h+=kpi('Repricing Abierto',repri.length+' casos',null,eqSem(cerrados,EQ_METAS.repri30,EQ_METAS.repri30*.5),
+        `${fM(gapTot)}/mes bajo mínimo · cerrados ${cerrados} de base ${EQ_METAS.repriBase} · meta 30d: ${EQ_METAS.repri30}`);
+    h+=kpi('Margen Zonas Foco',(mCh!=null?mCh.toFixed(1):'—')+'% / '+(mCu!=null?mCu.toFixed(1):'—')+'%',null,
+        (mCh||0)>=EQ_METAS.mChillan30?'c-green':'c-red',
+        `Chillán (meta ≥${EQ_METAS.mChillan30}%) / Curicó (90d ≥${EQ_METAS.mCurico90}%) · mes en curso`);
+    h+='</div>';
+    // ── tabla equipo ──
+    const tipoDe=n=>EQ_CS.includes(n)?'CS':EQ_INTERNOS.includes(n)?'Interno':EQ_FREELANCERS.includes(n)?'Freelance':'Otro';
+    const todos=[...new Set([...Object.keys(litNow),...Object.keys(litPrev),...EQ_FREELANCERS])]
+        .filter(n=>!EQ_CS.includes(n))
+        .map(n=>({n,tipo:tipoDe(n),lP:litPrev[n]||0,lN:litNow[n]||0,m:mv[n]||0}))
+        .sort((a,b)=>(b.lN+b.lP)-(a.lN+a.lP));
+    h+='<div class="section-label">Equipo comercial — producción y gestión (sin cartera CS)</div>';
+    h+='<div class="table-card" style="overflow-x:auto"><table><thead><tr><th>Vendedor</th><th>Tipo</th><th class="r">Litros mes ant.</th><th class="r">Litros mes actual</th><th class="r">Movs CRM 30d</th><th>Estado</th></tr></thead><tbody>';
+    todos.forEach(f=>{
+        const st=(f.lN>0&&f.m>=10)?'<span class="sbadge s-bajo">produce y registra</span>'
+            :(f.lN>0)?'<span class="sbadge s-medio">vende sin registrar</span>'
+            :(f.m>=10)?'<span class="sbadge s-alto">gestiona sin venta</span>'
+            :(f.lP>0)?'<span class="sbadge s-alto">sin venta este mes</span>'
+            :'<span class="sbadge s-critico">inactivo</span>';
+        h+=`<tr><td>${f.n}</td><td>${f.tipo}</td><td class="r">${fNum(f.lP)}</td><td class="r">${fNum(f.lN)}</td><td class="r">${f.m||0}</td><td>${st}</td></tr>`;
+    });
+    h+='</tbody></table></div>';
+    h+='<p style="font-size:11px;color:var(--text3);margin:4px 0 16px">⚠ Los freelancers no llevan meta individual (comisión pura): se dirigen con cartera asignada y actividad. "Movs CRM" usa write_date (el cron de Odoo re-estampa en batch): puede sobreestimar actividad, nunca subestimarla. Cuentas antiguas de Toro y Muñoz consolidadas.</p>';
+    // ── tabla remate ──
+    h+='<div class="section-label">Remate — asignaciones últimos 30 días</div>';
+    h+='<div class="table-scroll" style="max-height:300px"><table><thead><tr><th>Cliente</th><th>Ejecutivo</th><th>Asignado</th><th>Por</th><th class="r">Gestión</th><th class="r">Compró</th></tr></thead><tbody>';
+    asig.forEach(a=>{
+        h+=`<tr><td>${a.cliente||'—'}</td><td>${a.ejecutivo||'—'}</td><td>${a.fecha||''}</td><td>${a.por||''}</td><td class="r">${(a.gestionado||a.compro)?'✅':'—'}</td><td class="r">${a.compro?'🛒 '+a.compro:'—'}</td></tr>`;
+    });
+    if(!asig.length)h+='<tr><td colspan="6">Sin asignaciones en los últimos 30 días — el remate está detenido.</td></tr>';
+    h+='</tbody></table></div>';
+    // ── tabla repricing ──
+    h+='<div class="section-label" style="margin-top:16px">Repricing — clientes bajo el mínimo del Mantenedor (top 15, dedup. por grupo, margen 3 meses)</div>';
+    h+='<div class="table-scroll" style="max-height:340px"><table><thead><tr><th>Cliente</th><th>Zona</th><th>Tipo</th><th class="r">Margen 3m</th><th class="r">Mínimo</th><th class="r">L/mes</th><th class="r">Gap $/mes</th></tr></thead><tbody>';
+    repri.slice(0,15).forEach(r=>{
+        h+=`<tr><td>${r.name}${r.f?' 🏦':''}</td><td>${r.zona||'—'}</td><td>${r.t}</td><td class="r" style="color:var(--red);font-weight:600">${r.m.toFixed(2)}%</td><td class="r">${r.min.toFixed(1)}%</td><td class="r">${fNum(r.litros)}</td><td class="r">${fM(r.gap)}</td></tr>`;
+    });
+    h+='</tbody></table></div>';
+    h+='<p style="font-size:11px;color:var(--text3);margin-top:4px">Margen promedio de los últimos 3 meses (score de riesgo); un caso puede haberse corregido ya en el mes en curso — validar contra facturas recientes antes de la conversación. 🏦 = factorizado (TomEnergy paga el costo del factoring: margen efectivo aún menor). Metas del tablero fijadas 15-09-2026; editar EQ_METAS al renovarlas.</p>';
+    el.innerHTML=h;
 }
 // Meta ponderada del Margen Compañía según mix real de venta de la semana.
 // La venta por segmento se despeja de los márgenes (neto_r = neto·(m−mv)/(mr−mv),
