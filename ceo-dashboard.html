@@ -947,14 +947,18 @@ function renderRiesgo(){
         return m?parseInt(m[1]):null;
     }
     // ── Calculadora excepción (replica hoja Mantenedor con fórmula exacta) ──
-    // Mantenedor sep-2026 (actualizado 10-sep tras alza de costo): precios NETOS (sin IVA/IEC).
+    // Mantenedor sep-2026 (actualizado 10-sep tras alza de costo).
+    // ⚠ BASE DE PRECIOS: FINAL DE FACTURA por litro (impuestos incluidos) — como cotizan los
+    //   vendedores y como factura ENAP. Verificado 16-sep-2026 contra facturas reales:
+    //   ENAP total/L $1.266–1.272 = "enap" 1268 de la hoja; NO aplicar ×1,19+IEC a estos valores.
+    //   (Hasta esta fecha el comentario decía "netos sin IVA/IEC" — etiqueta ERRÓNEA.)
     // Mínimos = ENAP/(1−margen_min): Crédito 7.5% (col I) · Volumen 5.5% (col K) · Contado 6.5% (col M)
     // Fórmula real: D17 = VLOOKUP(zona, base_min, col_tipo) + (-días_real + 30) × C10/30
     //   donde C10 = -16 (costo financiero base por 30 días)
     // Actualizar bomba/enap cuando ENAP cambie (Mantenedor!F/G); los mínimos se recalculan solos.
     const MARGEN_MIN={cred:0.075, vol:0.055, cont:0.065};
-    const ZONAS_NETO={
-        // bomba: precio bomba NETO referencia · enap: costo ENAP neto
+    const ZONAS_BRUTO={
+        // bomba: precio bomba final referencia · enap: costo ENAP final facturado ($/L con impuestos)
         'Rancagua':            {bomba:1441, enap:1279},
         'San Fernando':        {bomba:1431, enap:1279},
         'San Fdo':             {bomba:1431, enap:1279},
@@ -968,7 +972,7 @@ function renderRiesgo(){
         'Región Metropolitana':{bomba:1431, enap:1279},
     };
     const ZONAS_PRECIOS={};
-    for(const [zn,v] of Object.entries(ZONAS_NETO)){
+    for(const [zn,v] of Object.entries(ZONAS_BRUTO)){
         ZONAS_PRECIOS[zn]={bomba:v.bomba,
             cred:v.enap/(1-MARGEN_MIN.cred),
             vol: v.enap/(1-MARGEN_MIN.vol),
