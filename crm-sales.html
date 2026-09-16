@@ -208,6 +208,9 @@ tr:hover td{background:#fafaf8}
         <table><thead><tr><th>Prioridad</th><th>Cliente</th><th>Zona</th><th title="Litros ÷ meses con compra (no ventana fija)">Prom. Mensual (activo)</th><th>Último vendedor</th><th>Fecha perdido</th><th>Última Nota</th></tr></thead><tbody id="newLostBody"></tbody></table>
         <div class="nodata" id="noNewLost" style="display:none">Sin nuevos perdidos este mes</div></div></div>
 
+      <!-- Recuperados del mes por FACTURAS (compró tras ≥90d sin comprar; inmune a leads pegados/ausentes) -->
+      <div id="recuperadosMesContainer"></div>
+
       <!-- Recuperables ahora (análisis por facturación 2025 vs 2026 — clientes que el CRM no ve) -->
       <div id="recuperablesContainer"></div>
 
@@ -1605,8 +1608,42 @@ function renderFidelizacion() {
   // Recuperables por facturaci\u00f3n + Transici\u00f3n a Fidelizaci\u00f3n (los gestiona el equipo comercial)
   renderRecuperables('recuperablesContainer', false, '🔁 Recuperables ahora — asignables',
     'Solo perdidos / sin lead: oportunidades para asignar a ejecutivos en el remate. Los durmientes se gestionan desde Gestión Fidelización.');
+  renderRecuperadosMes();
   renderGraduating();
   renderEstacionalesComercial();
+}
+
+// Recuperados del mes por FACTURAS (compró este mes tras ≥90 días sin comprar).
+// Independiente del CRM: pesca también leads pegados en Perdidos (auto 11 muerta),
+// leads ya movidos a Ganado y clientes sin lead — reporte Madelaine 16-sep.
+function renderRecuperadosMes() {
+  const cont = document.getElementById('recuperadosMesContainer');
+  if (!cont) return;
+  const rec = D.recuperados_mes || [];
+  const totalLpm = rec.reduce((s, c) => s + (c.avg_monthly_litros || 0), 0);
+  let h = '<div class="sec"><div class="sec-h"><h2>♻️ Recuperados del Mes</h2>'
+    + '<span style="font-size:12px;color:var(--dim)">' + rec.length + ' clientes · '
+    + Math.round(totalLpm).toLocaleString('es-CL') + ' L/mes históricos recuperados</span></div>'
+    + '<div class="sec-b" style="padding:0;overflow-x:auto">'
+    + '<div style="padding:12px 16px;border-left:3px solid var(--green);font-size:12px;color:var(--dim);line-height:1.6">'
+    + 'Detección por facturas: compró este mes tras ≥90 días sin comprar (Perdido si llevaba ≥270d). '
+    + 'No depende del CRM — incluye clientes sin lead o con lead sin actualizar.</div>';
+  if (rec.length === 0) {
+    h += '<div class="nodata">Sin recuperados este mes</div>';
+  } else {
+    h += '<table><thead><tr><th>Cliente</th><th>Zona</th><th>Origen</th><th style="text-align:right">Sin comprar</th><th>Volvió el</th><th style="text-align:right" title="Litros ÷ meses con compra (no ventana fija)">Prom. Mensual</th><th>Responsable</th></tr></thead><tbody>';
+    rec.forEach(c => {
+      const og = c.origen === 'Perdido'
+        ? '<span class="tag tag-r">Perdido</span>' : '<span class="tag tag-y">Durmiente</span>';
+      h += '<tr><td class="bold">' + H(c.name) + '</td><td>' + H(c.zona || '—') + '</td><td>' + og + '</td>'
+        + '<td style="text-align:right">' + (c.gap || 0) + 'd</td><td>' + (c.fecha || '—') + '</td>'
+        + '<td style="text-align:right">' + fL(c.avg_monthly_litros || 0) + '</td>'
+        + '<td style="font-size:12px">' + H(c.user || '—') + '</td></tr>';
+    });
+    h += '</tbody></table>';
+  }
+  h += '</div></div>';
+  cont.innerHTML = h;
 }
 
 // Recuperables ahora: clientes con ca\u00edda de facturaci\u00f3n 2025\u21922026 (\u2265500 L/mes 2025, cero YTD o ca\u00edda >70%).

@@ -2052,6 +2052,72 @@ def extract_rescued_clients(models, uid):
 # compra histórica aún no han llegado en 2026) del listado de
 # recuperables activos. Top 50 por volumen 2025.
 # ==============================================================
+def extract_recuperados_mes(models, uid):
+    """Recuperados del mes por FACTURAS, no por leads CRM: cliente que facturó
+    este mes tras >=90 días sin comprar. Origen Perdido si el gap era >=270d,
+    Durmiente si no. Inmune a los 3 huecos del detector por leads (reporte
+    Madelaine 16-sep: rescates de Toro invisibles): (a) filtro CS del frontend,
+    (b) lead ya movido a Ganado, (c) cliente sin lead (cartera antigua)."""
+    today = datetime.now().date()
+    m_start = today.replace(day=1)
+    print("\nExtracting recuperados del mes (por facturas)...")
+    cur = sr(models, uid, "account.move", [
+        ["move_type", "=", "out_invoice"], ["state", "=", "posted"],
+        ["invoice_date", ">=", fmt(m_start)],
+    ], ["partner_id", "invoice_date"], limit=10000)
+    first_cur = {}
+    for v in cur:
+        pid = safe_id(v.get("partner_id"))
+        d = (v.get("invoice_date") or "")[:10]
+        if pid and d and (pid not in first_cur or d < first_cur[pid]):
+            first_cur[pid] = d
+    pids = sorted(first_cur)
+    prev_max = {}
+    for i in range(0, len(pids), 200):
+        groups = models.execute_kw(ODOO_DB, uid, ODOO_KEY, "account.move", "read_group", [
+            [["move_type", "=", "out_invoice"], ["state", "=", "posted"],
+             ["partner_id", "in", pids[i:i+200]],
+             ["invoice_date", "<", fmt(m_start)]],
+            ["invoice_date:max"], ["partner_id"]], {"lazy": False})
+        for g in groups:
+            gpid = safe_id(g.get("partner_id"))
+            gd = (g.get("invoice_date") or "")[:10]
+            if gpid and gd:
+                prev_max[gpid] = gd
+    rec = []
+    for pid, d1 in first_cur.items():
+        p0 = prev_max.get(pid)
+        if not p0:
+            continue  # primera compra de la historia: es NUEVO, no recuperado
+        gap = (datetime.strptime(d1, "%Y-%m-%d").date()
+               - datetime.strptime(p0, "%Y-%m-%d").date()).days
+        if gap < 90:
+            continue
+        rec.append({"partner_id": pid, "fecha": d1, "gap": gap,
+                    "origen": "Perdido" if gap >= 270 else "Durmiente"})
+    ids = [r["partner_id"] for r in rec]
+    pmap = {}
+    for i in range(0, len(ids), 200):
+        for p in sr(models, uid, "res.partner", [["id", "in", ids[i:i+200]]],
+                    ["id", "name", "user_id", "delivery_zone_id"], limit=500):
+            pmap[p["id"]] = p
+    avg = avg_monthly_litros_activos(models, uid, ids, fmt(today - timedelta(days=730))) if ids else {}
+    out = []
+    for r in rec:
+        p = pmap.get(r["partner_id"]) or {}
+        nm = p.get("name") or "?"
+        if "Predeterminado" in nm:
+            continue
+        out.append({"name": nm,
+                    "user": canonical_vendedor(safe_name(p.get("user_id"))) if p.get("user_id") else "Sin asignar",
+                    "zona": safe_name(p.get("delivery_zone_id")) if p.get("delivery_zone_id") else "",
+                    "fecha": r["fecha"], "gap": r["gap"], "origen": r["origen"],
+                    "avg_monthly_litros": avg.get(r["partner_id"], 0)})
+    out.sort(key=lambda x: -x["avg_monthly_litros"])
+    print(f"  Recuperados del mes (facturas): {len(out)}")
+    return out
+
+
 def extract_recovery_clients(models, uid):
     print("\nExtracting Recovery (Quick Wins)...")
     from collections import defaultdict
@@ -3571,6 +3637,7 @@ def main():
 
     # Part 5b: Recovery (Quick Wins) — clientes 2025 que cayeron en 2026
     recovery = extract_recovery_clients(models, uid)
+    recuperados_mes = extract_recuperados_mes(models, uid)
 
     # Part 6: Credit Risk
     credit_risk = extract_credit_risk(models, uid)
@@ -3839,6 +3906,7 @@ def main():
         "ventas_prev": ventas_prev,
         "monthly_history": monthly_history,
         "churn": churn,
+        "recuperados_mes": recuperados_mes,
         "rescued": rescued,
         "recovery": recovery,
         "credit_risk": credit_risk,
