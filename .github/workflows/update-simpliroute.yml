@@ -1,0 +1,43 @@
+name: Update SimpliRoute Data
+
+on:
+  schedule:
+    - cron: '13 9 * * *'   # 06:13 Chile (verano) / 05:13 (invierno) — no choca con los extractores Odoo
+  workflow_dispatch:
+
+permissions:
+  contents: write
+concurrency:
+  group: simpliroute        # no pega a Odoo: no comparte el grupo odoo-extractors
+  cancel-in-progress: false
+
+jobs:
+  update-data:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Fetch visits from SimpliRoute
+        env:
+          SIMPLIROUTE_TOKEN: ${{ secrets.SIMPLIROUTE_TOKEN }}
+        run: python extract_simpliroute.py
+
+      - name: Validar plausibilidad del output
+        run: python validate_data.py simpliroute-data.json
+
+      - name: Commit and push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add simpliroute-data.json
+          git diff --cached --quiet && echo "No changes" && exit 0
+          git commit -m "Update SimpliRoute data $(date -u +'%Y-%m-%d %H:%M UTC')"
+          git pull --rebase -X theirs origin main
+          git push

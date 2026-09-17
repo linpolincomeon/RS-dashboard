@@ -52,6 +52,12 @@ CEO_MIN_FACTURAS_ABIERTAS = 40
 COSTOS_MIN_GASTO_YTD = 10_000_000
 COSTOS_MIN_CAMIONES = 5
 COSTOS_MIN_MOVIMIENTOS = 50
+
+# simpliroute-data.json (operación real desde sep-2026: ~20-25 entregas
+# completadas/día, ~15-20k L/día entregados)
+SR_MIN_COMPLETADAS_7D = 20
+SR_MIN_LITROS_7D = 30_000
+SR_MIN_VEHICULOS = 5
 # -----------------------------------------------------------------------------
 
 errores = []
@@ -250,12 +256,36 @@ def check_costos(archivo, d):
         fail(archivo, "bloque `meses` no tiene 12 meses")
 
 
+def check_simpliroute(archivo, d):
+    check_frescura(archivo, d.get("generated_utc"))
+    if len(d.get("vehiculos") or []) < SR_MIN_VEHICULOS:
+        fail(archivo, f"solo {len(d.get('vehiculos') or [])} vehículos "
+                      f"(mín {SR_MIN_VEHICULOS}) — ¿token/cuenta rota?")
+    # entregas completadas y litros de los últimos 7 días (desde `visitas`)
+    hasta = d.get("hasta") or ""
+    try:
+        corte = (datetime.fromisoformat(hasta) - timedelta(days=7)).date().isoformat()
+    except ValueError:
+        fail(archivo, f"campo `hasta` ilegible: {hasta!r}")
+        return
+    comp7 = [v for v in (d.get("visitas") or [])
+             if v.get("fecha", "") >= corte and v.get("status") == "completed"]
+    if len(comp7) < SR_MIN_COMPLETADAS_7D:
+        fail(archivo, f"solo {len(comp7)} entregas completadas en 7 días "
+                      f"(mín {SR_MIN_COMPLETADAS_7D})")
+    litros7 = sum(v.get("litros") or 0 for v in comp7)
+    if litros7 < SR_MIN_LITROS_7D:
+        fail(archivo, f"{litros7:,.0f} L completados en 7 días "
+                      f"(mín {SR_MIN_LITROS_7D:,})")
+
+
 CHECKS = {
     "crm-data.json": check_crm,
     "costos-data.json": check_costos,
     "ceo-data.json": check_ceo,
     "route-data.json": check_route,
     "riesgo-historico.json": check_riesgo_historico,
+    "simpliroute-data.json": check_simpliroute,
 }
 
 
