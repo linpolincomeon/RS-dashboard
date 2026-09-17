@@ -269,7 +269,8 @@ def check_simpliroute(archivo, d):
         fail(archivo, f"campo `hasta` ilegible: {hasta!r}")
         return
     comp7 = [v for v in (d.get("visitas") or [])
-             if v.get("fecha", "") >= corte and v.get("status") == "completed"]
+             if v.get("fecha", "") >= corte
+             and (v.get("status") == "completed" or v.get("especial"))]
     if len(comp7) < SR_MIN_COMPLETADAS_7D:
         fail(archivo, f"solo {len(comp7)} entregas completadas en 7 días "
                       f"(mín {SR_MIN_COMPLETADAS_7D})")

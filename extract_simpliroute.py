@@ -18,6 +18,12 @@ Qué trae el JSON:
 ⚠ Los litros por entrega vienen de extra_field_values.litros (fallback `load`).
   litros_entregados solo suma status `completed`; las parciales van aparte
   (la API trae quantity_delivered por item pero aún no se valida en terreno).
+⚠ FALLA_ES_ENTREGA: clientes cuyo flujo de facturación impide cerrar la visita
+  en la app — el chofer marca "failed" y anota los litros en el comentario,
+  pero la entrega SÍ ocurrió (confirmado por Pauline 17-sep, caso SUGAL:
+  0 completadas de 76 visitas, motivos "500 litros entregados", etc.).
+  Esas fallidas se reclasifican: cuentan como entregadas (flag `especial`)
+  y NO aparecen en `fallidas`.
 Horas en hora de Chile (checkout_time viene en UTC).
 """
 import json
@@ -40,6 +46,9 @@ MIN_COMPLETADAS_7D = 20      # operación real: ~20-25 completadas/día
 MIN_LITROS_7D = 30_000       # un solo día normal ya supera esto
 MIN_VEHICULOS = 5
 MAX_DIAS_CON_ERROR = 5       # tolerancia de errores HTTP en la ventana
+
+# "failed" que en realidad es entrega (facturación distinta, ver docstring)
+FALLA_ES_ENTREGA = ('SUGAL',)
 
 
 def token():
@@ -138,6 +147,9 @@ def main():
             ref = str(v.get('reference') or '')
             m = re.search(r'\bS\d+\b', ref)
             so = m.group(0) if m else None
+            cliente = str(v.get('title') or '').strip()
+            especial = (v.get('status') == 'failed' and
+                        any(c in cliente.upper() for c in FALLA_ES_ENTREGA))
             visitas.append(dict(
                 id=v.get('id'),
                 fecha=f,
@@ -145,8 +157,9 @@ def main():
                 patente=veh.get('patente'),
                 chofer=cho.get('corto'),
                 status=v.get('status'),
+                especial=especial,
                 litros=litros_de(v),
-                cliente=str(v.get('title') or '').strip(),
+                cliente=cliente,
                 rut=str(extra.get('rut') or '').strip(),
                 ref=ref, so=so,
                 salida=hora_local(v.get('on_its_way')),
@@ -167,18 +180,20 @@ def main():
     for (f, cam), vs in sorted(grupos.items(), reverse=True):
         cuenta = defaultdict(int)
         for v in vs:
-            cuenta[v['status']] += 1
+            cuenta['especial' if v['especial'] else v['status']] += 1
         checkouts = sorted(v['checkout'] for v in vs
                            if v['checkout'] and v['status'] in ('completed', 'partial', 'failed'))
         salidas = sorted(v['salida'] for v in vs if v['salida'])
         chofer = next((v['chofer'] for v in vs if v['chofer']), None)
         diario.append(dict(
             fecha=f, cam=cam, chofer=chofer,
-            completadas=cuenta['completed'], parciales=cuenta['partial'],
+            completadas=cuenta['completed'] + cuenta['especial'],
+            especiales=cuenta['especial'],   # SUGAL y afines (failed reclasificado)
+            parciales=cuenta['partial'],
             fallidas=cuenta['failed'], canceladas=cuenta['canceled'],
             pendientes=cuenta['pending'],
             litros_entregados=round(sum(v['litros'] for v in vs
-                                        if v['status'] == 'completed')),
+                                        if v['status'] == 'completed' or v['especial'])),
             litros_planificados=round(sum(v['litros'] for v in vs
                                           if v['status'] not in ('canceled',))),
             salida=salidas[0] if salidas else None,
@@ -189,11 +204,13 @@ def main():
     fallidas = [dict(fecha=v['fecha'], cam=v['cam'], chofer=v['chofer'],
                      cliente=v['cliente'], litros=v['litros'], hora=v['checkout'],
                      status=v['status'], motivo=v['motivo'], so=v['so'])
-                for v in visitas if v['status'] in ('failed', 'partial')]
+                for v in visitas
+                if v['status'] in ('failed', 'partial') and not v['especial']]
 
     # ── validación integrada ──
     corte7 = (hoy - dt.timedelta(days=7)).isoformat()
-    comp7 = [v for v in visitas if v['fecha'] >= corte7 and v['status'] == 'completed']
+    comp7 = [v for v in visitas
+             if v['fecha'] >= corte7 and (v['status'] == 'completed' or v['especial'])]
     if len(comp7) < MIN_COMPLETADAS_7D:
         sys.exit(f'ERROR: solo {len(comp7)} entregas completadas en 7 días '
                  f'(mín {MIN_COMPLETADAS_7D}) — no se escribe el JSON')
