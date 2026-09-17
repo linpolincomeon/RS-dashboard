@@ -45,7 +45,7 @@ CHURN_JULIO_MANUAL = [
     "JORGE LUIS GALLARDO LANZELLOTE",
     "JHOVANY ALEXANDER MOLINA GOMEZ",
     "OCTAVIO SEGUNDO ORTEGA VILLALOBOS",
-    "JOSE BENITO MAURO MEDINA (DIFUNTO)",  # nombre exacto Odoo; ojo: ficha marcada difunto
+    "JOSE BENITO MAURO MEDINA difunto",  # nombre exacto Odoo (renombrado ~sep); ojo: ficha marcada difunto
     "RAMON PARRAGUEZ LOPEZ",
     "RAQUEL ROJAS SEPULVEDA",
     "SERVICIOS E INVERSIONES KOALA S.A.",
@@ -1792,6 +1792,11 @@ def extract_churn_data(models, uid):
             print(f"  Churn julio manual NO encontrado: {_nm}")
             continue
         _p = _p[0]
+        # Graduación (17-sep, caso Gallardo): si el fijado COMPRÓ este mes ya no
+        # es perdido — vive en Recuperados del Mes, no acá.
+        if _p["id"] in curr_month_partners:
+            print(f"  Churn julio manual RECUPERADO (compró este mes), fuera de perdidos: {_nm}")
+            continue
         _churn_pend.append({
             "name": _p.get("name") or _nm,
             "user": canonical_vendedor(safe_name(_p.get("user_id"))) if _p.get("user_id") else "Sin asignar",
@@ -2437,6 +2442,16 @@ def extract_recovery_clients(models, uid):
             continue
         _p = _p[0]
         _pid = _p["id"]
+        # Graduación (17-sep, caso Gallardo/Transporte de Carga): compró en los
+        # últimos 90 días → ya no es recuperable asignable; vive en Recuperados
+        # del Mes. OJO: consulta directa — _own_recent solo cubre candidates y
+        # los manuales pueden no serlo.
+        if _pid in _own_recent or sr(models, uid, "account.move", [
+                ["move_type", "=", "out_invoice"], ["state", "=", "posted"],
+                ["partner_id", "=", _pid], ["invoice_date", ">=", recent_cut]],
+                ["id"], limit=1):
+            print(f"  Manual RECUPERADO (compra propia <90d), fuera de recuperables: {_nm}")
+            continue
         _ll = last_lead.get(_pid) or {}
         _man_rows.append({
             "id": _pid,
