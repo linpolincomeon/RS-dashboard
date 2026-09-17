@@ -3571,7 +3571,7 @@ def main():
     # Part 3c: Historial mensual (resumen tab Mes Vencido) — reusa extract_sales_data
     # por mes para que litros/venta/márgenes cuadren con el titular (no suma semanas).
     # Meta mensual de litros MANTENCIÓN (Comber/CS) — la actualiza Pauline cada mes
-    CS_META_MES = {"2026-07": 547687}
+    CS_META_MES = {"2026-07": 547687, "2026-09": 605942}
     CS_META_DEFAULT = 526505
 
     BUDGET_2026 = {1: 1065753, 2: 1090372, 3: 1135242, 4: 1305689, 5: 1035293, 6: 866750,
