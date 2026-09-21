@@ -1212,6 +1212,43 @@ function renderRiesgo(){
             h+='</tbody></table></div>';
             h+='<div style="font-size:11px;color:var(--text3);margin:6px 2px 0">Criterio: mora ≥15 días (línea de tiempo 4.2), sin etiqueta DICOM en la ficha de Odoo, excluyendo factorizados. Ya publicados según etiqueta: '+yaPub+'. Al publicar: avisar antes por correo y dejar la etiqueta DICOM en la ficha para que salga de esta alerta. 📌 = agregado manual.</div>';
         }
+
+        // ── ⏳ Ventana de siniestro AVLA — facturas FACTORIZADAS (caso Torreval, 21-sep-2026) ──
+        // Las facturas cedidas al factor quedan "pagadas" en Odoo (paga Go Capital/Security)
+        // → CxC limpio → invisibles para Cobranza Escalada. Si el cliente NO le paga al
+        // factor, la deuda rebota a TomEnergy y la ventana AVLA (60d desde el VENCIMIENTO
+        // original) corre igual. Odoo no sabe quién no pagó al factor: esta lista se llena
+        // A MANO cuando el factor avisa un impago (estado de cuenta Go Capital / Security).
+        const SINIESTRO_DIAS=60;
+        const SINIESTRO_WATCH=[
+            {name:'AGRICOLA TORREVAL LIMITADA', rut:'76347403-8', factor:'Go Capital / F. Security',
+             facturas:[{n:'FAC 52420',vcto:'2026-06-27',monto:1425000},{n:'FAC 52596',vcto:'2026-07-10',monto:1426000}],
+             nota:'Caso 21-sep-2026: impago al factor detectado tarde'}
+        ];
+        if(SINIESTRO_WATCH.length){
+            const hoy=new Date(); hoy.setHours(0,0,0,0);
+            h+='<div class="section-label" style="margin-top:22px;color:#854f0b">⏳ Ventana de siniestro AVLA — factorizadas con impago al factor ('+SINIESTRO_WATCH.length+')</div>';
+            h+='<div class="table-scroll" style="max-height:380px;border:1px solid #f0dcb4;border-radius:8px"><table><thead><tr>';
+            h+='<th>Cliente</th><th class="r">RUT</th><th>Factor</th><th>Factura</th><th class="r">Monto</th><th class="r">Vencimiento</th><th class="r">Límite siniestro</th><th style="text-align:center">Ventana</th><th>Nota</th></tr></thead><tbody>';
+            SINIESTRO_WATCH.forEach(w=>{
+                (w.facturas||[]).forEach((f,i)=>{
+                    const v=new Date(f.vcto+'T00:00:00');
+                    const lim=new Date(v); lim.setDate(lim.getDate()+SINIESTRO_DIAS);
+                    const restan=Math.round((lim-hoy)/864e5);
+                    const badge=restan<0?'<span class="sbadge s-critico">EXPIRADA hace '+(-restan)+'d</span>'
+                        :restan<=10?'<span class="sbadge s-critico">quedan '+restan+'d</span>'
+                        :restan<=25?'<span class="sbadge s-alto">quedan '+restan+'d</span>'
+                        :'<span class="sbadge s-bajo">quedan '+restan+'d</span>';
+                    h+='<tr>'+(i===0?'<td rowspan="'+w.facturas.length+'">📌 '+w.name+'</td><td class="r" rowspan="'+w.facturas.length+'" style="color:var(--text3)">'+(w.rut||'—')+'</td><td rowspan="'+w.facturas.length+'" style="font-size:11px">'+(w.factor||'—')+'</td>':'');
+                    h+='<td>'+f.n+'</td><td class="r">'+fMon(f.monto)+'</td><td class="r">'+f.vcto+'</td>';
+                    h+='<td class="r" style="font-weight:600">'+lim.toISOString().slice(0,10)+'</td>';
+                    h+='<td style="text-align:center">'+badge+'</td>';
+                    h+=(i===0?'<td rowspan="'+w.facturas.length+'" style="font-size:11px;color:var(--text2)">'+(w.nota||'')+'</td>':'')+'</tr>';
+                });
+            });
+            h+='</tbody></table></div>';
+            h+='<div style="font-size:11px;color:var(--text3);margin:6px 2px 0">Las factorizadas NO aparecen en morosos (el factor las paga y el CxC queda limpio), pero si el cliente no le paga al factor la deuda rebota y el plazo de siniestro AVLA ('+SINIESTRO_DIAS+'d desde el vencimiento original) corre igual. Al recibir aviso de impago del factor: agregar el caso a <code>SINIESTRO_WATCH</code> en este archivo (o pedírselo a Claude). Hoy hay ~322 facturas factorizadas de 132 clientes en ventana ($657M al 21-sep): el cruce contra el estado de cuenta del factor es lo que detecta el impago — este bloque asegura que el plazo no se pase una vez detectado.</div>';
+        }
     }
     el.innerHTML=h;
     // ── Chart 1: Donut with percentages ──
