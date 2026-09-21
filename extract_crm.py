@@ -58,6 +58,30 @@ CHURN_JULIO_MANUAL = [
     "HUGO HERNAN DONOSO POBLETE",
 ]
 
+# Cohorte CHURN de agosto-2026 (lista de Madelaine vía Pauline, 21-sep): última
+# compra ~nov-2025, cruzaron los 270d en agosto. No salían en Nuevos Perdidos por
+# los huecos conocidos (7 sin lead CRM; 6 con lead pegado en Durmiente por la
+# regla 3 congelada). Nombres EXACTOS de Odoo (resueltos por RUT).
+CHURN_AGOSTO_MANUAL = [
+    "MIGUEL ANGEL VALDES MENDOZA",       # compró 08-sep: la graduación lo salta mientras esté recuperado
+    "LUIS ROBESPIER MUNOZ VELIZ",
+    "SEBASTIAN ANDREE JUILLERAT OLIVA",
+    "JULIO CESAR ROJAS CORTES",
+    "CARLOS LUIS DURAN ULLOA",
+    "JUAN ANTONIO HORMAZABAL MEZA",
+    "ERIKA DEL PILAR GUZMAN MANRIQUEZ",
+    "JOSE VICTOR CALDERON PARRA",
+    "MARIA LETICIA VANNINI ARRIAGADA",   # su factura del 01-sep fue anulada: churn vigente
+    "DANIEL ESPINOZA VALLADARES",
+    "OLIVOS DE TALCA SPA",
+    "GUZMAN Y PENA SERVICIOS LIMITADA",
+    "MIGUEL ANGEL DEL C. LECAROS MELO SERVICIOS AGRICOLAS EIRL",
+    "SERVITRAC OTEIZA SPA",
+    "AGRICOLA Y COMERCIAL PINOR SPA",    # compró 04-sep: graduado mientras dure
+    "MADERAS INSIGNE LTDA",
+    "LUIS ZENON PALOMINOS CORDOVA",      # compró 08-sep: graduado mientras dure
+]
+
 # Meses en español — NIVEL MÓDULO. Antes solo existía como local en Recuperación,
 # lo que causaba NameError en el cálculo de churn: churn_pct se computaba bien y
 # el except lo pisaba de vuelta a 0 (KPI mostraba 0.0% junto a 10/229).
@@ -1775,33 +1799,36 @@ def extract_churn_data(models, uid):
     # ── Cohorte CHURN julio (lista manual de Pauline): fijarla en Nuevos Perdidos ──
     _ll_names = {(c.get("name") or "").strip().upper(): c for c in lost_list}
     _churn_pend = []
-    for _nm in CHURN_JULIO_MANUAL:
-        _k = _nm.strip().upper()
-        if _k in _ll_names:
-            _ll_names[_k]["churn_mes"] = "jul-26"
-            continue
-        _p = sr(models, uid, "res.partner", [["name", "=", _nm]],
-                ["id", "name", "user_id", "delivery_zone_id"], limit=1)
-        if not _p:
-            _p = sr(models, uid, "res.partner", [["name", "ilike", _nm.replace("  ", " ")[:30]]],
+    # Cohortes manuales de churn: (lista, etiqueta, fecha_perdido de referencia)
+    for _cohorte, _tag, _fecha in [(CHURN_JULIO_MANUAL, "jul-26", "2026-07-31"),
+                                   (CHURN_AGOSTO_MANUAL, "ago-26", "2026-08-31")]:
+        for _nm in _cohorte:
+            _k = _nm.strip().upper()
+            if _k in _ll_names:
+                _ll_names[_k]["churn_mes"] = _tag
+                continue
+            _p = sr(models, uid, "res.partner", [["name", "=", _nm]],
                     ["id", "name", "user_id", "delivery_zone_id"], limit=1)
-        if not _p:
-            print(f"  Churn julio manual NO encontrado: {_nm}")
-            continue
-        _p = _p[0]
-        # Graduación (17-sep, caso Gallardo): si el fijado COMPRÓ este mes ya no
-        # es perdido — vive en Recuperados del Mes, no acá.
-        if _p["id"] in curr_month_partners:
-            print(f"  Churn julio manual RECUPERADO (compró este mes), fuera de perdidos: {_nm}")
-            continue
-        _churn_pend.append({
-            "name": _p.get("name") or _nm,
-            "user": canonical_vendedor(safe_name(_p.get("user_id"))) if _p.get("user_id") else "Sin asignar",
-            "last_update": "2026-07-31",
-            "zona": safe_name(_p.get("delivery_zone_id")) if _p.get("delivery_zone_id") else "",
-            "partner_id": _p["id"],
-            "churn_mes": "jul-26",
-        })
+            if not _p:
+                _p = sr(models, uid, "res.partner", [["name", "ilike", _nm.replace("  ", " ")[:30]]],
+                        ["id", "name", "user_id", "delivery_zone_id"], limit=1)
+            if not _p:
+                print(f"  Churn {_tag} manual NO encontrado: {_nm}")
+                continue
+            _p = _p[0]
+            # Graduación (17-sep, caso Gallardo): si el fijado COMPRÓ este mes ya no
+            # es perdido — vive en Recuperados del Mes, no acá.
+            if _p["id"] in curr_month_partners:
+                print(f"  Churn {_tag} manual RECUPERADO (compró este mes), fuera de perdidos: {_nm}")
+                continue
+            _churn_pend.append({
+                "name": _p.get("name") or _nm,
+                "user": canonical_vendedor(safe_name(_p.get("user_id"))) if _p.get("user_id") else "Sin asignar",
+                "last_update": _fecha,
+                "zona": safe_name(_p.get("delivery_zone_id")) if _p.get("delivery_zone_id") else "",
+                "partner_id": _p["id"],
+                "churn_mes": _tag,
+            })
     if _churn_pend:
         _cp_pids = [c["partner_id"] for c in _churn_pend]
         _cp_avg = avg_monthly_litros_activos(models, uid, _cp_pids, fmt(today - timedelta(days=730)))
@@ -1817,7 +1844,9 @@ def extract_churn_data(models, uid):
     _lost_man = [c for c in lost_list if c.get("churn_mes")]
     _lost_auto = sorted([c for c in lost_list if not c.get("churn_mes")],
                         key=lambda x: x.get("avg_monthly_litros", 0), reverse=True)
-    _lost_output = _lost_man + _lost_auto[:max(0, 30 - len(_lost_man))]
+    # Manuales completos + top-30 automáticos (antes los manuales comían el cupo
+    # de los automáticos; con 2 cohortes fijadas el cap compartido dejaba 0 autos)
+    _lost_output = _lost_man + _lost_auto[:30]
 
     return {
         "summary": {
@@ -2422,7 +2451,7 @@ def extract_recovery_clients(models, uid):
     # ── Lista MANUAL de Pauline (12-ago-2026): clientes churn que SIEMPRE van en
     # Recuperación, aunque los filtros automáticos los excluyan. Van con manual=True
     # (el frontend les pone 📌 y les salta los filtros de exclusión).
-    RECUPERABLES_MANUAL = CHURN_JULIO_MANUAL
+    RECUPERABLES_MANUAL = CHURN_JULIO_MANUAL + CHURN_AGOSTO_MANUAL
     _ya = { (r.get("name") or "").strip().upper() for r in recoverable }
     _man_rows = []
     for _nm in RECUPERABLES_MANUAL:
