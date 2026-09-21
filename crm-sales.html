@@ -1569,9 +1569,10 @@ function renderFidelizacion() {
     });
   }
 
-  // Asignaciones del remate: TODAS las vigentes (últimas 5 semanas del tracking) en una
-  // sola tabla — pedido Pauline 12-ago. Se agrupan por ejecutivo en el orden de abajo.
-  const asig = D.asignaciones || [];
+  // Asignaciones del remate: solo las últimas 4 SEMANAS (pedido Pauline 21-sep:
+  // si no cerró en 1 mes, no era época de compra o no hubo caso — sale de la vista).
+  const _corteAsig = new Date(Date.now() - 28 * 86400000).toISOString().slice(0, 10);
+  const asig = (D.asignaciones || []).filter(a => (a.fecha || '') >= _corteAsig);
   document.getElementById('asigCount').textContent = asig.length;
   const ab = document.getElementById('asigBody'); ab.innerHTML = '';
   const noA = document.getElementById('noAsig');
