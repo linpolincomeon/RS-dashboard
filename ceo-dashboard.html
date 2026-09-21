@@ -346,7 +346,6 @@
         <div id="p-ventas" class="panel"></div>
         <div id="p-gerencia" class="panel"></div>
         <div id="p-resumen" class="panel"></div>
-        <div id="p-operaciones" class="panel"></div>
         <div id="p-riesgo" class="panel"></div>
         <div id="p-cashflow" class="panel"></div>
         <div id="p-equipo" class="panel"></div>
@@ -367,11 +366,12 @@ const fP=n=>!n&&n!==0?'—':(n*100).toFixed(1)+'%';
 const pD=(c,p)=>(!c||!p)?null:((c-p)/Math.abs(p))*100;
 const dH=d=>{if(d==null)return'';const u=d>=0;return`<div class="kpi-delta ${u?'up':'dn'}">${u?'▲':'▼'} ${Math.abs(d).toFixed(1)}%</div>`};
 function setupTabs(){
-    const tabDefs=[['ventas','RS'],['gerencia','Gerencia'],['resumen','Resumen'],['operaciones','Operaciones'],['riesgo','⚠️ Riesgo'],['cashflow','💰 Cash Flow'],['equipo','👥 Equipo']];
+    // Tab Operaciones ELIMINADO 21-sep (pedido Pauline): la versión buena vive en crm-sales.html
+    const tabDefs=[['ventas','RS'],['gerencia','Gerencia'],['resumen','Resumen'],['riesgo','⚠️ Riesgo'],['cashflow','💰 Cash Flow'],['equipo','👥 Equipo']];
     document.getElementById('tabs').innerHTML=tabDefs.map(([k,l])=>
         `<button class="tab ${k===curTab?'active':''}" onclick="switchTab('${k}')">${l}</button>`
     ).join('');
-    if(curTab==='ventas'||curTab==='gerencia'||curTab==='resumen'||curTab==='operaciones'){
+    if(curTab==='ventas'||curTab==='gerencia'||curTab==='resumen'){
         const ws=D.weeks[selW];
         document.getElementById('filters').innerHTML=[4,8,16].map(n=>
             `<button class="wf ${fN===n?'on':''}" onclick="setFilter(${n})">${n}S</button>`
@@ -397,7 +397,6 @@ function render(){
     if(curTab==='ventas') renderVentas();
     else if(curTab==='gerencia') renderGerencia();
     else if(curTab==='resumen') renderResumen();
-    else if(curTab==='operaciones') renderOperaciones();
     else if(curTab==='riesgo') renderRiesgo();
     else if(curTab==='cashflow') renderCashflow();
     else if(curTab==='equipo') renderEquipo();
@@ -621,65 +620,6 @@ function renderGerencia(){
         }
     } else {
         h+='<div class="chart-card" style="text-align:center;padding:2rem;color:var(--text3)">Sin datos de churn</div>';
-    }
-        // ═══ SECTION 3: SLA OPERACIONES — semana seleccionada + histórico ═══
-    const sla=D.sla||[];
-    if(sla.length>0){
-        // Buscar la semana seleccionada en el array de SLA por label
-        const selLabel=(D.weeks[selW]||{}).label;
-        const slaIdx=Math.max(0,sla.findIndex(w=>w.label===selLabel));
-        const slaW=sla[slaIdx];
-        h+='<div class="section-label">SLA Entrega — '+slaW.label+'</div>';
-        const allTotal=Object.values(slaW.zones||{}).reduce((s,z)=>s+z.total,0);
-        const allOT=Object.values(slaW.zones||{}).reduce((s,z)=>s+z.on_time,0);
-        const allPct=allTotal>0?allOT/allTotal*100:100;
-        const allLate=allTotal-allOT;
-        h+='<div class="kpi-grid">';
-        h+=kpi('SLA Global',allPct.toFixed(1)+'%',null,allPct>=slaTgt?'c-green':allPct>=90?'c-amber':'c-red',`${allOT} a tiempo / ${allTotal} total · meta ${slaTgt}%`);
-        h+=kpi('Entregas Atrasadas',''+allLate,null,allLate===0?'c-green':allLate<=3?'c-amber':'c-red','fuera de plazo (>24h)');
-        h+='</div>';
-        // Historical SLA table (last 8 weeks)
-        if(sla.length>1){
-            h+='<div class="table-card"><table><thead><tr><th>Semana</th><th class="r">Total</th><th class="r">A Tiempo</th><th class="r">Atrasados</th><th class="r">SLA %</th></tr></thead><tbody>';
-            sla.slice(0,8).forEach((w,idx)=>{
-                const wT=Object.values(w.zones||{}).reduce((s,z)=>s+z.total,0);
-                const wOT=Object.values(w.zones||{}).reduce((s,z)=>s+z.on_time,0);
-                const wPct=wT>0?wOT/wT*100:100;
-                const wLate=wT-wOT;
-                const cls=wPct>=slaTgt?'ok':wPct>=90?'':'bad';
-                const tag=idx===slaIdx?'<span style="font-size:9px;color:var(--accent);font-weight:700"> · actual</span>':'';
-                h+=`<tr><td class="hi">${w.label}${tag}</td><td class="r">${wT}</td><td class="r">${wOT}</td><td class="r ${wLate>0?'bad':''}">${wLate}</td><td class="r ${cls}">${wPct.toFixed(1)}%</td></tr>`;
-            });
-            h+='</tbody></table><div class="note">Histórico últimas 8 semanas</div></div>';
-        }
-        // SLA by zone table (current week only)
-        h+='<div class="section-label" style="font-size:13px;margin-top:1.5rem">Por Zona — '+slaW.label+'</div>';
-        const zones=Object.keys(slaW.zones||{}).sort();
-        h+='<div class="table-card"><table><thead><tr><th>Zona</th><th class="r">Total</th><th class="r">A Tiempo</th><th class="r">Atrasados</th><th class="r">SLA %</th></tr></thead><tbody>';
-        zones.forEach(z=>{
-            const zd=slaW.zones[z];
-            const cls=zd.pct>=slaTgt?'ok':zd.pct>=90?'':'bad';
-            h+=`<tr><td class="hi">${z}</td><td class="r">${zd.total}</td><td class="r">${zd.on_time}</td><td class="r ${zd.late>0?'bad':''}">${zd.late}</td><td class="r ${cls}">${zd.pct.toFixed(0)}%</td></tr>`;
-        });
-        h+='</tbody></table>';
-        h+='<div class="note">SLA = entrega completada (date_done) dentro de 24h desde fecha programada (scheduled_date) · stock.picking outgoing</div></div>';
-        // Late deliveries detail list
-        let hasLate=false;
-        zones.forEach(z=>{
-            const zd=slaW.zones[z];
-            if(zd.late_clients&&zd.late_clients.length>0) hasLate=true;
-        });
-        if(hasLate){
-            h+='<div class="section-label">Entregas Atrasadas — Detalle</div>';
-            h+='<div class="table-card"><table><thead><tr><th>Cliente</th><th>Zona</th></tr></thead><tbody>';
-            zones.forEach(z=>{
-                const zd=slaW.zones[z];
-                (zd.late_clients||[]).forEach(c=>{
-                    h+=`<tr><td class="hi">${c}</td><td>${z}</td></tr>`;
-                });
-            });
-            h+='</tbody></table></div>';
-        }
     }
     // ═══ SECTION 4: CUMPLIMIENTO PROVEEDORES (ENAP + ADQUIM) ═══
     const enap=D.enap;
@@ -1279,67 +1219,6 @@ function renderRiesgo(){
                     y:{beginAtZero:true,max:20,ticks:{callback:v=>v+'%',color:'#9c9b96',font:{size:9}},grid:{color:'rgba(0,0,0,.04)'}}}
             }});
     });
-}
-// ── OPERACIONES ──
-function renderOperaciones(){
-    const el=document.getElementById('p-operaciones');
-    const op=D.operaciones||{};
-    const months=op.months||[];
-    if(months.length===0){
-        el.innerHTML='<div class="chart-card" style="text-align:center;padding:3rem;color:var(--text3)">Sin datos de operaciones</div>';
-        return;
-    }
-    // Current month (last in list)
-    const curr=months[months.length-1]||{};
-    const budget=curr.budget||0, actual=curr.actual||0;
-    const cmpPct=curr.compliance_pct||0;
-    // YTD sum
-    const ytdActual=months.reduce((s,m)=>s+m.actual,0);
-    const ytdBudget=months.reduce((s,m)=>s+m.budget,0);
-    let h='<div class="kpi-grid">';
-    h+=kpi('Gasto Mes Actual','$'+fNum(actual),null,cmpPct<=100?'c-green':cmpPct<=110?'c-amber':'c-red',cmpPct.toFixed(1)+'% presupuesto: $'+fNum(budget));
-    h+=kpi('Gasto Acumulado Año','$'+fNum(ytdActual),null,'c-blue','Presupuesto: $'+fNum(ytdBudget));
-    h+=kpi('Cumplimiento %',cmpPct.toFixed(1)+'%',null,cmpPct<=100?'c-green':cmpPct<=110?'c-amber':'c-red',cmpPct<=100?'OK':cmpPct<=110?'Alerta':'Exceso');
-    h+='</div>';
-    // Monthly breakdown table
-    h+='<div class="section-label">Comparativo Mensual</div>';
-    h+='<div class="table-card" style="overflow-x:auto"><table><thead><tr>';
-    h+='<th>Mes</th><th class="r">Presupuesto</th><th class="r">Real</th><th class="r">Cumplimiento %</th>';
-    h+='</tr></thead><tbody>';
-    months.forEach((m,i)=>{
-        const mp=m.compliance_pct||0;
-        const sel=i===months.length-1;
-        h+=`<tr style="${sel?'background:var(--accent-light)':''}">`;
-        h+=`<td class="${sel?'hi':''}">${m.label}</td>`;
-        h+=`<td class="r">$${fNum(m.budget)}</td>`;
-        h+=`<td class="r">${fM(m.actual)}</td>`;
-        h+=`<td class="r ${mp<=100?'ok':mp<=110?'':'bad'}">${mp.toFixed(1)}%</td>`;
-        h+='</tr>';
-    });
-    h+='</tbody></table></div>';
-    // Chart: Budget vs Actual last 6 months
-    h+='<div class="chart-card"><div class="chart-title">Gasto vs Presupuesto <span class="badge">últimos 6 meses</span></div><div class="chart-wrap"><canvas id="cOpsMonthly"></canvas></div></div>';
-    // Categories for current month
-    const cats=curr.categories||{};
-    const catEntries=Object.entries(cats).filter(([k,v])=>v>0).sort((a,b)=>b[1]-a[1]);
-    if(catEntries.length>0){
-        h+='<div class="section-label">Categorías de Gasto — '+curr.label+'</div>';
-        h+='<div class="table-card"><table><thead><tr><th>Categoría</th><th class="r">Monto</th></tr></thead><tbody>';
-        catEntries.forEach(([cat,amt])=>{
-            h+=`<tr><td>${cat}</td><td class="r">$${fNum(amt)}</td></tr>`;
-        });
-        h+='</tbody></table></div>';
-    }
-    el.innerHTML=h;
-    // Render chart
-    const gC3='rgba(0,0,0,.04)',tC3='#9c9b96';
-    const labels=months.map(m=>m.label.split(' ')[0]);
-    dc('cOM');
-    charts.cOM=new Chart(document.getElementById('cOpsMonthly'),{type:'bar',
-        data:{labels,datasets:[
-            {label:'Presupuesto',data:months.map(m=>m.budget),backgroundColor:C.amber+'44',borderRadius:5},
-            {label:'Real',data:months.map(m=>m.actual),backgroundColor:months.map(m=>m.compliance_pct<=100?C.green+'77':m.compliance_pct<=110?C.amber+'77':C.red+'77'),borderRadius:5}
-        ]},options:co(tC3,gC3,v=>fM(v))});
 }
 // ── CASH FLOW (proyección capital de trabajo) ──
 function getCFParams(){

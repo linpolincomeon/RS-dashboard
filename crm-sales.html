@@ -130,7 +130,6 @@ tr:hover td{background:#fafaf8}
       <button class="tab-btn" onclick="switchTab('fidelizacion')">🔁 Gestión Comercial Recuperación</button>
       <button class="tab-btn" onclick="switchTab('cs')">👩‍💼 Gestión Fidelización</button>
       <button class="tab-btn" onclick="switchTab('mesvencido')">📋 Mes Vencido</button>
-      <button class="tab-btn" onclick="switchTab('operaciones')">🚚 Operaciones</button>
       <button class="tab-btn" onclick="switchTab('pipeline')">📊 Pipeline</button>
       <!-- Riesgo tab removed — now in CEO dashboard only -->
       <button class="tab-btn" onclick="switchTab('glosario')">📖 Glosario</button>
@@ -277,8 +276,6 @@ tr:hover td{background:#fafaf8}
     <!-- ═══ TAB: MES VENCIDO ═══ -->
     <div class="tab-panel" id="tab-mesvencido"></div>
 
-    <!-- ═══ TAB: OPERACIONES ═══ -->
-    <div class="tab-panel" id="tab-operaciones"></div>
 
     <!-- Tab Riesgo removed — now in CEO dashboard only -->
 
@@ -501,7 +498,6 @@ function selectWeek(idx) {
   if (document.getElementById('tab-ejecutivos').classList.contains('active')) renderEjecutivos();
   if (document.getElementById('tab-funnel').classList.contains('active')) renderFunnel();
   if (document.getElementById('tab-cs').classList.contains('active')) renderCS();
-  if (document.getElementById('tab-operaciones').classList.contains('active')) renderOperaciones();
 }
 
 const EXEC_COUNT = 3;
@@ -518,7 +514,6 @@ function switchTab(tab) {
   if (tab === 'fidelizacion' && D) renderFidelizacion();
   if (tab === 'cs' && D) renderCS();
   if (tab === 'mesvencido' && D) renderMesVencido();
-  if (tab === 'operaciones' && D) renderOperaciones();
   if (tab === 'pipeline' && D) renderPipeline();
   // Riesgo tab removed — now in CEO dashboard only
 }
@@ -2201,91 +2196,6 @@ function renderRescuedTable(list, bodyId, noId, countId) {
   });
 }
 
-// ═══════════════════════════════════════
-// OPERACIONES TAB — SLA entrega + litros por camión
-// ═══════════════════════════════════════
-function renderOperaciones() {
-  if (!D) return;
-  const OP = D.operaciones || {};
-  // Vista SEMANAL: la gestion de operaciones se rinde por semana comercial (jueves-miercoles)
-  const sla = (OP.sla_semanas || [])[selectedWeek] || OP.sla || {};
-  const wkStart = sla.week_start || '', wkEnd = sla.week_end || '';
-  const inWk = r => (wkStart && wkEnd) ? (r.fecha >= wkStart && r.fecha <= wkEnd) : true;
-  const rows = (OP.camiones_diario || []).filter(inWk);
-  const rowsZ = (OP.zonas_diario || []).filter(inWk);
-  const camiones = (OP.camiones || []).filter(c => rows.some(r => r.camion === c));
-  const zonas = (OP.zonas || []).filter(z => rowsZ.some(r => r.zona === z));
-  const litrosSem = rows.reduce((s, r) => s + (r.litros || 0), 0);
-
-  // Selector de semana (mismas semanas ENAP del resto del dashboard)
-  const fwOp = D.funnel_weeks || [];
-  let h = '<div style="display:flex;gap:6px;margin-bottom:18px;flex-wrap:wrap">' + fwOp.map((w, i) =>
-    '<button class="btn"' + (i === selectedWeek ? ' style="border-color:var(--red);color:var(--red)"' : '') + ' onclick="selectWeek(' + i + ')">' + w.label + (w.is_current ? ' \u25CF' : '') + '</button>'
-  ).join('') + '</div>';
-
-  // SLA SIMPLE: pedido entregado (facturado) dentro de 24 hrs \u2014 o en la fecha
-  // sugerida si el cliente hizo preorder para m\u00e1s adelante. Meta 95%.
-  const incumplidas = sla.prom_incumplidas || [];
-  h += '<div class="kpi-row">';
-  h += mkKpi((sla.prom_pct || 0) >= 95 ? 'c-green' : (sla.prom_pct || 0) >= 85 ? 'c-yellow' : 'c-red', '\u{1F69A} SLA Entrega 24h', (sla.prom_pct || 0) + '%', 'facturado \u226424h del pedido (o fecha acordada) \u00b7 meta 95%', sla.prom_pct || 0, 95);
-  h += mkKpi('c-blue', 'Pedidos de la Semana', sla.pedidos_semana || 0, (sla.prom_total || 0) + ' evaluados \u00b7 ' + (sla.prom_preorders || 0) + ' preorder' + ((sla.prom_en_curso || 0) ? ' \u00b7 ' + sla.prom_en_curso + ' en reparto' : '') + ((sla.prom_movidos || 0) ? ' \u00b7 \u26a0 ' + sla.prom_movidos + ' plazo movido' : ''), null, null);
-  h += mkKpi(incumplidas.length > 0 ? 'c-red' : 'c-green', '\u23f0 Fuera de Plazo', incumplidas.length, 'facturados despu\u00e9s del plazo comprometido', null, null);
-  // Entrega\u2192Factura (pedido Pauline 11-sep): promedio de d\u00edas entre la fecha de
-  // entrega ORIGINAL (snapshot) y la 1\u00aa factura \u2014 el SLA "despachamos en <24h"
-  if (sla.ent_prom_dias != null) {
-    const entOk = (sla.ent_24h_pct || 0) >= 95;
-    h += mkKpi(entOk ? 'c-green' : (sla.ent_24h_pct || 0) >= 85 ? 'c-yellow' : 'c-red',
-      '\u26a1 Entrega \u2192 Factura', sla.ent_prom_dias.toLocaleString('es-CL') + ' d\u00edas prom',
-      (sla.ent_24h_pct || 0) + '% dentro de 24h de la fecha de entrega \u00b7 ' + (sla.ent_0d_pct || 0) + '% mismo d\u00eda \u00b7 ' + (sla.ent_n || 0) + ' pedidos', null, null);
-  }
-  h += mkKpi('c-blue', 'Litros Entregados', fL(litrosSem), 'semana seleccionada', null, null);
-  h += mkKpi('c-green', 'Camiones Activos', camiones.filter(c => c !== 'Sin cami\u00f3n').length, 'con entregas en la semana', null, null);
-  h += '</div>';
-
-  // Matriz generica dia x columna
-  const matriz = (titulo, icono, cols, data, keyFn) => {
-    const dias2 = [...new Set(data.map(r => r.fecha))].sort();
-    const byD = {};
-    data.forEach(r => { (byD[r.fecha] = byD[r.fecha] || {})[keyFn(r)] = (byD[r.fecha][keyFn(r)] || 0) + r.litros; });
-    let m = '<div class="sec"><div class="sec-h"><h2>' + icono + ' ' + titulo + '</h2><span style="font-size:12px;color:var(--dim)">semana ' + (wkStart ? wkStart + ' \u2192 ' + wkEnd : '') + '</span></div><div class="sec-b" style="padding:0;overflow-x:auto"><table><thead><tr><th>Fecha</th>';
-    cols.forEach(c => m += '<th style="text-align:right">' + H(c) + '</th>');
-    m += '<th style="text-align:right;border-left:2px solid #e5e4df">Total d\u00eda</th></tr></thead><tbody>';
-    [...dias2].reverse().forEach(f => {
-      const mm = byD[f] || {};
-      const tot = Object.values(mm).reduce((s, v) => s + v, 0);
-      m += '<tr><td class="bold" style="white-space:nowrap">' + f + '</td>';
-      cols.forEach(c => m += '<td style="text-align:right">' + (mm[c] ? Math.round(mm[c]).toLocaleString('es-CL') : '<span style="color:var(--dim)">\u2014</span>') + '</td>');
-      m += '<td class="bold" style="text-align:right;border-left:2px solid #e5e4df">' + Math.round(tot).toLocaleString('es-CL') + '</td></tr>';
-    });
-    const totC = {};
-    data.forEach(r => totC[keyFn(r)] = (totC[keyFn(r)] || 0) + r.litros);
-    const totAll = data.reduce((s, r) => s + r.litros, 0);
-    m += '<tr style="font-weight:700;border-top:2px solid #e5e4df"><td>Total semana</td>';
-    cols.forEach(c => m += '<td style="text-align:right">' + Math.round(totC[c] || 0).toLocaleString('es-CL') + '</td>');
-    m += '<td style="text-align:right;border-left:2px solid #e5e4df">' + Math.round(totAll).toLocaleString('es-CL') + '</td></tr>';
-    m += '</tbody></table></div></div>';
-    return m;
-  };
-  h += matriz('Litros diarios por cami\u00f3n', '\u{1F69B}', camiones, rows, r => r.camion);
-  h += matriz('Litros diarios por zona', '\u{1F5FA}\uFE0F', zonas, rowsZ, r => r.zona);
-
-  // Fuera de plazo: facturados despu\u00e9s de las 24h (o de la fecha acordada si fue
-  // preorder). El plazo es el ORIGINAL del snapshot; si la fecha sugerida se corri\u00f3
-  // despu\u00e9s en Odoo, aparece "\u26a0 movido" con el antes \u2192 despu\u00e9s.
-  h += '<div class="sec"><div class="sec-h"><h2>\u23f0 Fuera de Plazo \u2014 ' + H(sla.label || 'semana') + '</h2><span class="badge">' + incumplidas.length + '</span></div><div class="sec-b" style="padding:0;overflow-x:auto"><table><thead><tr><th>Cliente</th><th>Orden</th><th>Pedido (hora Chile)</th><th>Plazo</th><th>Facturado el</th><th>D\u00edas despu\u00e9s</th></tr></thead><tbody>';
-  if (incumplidas.length === 0) {
-    h += '<tr><td colspan="6" class="nodata">Todos los pedidos dentro de plazo \u{1F389}</td></tr>';
-  } else {
-    incumplidas.forEach(r => {
-      const dc = r.dias > 2 ? 'color:var(--red);font-weight:700' : 'color:var(--yellow);font-weight:600';
-      const mv = r.movido ? ' <span class="tag tag-y" title="fecha sugerida cambiada en Odoo despu\u00e9s del pedido">\u26a0 movido ' + H(r.movido) + '</span>' : '';
-      h += '<tr><td class="bold">' + H(r.cliente) + '</td><td>' + H(r.orden) + '</td><td>' + r.pedido + '</td><td>' + (r.limite || '\u2014') + mv + '</td><td>' + r.facturado + '</td><td style="' + dc + '">+' + r.dias + 'd</td></tr>';
-    });
-  }
-  h += '</tbody></table></div></div>';
-
-  document.getElementById('tab-operaciones').innerHTML = h;
-}
 
 // ═══════════════════════════════════════
 // PIPELINE TAB

@@ -74,6 +74,7 @@
 
 <div class="tabs">
   <button class="tab active" data-tab="costos" onclick="switchTab('costos')">💰 Costos</button>
+  <button class="tab" data-tab="oper" onclick="switchTab('oper')">🚚 Operaciones</button>
   <button class="tab" data-tab="mant" onclick="switchTab('mant')">🔧 Mantención</button>
 </div>
 
@@ -92,7 +93,20 @@
   <div class="truck-grid" id="trucks"></div>
 </div>
 
-<div class="card vw-costos">
+<div class="card vw-oper" hidden>
+  <h2>🚚 Entregas reales por camión — SimpliRoute</h2>
+  <div class="note" style="margin:0 0 12px">Desde la API de SimpliRoute (se actualiza sola cada mañana). El <b>chofer es el que registran las visitas reales</b> — rotaciones incluidas, sin listas estáticas. Jornada = salida a ruta (<code>on_its_way</code>) → último checkout con GPS. Ventana: últimos 14 días (<span id="srRango"></span>).</div>
+  <div class="scroll"><table id="tablaSimpli"></table></div>
+  <div id="srNota" class="note"></div>
+</div>
+
+<div class="card vw-oper" hidden>
+  <h2>⚠️ Entregas fallidas recientes — con motivo</h2>
+  <div class="note" style="margin:0 0 12px">Visitas failed/partial de los últimos 14 días. Excluye los "failed" de facturación especial (SUGAL), que sí son entregas. Cada fila es plata dando vueltas: revisar motivo y reprogramar.</div>
+  <div class="scroll"><table id="tablaFallidas"></table></div>
+</div>
+
+<div class="card vw-oper" hidden>
   <h2>👷 Productividad de choferes — anatomía de la jornada</h2>
   <div class="note" style="margin:0 0 12px">Desde la planilla de bodegas que llenan los choferes (<code>Bodegas_por_Camion_v2</code>), no desde Odoo. La jornada de cada camión se parte en tres tramos: <b>arranque</b> (INICIO → 1ª venta), <b>activo</b> (1ª → última venta) y <b>cola</b> (última venta → CIERRE). Arranque y cola son horas con el camión y el chofer en marcha sin facturar. Valores = mediana del día típico en la ventana <span id="chofRango"></span>.</div>
   <div class="scroll"><table id="tablaChoferes"></table></div>
@@ -136,16 +150,18 @@ const sum = a => a.reduce((s, x) => s + x, 0);
 function cumplClass(pct) { return pct <= 100 ? 'ok' : (pct <= 115 ? 'warn' : 'bad'); }
 
 async function load() {
-  const [dataRes, presRes, chofRes, planRes] = await Promise.all([
+  const [dataRes, presRes, chofRes, planRes, srRes] = await Promise.all([
     fetch('costos-data.json?ts=' + Date.now()),
     fetch('presupuesto-camiones.json?ts=' + Date.now()),
     fetch('choferes-data.json?ts=' + Date.now()),
     fetch('plan-mantencion.json?ts=' + Date.now()),
+    fetch('simpliroute-data.json?ts=' + Date.now()),
   ]);
   const D = await dataRes.json();
   const P = await presRes.json();
   if (chofRes.ok) renderChoferes(await chofRes.json());
   if (planRes.ok) renderPlanMantencion(await planRes.json(), D);
+  if (srRes.ok) renderSimpli(await srRes.json());
 
   // último mes con gasto real
   const totalGLMes = D.meses.map((_, i) => sum(Object.values(D.flota_gl).map(v => v[i])));
@@ -437,8 +453,64 @@ function renderPlanMantencion(PLAN, D) {
     : 'Sin datos del plan.';
 }
 
+// ---- entregas reales por camión (SimpliRoute, se actualiza sola) ----
+function renderSimpli(S) {
+  const mm = h => { const [a, b] = h.split(':').map(Number); return a * 60 + b; };
+  const med = a => { if (!a.length) return null; const s = [...a].sort((x, y) => x - y); return s[Math.floor((s.length - 1) / 2)]; };
+  const corte = new Date(new Date(S.hasta + 'T12:00') - 13 * 864e5).toISOString().slice(0, 10);
+  const dias = (S.diario || []).filter(d => d.fecha >= corte && (d.completadas > 0 || d.fallidas > 0));
+  $('srRango').textContent = corte + ' → ' + S.hasta;
+
+  const cams = {};
+  for (const d of dias) {
+    const c = (cams[d.cam] = cams[d.cam] || { dias: [] });
+    c.dias.push(d);
+  }
+  const filas = Object.entries(cams).map(([cam, c]) => {
+    c.dias.sort((a, b) => b.fecha.localeCompare(a.fecha));
+    const jornadas = c.dias.filter(d => d.salida && d.ultimo_checkout)
+      .map(d => mm(d.ultimo_checkout) - mm(d.salida)).filter(x => x > 0);
+    return {
+      cam,
+      chofer: c.dias.find(d => d.chofer)?.chofer || '—',   // el de la visita más reciente
+      nDias: c.dias.length,
+      entregasDia: c.dias.reduce((s, d) => s + d.completadas, 0) / c.dias.length,
+      litrosDia: Math.round(c.dias.reduce((s, d) => s + d.litros_entregados, 0) / c.dias.length),
+      litrosTot: c.dias.reduce((s, d) => s + d.litros_entregados, 0),
+      fallidas: c.dias.reduce((s, d) => s + d.fallidas, 0),
+      salida: med(c.dias.filter(d => d.salida).map(d => mm(d.salida))),
+      fin: med(c.dias.filter(d => d.ultimo_checkout).map(d => mm(d.ultimo_checkout))),
+      jornada: med(jornadas),
+    };
+  }).sort((a, b) => b.litrosTot - a.litrosTot);
+
+  let h = '<table><tr><th>Camión</th><th>Chofer (visitas reales)</th><th>Días</th><th>Entregas/día</th><th>Litros/día</th><th>Litros total</th><th>Fallidas</th><th>Salida (med.)</th><th>Última entrega (med.)</th><th>Jornada (med.)</th></tr>';
+  for (const f of filas) {
+    h += `<tr><td><b>${f.cam}</b></td><td>${f.chofer}</td><td>${f.nDias}</td>
+      <td>${f.entregasDia.toFixed(1)}</td><td>${CLP.format(f.litrosDia)}</td><td><b>${CLP.format(f.litrosTot)}</b></td>
+      <td>${f.fallidas ? '<b class="bad">' + f.fallidas + '</b>' : '0'}</td>
+      <td>${f.salida != null ? hhmm(f.salida) : '—'}</td><td>${f.fin != null ? hhmm(f.fin) : '—'}</td>
+      <td>${f.jornada != null ? dur(f.jornada) : '—'}</td></tr>`;
+  }
+  h += '</table>';
+  $('tablaSimpli').innerHTML = h;
+  $('srNota').innerHTML = 'Fuente: <code>simpliroute-data.json</code> (API SimpliRoute, cron diario 06:13). "Fallidas" excluye la facturación especial (SUGAL), que cuenta como entregada. Con pocas semanas de datos las medianas aún son gruesas — se afinan solas.';
+
+  const uuidRe = /^[0-9a-f]{8}-[0-9a-f]{4}/i;
+  const fal = (S.fallidas || []).filter(x => x.fecha >= corte);
+  let g = '<table><tr><th>Fecha</th><th>Camión</th><th>Chofer</th><th>Cliente</th><th>Litros</th><th>Hora</th><th>Motivo</th></tr>';
+  if (!fal.length) g += '<tr><td colspan="7" style="color:var(--muted)">Sin fallidas en la ventana 🎉</td></tr>';
+  for (const x of fal) {
+    const motivo = x.motivo && !uuidRe.test(x.motivo) ? x.motivo : '<span style="color:var(--muted)">sin motivo anotado</span>';
+    g += `<tr><td>${x.fecha}</td><td><b>${x.cam || '—'}</b></td><td>${x.chofer || '—'}</td><td style="white-space:normal">${x.cliente}</td><td>${CLP.format(Math.round(x.litros || 0))}</td><td>${x.hora || '—'}</td><td style="white-space:normal">${motivo}</td></tr>`;
+  }
+  g += '</table>';
+  $('tablaFallidas').innerHTML = g;
+}
+
 function switchTab(t) {
   document.querySelectorAll('.vw-costos').forEach(e => e.hidden = t !== 'costos');
+  document.querySelectorAll('.vw-oper').forEach(e => e.hidden = t !== 'oper');
   document.querySelectorAll('.vw-mant').forEach(e => e.hidden = t !== 'mant');
   document.querySelectorAll('.tab').forEach(b => b.classList.toggle('active', b.dataset.tab === t));
 }
