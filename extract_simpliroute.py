@@ -47,8 +47,11 @@ MIN_LITROS_7D = 30_000       # un solo día normal ya supera esto
 MIN_VEHICULOS = 5
 MAX_DIAS_CON_ERROR = 5       # tolerancia de errores HTTP en la ventana
 
-# "failed" que en realidad es entrega (facturación distinta, ver docstring)
-FALLA_ES_ENTREGA = ('SUGAL',)
+# "failed" que en realidad es entrega (facturación distinta, ver docstring).
+# Marcha blanca SimpliRoute (decisión Pauline 21-sep): lista de excepciones
+# por cliente, revisadas caso a caso; la regla genérica (motivo "litros
+# entregados") queda para después.
+FALLA_ES_ENTREGA = ('SUGAL', 'ARRIGONI')
 
 
 def token():
@@ -148,7 +151,9 @@ def main():
             m = re.search(r'\bS\d+\b', ref)
             so = m.group(0) if m else None
             cliente = str(v.get('title') or '').strip()
-            especial = (v.get('status') == 'failed' and
+            # failed Y partial: en estos clientes ambos son el mismo artefacto
+            # de facturación (a veces los corrigen a partial en la app)
+            especial = (v.get('status') in ('failed', 'partial') and
                         any(c in cliente.upper() for c in FALLA_ES_ENTREGA))
             visitas.append(dict(
                 id=v.get('id'),
