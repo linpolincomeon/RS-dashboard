@@ -143,13 +143,10 @@ _CANONICAL_VENDORS = [
     ({"comber", "sigall", "pauline"}, "Comber Sigall Pauline"),
     ({"aviles", "carolina"}, "Carolina Avilés"),
     ({"marquez", "marcela"}, "Marcela Márquez"),
-    ({"bisquertt", "raul"}, "Raúl Bisquertt"),
     ({"boccardo", "mauro"}, "Mauro Boccardo"),
     ({"retamal", "rodrigo"}, "Rodrigo Retamal"),
     ({"manuel", "lopez"}, "Manuel López"),
     ({"nicolas", "gonzalez"}, "Nicolás Gonzalez"),
-    ({"cristian", "jiroz"}, "Cristian Jiroz"),
-    ({"diego", "varas"}, "Diego Varas"),
     ({"abraham", "urrutia"}, "Abraham Urrutia"),
     ({"ernesto", "parot"}, "Ernesto Parot"),
     ({"juan", "naour"}, "Juan Naour"),
@@ -3806,8 +3803,8 @@ def main():
         _exec_names = [
             "toro gonzález sebastian enrique", "muñoz encalada joaquin",
             "sebastian toro", "joaquin muñoz",  # cuentas .ext (nombre corto, no canonicaliza al largo)
-            "carolina avilés", "marcela márquez", "raúl bisquertt", "rodrigo retamal",
-            "manuel lópez", "nicolás gonzalez", "cristian jiroz", "diego varas",
+            "carolina avilés", "marcela márquez", "rodrigo retamal",
+            "manuel lópez", "nicolás gonzalez",
             "abraham urrutia", "ernesto parot", "juan naour",
         ]
 
