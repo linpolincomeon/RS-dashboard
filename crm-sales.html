@@ -195,7 +195,7 @@ tr:hover td{background:#fafaf8}
       <div class="kpi-row" id="churnKpiRow"></div>
 
       <!-- Clientes asignados a ejecutivos (remate) — revisar gestión la semana siguiente -->
-      <div class="sec"><div class="sec-h"><h2>🎯 Clientes Asignados a Ejecutivos</h2><span class="badge" id="asigCount">0</span></div><div class="sec-b" style="max-height:500px;overflow-x:auto">
+      <div class="sec"><div class="sec-h"><h2>🎯 Clientes Asignados a Ejecutivos</h2><span style="font-size:12px;color:var(--dim)" id="asigPlazoHint"></span><span class="badge" id="asigCount">0</span></div><div class="sec-b" style="max-height:500px;overflow-x:auto">
         <table><thead><tr><th>Cliente</th><th>Asignado a</th><th>Fecha</th><th>Venía de</th><th>Gestión</th></tr></thead><tbody id="asigBody"></tbody></table>
         <div class="nodata" id="noAsig" style="display:none">Sin asignaciones en la semana seleccionada</div></div></div>
 
@@ -1582,12 +1582,32 @@ function renderFidelizacion() {
     // Orden por FECHA (nuevas arriba) con bandas alternadas por semana comercial ENAP (jue-mié)
     const enapWeek = f => { const d = new Date((f || '2000-01-01') + 'T12:00:00'); const diff = (d.getDay() - 4 + 7) % 7; d.setDate(d.getDate() - diff); return d.toISOString().slice(0, 10); };
     let _wkPrev = null, _sombra = false;
+    // Plazo de gesti\u00f3n del remate (regla Pauline 21-sep): 7 d\u00edas desde la asignaci\u00f3n
+    // para registrar la primera gesti\u00f3n; vencido \u2192 se libera al siguiente ejecutivo
+    // en el comit\u00e9. Es incentivo, no castigo: gestionar a tiempo mantiene prioridad.
+    const PLAZO_GESTION_DIAS = 7;
+    const _dias = (d1, d2) => Math.round((new Date(d2 + 'T12:00:00') - new Date(d1 + 'T12:00:00')) / 86400000);
+    const _hoyStr = new Date().toISOString().slice(0, 10);
+    let _porLiberar = 0;
     asig.slice().sort((a, b) => (b.fecha || '').localeCompare(a.fecha || '') || (a.ejecutivo || '').localeCompare(b.ejecutivo || '')).forEach(a => {
-      const gest = a.compro
-        ? '<span class="tag tag-g">\ud83d\uded2 Compr\u00f3 \u00b7 ' + a.compro + '</span>'
-        : (a.gestionado
-          ? '<span class="tag tag-g" title="' + H(a.nota || '') + '">\u2705 ' + (a.nota_fecha || '') + '</span>'
-          : '<span class="tag tag-r">\u274c Sin gesti\u00f3n</span>');
+      let gest;
+      if (a.compro) {
+        gest = '<span class="tag tag-g">\ud83d\uded2 Compr\u00f3 \u00b7 ' + a.compro + '</span>';
+      } else if (a.gestionado) {
+        const tarde = a.fecha && a.nota_fecha && _dias(a.fecha, a.nota_fecha) > PLAZO_GESTION_DIAS;
+        gest = tarde
+          ? '<span class="tag tag-y" title="' + H(a.nota || '') + '">\u2705 ' + (a.nota_fecha || '') + ' \u00b7 tarde</span>'
+          : '<span class="tag tag-g" title="' + H(a.nota || '') + '">\u2705 ' + (a.nota_fecha || '') + '</span>';
+      } else {
+        const trans = a.fecha ? _dias(a.fecha, _hoyStr) : 0;
+        const restan = PLAZO_GESTION_DIAS - trans;
+        if (restan >= 0) {
+          gest = '<span class="tag tag-y">\u23f3 Sin gesti\u00f3n \u00b7 ' + (restan === 0 ? 'vence HOY' : 'quedan ' + restan + 'd') + '</span>';
+        } else {
+          _porLiberar++;
+          gest = '<span class="tag tag-r">\u23f0 Vencido +' + (-restan) + 'd \u2014 liberar al siguiente</span>';
+        }
+      }
       const tr = document.createElement('tr');
       const _wk = enapWeek(a.fecha);
       if (_wk !== _wkPrev) { if (_wkPrev !== null) _sombra = !_sombra; _wkPrev = _wk; }
@@ -1595,6 +1615,9 @@ function renderFidelizacion() {
       tr.innerHTML = '<td class="bold">' + H(a.cliente) + '</td><td>' + H(a.ejecutivo) + '</td><td>' + (a.fecha || '\u2014') + '</td><td style="font-size:11px;color:var(--dim)">' + H(a.desde || '\u2014') + '</td><td>' + gest + '</td>';
       ab.appendChild(tr);
     });
+    const _ph = document.getElementById('asigPlazoHint');
+    if (_ph) _ph.innerHTML = 'plazo de gesti\u00f3n: ' + PLAZO_GESTION_DIAS + ' d\u00edas \u00b7 vencido pasa al siguiente ejecutivo'
+      + (_porLiberar ? ' \u00b7 <b style="color:var(--red)">\u23f0 ' + _porLiberar + ' por liberar</b>' : '');
   }
 
   // Recuperables por facturaci\u00f3n + Transici\u00f3n a Fidelizaci\u00f3n (los gestiona el equipo comercial)
