@@ -1175,7 +1175,31 @@ function renderRiesgo(){
         const SINIESTRO_WATCH=[
             {name:'AGRICOLA TORREVAL LIMITADA', rut:'76347403-8', factor:'Go Capital / F. Security',
              facturas:[{n:'FAC 52420',vcto:'2026-06-27',monto:1425000},{n:'FAC 52596',vcto:'2026-07-10',monto:1426000}],
-             nota:'Caso 21-sep-2026: impago al factor detectado tarde'}
+             nota:'Caso 21-sep-2026: impago al factor detectado tarde'},
+            {name:"URAN ANTONIO LUNA DOMÍNGUEZ", rut:'', factor:'según Sheet factoring', facturas:[{n:'FAC 48530',vcto:'2025-12-30',monto:2958000}],
+             nota:'Cruce Sheet factoring 22-sep-2026: En mora con el factor, nunca siniestrada'},
+            {name:"TRANSPORTE SANTA ELENITA SPA", rut:'', factor:'según Sheet factoring', facturas:[{n:'FAC 48535',vcto:'2026-01-02',monto:974780}],
+             nota:'Cruce Sheet factoring 22-sep-2026: En mora con el factor, nunca siniestrada'},
+            {name:"HUGO PATRICIO CATALAN ZAVALLA", rut:'', factor:'según Sheet factoring', facturas:[{n:'FAC 50684',vcto:'2026-03-20',monto:4655001}],
+             nota:'Cruce Sheet factoring 22-sep-2026: En mora con el factor, nunca siniestrada'},
+            {name:"SOCIEDAD COMERCIAL LUIS PARRAGUEZ G E HIJOS LTDA", rut:'', factor:'según Sheet factoring', facturas:[{n:'FAC 50688',vcto:'2026-03-20',monto:956000}],
+             nota:'Cruce Sheet factoring 22-sep-2026: En mora con el factor, nunca siniestrada'},
+            {name:"ALFREDO ALFONSO OPAZO MUÑOZ", rut:'', factor:'según Sheet factoring', facturas:[{n:'FAC 50707',vcto:'2026-03-21',monto:1792000},{n:'FAC 50718',vcto:'2026-03-21',monto:1792000}],
+             nota:'Cruce Sheet factoring 22-sep-2026: En mora con el factor, nunca siniestrada'},
+            {name:"JULIO ENRIQUE RUBILAR ROMERO", rut:'', factor:'según Sheet factoring', facturas:[{n:'FAC 50711',vcto:'2026-03-21',monto:1814000}],
+             nota:'Cruce Sheet factoring 22-sep-2026: En mora con el factor, nunca siniestrada'},
+            {name:"DOMINGO SEGUNDO GALAZ QUEZADA", rut:'', factor:'según Sheet factoring', facturas:[{n:'FAC 50750',vcto:'2026-03-22',monto:942000}],
+             nota:'Cruce Sheet factoring 22-sep-2026: En mora con el factor, nunca siniestrada'},
+            {name:"CONSTRUCTORA LO BLANCO SPA", rut:'', factor:'según Sheet factoring', facturas:[{n:'FAC 50754',vcto:'2026-03-25',monto:926000}],
+             nota:'Cruce Sheet factoring 22-sep-2026: En mora con el factor, nunca siniestrada'},
+            {name:"AGRICOLA RIOJARA LIMITADA", rut:'', factor:'según Sheet factoring', facturas:[{n:'FAC 50760',vcto:'2026-03-25',monto:901000}],
+             nota:'Cruce Sheet factoring 22-sep-2026: En mora con el factor, nunca siniestrada'},
+            {name:"CLAUDIO AMARO LOYOLA", rut:'', factor:'según Sheet factoring', facturas:[{n:'FAC 50761',vcto:'2026-03-25',monto:926000}],
+             nota:'Cruce Sheet factoring 22-sep-2026: En mora con el factor, nunca siniestrada'},
+            {name:"NUEVO SUR SPA", rut:'', factor:'según Sheet factoring', facturas:[{n:'FAC 50770',vcto:'2026-03-25',monto:957000}],
+             nota:'Cruce Sheet factoring 22-sep-2026: En mora con el factor, nunca siniestrada'},
+            {name:"DISTRIBUIDORA MAULE SPA", rut:'', factor:'según Sheet factoring', facturas:[{n:'FAC 50773',vcto:'2026-03-25',monto:1366500}],
+             nota:'Cruce Sheet factoring 22-sep-2026: En mora con el factor, nunca siniestrada'}
         ];
         if(SINIESTRO_WATCH.length){
             const hoy=new Date(); hoy.setHours(0,0,0,0);
@@ -1448,15 +1472,18 @@ function kpi(label,val,delta,cls,sub){
 }
 // ── 👥 GESTIÓN EQUIPO (tablero subgerencia — solo CEO dashboard, no visible a vendedores) ──
 // Metas fijadas 15-09-2026 (doc "Inteligencia de datos — Mandato Subgerencia"). Actualizar aquí al renovarlas.
-const EQ_METAS={litros30:450000,litros90:650000,litrosBase:338000,prod30:9,prod90:13,equipoN:13,
+// prod30/prod90/equipoN recalibrados 13→10 (misma proporción) tras borrar 3 inactivos
+const EQ_METAS={litros30:450000,litros90:650000,litrosBase:338000,prod30:7,prod90:10,equipoN:10,
     remateMes:40,rematePct:35,repri30:15,repri90:30,repriBase:59,
     mChillan30:7.0,mChillan90:7.5,mCurico90:8.0};
 // Consolidación de cuentas dobles y clasificación (misma convención que crm-sales)
 const EQ_MERGE={'Toro González Sebastian Enrique':'Sebastian Toro','MUÑOZ ENCALADA JOAQUIN':'Joaquin Muñoz'};
 const EQ_CS=['Comber Sigall Pauline','BOCCARDO SALVO MAURO','TomEnergy'];
 const EQ_INTERNOS=['Carlos Labbe','Isabel Muñoz','Gonzalo Vásquez','Belen Muñoz'];
+// Bisquertt/Jiroz/Varas BORRADOS 22-sep (inactivos totales, pedido Pauline 21-sep):
+// deflactaban 'Freelancers Productivos' como filas eternas en 0 sobre equipoN=13.
 const EQ_FREELANCERS=['Sebastian Toro','Nicolás Gonzalez','Carolina Avilés','Joaquin Muñoz','Abraham Urrutia',
-    'Rodrigo Retamal','Marcela Márquez','Manuel López','Raúl Bisquertt','Cristian Jiroz','Diego Varas','Juan Naour','Ernesto Parot'];
+    'Rodrigo Retamal','Marcela Márquez','Manuel López','Juan Naour','Ernesto Parot'];
 const EQ_MIN={'Volumen':5.5,'Crédito':7.5,'Contado':6.5};
 function eqSem(v,ok,warn){return v>=ok?'c-green':v>=warn?'c-amber':'c-red'}
 function renderEquipo(){
