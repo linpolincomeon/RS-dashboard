@@ -1816,10 +1816,16 @@ def extract_churn_data(models, uid):
                 print(f"  Churn {_tag} manual NO encontrado: {_nm}")
                 continue
             _p = _p[0]
-            # Graduación (17-sep, caso Gallardo): si el fijado COMPRÓ este mes ya no
-            # es perdido — vive en Recuperados del Mes, no acá.
-            if _p["id"] in curr_month_partners:
-                print(f"  Churn {_tag} manual RECUPERADO (compró este mes), fuera de perdidos: {_nm}")
+            # Graduación (17-sep caso Gallardo; ampliada 22-sep): si el fijado COMPRÓ
+            # en los últimos 90 días ya no es perdido — vive en Recuperados del Mes.
+            # Solo mes actual NO basta: al cambiar el mes los recuperados de sep
+            # reaparecían como churn (Valdés/Pinor/Palominos el 01-oct).
+            if _p["id"] in curr_month_partners or sr(models, uid, "account.move", [
+                    ["move_type", "=", "out_invoice"], ["state", "=", "posted"],
+                    ["partner_id", "=", _p["id"]],
+                    ["invoice_date", ">=", fmt(datetime.now().date() - timedelta(days=90))]],
+                    ["id"], limit=1):
+                print(f"  Churn {_tag} manual RECUPERADO (compra <90d), fuera de perdidos: {_nm}")
                 continue
             _churn_pend.append({
                 "name": _p.get("name") or _nm,
@@ -1839,7 +1845,7 @@ def extract_churn_data(models, uid):
             c["last_note"] = _n.get("body", "")
             c.pop("partner_id", None)
         lost_list.extend(_churn_pend)
-        print(f"  Churn julio manual: {len(_churn_pend)} agregados a lost_list")
+        print(f"  Churn manual (todas las cohortes): {len(_churn_pend)} agregados a lost_list")
     # output: los manuales/churn garantizados + top por litros
     _lost_man = [c for c in lost_list if c.get("churn_mes")]
     _lost_auto = sorted([c for c in lost_list if not c.get("churn_mes")],
@@ -2510,7 +2516,9 @@ def extract_recovery_clients(models, uid):
         # re-slice garantizando que TODOS los manuales entren al output
         _man_out = [r for r in recoverable if r.get("manual")]
         _auto_out = [r for r in recoverable if not r.get("manual")]
-        recoverable_top = sorted(_man_out + _auto_out[:max(0, 50 - len(_man_out))],
+        # Manuales completos + top-50 automáticos (el cap compartido estrangulaba
+        # a los automáticos con 2 cohortes fijadas — mismo fix que lost_list)
+        recoverable_top = sorted(_man_out + _auto_out[:50],
                                  key=lambda x: -(x.get("lpm_2025") or 0))
         print(f"  Lista manual: {len(_man_rows)} clientes agregados a recuperables")
 
@@ -3503,14 +3511,66 @@ def extract_asignaciones(models, uid):
                 ["partner_id", "=", r["pid"]], ["invoice_date", ">=", r["fecha"]],
             ], ["invoice_date"], limit=1, order="invoice_date asc")
             r["compro"] = inv[0]["invoice_date"] if inv else ""
-        notas = gather_latest_note(models, uid, pids) if pids else {}
+        # Gestión REAL del EJECUTIVO asignado (Pauline 22-sep): solo notas/actividades
+        # hechas POR el ejecutivo .ext después de la asignación — nada automático
+        # (bots/crons quedan fuera por autor; tracking/etapas por subtipo).
+        # primera_gestion alimenta el plazo de 7 días; nota/nota_fecha = la ÚLTIMA
+        # gestión del ejecutivo (columna "Qué gestión" del dashboard).
+        _gsub = [s["id"] for s in sr(models, uid, "mail.message.subtype",
+                 [["name", "in", ["Note", "Nota", "Activities", "Actividades"]]],
+                 ["id"], limit=50)] or [2, 3]
+        _ext_partner = {u["id"]: safe_id(u.get("partner_id")) for u in
+                        sr(models, uid, "res.users", [["id", "in", list(ext_ids)]], ["id", "partner_id"])}
+        _ruido_a = ["lead enrichment", "stage changed", "cambio de etapa", "ganado autom",
+                    "oportunidad ganada", "oportunidad perdida", "facturas pendientes",
+                    "cierre masivo", "lista de precios cambiada", "alerta:",
+                    "dias sin comprar", "días sin comprar"]
+        _leads_pid = {}
+        for l in sr(models, uid, "crm.lead", [["partner_id", "in", pids], ["active", "in", [True, False]]],
+                    ["id", "partner_id"], limit=10000):
+            _leads_pid.setdefault(safe_id(l.get("partner_id")), []).append(l["id"])
+        for r in rows:
+            _auth = _ext_partner.get(r["_dest_uid"])
+            gests = []
+            if _auth:
+                dom = ["|",
+                       "&", ["model", "=", "res.partner"], ["res_id", "=", r["pid"]],
+                       "&", ["model", "=", "crm.lead"], ["res_id", "in", _leads_pid.get(r["pid"]) or [0]],
+                       ["subtype_id", "in", _gsub],
+                       ["author_id", "=", _auth],
+                       ["date", ">=", r["fecha"] + " 00:00:00"]]
+                for m0 in sr(models, uid, "mail.message", dom, ["body", "date"], limit=30, order="date asc"):
+                    b = strip_html(m0.get("body") or "").strip()
+                    low = b.lower()
+                    if (low.startswith("actividades pendientes") or low.startswith("to-do done")) and ":" in b:
+                        b = b.split(":", 1)[1].strip()
+                    if len(b) > 3 and not any(x in b.lower() for x in _ruido_a):
+                        gests.append(((m0.get("date") or "")[:10], b[:150]))
+                # Actividades PLANEADAS del ejecutivo (mail.activity): también son
+                # gestión, y traen el TIPO (Llamada/Reunión/To-Do) que pide Pauline.
+                dom_a = ["|",
+                         "&", ["res_model", "=", "res.partner"], ["res_id", "=", r["pid"]],
+                         "&", ["res_model", "=", "crm.lead"], ["res_id", "in", _leads_pid.get(r["pid"]) or [0]],
+                         ["user_id", "=", r["_dest_uid"]],
+                         ["create_date", ">=", r["fecha"] + " 00:00:00"]]
+                for a0 in sr(models, uid, "mail.activity", dom_a,
+                             ["activity_type_id", "summary", "create_date"], limit=10, order="create_date asc"):
+                    _txt = (safe_name(a0.get("activity_type_id")) or "Actividad")
+                    if a0.get("summary"):
+                        _txt += ": " + a0["summary"]
+                    # mismo filtro de ruido: el cron 93 crea To-Dos "ALERTA: ..." a
+                    # nombre del ejecutivo — no son gestión suya
+                    if not any(x in _txt.lower() for x in _ruido_a):
+                        gests.append(((a0.get("create_date") or "")[:10], _txt[:150]))
+            gests.sort(key=lambda g: g[0])
+            r["primera_gestion"] = gests[0][0] if gests else ""
+            r["nota_fecha"] = gests[-1][0] if gests else ""
+            r["nota"] = gests[-1][1] if gests else ""
+            r["gestionado"] = bool(gests)
+
         for r in rows:
             r["cliente"] = (pmap.get(r["pid"]) or {}).get("name") or "?"
             r.pop("_dest_uid", None)
-            n = notas.get(r["pid"]) or {}
-            r["nota"] = n.get("body", "")
-            r["nota_fecha"] = (n.get("date") or "")[:10]
-            r["gestionado"] = bool(r["nota_fecha"] and r["nota_fecha"] >= r["fecha"])
             r.pop("pid", None)
             r.pop("_via", None)
             r.pop("_lead_id", None)
@@ -3830,11 +3890,17 @@ def main():
         window_start = today - timedelta(days=210)
         window_end = today - timedelta(days=150)
         _exec_names = [
-            "toro gonzález sebastian enrique", "muñoz encalada joaquin",
+            # "toro gonzález sebastian enrique" ELIMINADO (Pauline 22-sep): cuenta
+            # full-time antigua — sus capturas ya fueron transferidas a CS; en
+            # Transición solo el .ext ("sebastian toro").
+            "muñoz encalada joaquin",
             "sebastian toro", "joaquin muñoz",  # cuentas .ext (nombre corto, no canonicaliza al largo)
             "carolina avilés", "marcela márquez", "rodrigo retamal",
             "manuel lópez", "nicolás gonzalez",
             "abraham urrutia", "ernesto parot", "juan naour",
+            # Borrados del dashboard 21-sep pero se mantienen AQUÍ: sus capturas de
+            # feb-abr aún pueden cumplir 180d y deben aparecer para traspaso a CS.
+            "raúl bisquertt", "cristian jiroz", "diego varas",
         ]
 
         # Get all invoices in the window (candidates for first invoice)

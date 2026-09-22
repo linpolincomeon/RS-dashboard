@@ -196,8 +196,8 @@ tr:hover td{background:#fafaf8}
 
       <!-- Clientes asignados a ejecutivos (remate) — revisar gestión la semana siguiente -->
       <div class="sec"><div class="sec-h"><h2>🎯 Clientes Asignados a Ejecutivos</h2><span style="font-size:12px;color:var(--dim)" id="asigPlazoHint"></span><span class="badge" id="asigCount">0</span></div><div class="sec-b" style="max-height:500px;overflow-x:auto">
-        <table><thead><tr><th>Cliente</th><th>Asignado a</th><th>Fecha</th><th>Venía de</th><th>Gestión</th></tr></thead><tbody id="asigBody"></tbody></table>
-        <div class="nodata" id="noAsig" style="display:none">Sin asignaciones en la semana seleccionada</div></div></div>
+        <table><thead><tr><th>Cliente</th><th>Asignado a</th><th>Fecha</th><th>Venía de</th><th>Gestión</th><th>Qué gestión (del ejecutivo)</th></tr></thead><tbody id="asigBody"></tbody></table>
+        <div class="nodata" id="noAsig" style="display:none">Sin asignaciones en las últimas 4 semanas</div></div></div>
 
       <!-- Explanation notes -->
       <div id="churnNotes" style="background:var(--card);border-radius:12px;padding:16px;margin-bottom:24px;border-left:3px solid var(--yellow);font-size:12px;color:var(--dim);line-height:1.6"></div>
@@ -1569,10 +1569,18 @@ function renderFidelizacion() {
     });
   }
 
-  // Asignaciones del remate: solo las últimas 4 SEMANAS (pedido Pauline 21-sep:
+  // Asignaciones del remate: solo las últimas 4 SEMANAS ENAP (pedido Pauline 21-sep:
   // si no cerró en 1 mes, no era época de compra o no hubo caso — sale de la vista).
-  const _corteAsig = new Date(Date.now() - 28 * 86400000).toISOString().slice(0, 10);
+  // Fecha LOCAL (no toISOString/UTC: desde las 21:00 Chile corría un día adelantado)
+  // y corte al inicio de semana comercial (jueves): las semanas salen completas.
+  const _hoyLocal = (() => { const d = new Date(); d.setMinutes(d.getMinutes() - d.getTimezoneOffset()); return d.toISOString().slice(0, 10); })();
+  const _corteAsig = (() => { const d = new Date(_hoyLocal + 'T12:00:00'); d.setDate(d.getDate() - ((d.getDay() - 4 + 7) % 7) - 21); return d.toISOString().slice(0, 10); })();
   const asig = (D.asignaciones || []).filter(a => (a.fecha || '') >= _corteAsig);
+  // Plazo de gestión del remate (regla Pauline 21-sep): 7 días desde la asignación
+  // para la primera gestión DEL EJECUTIVO; vencido → se libera al siguiente en el
+  // comité. Es incentivo, no castigo: gestionar a tiempo mantiene prioridad.
+  const PLAZO_GESTION_DIAS = 7;
+  let _porLiberar = 0;
   document.getElementById('asigCount').textContent = asig.length;
   const ab = document.getElementById('asigBody'); ab.innerHTML = '';
   const noA = document.getElementById('noAsig');
@@ -1583,19 +1591,17 @@ function renderFidelizacion() {
     // Orden por FECHA (nuevas arriba) con bandas alternadas por semana comercial ENAP (jue-mié)
     const enapWeek = f => { const d = new Date((f || '2000-01-01') + 'T12:00:00'); const diff = (d.getDay() - 4 + 7) % 7; d.setDate(d.getDate() - diff); return d.toISOString().slice(0, 10); };
     let _wkPrev = null, _sombra = false;
-    // Plazo de gesti\u00f3n del remate (regla Pauline 21-sep): 7 d\u00edas desde la asignaci\u00f3n
-    // para registrar la primera gesti\u00f3n; vencido \u2192 se libera al siguiente ejecutivo
-    // en el comit\u00e9. Es incentivo, no castigo: gestionar a tiempo mantiene prioridad.
-    const PLAZO_GESTION_DIAS = 7;
     const _dias = (d1, d2) => Math.round((new Date(d2 + 'T12:00:00') - new Date(d1 + 'T12:00:00')) / 86400000);
-    const _hoyStr = new Date().toISOString().slice(0, 10);
-    let _porLiberar = 0;
+    const _hoyStr = _hoyLocal;
     asig.slice().sort((a, b) => (b.fecha || '').localeCompare(a.fecha || '') || (a.ejecutivo || '').localeCompare(b.ejecutivo || '')).forEach(a => {
       let gest;
       if (a.compro) {
         gest = '<span class="tag tag-g">\ud83d\uded2 Compr\u00f3 \u00b7 ' + a.compro + '</span>';
       } else if (a.gestionado) {
-        const tarde = a.fecha && a.nota_fecha && _dias(a.fecha, a.nota_fecha) > PLAZO_GESTION_DIAS;
+        // 'tarde' contra la PRIMERA gestión del ejecutivo (nota_fecha es la última
+        // y castigaba al que sigue gestionando); fallback nota_fecha para JSON viejo
+        const _pg = a.primera_gestion || a.nota_fecha;
+        const tarde = a.fecha && _pg && _dias(a.fecha, _pg) > PLAZO_GESTION_DIAS;
         gest = tarde
           ? '<span class="tag tag-y" title="' + H(a.nota || '') + '">\u2705 ' + (a.nota_fecha || '') + ' \u00b7 tarde</span>'
           : '<span class="tag tag-g" title="' + H(a.nota || '') + '">\u2705 ' + (a.nota_fecha || '') + '</span>';
@@ -1613,13 +1619,19 @@ function renderFidelizacion() {
       const _wk = enapWeek(a.fecha);
       if (_wk !== _wkPrev) { if (_wkPrev !== null) _sombra = !_sombra; _wkPrev = _wk; }
       if (_sombra) tr.style.background = '#f2f1ee';
-      tr.innerHTML = '<td class="bold">' + H(a.cliente) + '</td><td>' + H(a.ejecutivo) + '</td><td>' + (a.fecha || '\u2014') + '</td><td style="font-size:11px;color:var(--dim)">' + H(a.desde || '\u2014') + '</td><td>' + gest + '</td>';
+      // Qu\u00e9 gesti\u00f3n: la \u00faltima nota/actividad hecha POR el ejecutivo asignado
+      // (el extract filtra por autor .ext \u2014 nada autom\u00e1tico ni de terceros)
+      const queGest = a.nota
+        ? '<span style="font-size:11px;color:var(--dim)">' + H(a.nota) + '</span>'
+        : '<span style="color:var(--dim)">\u2014</span>';
+      tr.innerHTML = '<td class="bold">' + H(a.cliente) + '</td><td>' + H(a.ejecutivo) + '</td><td>' + (a.fecha || '\u2014') + '</td><td style="font-size:11px;color:var(--dim)">' + H(a.desde || '\u2014') + '</td><td>' + gest + '</td><td style="max-width:280px;white-space:normal">' + queGest + '</td>';
       ab.appendChild(tr);
     });
-    const _ph = document.getElementById('asigPlazoHint');
-    if (_ph) _ph.innerHTML = 'plazo de gesti\u00f3n: ' + PLAZO_GESTION_DIAS + ' d\u00edas \u00b7 vencido pasa al siguiente ejecutivo'
-      + (_porLiberar ? ' \u00b7 <b style="color:var(--red)">\u23f0 ' + _porLiberar + ' por liberar</b>' : '');
   }
+  const _ph = document.getElementById('asigPlazoHint');
+  if (_ph) _ph.innerHTML = asig.length === 0 ? '' :
+    'plazo de gesti\u00f3n: ' + PLAZO_GESTION_DIAS + ' d\u00edas \u00b7 vencido pasa al siguiente ejecutivo'
+    + (_porLiberar ? ' \u00b7 <b style="color:var(--red)">\u23f0 ' + _porLiberar + ' por liberar</b>' : '');
 
   // Recuperables por facturaci\u00f3n + Transici\u00f3n a Fidelizaci\u00f3n (los gestiona el equipo comercial)
   renderRecuperables('recuperablesContainer', false, '🔁 Recuperables ahora — asignables',
