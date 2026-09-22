@@ -1351,7 +1351,30 @@ def extract_cobranza_escalada(models, uid):
                 "etapa": etapa, "cubierto": round(cubierto),
                 "no_cubierto": round(d["monto"] - cubierto),
             })
-    clientes.sort(key=lambda c: -c["dias"])
+    # ── Siniestrados SIN deuda viva en CxC (caso Corval, 22-sep-2026) ──
+    # La convención TomEnergy es renombrar la ficha con "SINIESTRO/siniestrado".
+    # Si su deuda ya no está en CxC (facturas cedidas al factor —Corval: Fingo/
+    # Go Capital/F.Security—, reversadas o pagadas por AVLA) el cliente
+    # desaparecía del roster. Se listan igual en Post-siniestro, deuda "fuera de CxC".
+    listados = {c["name"] for c in clientes}
+    renombrados = sr(models, uid, "res.partner",
+                     [["name", "ilike", "siniestr"], ["customer_rank", ">", 0]],
+                     ["id", "name", "vat"], limit=200)
+    extra = 0
+    for p in renombrados:
+        if p["id"] in per or p["name"] in listados:
+            continue
+        clientes.append({
+            "name": p["name"], "rut": p.get("vat") or "", "monto": 0,
+            "n_facturas": 0, "dias": None, "oldest_due": None,
+            "etapa": "post_siniestro", "cubierto": 0, "no_cubierto": 0,
+            "sin_cxc": True,
+        })
+        buckets["post_siniestro"]["n"] += 1
+        extra += 1
+    print(f"  Siniestrados sin CxC viva agregados al roster: {extra}")
+
+    clientes.sort(key=lambda c: -(c["dias"] or 0))
     for k in buckets:
         buckets[k]["monto"] = round(buckets[k]["monto"])
     print(f"  {len(per)} clientes en mora · escalados (>=15d): {len(clientes)}")

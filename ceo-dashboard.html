@@ -1108,6 +1108,18 @@ function renderRiesgo(){
             const esFact=factSet.has(c.name);
             let accion=e.accion;
             if(esFact&&c.etapa==='corte_dicom')accion='Cortar suministro — NO publicar en DICOM (factura cedida al factor)';
+            // Siniestrado sin deuda viva en CxC (caso Corval): la deuda quedó cedida al
+            // factor / reversada / pagada por AVLA — la ficha renombrada lo mantiene en el roster
+            if(c.sin_cxc){
+                accion='Deuda fuera de CxC (cedida al factor, reversada o pagada por AVLA) — seguimiento en legal/factor';
+                h+='<tr><td>'+c.name+'</td>';
+                h+='<td class="r" style="color:var(--text3)" title="sin facturas vencidas vivas en Odoo">fuera de CxC</td>';
+                h+='<td class="r" style="color:var(--text3)">—</td><td class="r" style="color:var(--text3)">—</td>';
+                h+='<td class="r" style="color:var(--text3)">—</td><td class="r" style="color:var(--text3)">—</td>';
+                h+='<td style="text-align:center"><span class="sbadge '+e.cls+'">'+e.label+'</span></td>';
+                h+='<td style="font-size:11px;color:var(--text2)">'+accion+'</td></tr>';
+                return;
+            }
             h+='<tr><td>'+c.name+(esFact?' <span title="Cliente factorizado (≥50% de pagos vía factor)">🏦</span>':'')+'</td>';
             h+='<td class="r" style="font-weight:600" title="'+c.n_facturas+' factura(s) vencida(s)">'+fMon(c.monto)+'</td>';
             h+='<td class="r" style="font-weight:700;color:'+(c.dias>=180?'#6b21a8':c.dias>=60?'var(--red)':'var(--amber)')+'">'+c.dias+'d</td>';
