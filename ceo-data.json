@@ -1,23 +1,23 @@
 {
-  "updated": "2026-09-22T12:58:57.600704",
+  "updated": "2026-09-22T13:50:53.949247",
   "weeks": [
     {
       "label": "17sep-23sep",
       "start": "2026-09-17",
       "end": "2026-09-23",
-      "ventas": 104043441,
-      "neto": 99851634,
-      "litros": 75129,
-      "litros_retail": 46599,
+      "ventas": 106821442,
+      "neto": 102519223,
+      "litros": 77129,
+      "litros_retail": 48599,
       "litros_volumen": 28530,
       "precio_neto": 1329,
       "precio_bruto": 1385,
-      "margin": 0.08127,
-      "margin_retail": 0.08233,
+      "margin": 0.08134,
+      "margin_retail": 0.08239,
       "margin_volumen": 0.07953,
-      "facturas": 54,
+      "facturas": 56,
       "nc": 1,
-      "clientes": 43,
+      "clientes": 44,
       "recaud": 164442378,
       "cheques": 7325190,
       "transf": 92972281,
@@ -26,7 +26,7 @@
       "cheq_cartera_saldo": 0,
       "cheq_recibidos": 0,
       "facturas_contado": 6,
-      "facturas_credito": 48,
+      "facturas_credito": 50,
       "margin_by_term": {
         "Prepago": {
           "margin": 0.07306,
@@ -47,9 +47,9 @@
           "days": 7
         },
         "30 Días": {
-          "margin": 0.08782,
-          "normalizado": 0.08782,
-          "count": 28,
+          "margin": 0.08762,
+          "normalizado": 0.08762,
+          "count": 30,
           "days": 30
         },
         "45 Días": {
@@ -1254,8 +1254,8 @@
     {
       "date": "22sep",
       "day": "Mar",
-      "litros": 17470,
-      "neto": 23151023
+      "litros": 19470,
+      "neto": 25818612
     },
     {
       "date": "21sep",
@@ -1380,11 +1380,11 @@
   ],
   "total_cash": 63236363,
   "receivables": {
-    "open_invoices": 258,
-    "total_due": 512702377,
-    "current": 400912571,
+    "open_invoices": 260,
+    "total_due": 515480378,
+    "current": 403690572,
     "overdue": 111789806,
-    "pct_overdue": 21.8,
+    "pct_overdue": 21.7,
     "aging": {
       "0-30": 65936418,
       "31-60": 14907004,
@@ -1651,22 +1651,19 @@
         },
         "Curico": {
           "total": 12,
-          "on_time": 11,
-          "late": 1,
-          "pct": 91.67,
-          "late_clients": [
-            "AGRICOLA LA PATAGUILLA LTDA (prom: 2026-09-22, fact: sin factura)"
-          ]
+          "on_time": 12,
+          "late": 0,
+          "pct": 100.0,
+          "late_clients": []
         },
         "Rancagua": {
           "total": 30,
-          "on_time": 20,
-          "late": 10,
-          "pct": 66.67,
+          "on_time": 21,
+          "late": 9,
+          "pct": 70.0,
           "late_clients": [
             "Comercializadora Agrotuncahue (prom: 2026-09-22, fact: sin factura)",
             "AGRICOLA TRICAHUE LIMITADA (prom: 2026-09-22, fact: sin factura)",
-            "AGRICOLA EUGENIO LIRA ESPINOZA E.I.R.L. (prom: 2026-09-22, fact: sin factura)",
             "AMASANDERIA CAMILA SPA (prom: 2026-09-22, fact: sin factura)",
             "AGRICOLA OMEGA TRES LIMITADA (prom: 2026-09-22, fact: sin factura)",
             "SUGAL CHILE LIMITADA (prom: 2026-09-22, fact: sin factura)",
@@ -2638,14 +2635,14 @@
     }
   ],
   "riesgo": {
-    "cubierto": 426567639,
-    "cubierto_count": 229,
+    "cubierto": 429345640,
+    "cubierto_count": 231,
     "no_cubierto": 86134738,
     "no_cubierto_count": 29,
-    "pct_monto": 16.8,
-    "pct_count": 11.24,
+    "pct_monto": 16.71,
+    "pct_count": 11.15,
     "avla_fecha_descarga": "2026-09-10",
-    "avla_ruts_matched": 94,
+    "avla_ruts_matched": 95,
     "avla_ruts_total": 816
   },
   "churn": {
@@ -4146,9 +4143,9 @@
         "dso": 21.7
       }
     ],
-    "cxc_hoy": 1309068929,
+    "cxc_hoy": 1311846930,
     "por_semana": {
-      "2026-09-23": 1309068929,
+      "2026-09-23": 1311846930,
       "2026-09-16": 1309234901,
       "2026-09-09": 1275745508,
       "2026-09-02": 1163970759,
