@@ -1,0 +1,50 @@
+name: Update Cuadratura Odoo-SimpliRoute
+
+on:
+  schedule:
+    # Cada hora en jornada laboral, lun-sáb. Cron es UTC fijo:
+    # 11-21 UTC = 08:00-18:00 Chile en verano (sep-abr) / 07:00-17:00 en invierno.
+    # Minuto 37: no choca con los extractores nocturnos ni con simpliroute (09:13).
+    - cron: '37 11-21 * * 1-6'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+concurrency:
+  group: cuadratura          # consultas livianas a Odoo (4-6 search_read chicos)
+  cancel-in-progress: false
+
+jobs:
+  update-data:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Cuadratura Odoo vs SimpliRoute
+        env:
+          ODOO_URL: https://tomenergy.cl
+          ODOO_DB: PRODUCCION
+          ODOO_USER: p@tomenergy.cl
+          ODOO_KEY: ${{ secrets.ODOO_KEY }}
+          SIMPLIROUTE_TOKEN: ${{ secrets.SIMPLIROUTE_TOKEN }}
+        run: python extract_cuadratura.py
+
+      - name: Validar plausibilidad del output
+        run: python validate_data.py cuadratura-data.json
+
+      - name: Commit and push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add cuadratura-data.json
+          git diff --cached --quiet && echo "No changes" && exit 0
+          git commit -m "Update cuadratura $(date -u +'%Y-%m-%d %H:%M UTC')"
+          git pull --rebase -X theirs origin main
+          git push

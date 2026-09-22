@@ -30,7 +30,9 @@ ENCOGIMIENTO_MAX = 0.50        # falla si el archivo pesa menos del 50% que ayer
 # route-data.json son los pedidos DEL DÍA: fin de semana o madrugada sin
 # pedidos lo dejan casi vacío (≈85 bytes vs ~7k de un día normal) y el check
 # de encogimiento botaba el cron sábado/domingo/lunes temprano (runs 118-120).
-SIN_CHECK_ENCOGIMIENTO = {"route-data.json"}
+# cuadratura-data.json es intradía (cron horario): la primera corrida de la
+# mañana trae pocas visitas del día y encoge legítimamente vs la de las 18:00.
+SIN_CHECK_ENCOGIMIENTO = {"route-data.json", "cuadratura-data.json"}
 
 # crm-data.json (histórico jul-2026: semanas completas 116k–257k litros,
 # 1.415 clientes activos, 27 ejecutivos, funnel 7 etapas / ~1.278 leads)
@@ -280,6 +282,21 @@ def check_simpliroute(archivo, d):
                       f"(mín {SR_MIN_LITROS_7D:,})")
 
 
+def check_cuadratura(archivo, d):
+    # Intradía y volátil (madrugada/lunes con poco dato es legítimo): solo
+    # estructura + frescura. La plausibilidad fina la valida el propio extract.
+    check_frescura(archivo, d.get("generated_utc"))
+    rutas = d.get("rutas") or {}
+    litros = d.get("litros") or {}
+    if not isinstance(rutas.get("pendientes"), list) or "resumen" not in rutas:
+        fail(archivo, "bloque `rutas` sin pendientes/resumen")
+    if not isinstance(litros.get("por_so"), list) or not isinstance(litros.get("dias"), list):
+        fail(archivo, "bloque `litros` sin por_so/dias")
+    for k in ("entregado_hoy", "facturado_hoy", "por_facturar_total"):
+        if not isinstance(litros.get(k), (int, float)) or litros.get(k, 0) < 0:
+            fail(archivo, f"litros.{k} ausente o negativo: {litros.get(k)!r}")
+
+
 CHECKS = {
     "crm-data.json": check_crm,
     "costos-data.json": check_costos,
@@ -287,6 +304,7 @@ CHECKS = {
     "route-data.json": check_route,
     "riesgo-historico.json": check_riesgo_historico,
     "simpliroute-data.json": check_simpliroute,
+    "cuadratura-data.json": check_cuadratura,
 }
 
 

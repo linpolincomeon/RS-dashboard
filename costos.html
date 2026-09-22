@@ -93,6 +93,20 @@
   <div class="truck-grid" id="trucks"></div>
 </div>
 
+<div class="card vw-oper" hidden id="cardCuadRutas">
+  <h2>🔁 Cuadratura Odoo ↔ SimpliRoute — rutas de hoy</h2>
+  <div class="note" style="margin:0 0 12px">Todo lo <b>aprobado en Odoo</b> (despacho pendiente con fecha de hoy o atrasado) debe tener <b>ruta en SimpliRoute</b> — y toda visita en ruta debe corresponder a una orden aprobada. Se actualiza cada hora en jornada laboral (<span id="cuadStamp"></span>).</div>
+  <div class="kpi-grid" id="cuadKpisRutas" style="margin-bottom:12px"></div>
+  <div id="cuadRutasDetalle"></div>
+</div>
+
+<div class="card vw-oper" hidden id="cardCuadLitros">
+  <h2>🧾 Cuadratura de litros — entregado (SimpliRoute) vs facturado (Odoo)</h2>
+  <div class="note" style="margin:0 0 12px">Por sale.order: litros con checkout en SimpliRoute vs litros en facturas posted de Odoo (NC restadas). <b>Al cierre del día ambos deben cuadrar</b>; lo entregado sin factura queda "por facturar". Intradía es normal que "facturado hoy" supere a "entregado hoy": incluye entregas de ayer facturadas hoy (SLA 24h) — la comparación que vale es por orden y por día de entrega. 🏭 = facturación especial (SUGAL, ARRIGONI): la visita no cierra con litros reales, se usa el pedido de la SO como entregado y las diferencias contra factura son esperables.</div>
+  <div class="kpi-grid" id="cuadKpisLitros" style="margin-bottom:12px"></div>
+  <div id="cuadLitrosDetalle"></div>
+</div>
+
 <div class="card vw-oper" hidden>
   <h2>🚚 Entregas reales por camión — SimpliRoute</h2>
   <div class="note" style="margin:0 0 12px">Desde la API de SimpliRoute (se actualiza sola cada mañana). El <b>chofer es el que registran las visitas reales</b> — rotaciones incluidas, sin listas estáticas. Jornada = salida a ruta (<code>on_its_way</code>) → último checkout con GPS. Ventana: últimos 14 días (<span id="srRango"></span>).</div>
@@ -150,18 +164,21 @@ const sum = a => a.reduce((s, x) => s + x, 0);
 function cumplClass(pct) { return pct <= 100 ? 'ok' : (pct <= 115 ? 'warn' : 'bad'); }
 
 async function load() {
-  const [dataRes, presRes, chofRes, planRes, srRes] = await Promise.all([
+  const [dataRes, presRes, chofRes, planRes, srRes, cuadRes] = await Promise.all([
     fetch('costos-data.json?ts=' + Date.now()),
     fetch('presupuesto-camiones.json?ts=' + Date.now()),
     fetch('choferes-data.json?ts=' + Date.now()),
     fetch('plan-mantencion.json?ts=' + Date.now()),
     fetch('simpliroute-data.json?ts=' + Date.now()),
+    fetch('cuadratura-data.json?ts=' + Date.now()),
   ]);
   const D = await dataRes.json();
   const P = await presRes.json();
   if (chofRes.ok) renderChoferes(await chofRes.json());
   if (planRes.ok) renderPlanMantencion(await planRes.json(), D);
   if (srRes.ok) renderSimpli(await srRes.json());
+  if (cuadRes.ok) renderCuadratura(await cuadRes.json());
+  else { $('cardCuadRutas').remove(); $('cardCuadLitros').remove(); }
 
   // último mes con gasto real
   const totalGLMes = D.meses.map((_, i) => sum(Object.values(D.flota_gl).map(v => v[i])));
@@ -451,6 +468,98 @@ function renderPlanMantencion(PLAN, D) {
   $('planMantNota').innerHTML = filas.length
     ? `<b class="bad">${vencidos} vencidos</b> de ${filas.length} ítems con historia. Detección por palabra clave en la glosa: trabajos facturados con glosa genérica ("Del Giro") no aparecen — anotar la fecha en <code>ultima_manual</code> del JSON.`
     : 'Sin datos del plan.';
+}
+
+// ---- cuadratura Odoo <-> SimpliRoute (cron horario en jornada laboral) ----
+function renderCuadratura(C) {
+  const L = v => CLP.format(Math.round(v));
+  const fF = f => `${f.slice(8, 10)}-${f.slice(5, 7)}`;
+  const kpi = (label, val, cls, sub) =>
+    `<div class="kpi"><div class="label">${label}</div><div class="value ${cls || ''}">${val}</div>${sub ? `<div class="sub">${sub}</div>` : ''}</div>`;
+  const h3 = t => `<h3 style="font-size:14px;margin:16px 0 8px">${t}</h3>`;
+
+  // frescura: en jornada laboral el dato no debiera tener más de ~2h
+  const gen = new Date(C.generated_utc);
+  const mins = Math.round((Date.now() - gen.getTime()) / 60000);
+  const hhmm = gen.toLocaleString('es-CL', { hour: '2-digit', minute: '2-digit', day: '2-digit', month: '2-digit', timeZone: 'America/Santiago' });
+  $('cuadStamp').innerHTML = `última corrida ${hhmm}` +
+    (mins > 150 ? ` — <b class="bad">hace ${Math.round(mins / 60)} h, dato viejo: revisar el cron</b>` : ` · hace ${mins} min`);
+
+  // ── rutas ──
+  const R = C.rutas, res = R.resumen;
+  const ruteadasTxt = res.ruteadas + (res.ruteadas_manana ? ` <span style="font-size:13px;color:var(--muted)">+${res.ruteadas_manana} p/mañana</span>` : '');
+  $('cuadKpisRutas').innerHTML =
+    kpi('Aprobadas pendientes', res.total, '', 'despachos Odoo por salir (hoy + atrasados)') +
+    kpi('Ruteadas en Simpli', ruteadasTxt, (res.ruteadas + res.ruteadas_manana) >= res.total ? 'ok' : '') +
+    kpi('Sin ruta', res.sin_ruta, res.sin_ruta ? 'bad' : 'ok', res.sin_ruta ? 'aprobadas sin asignar — asignar en SimpliRoute' : 'todo asignado ✓') +
+    kpi('En ruta sin aprobar', res.huerfanas, res.huerfanas ? 'bad' : 'ok', res.huerfanas ? 'visita cuya orden no está aprobada en Odoo' : '—');
+
+  let h = '';
+  const sinRuta = R.pendientes.filter(p => p.estado === 'sin_ruta');
+  if (sinRuta.length) {
+    h += h3('⚠ Aprobadas en Odoo sin ruta en SimpliRoute') +
+      '<div class="scroll"><table><tr><th>Orden</th><th>Despacho</th><th>Cliente</th><th>Camión</th><th class="num">Litros</th><th>Programado</th></tr>' +
+      sinRuta.map(p => `<tr><td><b>${p.so}</b></td><td>${p.picking}</td><td>${p.cliente}</td><td>${p.camion}</td><td class="num">${L(p.litros)}</td><td>${p.programado}${p.atrasado ? ' <b class="bad">atrasado</b>' : ''}</td></tr>`).join('') +
+      '</table></div>';
+  }
+  if (R.huerfanas.length) {
+    h += h3('⚠ En ruta en SimpliRoute sin orden aprobada en Odoo') +
+      '<div class="scroll"><table><tr><th>Orden</th><th>Cliente</th><th>Estado Odoo</th><th>Visita</th><th class="num">Litros</th></tr>' +
+      R.huerfanas.map(x => `<tr><td><b>${x.so}</b></td><td>${x.cliente}</td><td class="bad">${x.estado_odoo}</td><td>${x.status}</td><td class="num">${L(x.litros)}</td></tr>`).join('') +
+      '</table></div>';
+  }
+  if (R.sin_ref.length) {
+    h += `<div class="note">ℹ️ ${R.sin_ref.length} visita(s) de hoy <b>sin referencia a Odoo</b> (creadas a mano en la app, no cuadran solas): ` +
+      R.sin_ref.map(x => `${x.cliente} (${L(x.litros)} L, ${x.status})`).join(' · ') + '</div>';
+  }
+  if (!sinRuta.length && !R.huerfanas.length) {
+    h = '<div class="note ok" style="color:var(--ok)">✅ Todo lo aprobado en Odoo está asignado en SimpliRoute y toda visita en ruta tiene orden aprobada.</div>' + h;
+  }
+  $('cuadRutasDetalle').innerHTML = h;
+
+  // ── litros ──
+  const Li = C.litros;
+  $('cuadKpisLitros').innerHTML =
+    kpi('Entregado hoy (Simpli)', L(Li.entregado_hoy) + ' L', '', 'visitas con checkout hoy') +
+    kpi('Facturado hoy (Odoo)', L(Li.facturado_hoy) + ' L', '', 'diésel posted hoy — incluye entregas de ayer') +
+    kpi('Por facturar', L(Li.por_facturar_total) + ' L', Li.por_facturar_total > 0 ? 'warn' : 'ok', 'entregado sin factura posted (7 días)');
+
+  // días con problema según el detalle por orden
+  const probPorDia = {};
+  for (const r of Li.por_so) if (r.estado !== 'ok') probPorDia[r.fecha] = (probPorDia[r.fecha] || 0) + 1;
+
+  let lh = '<div class="scroll"><table><tr><th>Día entrega</th><th class="num">Entregas</th><th class="num">Entregado L</th><th class="num">Facturado L</th><th class="num">Por facturar L</th><th>Cuadratura</th></tr>';
+  for (const d of Li.dias) {
+    if (!d.entregas) continue;
+    const nProb = probPorDia[d.fecha] || 0;
+    const veredicto = !nProb ? '<span class="ok">✓ cuadra</span>'
+      : (d.fecha === C.hoy ? '<span class="warn">en curso</span>'
+        : `<span class="bad">revisar (${nProb})</span>`);
+    lh += `<tr><td>${fF(d.fecha)}${d.fecha === C.hoy ? ' <span class="badge">hoy</span>' : ''}</td><td class="num">${d.entregas}</td><td class="num">${L(d.entregado)}</td><td class="num">${L(d.facturado)}</td><td class="num${d.por_facturar ? ' warn' : ''}">${L(d.por_facturar)}</td><td>${veredicto}</td></tr>`;
+  }
+  lh += '</table></div>';
+
+  const prob = Li.por_so.filter(r => r.estado !== 'ok');
+  if (prob.length) {
+    lh += h3(`Órdenes que no cuadran (${prob.length})`) +
+      '<div class="scroll"><table><tr><th>Entrega</th><th>Orden</th><th>Cliente</th><th>Camión</th><th class="num">Entregado L</th><th class="num">Facturado L</th><th>Facturas</th><th>Estado</th></tr>' +
+      prob.map(r => {
+        const badge = r.especial ? ' <span class="badge" title="Facturación especial: la visita no cierra con litros reales, entregado = pedido de la SO">🏭</span>' : '';
+        const est = r.estado === 'por_facturar' ? '<b class="warn">por facturar</b>'
+          : `<b class="bad">diferencia ${L(r.facturado - r.entregado)} L</b>`;
+        return `<tr><td>${fF(r.fecha)}</td><td><b>${r.so}</b></td><td>${r.cliente}${badge}${r.parcial ? ' <span class="badge">parcial</span>' : ''}</td><td>${r.camion}</td><td class="num">${L(r.entregado)}</td><td class="num">${L(r.facturado)}</td><td>${(r.facturas || []).join(', ') || '—'}</td><td>${est}</td></tr>`;
+      }).join('') + '</table></div>';
+  } else {
+    lh += '<div class="note ok" style="color:var(--ok)">✅ Todas las entregas de la ventana están facturadas y los litros calzan.</div>';
+  }
+
+  if (Li.fuera_simpli.length) {
+    lh += h3(`Facturado hoy sin visita en SimpliRoute (${Li.fuera_simpli.length})`) +
+      '<div class="scroll"><table><tr><th>Factura</th><th>Orden</th><th>Cliente</th><th class="num">Litros</th></tr>' +
+      Li.fuera_simpli.map(x => `<tr><td>${x.factura}</td><td>${x.so}</td><td>${x.cliente}</td><td class="num">${L(x.litros)}</td></tr>`).join('') +
+      '</table></div><div class="note">Ventas diésel facturadas hoy cuya orden no pasó por SimpliRoute en la ventana — pueden ser legítimas (despacho fuera de ruta), pero explican descuadres del total del día.</div>';
+  }
+  $('cuadLitrosDetalle').innerHTML = lh;
 }
 
 // ---- entregas reales por camión (SimpliRoute, se actualiza sola) ----
