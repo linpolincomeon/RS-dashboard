@@ -1,53 +1,9 @@
 {
- "generated_utc": "2026-09-22T18:15+00:00",
+ "generated_utc": "2026-09-22T21:36+00:00",
  "hoy": "2026-09-22",
  "desde": "2026-09-16",
  "rutas": {
   "pendientes": [
-   {
-    "picking": "PHXC/OUT/01600",
-    "so": "S36512",
-    "cliente": "Comercializadora Agrotuncahue, Packing El Carmen",
-    "camion": "PHXC-44",
-    "litros": 800,
-    "programado": "16-09 12:00",
-    "atrasado": true,
-    "estado": "ruteada",
-    "visita_status": "pending"
-   },
-   {
-    "picking": "VD/OUT/01576",
-    "so": "S36581",
-    "cliente": "AGRICOLA Y COMERCIAL PINOR SPA, AGRICOLA PINOR PAULINA PINO",
-    "camion": "VDKT-95",
-    "litros": 1000,
-    "programado": "21-09 11:09",
-    "atrasado": true,
-    "estado": "ruteada",
-    "visita_status": "pending"
-   },
-   {
-    "picking": "PHXC/OUT/01590",
-    "so": "S36584",
-    "cliente": "ALEJANDRO GARCIA-HUIDOBRO SANFUENTES, MARIA JOSE ALBARRAN",
-    "camion": "PHXC-44",
-    "litros": 1000,
-    "programado": "21-09 12:01",
-    "atrasado": true,
-    "estado": "ruteada",
-    "visita_status": "pending"
-   },
-   {
-    "picking": "TJVS/OUT/01854",
-    "so": "S36598",
-    "cliente": "RODRIGO VALDERRAMA LABRA, RODRIGO VALDERRAMA-Rodrigo",
-    "camion": "VDKT-95",
-    "litros": 700,
-    "programado": "21-09 14:08",
-    "atrasado": true,
-    "estado": "ruteada",
-    "visita_status": "completed"
-   },
    {
     "picking": "PHXC/OUT/01588",
     "so": "S36602",
@@ -109,19 +65,19 @@
    {
     "cliente": "Progranja",
     "ref": "",
-    "status": "pending",
+    "status": "failed",
     "litros": 500
    },
    {
     "cliente": "amasanderia camila spa",
     "ref": "",
-    "status": "pending",
+    "status": "failed",
     "litros": 400
    }
   ],
   "resumen": {
-   "total": 9,
-   "ruteadas": 9,
+   "total": 5,
+   "ruteadas": 5,
    "ruteadas_manana": 0,
    "sin_ruta": 0,
    "huerfanas": 0
@@ -283,9 +239,27 @@
     "visitas": 1,
     "pedido": 700,
     "entregado": 700,
-    "facturado": 0,
-    "facturas": [],
-    "estado": "por_facturar"
+    "facturado": 700,
+    "facturas": [
+     "FAC 54344"
+    ],
+    "estado": "ok"
+   },
+   {
+    "so": "S36584",
+    "fecha": "2026-09-22",
+    "cliente": "ALEJANDRO GARCIA-HUIDOBRO SANFUENTES",
+    "camion": "PHXC-44",
+    "especial": false,
+    "parcial": false,
+    "visitas": 1,
+    "pedido": 1000,
+    "entregado": 1000,
+    "facturado": 1000,
+    "facturas": [
+     "FAC 54345"
+    ],
+    "estado": "ok"
    },
    {
     "so": "S36583",
@@ -316,6 +290,22 @@
     "facturado": 1000,
     "facturas": [
      "FAC 54331"
+    ],
+    "estado": "ok"
+   },
+   {
+    "so": "S36581",
+    "fecha": "2026-09-22",
+    "cliente": "AGRICOLA Y COMERCIAL PINOR SPA",
+    "camion": "VDKT-95",
+    "especial": false,
+    "parcial": false,
+    "visitas": 1,
+    "pedido": 1000,
+    "entregado": 1000,
+    "facturado": 1000,
+    "facturas": [
+     "FAC 54346"
     ],
     "estado": "ok"
    },
@@ -364,6 +354,22 @@
     "facturado": 1000,
     "facturas": [
      "FAC 54333"
+    ],
+    "estado": "ok"
+   },
+   {
+    "so": "S36512",
+    "fecha": "2026-09-22",
+    "cliente": "Comercializadora Agrotuncahue",
+    "camion": "PHXC-44",
+    "especial": false,
+    "parcial": false,
+    "visitas": 1,
+    "pedido": 800,
+    "entregado": 800,
+    "facturado": 800,
+    "facturas": [
+     "FAC 54347"
     ],
     "estado": "ok"
    },
@@ -1589,11 +1595,11 @@
   "dias": [
    {
     "fecha": "2026-09-22",
-    "entregas": 16,
-    "entregado": 14570,
-    "facturado": 13870,
-    "por_facturar": 700,
-    "sin_factura": 1
+    "entregas": 19,
+    "entregado": 17370,
+    "facturado": 17370,
+    "por_facturar": 0,
+    "sin_factura": 0
    },
    {
     "fecha": "2026-09-21",
@@ -1644,9 +1650,9 @@
     "sin_factura": 2
    }
   ],
-  "por_facturar_total": 8000,
-  "entregado_hoy": 14570,
-  "facturado_hoy": 21870,
+  "por_facturar_total": 7300,
+  "entregado_hoy": 17370,
+  "facturado_hoy": 25370,
   "fuera_simpli": [
    {
     "factura": "FAC 54328",
