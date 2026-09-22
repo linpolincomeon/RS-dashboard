@@ -115,11 +115,35 @@ def connect():
     return models, uid
 
 
+_FAULT_TRANSITORIO = ("OperationalError", "shutting down", "server closed the connection",
+                      "could not connect", "connection failed")
+
+def _es_fault_transitorio(e):
+    # Postgres reiniciándose (backup/mantención) llega como Fault 1 con el
+    # psycopg2.OperationalError en el texto — transitorio, se reintenta.
+    return isinstance(e, xmlrpc.client.Fault) and any(m in str(e) for m in _FAULT_TRANSITORIO)
+
+
 def sr(models, uid, model, domain, fields, limit=5000, offset=0):
-    return models.execute_kw(
-        ODOO_DB, uid, ODOO_KEY, model, "search_read",
-        [domain], {"fields": fields, "limit": limit, "offset": offset}
-    )
+    # Mismo esquema de reintentos que extract_crm.py (502/timeout/DB reiniciando):
+    # 5 intentos, pausas 15/30/60/120s. Fault no transitorio falla al tiro.
+    import time as _time
+    last_err = None
+    _waits = [15, 30, 60, 120]
+    for attempt in range(5):
+        try:
+            return models.execute_kw(
+                ODOO_DB, uid, ODOO_KEY, model, "search_read",
+                [domain], {"fields": fields, "limit": limit, "offset": offset}
+            )
+        except (xmlrpc.client.ProtocolError, ConnectionError, OSError, xmlrpc.client.Fault) as e:
+            if isinstance(e, xmlrpc.client.Fault) and not _es_fault_transitorio(e):
+                raise
+            last_err = e
+            print(f"  [retry {attempt+1}/5] {model}: {e}")
+            if attempt < 4:
+                _time.sleep(_waits[attempt])
+    raise last_err
 
 
 def fetch_all(models, uid, model, domain, fields):

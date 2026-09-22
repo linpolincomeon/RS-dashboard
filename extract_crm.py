@@ -99,10 +99,21 @@ def connect():
     return models, uid
 
 
+_FAULT_TRANSITORIO = ("OperationalError", "shutting down", "server closed the connection",
+                      "could not connect", "connection failed")
+
+def _es_fault_transitorio(e):
+    # Un Postgres reiniciándose (backup/mantención) llega como Fault 1 con el
+    # psycopg2.OperationalError dentro del texto — es transitorio y se reintenta
+    # (visto en la corrida 638 del 22-sep: "the database system is shutting down").
+    return isinstance(e, xmlrpc.client.Fault) and any(m in str(e) for m in _FAULT_TRANSITORIO)
+
+
 def sr(models, uid, model, domain, fields, limit=5000, offset=0, order="id desc"):
-    # Reintentos ante errores transitorios del server (502/timeout). Las ventanas de
-    # mantención/backup de Odoo duran varios minutos → presupuesto ~4 min (5 intentos,
-    # pausas 15/30/60/120s). Fault (campo inválido, etc.) NO se reintenta: falla al tiro.
+    # Reintentos ante errores transitorios del server (502/timeout/DB reiniciando).
+    # Las ventanas de mantención/backup de Odoo duran varios minutos → presupuesto
+    # ~4 min (5 intentos, pausas 15/30/60/120s). Fault NO transitorio (campo
+    # inválido, permisos, etc.) NO se reintenta: falla al tiro.
     import time as _time
     last_err = None
     _waits = [15, 30, 60, 120]
@@ -112,7 +123,9 @@ def sr(models, uid, model, domain, fields, limit=5000, offset=0, order="id desc"
                 ODOO_DB, uid, ODOO_KEY, model, "search_read",
                 [domain], {"fields": fields, "limit": limit, "offset": offset, "order": order}
             )
-        except (xmlrpc.client.ProtocolError, ConnectionError, OSError) as e:
+        except (xmlrpc.client.ProtocolError, ConnectionError, OSError, xmlrpc.client.Fault) as e:
+            if isinstance(e, xmlrpc.client.Fault) and not _es_fault_transitorio(e):
+                raise
             last_err = e
             print(f"  [retry {attempt+1}/5] {model}: {e}")
             if attempt < 4:
@@ -127,7 +140,9 @@ def s_count(models, uid, model, domain):
     for attempt in range(5):
         try:
             return models.execute_kw(ODOO_DB, uid, ODOO_KEY, model, "search_count", [domain])
-        except (xmlrpc.client.ProtocolError, ConnectionError, OSError) as e:
+        except (xmlrpc.client.ProtocolError, ConnectionError, OSError, xmlrpc.client.Fault) as e:
+            if isinstance(e, xmlrpc.client.Fault) and not _es_fault_transitorio(e):
+                raise
             last_err = e
             print(f"  [retry {attempt+1}/5] count {model}: {e}")
             if attempt < 4:
