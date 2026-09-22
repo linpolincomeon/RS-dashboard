@@ -1,5 +1,5 @@
 {
- "generated_utc": "2026-09-22T21:36+00:00",
+ "generated_utc": "2026-09-22T23:47+00:00",
  "hoy": "2026-09-22",
  "desde": "2026-09-16",
  "rutas": {
@@ -27,7 +27,7 @@
     "visita_status": "failed"
    },
    {
-    "picking": "SHGP/OUT/01412",
+    "picking": "PYHK/OUT/01327",
     "so": "S36611",
     "cliente": "PATRICIO VISCAY ALBORNOZ, Cristopher",
     "camion": "SHGP-60",
@@ -35,7 +35,7 @@
     "programado": "21-09 15:43",
     "atrasado": true,
     "estado": "ruteada",
-    "visita_status": "pending"
+    "visita_status": "partial"
    },
    {
     "picking": "PHXC/OUT/01593",
@@ -178,6 +178,22 @@
     "facturado": 1000,
     "facturas": [
      "FAC 54342"
+    ],
+    "estado": "ok"
+   },
+   {
+    "so": "S36611",
+    "fecha": "2026-09-22",
+    "cliente": "PATRICIO VISCAY ALBORNOZ",
+    "camion": "SHGP-60",
+    "especial": false,
+    "parcial": true,
+    "visitas": 1,
+    "pedido": 1500,
+    "entregado": 3030,
+    "facturado": 3030,
+    "facturas": [
+     "FAC 54348"
     ],
     "estado": "ok"
    },
@@ -1595,9 +1611,9 @@
   "dias": [
    {
     "fecha": "2026-09-22",
-    "entregas": 19,
-    "entregado": 17370,
-    "facturado": 17370,
+    "entregas": 20,
+    "entregado": 20400,
+    "facturado": 20400,
     "por_facturar": 0,
     "sin_factura": 0
    },
@@ -1651,8 +1667,8 @@
    }
   ],
   "por_facturar_total": 7300,
-  "entregado_hoy": 17370,
-  "facturado_hoy": 25370,
+  "entregado_hoy": 20400,
+  "facturado_hoy": 28400,
   "fuera_simpli": [
    {
     "factura": "FAC 54328",
