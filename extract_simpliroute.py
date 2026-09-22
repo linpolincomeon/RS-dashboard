@@ -97,10 +97,14 @@ def hora_local(iso_utc):
 
 def litros_de(v):
     extra = v.get('extra_field_values') or {}
-    try:
-        return float(str(extra.get('litros', '')).replace('.', '').replace(',', '.'))
-    except (TypeError, ValueError):
-        pass
+    raw = str(extra.get('litros', '')).strip()
+    # 1° el número tal cual; solo si falla, limpiar formato chileno ("5.700").
+    # OJO: nunca al revés — replace('.','') convierte 5700.0 en 57000 (×10).
+    for candidato in (raw, raw.replace('.', '').replace(',', '.')):
+        try:
+            return float(candidato)
+        except (TypeError, ValueError):
+            pass
     try:
         return float(v.get('load') or 0)
     except (TypeError, ValueError):
@@ -174,6 +178,19 @@ def main():
             ))
     if errores_dias > MAX_DIAS_CON_ERROR:
         sys.exit(f'ERROR: {errores_dias} días con error de API — no se escribe el JSON')
+
+    # Vigía de doble conteo: un mismo sale.order con 2+ visitas que suman
+    # litros (puede pasar si una orden re-planificada queda failed-especial
+    # Y completed a la vez). Auditado 21-sep: 0 casos. Si aparece, se ve en
+    # el log del cron — ahí decidir si toca deduplicar por `so`.
+    contados = defaultdict(int)
+    for v in visitas:
+        if v['so'] and (v['status'] == 'completed' or v['especial']):
+            contados[v['so']] += 1
+    dobles = sorted(so for so, n in contados.items() if n > 1)
+    if dobles:
+        print(f'  ⚠ {len(dobles)} órdenes contadas 2+ veces en litros_entregados: '
+              + ', '.join(dobles[:10]), file=sys.stderr)
 
     # ── agregado diario por camión ──
     grupos = defaultdict(list)
