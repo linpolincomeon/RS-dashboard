@@ -992,13 +992,11 @@ function renderEjecutivos() {
   if (isExecAccum) {
     for (const [user, val] of Object.entries(T.margin_by_user || {})) { if (matchesExec(user)) { margen = val; break; } }
   } else {
+    // SOLO el margen de la semana seleccionada: el fallback al margen del MES
+    // mostraba 5,4% en semanas sin venta (reporte Pauline 23-sep, caso Vásquez).
+    // Sin venta en la semana → '—'.
     const wkMbu = (wkData.margin_by_user || {});
-    if (Object.keys(wkMbu).length > 0) {
-      for (const [user, val] of Object.entries(wkMbu)) { if (matchesExec(user)) { margen = val; break; } }
-    }
-    if (!margen) {
-      for (const [user, val] of Object.entries(T.margin_by_user || {})) { if (matchesExec(user)) { margen = val; break; } }
-    }
+    for (const [user, val] of Object.entries(wkMbu)) { if (matchesExec(user)) { margen = val; break; } }
   }
 
   // Ruta (visitas)
@@ -1739,7 +1737,11 @@ function renderRecuperables(containerId, soloDurmientes, titulo, hint) {
       const crmBadge = c.crm_stage
         ? `<span class="tag ${/durmiente/i.test(c.crm_stage) ? 'tag-y' : 'tag-r'}">${H(c.crm_stage)}</span>`
         : '<span style="color:var(--dim);font-size:11px">Sin lead</span>';
-      const execName = c.crm_exec ? `<span style="font-size:11px">${H(c.crm_exec.split(' ').slice(-1)[0])}</span>` : '<span style="color:var(--dim);font-size:11px">\u2014</span>';
+      // Ejecutivo = due\u00f1o ACTUAL de la ficha (Pauline 23-sep: el exec del \u00faltimo
+      // lead estaba desactualizado en 13/39). Si el lead dice otro, va en tooltip.
+      const _fexec = c.ficha_user || c.crm_exec;
+      const _leadDif = c.crm_exec && c.ficha_user && c.crm_exec !== c.ficha_user ? ` title="lead CRM: ${H(c.crm_exec)}"` : '';
+      const execName = _fexec ? `<span style="font-size:11px"${_leadDif}>${H(_fexec.split(' ').slice(-1)[0])}${_leadDif ? ' \u26a0' : ''}</span>` : '<span style="color:var(--dim);font-size:11px">\u2014</span>';
       const gIcon = c._gestionStatus === 'done' ? '\u2705' : c._gestionStatus === 'planned' ? '\ud83d\udcc5' : c._gestionStatus === 'overdue' ? '\u26a0\ufe0f' : '\u274c';
       let actCell = '';
       if (c._crmAct) {

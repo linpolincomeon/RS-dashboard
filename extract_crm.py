@@ -695,8 +695,11 @@ def extract_funnel_data(models, uid):
             ["create_uid", "!=", 1],
         ]
         quote_count = s_count(models, uid, "sale.order", quote_domain)
+        # limit alto: by_user se construye de aquí — con limit=20 la semana se
+        # truncaba y los ejecutivos que cotizan tarde en la semana salían en 0
+        # (caso Gonzalo Vásquez 23-sep); el detalle visible se recorta después.
         quote_detail = sr(models, uid, "sale.order", quote_domain,
-                          ["name", "partner_id", "user_id", "amount_untaxed", "state", "create_date"], limit=20)
+                          ["name", "partner_id", "user_id", "amount_untaxed", "state", "create_date"], limit=1000)
 
         # Get litros from sale.order.line for these quotes
         quote_ids = [q["id"] for q in quote_detail]
@@ -794,7 +797,7 @@ def extract_funnel_data(models, uid):
                 "leads":       {"value": lead_count, "goal": 15, "by_user": dict(leads_by_user), "detail": lead_rows},
                 "contacto":    {"value": contact_count, "goal": 10, "by_user": dict(contacts_by_user)},
                 "ruta":        {"value": ruta_count, "goal": 5, "by_user": dict(ruta_by_user)},
-                "cotizacion":  {"value": quote_count, "goal": 8, "by_user": dict(quotes_by_user), "detail": quote_rows},
+                "cotizacion":  {"value": quote_count, "goal": 8, "by_user": dict(quotes_by_user), "detail": quote_rows[:20]},
                 "seguimiento": {"value": followup_pct, "goal": 100, "unit": "%", "count": managed_count, "by_user": dict(managed_by_user), "detail": managed_detail},
                 "cierre":      {"value": close_count, "goal": 2, "by_user": dict(close_by_user), "detail": close_detail},
             }
@@ -2432,6 +2435,9 @@ def extract_recovery_clients(models, uid):
             "crm_stage": lead.get("stage", ""),
             "crm_exec": lead.get("exec", ""),
             "crm_last": lead.get("last_crm", ""),
+            # Dueño ACTUAL de la ficha (res.partner.user_id) — el crm_exec es el del
+            # último lead y puede estar desactualizado (13/39 diferían, Pauline 23-sep)
+            "ficha_user": canonical_vendedor(safe_name(p.get("user_id"))) if p.get("user_id") else "",
         }
 
         if is_seasonal:
@@ -2499,6 +2505,7 @@ def extract_recovery_clients(models, uid):
             "crm_stage": _ll.get("stage") or "",
             "crm_exec": _ll.get("exec") or "",
             "crm_last": _ll.get("last_crm") or "",
+            "ficha_user": canonical_vendedor(safe_name(_p.get("user_id"))) if _p.get("user_id") else "",
             "manual": True,
         })
     if _man_rows:
@@ -3957,6 +3964,13 @@ def main():
                 vendedor = ""
                 if partner_rec:
                     vendedor = canonical_vendedor(safe_name(partner_rec[0].get("user_id")))
+                # Cuentas ANTIGUAS full-time (Toro 56, Muñoz 262): capturas ya pagadas
+                # y transferidas — FUERA de Transición (Pauline 22/23-sep). Por nombre
+                # no basta: el match por tokens hace calzar el nombre corto .ext con
+                # el largo de la cuenta antigua (por eso quitar el nombre no funcionó).
+                _uid_v = safe_id(partner_rec[0].get("user_id")) if partner_rec else None
+                if _uid_v in (56, 262):
+                    continue
                 vn = norm_name(vendedor)
                 is_exec = any(all(w in vn.split() for w in norm_name(av).split()) for av in _exec_names)
                 if is_exec:
