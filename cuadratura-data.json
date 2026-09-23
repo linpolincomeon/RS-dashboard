@@ -1,5 +1,5 @@
 {
- "generated_utc": "2026-09-23T19:11+00:00",
+ "generated_utc": "2026-09-23T22:26+00:00",
  "hoy": "2026-09-23",
  "desde": "2026-09-17",
  "rutas": {
@@ -16,17 +16,6 @@
     "visita_status": "partial"
    },
    {
-    "picking": "PHXC/OUT/01611",
-    "so": "S36626",
-    "cliente": "AMASANDERIA CAMILA SPA, Jessica",
-    "camion": "PHXC-44",
-    "litros": 400,
-    "programado": "22-09 08:01",
-    "atrasado": true,
-    "estado": "ruteada",
-    "visita_status": "pending"
-   },
-   {
     "picking": "PHXC/OUT/01608",
     "so": "S36635",
     "cliente": "JOSE MANUEL HERRERA BARROS, nueva costanera norte 299, San Francisco de Mostazal",
@@ -38,51 +27,7 @@
     "visita_status": "pending"
    },
    {
-    "picking": "PHXC/OUT/01607",
-    "so": "S36636",
-    "cliente": "CBARRIOS CONSTRUCTORA SPA, Obra Coya, Rancagua",
-    "camion": "PHXC-44",
-    "litros": 2000,
-    "programado": "22-09 10:13",
-    "atrasado": true,
-    "estado": "ruteada",
-    "visita_status": "pending"
-   },
-   {
-    "picking": "PYHK/OUT/01331",
-    "so": "S36639",
-    "cliente": "INGENERIA Y CONSTRUCCIONES FEBLANCA SPA, PLANTA PARRAL",
-    "camion": "PYHK-28",
-    "litros": 1500,
-    "programado": "22-09 11:04",
-    "atrasado": true,
-    "estado": "ruteada",
-    "visita_status": "pending"
-   },
-   {
-    "picking": "PYHK/OUT/01334",
-    "so": "S36645",
-    "cliente": "AGRIZANO S A, HUERTOSTA.MONICALOSNICHES- JAVIERLEYTON",
-    "camion": "TJVS-53",
-    "litros": 1000,
-    "programado": "22-09 12:49",
-    "atrasado": true,
-    "estado": "ruteada",
-    "visita_status": "completed"
-   },
-   {
-    "picking": "VD/OUT/01586",
-    "so": "S36648",
-    "cliente": "SERVICIOS E INVERSIONES KOALA S.A.",
-    "camion": "VDKT-95",
-    "litros": 800,
-    "programado": "22-09 13:40",
-    "atrasado": true,
-    "estado": "ruteada",
-    "visita_status": "pending"
-   },
-   {
-    "picking": "VD/OUT/01585",
+    "picking": "TJVS/OUT/01867",
     "so": "S36651",
     "cliente": "TRANSPORTES CMH SPA, TRANSPORTES CMH-Carlos",
     "camion": "VDKT-95",
@@ -90,7 +35,7 @@
     "programado": "22-09 14:22",
     "atrasado": true,
     "estado": "ruteada",
-    "visita_status": "pending"
+    "visita_status": "partial"
    },
    {
     "picking": "PHXC/OUT/01606",
@@ -135,24 +80,13 @@
     "atrasado": true,
     "estado": "ruteada",
     "visita_status": "completed"
-   },
-   {
-    "picking": "SHGP/OUT/01421",
-    "so": "S36675",
-    "cliente": "CONSTRUCTORA MONIER SPA, ERIC COFRE, CONSTRUCTORA MONIER, COLBUN",
-    "camion": "SHGP-60",
-    "litros": 1400,
-    "programado": "22-09 18:12",
-    "atrasado": true,
-    "estado": "ruteada",
-    "visita_status": "pending"
    }
   ],
   "huerfanas": [],
   "sin_ref": [],
   "resumen": {
-   "total": 13,
-   "ruteadas": 13,
+   "total": 7,
+   "ruteadas": 7,
    "ruteadas_manana": 0,
    "sin_ruta": 0,
    "huerfanas": 0
@@ -160,6 +94,22 @@
  },
  "litros": {
   "por_so": [
+   {
+    "so": "S36711",
+    "fecha": "2026-09-23",
+    "cliente": "TRANSPORTE SANTA ELENITA SPA",
+    "camion": "PHXC-44",
+    "especial": false,
+    "parcial": false,
+    "visitas": 1,
+    "pedido": 1000,
+    "entregado": 1000,
+    "facturado": 1000,
+    "facturas": [
+     "FAC 54381"
+    ],
+    "estado": "ok"
+   },
    {
     "so": "S36692",
     "fecha": "2026-09-23",
@@ -237,6 +187,22 @@
     "facturado": 500,
     "facturas": [
      "FAC 54367"
+    ],
+    "estado": "ok"
+   },
+   {
+    "so": "S36675",
+    "fecha": "2026-09-23",
+    "cliente": "CONSTRUCTORA MONIER SPA",
+    "camion": "SHGP-60",
+    "especial": false,
+    "parcial": false,
+    "visitas": 1,
+    "pedido": 1400,
+    "entregado": 1400,
+    "facturado": 1400,
+    "facturas": [
+     "FAC 54382"
     ],
     "estado": "ok"
    },
@@ -417,6 +383,22 @@
     "estado": "ok"
    },
    {
+    "so": "S36651",
+    "fecha": "2026-09-23",
+    "cliente": "TRANSPORTES CMH SPA",
+    "camion": "VDKT-95",
+    "especial": false,
+    "parcial": true,
+    "visitas": 1,
+    "pedido": 2000,
+    "entregado": 1830,
+    "facturado": 1830,
+    "facturas": [
+     "FAC 54384"
+    ],
+    "estado": "ok"
+   },
+   {
     "so": "S36649",
     "fecha": "2026-09-23",
     "cliente": "JUAN BAUTISTA CIFUENTES VELOSO",
@@ -429,6 +411,22 @@
     "facturado": 363,
     "facturas": [
      "FAC 54378"
+    ],
+    "estado": "ok"
+   },
+   {
+    "so": "S36648",
+    "fecha": "2026-09-23",
+    "cliente": "SERVICIOS E INVERSIONES KOALA S.A.",
+    "camion": "VDKT-95",
+    "especial": false,
+    "parcial": false,
+    "visitas": 1,
+    "pedido": 800,
+    "entregado": 800,
+    "facturado": 800,
+    "facturas": [
+     "FAC 54383"
     ],
     "estado": "ok"
    },
@@ -513,6 +511,22 @@
     "estado": "ok"
    },
    {
+    "so": "S36639",
+    "fecha": "2026-09-23",
+    "cliente": "INGENERIA Y CONSTRUCCIONES FEBLANCA SPA",
+    "camion": "PYHK-28",
+    "especial": false,
+    "parcial": false,
+    "visitas": 1,
+    "pedido": 1500,
+    "entregado": 1500,
+    "facturado": 1500,
+    "facturas": [
+     "FAC 54385"
+    ],
+    "estado": "ok"
+   },
+   {
     "so": "S36637",
     "fecha": "2026-09-23",
     "cliente": "ARIDOS LO VALDIVIA LIMITADA",
@@ -525,6 +539,22 @@
     "facturado": 2000,
     "facturas": [
      "FAC 54359"
+    ],
+    "estado": "ok"
+   },
+   {
+    "so": "S36636",
+    "fecha": "2026-09-23",
+    "cliente": "CBARRIOS CONSTRUCTORA SPA",
+    "camion": "PHXC-44",
+    "especial": false,
+    "parcial": true,
+    "visitas": 1,
+    "pedido": 1500,
+    "entregado": 1500,
+    "facturado": 1500,
+    "facturas": [
+     "FAC 54380"
     ],
     "estado": "ok"
    },
@@ -557,6 +587,22 @@
     "facturado": 1000,
     "facturas": [
      "FAC 54377"
+    ],
+    "estado": "ok"
+   },
+   {
+    "so": "S36626",
+    "fecha": "2026-09-23",
+    "cliente": "AMASANDERIA CAMILA SPA",
+    "camion": "PHXC-44",
+    "especial": false,
+    "parcial": false,
+    "visitas": 1,
+    "pedido": 400,
+    "entregado": 400,
+    "facturado": 400,
+    "facturas": [
+     "FAC 54379"
     ],
     "estado": "ok"
    },
@@ -1670,9 +1716,9 @@
   "dias": [
    {
     "fecha": "2026-09-23",
-    "entregas": 27,
-    "entregado": 43713,
-    "facturado": 43713,
+    "entregas": 34,
+    "entregado": 52143,
+    "facturado": 52143,
     "por_facturar": 0,
     "sin_factura": 0
    },
@@ -1726,8 +1772,8 @@
    }
   ],
   "por_facturar_total": 6500,
-  "entregado_hoy": 43713,
-  "facturado_hoy": 45213,
+  "entregado_hoy": 52143,
+  "facturado_hoy": 53643,
   "fuera_simpli": [
    {
     "factura": "FAC 54355",
