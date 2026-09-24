@@ -462,6 +462,49 @@ def extract_crm_data(models, uid):
     for eid, cnt in won_by_exec.items():
         exec_map[eid]["won"] = cnt
 
+    # ── Movs CRM HUMANOS 30d (pedido Pauline 22-sep-2026) ──
+    # moved_30d cuenta leads con actividad reciente por FECHA, que incluye los
+    # re-estampados del cron y las acciones automáticas — no dice si el ejecutivo
+    # gestiona. movs_humanos_30d = mensajes creados POR el usuario en los últimos
+    # 30d sobre crm.lead/res.partner: notas, actividades completadas, comentarios
+    # y cambios con tracking (mover etapa a mano SÍ es gestión). OdooBot(1)/admin(2)
+    # excluidos. clientes_30d = fichas/leads distintos tocados (amplitud de gestión).
+    _mh_sub = [s["id"] for s in sr(models, uid, "mail.message.subtype",
+               [["name", "in", ["Note", "Nota", "Activities", "Actividades"]]],
+               ["id"], limit=50)] or [2, 3]
+    _cut30 = fmt(datetime.now().date() - timedelta(days=30))
+    _mh_msgs = sr(models, uid, "mail.message", [
+        ["date", ">=", _cut30],
+        ["model", "in", ["crm.lead", "res.partner"]],
+        ["create_uid", "not in", [1, 2]],
+        "|", "|", ["subtype_id", "in", _mh_sub],
+        ["message_type", "=", "comment"],
+        ["tracking_value_ids", "!=", False],
+    ], ["create_uid", "model", "res_id"], limit=20000)
+    _mh_uid = {}
+    for m in _mh_msgs:
+        u = safe_id(m.get("create_uid"))
+        if not u:
+            continue
+        d = _mh_uid.setdefault(u, {"movs": 0, "clientes": set()})
+        d["movs"] += 1
+        d["clientes"].add((m.get("model"), m.get("res_id")))
+    _uid_names = {u["id"]: canonical_vendedor(u["name"]) for u in sr(
+        models, uid, "res.users", [["id", "in", list(_mh_uid)]], ["id", "name"], limit=200)}
+    _mh_by_name = {}
+    for u, d in _mh_uid.items():
+        n = _uid_names.get(u)
+        if not n:
+            continue
+        t = _mh_by_name.setdefault(n, {"movs": 0, "clientes": set()})
+        t["movs"] += d["movs"]
+        t["clientes"] |= d["clientes"]
+    for e in exec_map.values():
+        hm = _mh_by_name.get(canonical_vendedor(e["name"]))
+        e["movs_humanos_30d"] = hm["movs"] if hm else 0
+        e["clientes_30d"] = len(hm["clientes"]) if hm else 0
+    print(f"  Movs humanos 30d: {len(_mh_msgs)} mensajes de {len(_mh_uid)} usuarios")
+
     executives = sorted(exec_map.values(), key=lambda x: -x["total"])
 
     created_this_week = sum(1 for l in leads if (l.get("create_date") or "")[:10] >= week_start)

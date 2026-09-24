@@ -1493,11 +1493,14 @@ function renderEquipo(){
     const merge=n=>EQ_MERGE[n]||n;
     const sumBy=(obj)=>{const o={};Object.entries(obj||{}).forEach(([k,v])=>{const n=merge(k);o[n]=(o[n]||0)+v});return o};
     const litNow=sumBy(crm.ventas?.totals?.litros_by_user), litPrev=sumBy(crm.ventas_prev?.totals?.litros_by_user);
-    // moved_30d por ejecutivo (consolidando cuentas; nombres del CRM difieren en mayúsculas → match case-insensitive por apellido corto)
-    const mv={};(crm.executives||[]).forEach(e=>{
+    // Movs HUMANOS 30d por ejecutivo (pedido Pauline 22-sep: solo gestión real —
+    // notas/actividades/comentarios/cambios hechos POR el usuario; nada automático).
+    // Fallback a moved_30d si el JSON aún no trae el campo nuevo.
+    const mv={},cl={};(crm.executives||[]).forEach(e=>{
         let n=e.name;
         if(/toro/i.test(n))n='Sebastian Toro'; else if(/mu[ñn]oz encalada|^joaquin mu/i.test(n))n='Joaquin Muñoz'; else n=merge(n);
-        mv[n]=(mv[n]||0)+(e.moved_30d||0);
+        mv[n]=(mv[n]||0)+(e.movs_humanos_30d!=null?e.movs_humanos_30d:(e.moved_30d||0));
+        cl[n]=(cl[n]||0)+(e.clientes_30d||0);
     });
     // ── métrica 1: litros equipo comercial (todo lo no-CS) ──
     const totNow=crm.ventas?.totals?.total_litros||0, totPrev=crm.ventas_prev?.totals?.total_litros||0;
@@ -1551,20 +1554,20 @@ function renderEquipo(){
     const tipoDe=n=>EQ_CS.includes(n)?'CS':EQ_INTERNOS.includes(n)?'Interno':EQ_FREELANCERS.includes(n)?'Freelance':'Otro';
     const todos=[...new Set([...Object.keys(litNow),...Object.keys(litPrev),...EQ_FREELANCERS])]
         .filter(n=>!EQ_CS.includes(n))
-        .map(n=>({n,tipo:tipoDe(n),lP:litPrev[n]||0,lN:litNow[n]||0,m:mv[n]||0}))
+        .map(n=>({n,tipo:tipoDe(n),lP:litPrev[n]||0,lN:litNow[n]||0,m:mv[n]||0,c:cl[n]||0}))
         .sort((a,b)=>(b.lN+b.lP)-(a.lN+a.lP));
     h+='<div class="section-label">Equipo comercial — producción y gestión (sin cartera CS)</div>';
-    h+='<div class="table-card" style="overflow-x:auto"><table><thead><tr><th>Vendedor</th><th>Tipo</th><th class="r">Litros mes ant.</th><th class="r">Litros mes actual</th><th class="r">Movs CRM 30d</th><th>Estado</th></tr></thead><tbody>';
+    h+='<div class="table-card" style="overflow-x:auto"><table><thead><tr><th>Vendedor</th><th>Tipo</th><th class="r">Litros mes ant.</th><th class="r">Litros mes actual</th><th class="r">Movs reales 30d</th><th class="r">Clientes tocados</th><th>Estado</th></tr></thead><tbody>';
     todos.forEach(f=>{
         const st=(f.lN>0&&f.m>=10)?'<span class="sbadge s-bajo">produce y registra</span>'
             :(f.lN>0)?'<span class="sbadge s-medio">vende sin registrar</span>'
             :(f.m>=10)?'<span class="sbadge s-alto">gestiona sin venta</span>'
             :(f.lP>0)?'<span class="sbadge s-alto">sin venta este mes</span>'
             :'<span class="sbadge s-critico">inactivo</span>';
-        h+=`<tr><td>${f.n}</td><td>${f.tipo}</td><td class="r">${fNum(f.lP)}</td><td class="r">${fNum(f.lN)}</td><td class="r">${f.m||0}</td><td>${st}</td></tr>`;
+        h+=`<tr><td>${f.n}</td><td>${f.tipo}</td><td class="r">${fNum(f.lP)}</td><td class="r">${fNum(f.lN)}</td><td class="r">${f.m||0}</td><td class="r">${f.c||0}</td><td>${st}</td></tr>`;
     });
     h+='</tbody></table></div>';
-    h+='<p style="font-size:11px;color:var(--text3);margin:4px 0 16px">⚠ Los freelancers no llevan meta individual (comisión pura): se dirigen con cartera asignada y actividad. "Movs CRM" usa write_date (el cron de Odoo re-estampa en batch): puede sobreestimar actividad, nunca subestimarla. Cuentas antiguas de Toro y Muñoz consolidadas.</p>';
+    h+='<p style="font-size:11px;color:var(--text3);margin:4px 0 16px">⚠ Los freelancers no llevan meta individual (comisión pura): se dirigen con cartera asignada y actividad. "Movs reales" = notas, actividades completadas, comentarios y cambios de etapa hechos POR el usuario en los últimos 30 días (nada automático: OdooBot/crons excluidos). "Clientes tocados" = fichas/leads distintos con gestión — 50 movs en 2 clientes ≠ gestión de cartera. Cuentas antiguas de Toro y Muñoz consolidadas.</p>';
     // ── tabla remate ──
     h+='<div class="section-label">Remate — asignaciones últimos 30 días</div>';
     h+='<div class="table-scroll" style="max-height:300px"><table><thead><tr><th>Cliente</th><th>Ejecutivo</th><th>Asignado</th><th>Por</th><th class="r">Gestión</th><th class="r">Compró</th></tr></thead><tbody>';
