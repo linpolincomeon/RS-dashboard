@@ -1737,11 +1737,17 @@ function renderRecuperables(containerId, soloDurmientes, titulo, hint) {
       const crmBadge = c.crm_stage
         ? `<span class="tag ${/durmiente/i.test(c.crm_stage) ? 'tag-y' : 'tag-r'}">${H(c.crm_stage)}</span>`
         : '<span style="color:var(--dim);font-size:11px">Sin lead</span>';
-      // Ejecutivo = due\u00f1o ACTUAL de la ficha (Pauline 23-sep: el exec del \u00faltimo
-      // lead estaba desactualizado en 13/39). Si el lead dice otro, va en tooltip.
-      const _fexec = c.ficha_user || c.crm_exec;
-      const _leadDif = c.crm_exec && c.ficha_user && c.crm_exec !== c.ficha_user ? ` title="lead CRM: ${H(c.crm_exec)}"` : '';
-      const execName = _fexec ? `<span style="font-size:11px"${_leadDif}>${H(_fexec.split(' ').slice(-1)[0])}${_leadDif ? ' \u26a0' : ''}</span>` : '<span style="color:var(--dim);font-size:11px">\u2014</span>';
+      // Ejecutivo = due\u00f1o ACTUAL de la ficha, con NOMBRE COMPLETO (solo el apellido
+      // confund\u00eda: 'Comber Sigall Pauline' sal\u00eda 'Pauline'). Regla Pauline 23-sep:
+      // sin gesti\u00f3n en 3 meses \u2192 se muestra 'TomEnergy' (libre para asignar en el
+      // remate), aunque la ficha tenga due\u00f1o. Si el lead CRM difiere, tooltip \u26a0.
+      const _hace90 = (() => { const d = new Date(); d.setDate(d.getDate() - 90); d.setMinutes(d.getMinutes() - d.getTimezoneOffset()); return d.toISOString().slice(0, 10); })();
+      const _sinGestion90 = !c.note_date || c.note_date < _hace90;
+      const _dueno = c.ficha_user || c.crm_exec;
+      const _fexec = _sinGestion90 ? 'TomEnergy' : _dueno;
+      const _leadDif = !_sinGestion90 && c.crm_exec && c.ficha_user && c.crm_exec !== c.ficha_user ? ` title="lead CRM: ${H(c.crm_exec)}"` : '';
+      const _libreTip = _sinGestion90 && _dueno && _dueno !== 'TomEnergy' ? ` title="ficha: ${H(_dueno)} \u2014 sin gesti\u00f3n 3+ meses, libre para asignar"` : '';
+      const execName = _fexec ? `<span style="font-size:11px"${_leadDif}${_libreTip}>${H(_fexec)}${_leadDif ? ' \u26a0' : ''}</span>` : '<span style="color:var(--dim);font-size:11px">\u2014</span>';
       const gIcon = c._gestionStatus === 'done' ? '\u2705' : c._gestionStatus === 'planned' ? '\ud83d\udcc5' : c._gestionStatus === 'overdue' ? '\u26a0\ufe0f' : '\u274c';
       let actCell = '';
       if (c._crmAct) {
