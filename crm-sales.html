@@ -196,7 +196,7 @@ tr:hover td{background:#fafaf8}
 
       <!-- Clientes asignados a ejecutivos (remate) — revisar gestión la semana siguiente -->
       <div class="sec"><div class="sec-h"><h2>🎯 Clientes Asignados a Ejecutivos</h2><span style="font-size:12px;color:var(--dim)" id="asigPlazoHint"></span><span class="badge" id="asigCount">0</span></div><div class="sec-b" style="max-height:500px;overflow-x:auto">
-        <table><thead><tr><th>Cliente</th><th>Asignado a</th><th>Fecha</th><th>Venía de</th><th>Gestión</th><th>Qué gestión (del ejecutivo)</th></tr></thead><tbody id="asigBody"></tbody></table>
+        <table><thead><tr><th>Cliente</th><th>Asignado a</th><th>Fecha</th><th>Venía de</th><th>Gestión</th><th>Qué gestión</th></tr></thead><tbody id="asigBody"></tbody></table>
         <div class="nodata" id="noAsig" style="display:none">Sin asignaciones en las últimas 4 semanas</div></div></div>
 
       <!-- Explanation notes -->
@@ -1617,10 +1617,10 @@ function renderFidelizacion() {
       const _wk = enapWeek(a.fecha);
       if (_wk !== _wkPrev) { if (_wkPrev !== null) _sombra = !_sombra; _wkPrev = _wk; }
       if (_sombra) tr.style.background = '#f2f1ee';
-      // Qu\u00e9 gesti\u00f3n: la \u00faltima nota/actividad hecha POR el ejecutivo asignado
-      // (el extract filtra por autor .ext \u2014 nada autom\u00e1tico ni de terceros)
+      // Qu\u00e9 gesti\u00f3n: la \u00faltima nota/actividad HUMANA post-asignaci\u00f3n (el equipo
+      // anota bit\u00e1coras editando actividades \u2014 Pauline 24-sep). Autor visible.
       const queGest = a.nota
-        ? '<span style="font-size:11px;color:var(--dim)">' + H(a.nota) + '</span>'
+        ? '<span style="font-size:11px;color:var(--dim)">' + H(a.nota) + (a.nota_autor ? ' <b>\u00b7 ' + H(a.nota_autor.split(' ')[0]) + '</b>' : '') + '</span>'
         : '<span style="color:var(--dim)">\u2014</span>';
       tr.innerHTML = '<td class="bold">' + H(a.cliente) + '</td><td>' + H(a.ejecutivo) + '</td><td>' + (a.fecha || '\u2014') + '</td><td style="font-size:11px;color:var(--dim)">' + H(a.desde || '\u2014') + '</td><td>' + gest + '</td><td style="max-width:280px;white-space:normal">' + queGest + '</td>';
       ab.appendChild(tr);

@@ -3518,61 +3518,63 @@ def extract_asignaciones(models, uid):
                 ["partner_id", "=", r["pid"]], ["invoice_date", ">=", r["fecha"]],
             ], ["invoice_date"], limit=1, order="invoice_date asc")
             r["compro"] = inv[0]["invoice_date"] if inv else ""
-        # Gestión REAL del EJECUTIVO asignado (Pauline 22-sep): solo notas/actividades
-        # hechas POR el ejecutivo .ext después de la asignación — nada automático
-        # (bots/crons quedan fuera por autor; tracking/etapas por subtipo).
-        # primera_gestion alimenta el plazo de 7 días; nota/nota_fecha = la ÚLTIMA
-        # gestión del ejecutivo (columna "Qué gestión" del dashboard).
+        # Gestión REAL post-asignación (Pauline 22-sep, ajustada 24-sep): cuenta
+        # cualquier gestión HUMANA — el equipo registra editando actividades de
+        # cualquier dueño (Isabel anota lo de Abraham; bitácoras dentro de To-Dos
+        # del cron). Fuera SOLO bots (OdooBot/admin) y ruido automático. Las
+        # actividades pendientes cuentan por write_date (se editan en el lugar).
+        # primera_gestion alimenta el plazo de 7 días; nota/nota_fecha = la última.
         _gsub = [s["id"] for s in sr(models, uid, "mail.message.subtype",
                  [["name", "in", ["Note", "Nota", "Activities", "Actividades"]]],
                  ["id"], limit=50)] or [2, 3]
-        _ext_partner = {u["id"]: safe_id(u.get("partner_id")) for u in
-                        sr(models, uid, "res.users", [["id", "in", list(ext_ids)]], ["id", "partner_id"])}
+        # partners de los BOTS (OdooBot uid 1, admin uid 2): sus mensajes no son gestión
+        _bot_partners = [safe_id(u.get("partner_id")) for u in
+                         sr(models, uid, "res.users", [["id", "in", [1, 2]]], ["id", "partner_id"])]
         _ruido_a = ["lead enrichment", "stage changed", "cambio de etapa", "ganado autom",
                     "oportunidad ganada", "oportunidad perdida", "facturas pendientes",
                     "cierre masivo", "lista de precios cambiada", "alerta:",
-                    "dias sin comprar", "días sin comprar"]
+                    "dias sin comprar", "días sin comprar",
+                    "le asignaron al lead", "le asignaron el lead", "apreciable"]
         _leads_pid = {}
         for l in sr(models, uid, "crm.lead", [["partner_id", "in", pids], ["active", "in", [True, False]]],
                     ["id", "partner_id"], limit=10000):
             _leads_pid.setdefault(safe_id(l.get("partner_id")), []).append(l["id"])
         for r in rows:
-            _auth = _ext_partner.get(r["_dest_uid"])
             gests = []
-            if _auth:
-                dom = ["|",
-                       "&", ["model", "=", "res.partner"], ["res_id", "=", r["pid"]],
-                       "&", ["model", "=", "crm.lead"], ["res_id", "in", _leads_pid.get(r["pid"]) or [0]],
-                       ["subtype_id", "in", _gsub],
-                       ["author_id", "=", _auth],
-                       ["date", ">=", r["fecha"] + " 00:00:00"]]
-                for m0 in sr(models, uid, "mail.message", dom, ["body", "date"], limit=30, order="date asc"):
-                    b = strip_html(m0.get("body") or "").strip()
-                    low = b.lower()
-                    if (low.startswith("actividades pendientes") or low.startswith("to-do done")) and ":" in b:
-                        b = b.split(":", 1)[1].strip()
-                    if len(b) > 3 and not any(x in b.lower() for x in _ruido_a):
-                        gests.append(((m0.get("date") or "")[:10], b[:150]))
-                # Actividades PLANEADAS del ejecutivo (mail.activity): también son
-                # gestión, y traen el TIPO (Llamada/Reunión/To-Do) que pide Pauline.
-                dom_a = ["|",
-                         "&", ["res_model", "=", "res.partner"], ["res_id", "=", r["pid"]],
-                         "&", ["res_model", "=", "crm.lead"], ["res_id", "in", _leads_pid.get(r["pid"]) or [0]],
-                         ["user_id", "=", r["_dest_uid"]],
-                         ["create_date", ">=", r["fecha"] + " 00:00:00"]]
-                for a0 in sr(models, uid, "mail.activity", dom_a,
-                             ["activity_type_id", "summary", "create_date"], limit=10, order="create_date asc"):
-                    _txt = (safe_name(a0.get("activity_type_id")) or "Actividad")
-                    if a0.get("summary"):
-                        _txt += ": " + a0["summary"]
-                    # mismo filtro de ruido: el cron 93 crea To-Dos "ALERTA: ..." a
-                    # nombre del ejecutivo — no son gestión suya
-                    if not any(x in _txt.lower() for x in _ruido_a):
-                        gests.append(((a0.get("create_date") or "")[:10], _txt[:150]))
+            dom = ["|",
+                   "&", ["model", "=", "res.partner"], ["res_id", "=", r["pid"]],
+                   "&", ["model", "=", "crm.lead"], ["res_id", "in", _leads_pid.get(r["pid"]) or [0]],
+                   ["subtype_id", "in", _gsub],
+                   ["author_id", "not in", _bot_partners],
+                   ["date", ">=", r["fecha"] + " 00:00:00"]]
+            for m0 in sr(models, uid, "mail.message", dom, ["body", "date", "author_id"], limit=30, order="date asc"):
+                b = strip_html(m0.get("body") or "").strip()
+                low = b.lower()
+                if (low.startswith("actividades pendientes") or low.startswith("to-do done")) and ":" in b:
+                    b = b.split(":", 1)[1].strip()
+                if len(b) > 3 and not any(x in b.lower() for x in _ruido_a):
+                    gests.append(((m0.get("date") or "")[:10], b[:150],
+                                  safe_name(m0.get("author_id")) if m0.get("author_id") else ""))
+            # Actividades PENDIENTES (mail.activity): el equipo las usa como bitácora
+            # y las EDITA en el lugar (incluso alertas del cron) → cuentan por
+            # write_date, sin filtro de dueño; el ruido se filtra por contenido.
+            dom_a = ["|",
+                     "&", ["res_model", "=", "res.partner"], ["res_id", "=", r["pid"]],
+                     "&", ["res_model", "=", "crm.lead"], ["res_id", "in", _leads_pid.get(r["pid"]) or [0]],
+                     ["write_date", ">=", r["fecha"] + " 00:00:00"]]
+            for a0 in sr(models, uid, "mail.activity", dom_a,
+                         ["activity_type_id", "summary", "write_date", "user_id"], limit=10, order="write_date asc"):
+                _txt = (safe_name(a0.get("activity_type_id")) or "Actividad")
+                if a0.get("summary"):
+                    _txt += ": " + a0["summary"]
+                if not any(x in _txt.lower() for x in _ruido_a):
+                    gests.append(((a0.get("write_date") or "")[:10], _txt[:150],
+                                  safe_name(a0.get("user_id")) if a0.get("user_id") else ""))
             gests.sort(key=lambda g: g[0])
             r["primera_gestion"] = gests[0][0] if gests else ""
             r["nota_fecha"] = gests[-1][0] if gests else ""
             r["nota"] = gests[-1][1] if gests else ""
+            r["nota_autor"] = gests[-1][2] if gests else ""
             r["gestionado"] = bool(gests)
 
         for r in rows:
