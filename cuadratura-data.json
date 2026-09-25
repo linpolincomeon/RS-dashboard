@@ -1,5 +1,5 @@
 {
- "generated_utc": "2026-09-25T20:06+00:00",
+ "generated_utc": "2026-09-25T23:28+00:00",
  "hoy": "2026-09-25",
  "desde": "2026-09-19",
  "rutas": {
@@ -27,18 +27,7 @@
     "visita_status": "partial"
    },
    {
-    "picking": "PHXC/OUT/01647",
-    "so": "S36781",
-    "cliente": "SUGAL CHILE LIMITADA, SAN DIEGO",
-    "camion": "PHXC-44",
-    "litros": 1500,
-    "programado": "24-09 16:00",
-    "atrasado": true,
-    "estado": "ruteada",
-    "visita_status": "pending"
-   },
-   {
-    "picking": "SHGP/OUT/01429",
+    "picking": "PYHK/OUT/01357",
     "so": "S36787",
     "cliente": "SOC AGRICOLA GRANJA SAN RAFAEL LIMITADA, OFICINA CENTRAL-Zulema",
     "camion": "SHGP-60",
@@ -46,7 +35,7 @@
     "programado": "24-09 16:08",
     "atrasado": true,
     "estado": "ruteada",
-    "visita_status": "pending"
+    "visita_status": "failed"
    },
    {
     "picking": "PHXC/OUT/01646",
@@ -82,7 +71,7 @@
     "visita_status": "pending"
    },
    {
-    "picking": "PHXC/OUT/01643",
+    "picking": "VD/OUT/01630",
     "so": "S36793",
     "cliente": "SUGAL CHILE LIMITADA, POMAIRE CAMPOS PROPIOS",
     "camion": "PHXC-44",
@@ -90,10 +79,10 @@
     "programado": "24-09 16:21",
     "atrasado": true,
     "estado": "ruteada",
-    "visita_status": "pending"
+    "visita_status": "failed"
    },
    {
-    "picking": "PHXC/OUT/01642",
+    "picking": "VD/OUT/01629",
     "so": "S36794",
     "cliente": "SUGAL CHILE LIMITADA, SANTA CAROLINA CAMPOS PROPIOS",
     "camion": "PHXC-44",
@@ -101,18 +90,18 @@
     "programado": "24-09 16:22",
     "atrasado": true,
     "estado": "ruteada",
-    "visita_status": "pending"
+    "visita_status": "failed"
    },
    {
-    "picking": "PHXC/OUT/01641",
+    "picking": "VD/OUT/01628",
     "so": "S36795",
     "cliente": "SUGAL CHILE LIMITADA, SANTA CAROLINA CAMPOS PROPIOS",
     "camion": "PHXC-44",
-    "litros": 800,
+    "litros": 700,
     "programado": "24-09 16:22",
     "atrasado": true,
     "estado": "ruteada",
-    "visita_status": "pending"
+    "visita_status": "failed"
    },
    {
     "picking": "TYDG/OUT/00253",
@@ -148,7 +137,7 @@
     "visita_status": "partial"
    },
    {
-    "picking": "SHGP/OUT/01433",
+    "picking": "PYHK/OUT/01356",
     "so": "S36805",
     "cliente": "AGRICOLA LOS ALPES LTDA, AGRICOLA LOS ALPES - LAS BRISAS - SAN CLEMENTE",
     "camion": "SHGP-60",
@@ -156,7 +145,7 @@
     "programado": "25-09 07:29",
     "atrasado": false,
     "estado": "ruteada",
-    "visita_status": "pending"
+    "visita_status": "completed"
    },
    {
     "picking": "PHXC/OUT/01648",
@@ -173,8 +162,8 @@
   "huerfanas": [],
   "sin_ref": [],
   "resumen": {
-   "total": 15,
-   "ruteadas": 14,
+   "total": 14,
+   "ruteadas": 13,
    "ruteadas_manana": 0,
    "sin_ruta": 1,
    "huerfanas": 0
@@ -231,6 +220,22 @@
     "estado": "ok"
    },
    {
+    "so": "S36805",
+    "fecha": "2026-09-25",
+    "cliente": "AGRICOLA LOS ALPES LTDA",
+    "camion": "SHGP-60",
+    "especial": false,
+    "parcial": false,
+    "visitas": 1,
+    "pedido": 800,
+    "entregado": 800,
+    "facturado": 800,
+    "facturas": [
+     "FAC 54446"
+    ],
+    "estado": "ok"
+   },
+   {
     "so": "S36802",
     "fecha": "2026-09-25",
     "cliente": "CLAUDIO ANTONIO GAJARDO MACHUCA",
@@ -263,6 +268,52 @@
     "estado": "ok"
    },
    {
+    "so": "S36795",
+    "fecha": "2026-09-25",
+    "cliente": "SUGAL CHILE LIMITADA",
+    "camion": "PHXC-44",
+    "especial": true,
+    "parcial": false,
+    "visitas": 1,
+    "pedido": 700,
+    "entregado": 800,
+    "facturado": 700,
+    "facturas": [
+     "FAC 54448"
+    ],
+    "estado": "diferencia"
+   },
+   {
+    "so": "S36794",
+    "fecha": "2026-09-25",
+    "cliente": "SUGAL CHILE LIMITADA",
+    "camion": "PHXC-44",
+    "especial": true,
+    "parcial": false,
+    "visitas": 1,
+    "pedido": 500,
+    "entregado": 500,
+    "facturado": 500,
+    "facturas": [
+     "FAC 54447"
+    ],
+    "estado": "ok"
+   },
+   {
+    "so": "S36793",
+    "fecha": "2026-09-25",
+    "cliente": "SUGAL CHILE LIMITADA",
+    "camion": "PHXC-44",
+    "especial": true,
+    "parcial": false,
+    "visitas": 1,
+    "pedido": 700,
+    "entregado": 700,
+    "facturado": 0,
+    "facturas": [],
+    "estado": "por_facturar"
+   },
+   {
     "so": "S36790",
     "fecha": "2026-09-25",
     "cliente": "AGRICOLA AGROBOSQUES SAN ISIDRO S.A.",
@@ -277,6 +328,20 @@
      "FAC 54426"
     ],
     "estado": "ok"
+   },
+   {
+    "so": "S36785",
+    "fecha": "2026-09-25",
+    "cliente": "SUGAL CHILE LIMITADA",
+    "camion": "SHGP-60",
+    "especial": true,
+    "parcial": false,
+    "visitas": 1,
+    "pedido": 1030,
+    "entregado": 1000,
+    "facturado": 0,
+    "facturas": [],
+    "estado": "por_facturar"
    },
    {
     "so": "S36784",
@@ -304,6 +369,20 @@
     "visitas": 1,
     "pedido": 500,
     "entregado": 500,
+    "facturado": 0,
+    "facturas": [],
+    "estado": "por_facturar"
+   },
+   {
+    "so": "S36781",
+    "fecha": "2026-09-25",
+    "cliente": "SUGAL CHILE LIMITADA",
+    "camion": "PHXC-44",
+    "especial": true,
+    "parcial": false,
+    "visitas": 1,
+    "pedido": 1500,
+    "entregado": 1200,
     "facturado": 0,
     "facturas": [],
     "estado": "por_facturar"
@@ -2160,11 +2239,11 @@
   "dias": [
    {
     "fecha": "2026-09-25",
-    "entregas": 24,
-    "entregado": 35706,
-    "facturado": 34406,
-    "por_facturar": 1300,
-    "sin_factura": 2
+    "entregas": 30,
+    "entregado": 40706,
+    "facturado": 36406,
+    "por_facturar": 4200,
+    "sin_factura": 5
    },
    {
     "fecha": "2026-09-24",
@@ -2215,9 +2294,22 @@
     "sin_factura": 0
    }
   ],
-  "por_facturar_total": 5100,
-  "entregado_hoy": 35706,
-  "facturado_hoy": 34406,
-  "fuera_simpli": []
+  "por_facturar_total": 8000,
+  "entregado_hoy": 40706,
+  "facturado_hoy": 37806,
+  "fuera_simpli": [
+   {
+    "factura": "FAC 54450",
+    "so": "S36792",
+    "cliente": "SUGAL CHILE LIMITADA",
+    "litros": 700
+   },
+   {
+    "factura": "FAC 54449",
+    "so": "S36791",
+    "cliente": "SUGAL CHILE LIMITADA",
+    "litros": 700
+   }
+  ]
  }
 }
