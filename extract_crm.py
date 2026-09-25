@@ -480,15 +480,33 @@ def extract_crm_data(models, uid):
         "|", "|", ["subtype_id", "in", _mh_sub],
         ["message_type", "=", "comment"],
         ["tracking_value_ids", "!=", False],
-    ], ["create_uid", "model", "res_id"], limit=20000)
+    ], ["create_uid", "model", "res_id", "date"], limit=20000)
     _mh_uid = {}
+
+    def _mh_add(_u, _f, _key):
+        if not _u:
+            return
+        _d = _mh_uid.setdefault(_u, {"movs": 0, "movs7": 0, "clientes": set()})
+        _d["movs"] += 1
+        if _f >= week_start:
+            _d["movs7"] += 1
+        _d["clientes"].add(_key)
+
     for m in _mh_msgs:
-        u = safe_id(m.get("create_uid"))
-        if not u:
+        _mh_add(safe_id(m.get("create_uid")), (m.get("date") or "")[:10],
+                (m.get("model"), m.get("res_id")))
+    # Actividades PENDIENTES editadas: el equipo escribe bitácoras ahí (regla
+    # 24-sep, misma que asignaciones) — cuentan por write_date, atribuidas a
+    # QUIEN editó (write_uid); alertas del cron fuera por contenido.
+    for a in sr(models, uid, "mail.activity", [
+            ["res_model", "in", ["crm.lead", "res.partner"]],
+            ["write_date", ">=", _cut30],
+            ["write_uid", "not in", [1, 2]]],
+            ["write_uid", "res_model", "res_id", "write_date", "summary"], limit=20000):
+        if "alerta:" in (a.get("summary") or "").lower():
             continue
-        d = _mh_uid.setdefault(u, {"movs": 0, "clientes": set()})
-        d["movs"] += 1
-        d["clientes"].add((m.get("model"), m.get("res_id")))
+        _mh_add(safe_id(a.get("write_uid")), (a.get("write_date") or "")[:10],
+                (a.get("res_model"), a.get("res_id")))
     _uid_names = {u["id"]: canonical_vendedor(u["name"]) for u in sr(
         models, uid, "res.users", [["id", "in", list(_mh_uid)]], ["id", "name"], limit=200)}
     _mh_by_name = {}
@@ -496,14 +514,16 @@ def extract_crm_data(models, uid):
         n = _uid_names.get(u)
         if not n:
             continue
-        t = _mh_by_name.setdefault(n, {"movs": 0, "clientes": set()})
+        t = _mh_by_name.setdefault(n, {"movs": 0, "movs7": 0, "clientes": set()})
         t["movs"] += d["movs"]
+        t["movs7"] += d["movs7"]
         t["clientes"] |= d["clientes"]
     for e in exec_map.values():
         hm = _mh_by_name.get(canonical_vendedor(e["name"]))
         e["movs_humanos_30d"] = hm["movs"] if hm else 0
+        e["movs_humanos_7d"] = hm["movs7"] if hm else 0
         e["clientes_30d"] = len(hm["clientes"]) if hm else 0
-    print(f"  Movs humanos 30d: {len(_mh_msgs)} mensajes de {len(_mh_uid)} usuarios")
+    print(f"  Movs humanos 30d: {len(_mh_msgs)} mensajes + actividades de {len(_mh_uid)} usuarios")
 
     executives = sorted(exec_map.values(), key=lambda x: -x["total"])
 

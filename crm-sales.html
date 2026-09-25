@@ -289,10 +289,16 @@ tr:hover td{background:#fafaf8}
         <table style="width:100%">
           <thead><tr><th style="width:200px">Issue</th><th>Detalle</th><th style="width:100px">Estado</th></tr></thead>
           <tbody>
-            <tr><td class="bold" style="color:#c8360e">Clientes en Riesgo — Actuar Ahora</td><td>Alerta temprana basada en <code>frecuencia_facturacion</code> del partner: clientes cuyo días sin compra supera 1.5× su frecuencia normal. Requiere que el campo esté poblado en Odoo para la mayoría de clientes. Cuando esté listo, se muestra en Churn & Rescate.</td><td><span class="tag tag-r">Requiere data Odoo</span></td></tr>
+            <!-- Actualizado 25-sep-2026 (revisión Pauline). Resueltos que salieron:
+                 alerta frecuencia (durmancia dinámica en acción 1243 desde 04-ago),
+                 crons Odoo (verificados, cron 84 corriendo 2×/día),
+                 AVLA cruce (planilla subida 24-sep, Pauline monitorea directo). -->
+            <tr><td class="bold" style="color:#e65100">Reasignar recuperables sin gestión</td><td>El dashboard ya muestra "TomEnergy" en recuperables sin gestión 3+ meses, pero las fichas en Odoo siguen con el dueño antiguo (Toro, Comber, etc.). Falta decidir si se reasignan de verdad (cambio masivo de <code>user_id</code>) para que comisiones y candado calcen.</td><td><span class="tag tag-y">Decisión Pauline</span></td></tr>
+            <tr><td class="bold" style="color:#e65100">Cartera de factores (SINIESTRO_WATCH)</td><td>Pauline envía quincenalmente los estados de cuenta de Go Capital y F. Security; con el primer export se construye el parser y el cruce automático de impagos al factor (ventana de siniestro AVLA 60d).</td><td><span class="tag tag-y">Espera export</span></td></tr>
+            <tr><td class="bold" style="color:#e65100">Leads sin etapa (~48)</td><td>Leads activos sin etapa en el CRM (ediciones a mano) — invisibles en el funnel. Barrido diseñado: compró → Ganado, dormido → Durmiente. Pendiente OK para agregarlo a la acción 1243.</td><td><span class="tag tag-y">Decisión Pauline</span></td></tr>
+            <tr><td class="bold" style="color:#e65100">Form chofer → solo bodega</td><td>Cuando la reportería SimpliRoute esté validada contra Odoo (marcha blanca), capar el formulario de choferes a inicio/carga/traslado/cierre.</td><td><span class="tag tag-y">Marcha blanca</span></td></tr>
             <tr><td class="bold" style="color:#c8360e">Litros Toro — NC</td><td>Las notas de crédito "por monto" (sin línea diesel B1) no restan litros. El campo <code>reversed_entry_id</code> no vincula NC a factura original en Odoo 18.</td><td><span class="tag tag-r">Bloqueado</span></td></tr>
-            <tr><td class="bold" style="color:#e65100">AVLA cruce</td><td>Pendiente subir planilla mensual AVLA para cruzar contra monto_credito/saldo_credito en Odoo. Histórico en <code>riesgo-historico.json</code>.</td><td><span class="tag tag-y">Pendiente</span></td></tr>
-            <tr><td class="bold" style="color:#e65100">Crons Odoo</td><td>Scripts de alerta temprana y mover a "En Riesgo" entregados. Verificar si están instalados como Acciones Planificadas.</td><td><span class="tag tag-y">Por verificar</span></td></tr>
+            <tr><td class="bold" style="color:#2e7d32">AVLA cruce</td><td>Planilla AVLA subida (24-sep) y cruzando contra monto_credito/saldo_credito; Pauline monitorea directo. Histórico en <code>riesgo-historico.json</code>.</td><td><span class="tag tag-g">Resuelto</span></td></tr>
           </tbody>
         </table>
       </div></div>
@@ -1429,26 +1435,44 @@ function renderRankingAccum() {
   const lbu = T.litros_by_user || {};
   const pf = getProratedFactor(D.ventas?.month_start || new Date());
 
+  // Cuentas ANTIGUAS full-time → consolidadas en el nombre corto .ext (Pauline
+  // 25-sep: salían como filas separadas con % y movs propios)
+  const ALIAS_ANT = {};
+  ALIAS_ANT[norm('toro gonzález sebastian enrique')] = 'sebastian toro';
+  ALIAS_ANT[norm('muñoz encalada joaquin')] = 'joaquin muñoz';
+  // Alias DESPUÉS de canonicalizar: variantes como '(ant) Joaquin Muñoz Encalada'
+  // primero canonicalizan al nombre largo y recién ahí calzan con el alias
+  const canonAlias = n => { const c = canonicalName(n || ''); const a = ALIAS_ANT[norm(c)]; return a ? canonicalName(a) : c; };
+
   // Build unified set of allowed vendor names, deduplicated by canonical name
   const nameMap = {};
-  const addName = n => { const cn = canonicalName(n); if (!nameMap[cn]) nameMap[cn] = cn; };
+  const addName = n => { const cn = canonAlias(n); if (!nameMap[cn]) nameMap[cn] = cn; };
   Object.keys(D.vendor_goals || {}).forEach(n => { if (isAllowed(n)) addName(n); });
   Object.keys(lbu).forEach(n => { if (isAllowed(n)) addName(n); });
   (D.executives || []).forEach(e => { if (isAllowed(e.name)) addName(e.name); });
   const vendorNames = Object.values(nameMap);
 
-  // Build exec lookup
-  const execMap = {};
-  (D.executives || []).forEach(e => { execMap[norm(e.name)] = e; });
-
   const rows = vendorNames.map(n => {
-    const lt = findInByUser(lbu, n);
+    // Litros: suma las variantes (cuenta nueva + antigua)
+    let lt = 0;
+    for (const [k, v] of Object.entries(lbu)) {
+      if (canonAlias(k) === n) lt += (typeof v === 'number' ? v : 0);
+    }
     const g = getGoal(n);
     const gL = g.litros_mes || 0;
     const pM = gL > 0 ? gL * pf : 1;
     const ltP = gL > 0 ? Math.round((lt / pM) * 100) : 0;
-    const ex = execMap[norm(n)] || {};
-    return { name: n, ltP, m7: ex.moved || 0, m30: ex.moved_30d || 0 };
+    // Mov = gestión HUMANA (notas + actividades editadas, misma regla que
+    // Asignaciones 24-sep), sumando cuenta nueva + antigua; fallback a los
+    // contadores viejos para JSON sin los campos nuevos.
+    let m7 = 0, m30 = 0;
+    (D.executives || []).forEach(e => {
+      if (canonAlias(e.name) === n) {
+        m7 += (e.movs_humanos_7d != null ? e.movs_humanos_7d : (e.moved || 0));
+        m30 += (e.movs_humanos_30d != null ? e.movs_humanos_30d : (e.moved_30d || 0));
+      }
+    });
+    return { name: n, ltP, m7, m30 };
   }).sort((a, b) => b.ltP - a.ltP);
 
   rows.forEach((r, i) => {
