@@ -1045,14 +1045,16 @@ function renderRiesgo(){
                 // Semáforo: bombaActual vs bombaDiff del MÍNIMO
                 // OK si bomba_cliente > minimo_diff por ≥10
                 // Cerca límite si diferencia entre 0 y +10
-                // Bajo mínimo si bomba_cliente ≤ minimo_diff
+                // 🔴 solo BAJO el mínimo (margen<0); vender exactamente AL mínimo cumple
+                // la política → 🟡 "al límite" (fix 25-sep: margen<=0 pintaba rojo a
+                // clientes en el mínimo exacto, ej. La Palma B-53 con mín B-53)
                 const bombaCli=c._bombaAct;
                 const excepDiff=calc.bombaDiff;  // ej -29
                 const excepLabel='B'+(excepDiff>=0?'+':'')+excepDiff;
                 let dot='🟢',clr='var(--green)',bg='#e1f5ee';
                 if(bombaCli!=null){
-                    const margen=bombaCli-excepDiff;  // cuánto sobre excepción
-                    if(margen<=0){dot='🔴';clr='#a32d2d';bg='#fcebeb';}
+                    const margen=bombaCli-excepDiff;  // cuánto sobre el mínimo
+                    if(margen<0){dot='🔴';clr='#a32d2d';bg='#fcebeb';}
                     else if(margen<10){dot='🟡';clr='#854f0b';bg='#faeeda';}
                 }
                 excepHtml=`<span title="Zona ${zonaCli} · ${tipoCli} · ${diasReal}d → mínimo $${calc.excepcion}/L neto (bomba zona $${calc.bombaZona} neto)" style="display:inline-block;background:${bg};color:${clr};font-weight:700;padding:3px 8px;border-radius:6px;font-size:11px;white-space:nowrap">${dot} ${excepLabel}</span>`;
