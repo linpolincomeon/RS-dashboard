@@ -1,8 +1,8 @@
 {
- "generated_utc": "2026-09-26T13:44+00:00",
+ "generated_utc": "2026-09-27T14:41+00:00",
  "fuente": "API SimpliRoute · /routes/visits por planned_date",
- "desde": "2026-08-13",
- "hasta": "2026-09-26",
+ "desde": "2026-08-14",
+ "hasta": "2026-09-27",
  "vehiculos": [
   {
    "id": 734082,
@@ -104,6 +104,22 @@
   }
  ],
  "diario": [
+  {
+   "fecha": "2026-09-27",
+   "cam": "PH",
+   "chofer": "Fernando",
+   "completadas": 1,
+   "especiales": 0,
+   "parciales": 0,
+   "fallidas": 0,
+   "canceladas": 0,
+   "pendientes": 0,
+   "litros_entregados": 890,
+   "litros_planificados": 890,
+   "salida": "07:25",
+   "primer_checkout": "09:48",
+   "ultimo_checkout": "09:48"
+  },
   {
    "fecha": "2026-09-26",
    "cam": "SH",
@@ -1559,6 +1575,23 @@
  ],
  "visitas": [
   {
+   "id": 931427698,
+   "fecha": "2026-09-27",
+   "cam": "PH",
+   "patente": "PHXC-44",
+   "chofer": "Fernando",
+   "status": "completed",
+   "especial": false,
+   "litros": 890.0,
+   "cliente": "SUGAL CHILE LIMITADA",
+   "rut": "15527619-3",
+   "ref": "PHXC/OUT/01657 - S36858",
+   "so": "S36858",
+   "salida": "07:25",
+   "checkout": "09:48",
+   "motivo": "Se entregan 890 lt. En campo Miraflores"
+  },
+  {
    "id": 931164877,
    "fecha": "2026-09-26",
    "cam": "SH",
@@ -2234,6 +2267,57 @@
    "rut": "",
    "ref": "TJVS/OUT/01892 - S36813",
    "so": "S36813",
+   "salida": null,
+   "checkout": null,
+   "motivo": ""
+  },
+  {
+   "id": 931350813,
+   "fecha": "2026-09-25",
+   "cam": null,
+   "patente": null,
+   "chofer": null,
+   "status": "pending",
+   "especial": false,
+   "litros": 500.0,
+   "cliente": "INGENERIA Y CONSTRUCCIONES FEBLANCA SPA",
+   "rut": "",
+   "ref": "TYDG/OUT/00254 - S36784",
+   "so": "S36784",
+   "salida": null,
+   "checkout": null,
+   "motivo": ""
+  },
+  {
+   "id": 931350815,
+   "fecha": "2026-09-25",
+   "cam": null,
+   "patente": null,
+   "chofer": null,
+   "status": "pending",
+   "especial": false,
+   "litros": 500.0,
+   "cliente": "INGENERIA Y CONSTRUCCIONES FEBLANCA SPA",
+   "rut": "",
+   "ref": "PYHK/IN/00149 - Devolución de PYHK/OUT/01358",
+   "so": null,
+   "salida": null,
+   "checkout": null,
+   "motivo": ""
+  },
+  {
+   "id": 931350816,
+   "fecha": "2026-09-25",
+   "cam": null,
+   "patente": null,
+   "chofer": null,
+   "status": "pending",
+   "especial": false,
+   "litros": 500.0,
+   "cliente": "INGENERIA Y CONSTRUCCIONES FEBLANCA SPA",
+   "rut": "",
+   "ref": "PYHK/OUT/01358 - S36784",
+   "so": "S36784",
    "salida": null,
    "checkout": null,
    "motivo": ""
