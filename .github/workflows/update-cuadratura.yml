@@ -8,7 +8,10 @@ on:
     # de 11 corridas/día pedidas ejecutaba 2-3, y ninguna antes de ~12:00 Chile).
     # Por eso se piden 22 intentos/día: caen más y más temprano. Si aun así el
     # dato está viejo, correrlo a mano: Actions → este workflow → Run workflow.
-    - cron: '7,37 11-21 * * 1-6'
+    - cron: '7,37 11-23 * * 1-6'
+    # Cierre diario (tab ✅ de costos.html) se hace ~20:00-22:00 Chile = 23-01 UTC
+    # en verano: se extiende hasta la 01:37 UTC del día siguiente (mar-dom UTC).
+    - cron: '7,37 0-1 * * 0,2-6'
   workflow_dispatch:
 
 permissions:

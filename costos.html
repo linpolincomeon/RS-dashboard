@@ -76,6 +76,36 @@
   <button class="tab active" data-tab="costos" onclick="switchTab('costos')">💰 Costos</button>
   <button class="tab" data-tab="oper" onclick="switchTab('oper')">🚚 Operaciones</button>
   <button class="tab" data-tab="mant" onclick="switchTab('mant')">🔧 Mantención</button>
+  <button class="tab" data-tab="cierre" onclick="switchTab('cierre')">✅ Cierre diario</button>
+</div>
+
+<div class="card vw-cierre" hidden id="cardCierre">
+  <h2>✅ Cierre diario — qué corregir hoy</h2>
+  <div class="note" style="margin:0 0 12px">Cruce automático Odoo ↔ SimpliRoute del instructivo de cierre (fases 2–6). Muestra <b>solo lo que no cuadra</b> y la acción a tomar. Referencia de lo entregado = <b>SimpliRoute</b> (calza al litro con la planilla de bodegas en los camiones que la llenan). Solo lectura: las correcciones se hacen en Odoo. <span id="cierreStamp"></span></div>
+  <div class="kpi-grid" id="cierreKpis" style="margin-bottom:0"></div>
+</div>
+<div class="card vw-cierre" hidden>
+  <h2>5 · Saldo por camión — Odoo vs planilla</h2>
+  <div class="note" style="margin:0 0 12px"><b>Odoo esperado</b> = saldo Odoo ahora + el efecto de aplicar las correcciones de la fase 4. Anota el saldo cierre de la planilla en la columna Drive: si coincide con el esperado, ese camión está listo.</div>
+  <div class="scroll"><table id="cierreSaldos"></table></div>
+</div>
+<div class="card vw-cierre" hidden>
+  <h2>4 · Ventas — órdenes a corregir (Cantidad = Entregado = Facturado)</h2>
+  <div class="note" style="margin:0 0 12px">Entregas de hoy y salidas abiertas en "Confirmación salidas". <b>Simpli</b> = litros entregados · <b>Cantidad</b> = pedido en la orden · <b>Entregado</b> = validado en Odoo · <b>Facturado</b> = facturas. Seguir las acciones en el orden indicado (hoja 4B).</div>
+  <div id="cierreVentas"></div>
+</div>
+<div class="card vw-cierre" hidden>
+  <h2>2 · Compras (cargas) — factura, litros y recepción</h2>
+  <div class="note" style="margin:0 0 12px">Compras diésel de ayer y hoy. Las facturas ENAP llegan solas a Odoo como <b>borrador sin vincular</b>: aquí se cruzan por proveedor y litros con su orden de compra. El monto final a comparar con la CC es el de la factura una vez vinculada.</div>
+  <div id="cierreCompras"></div>
+</div>
+<div class="card vw-cierre" hidden>
+  <h2>3 · Traspasos entre bodegas sin terminar</h2>
+  <div id="cierreTraspasos"></div>
+</div>
+<div class="card vw-cierre" hidden>
+  <h2>6 · Pedidos de mañana</h2>
+  <div id="cierreManana"></div>
 </div>
 
 <div class="kpi-grid vw-costos" id="kpis"></div>
@@ -181,8 +211,11 @@ async function load() {
     renderSimpli(S);
     renderJornada(S, CH);
   }
-  if (cuadRes.ok) renderCuadratura(await cuadRes.json());
-  else { $('cardCuadRutas').remove(); $('cardCuadLitros').remove(); }
+  if (cuadRes.ok) {
+    const C = await cuadRes.json();
+    renderCuadratura(C);
+    if (C.cierre) renderCierre(C);
+  } else { $('cardCuadRutas').remove(); $('cardCuadLitros').remove(); }
 
   // último mes con gasto real
   const totalGLMes = D.meses.map((_, i) => sum(Object.values(D.flota_gl).map(v => v[i])));
@@ -566,6 +599,110 @@ function renderCuadratura(C) {
   $('cuadLitrosDetalle').innerHTML = lh;
 }
 
+// ---- cierre diario: checklist del instructivo (fases 2-6), solo lo que no cuadra ----
+function renderCierre(C) {
+  const K = C.cierre, L = v => v == null ? '—' : CLP.format(Math.round(v));
+  const fF = f => f ? `${f.slice(8, 10)}-${f.slice(5, 7)}` : '—';
+  const kpi = (label, val, cls, sub) =>
+    `<div class="kpi"><div class="label">${label}</div><div class="value ${cls || ''}">${val}</div>${sub ? `<div class="sub">${sub}</div>` : ''}</div>`;
+  const tabla = (head, rows) => `<div class="scroll"><table><tr>${head.map(h => `<th${h.startsWith('#') ? ' class="num"' : ''}>${h.replace('#', '')}</th>`).join('')}</tr>${rows.join('')}</table></div>`;
+  const okMsg = t => `<div class="note" style="color:var(--ok)">✅ ${t}</div>`;
+  const gen = new Date(C.generated_utc);
+  const mins = Math.round((Date.now() - gen.getTime()) / 60000);
+  $('cierreStamp').innerHTML = `Dato de las <b>${gen.toLocaleTimeString('es-CL', { hour: '2-digit', minute: '2-digit', timeZone: 'America/Santiago' })}</b>` +
+    (mins > 45 ? ` — <b class="bad">hace ${mins} min: para el cierre, correr "Update Cuadratura" (Actions → Run workflow) y recargar</b>` : ` (hace ${mins} min)`);
+
+  const f2 = K.fase2, f3 = K.fase3, f4 = K.fase4, f5 = K.fase5, f6 = K.fase6;
+  const comprasProb = f2.compras.filter(c => !c.recibida || c.factura_estado !== 'posted');
+  const hoyCompras = f2.compras.filter(c => c.fecha === C.hoy && !c.devuelta);
+  const nDevueltas = f2.compras.filter(c => c.devuelta).length;
+  const saldosMal = f5.saldos.filter(s => s.ajuste);
+
+  $('cierreKpis').innerHTML =
+    kpi('2 · Cargas hoy', hoyCompras.length, '', `${L(hoyCompras.reduce((a, c) => a + c.litros_real, 0))} L · ${f2.sin_recibir ? `<b class="bad">${f2.sin_recibir} sin recibir</b>` : 'todas recibidas'}${nDevueltas ? ` · <span class="warn">${nDevueltas} OC duplicadas/devueltas</span>` : ''}`) +
+    kpi('3 · Traspasos abiertos', f3.traspasos.length, f3.traspasos.length ? 'warn' : 'ok', 'sin validar en Odoo') +
+    kpi('4 · Órdenes a corregir', f4.ventas.length, f4.ventas.length ? 'bad' : 'ok', `de ${f4.entregadas_hoy} entregadas hoy`) +
+    kpi('5 · Camiones con ajuste', saldosMal.length, saldosMal.length ? 'warn' : 'ok', saldosMal.length ? 'cuadran al aplicar la fase 4' : 'Odoo = SimpliRoute') +
+    kpi('6 · Mañana con excepción', f6.con_excepcion, f6.con_excepcion ? 'bad' : 'ok', `${f6.por_aprobar.length} por aprobar`);
+
+  // ── fase 5: saldos ──
+  const key = c => `cierre_drive_${C.hoy}_${c}`;
+  const get = c => { try { return localStorage.getItem(key(c)) || ''; } catch (e) { return ''; } };
+  let h5 = '<tr><th>Camión</th><th class="num">Vendido hoy (Simpli)</th><th class="num">Odoo ahora</th><th class="num">Ajuste pendiente</th><th class="num">Odoo esperado</th><th class="num">Drive (planilla)</th><th>Estado</th></tr>';
+  for (const s of f5.saldos) {
+    h5 += `<tr data-cam="${s.cam}" data-esp="${s.esperado}"><td><b>${s.cam}</b></td><td class="num">${L(s.ventas_simpli_hoy)}</td><td class="num">${L(s.odoo)}</td>
+      <td class="num ${s.ajuste ? 'warn' : ''}">${s.ajuste ? (s.ajuste > 0 ? '+' : '') + L(s.ajuste) : '—'}</td><td class="num"><b>${L(s.esperado)}</b></td>
+      <td class="num"><input inputmode="numeric" style="width:90px;text-align:right;font:inherit;padding:3px 6px;border:1px solid var(--border);border-radius:6px" value="${get(s.cam)}"></td><td class="est">—</td></tr>`;
+  }
+  $('cierreSaldos').innerHTML = h5;
+  const evalRow = tr => {
+    const inp = tr.querySelector('input'), v = inp.value.replace(/\D/g, '');
+    const est = tr.querySelector('.est');
+    try { localStorage.setItem(key(tr.dataset.cam), inp.value); } catch (e) {}
+    if (!v) { est.innerHTML = '<span style="color:var(--muted)">anotar saldo</span>'; return; }
+    const d = Number(v) - Number(tr.dataset.esp);
+    est.innerHTML = Math.abs(d) <= 1 ? '<b class="ok">✓ cuadra</b>'
+      : `<b class="bad">${d > 0 ? 'planilla +' : 'planilla '}${L(d)} L</b> <span style="color:var(--muted)">(¿venta/carga/traslado sin anotar?)</span>`;
+  };
+  document.querySelectorAll('#cierreSaldos tr[data-cam]').forEach(tr => {
+    evalRow(tr);
+    tr.querySelector('input').addEventListener('input', () => evalRow(tr));
+  });
+
+  // ── fase 4: ventas ──
+  $('cierreVentas').innerHTML = f4.ventas.length ? tabla(
+    ['Camión', 'Orden', 'Cliente', '#Simpli', '#Cantidad', '#Entregado', '#Facturado', 'Qué hacer'],
+    f4.ventas.map(v => `<tr><td><b>${v.cam}</b></td><td><b>${v.so}</b>${v.picking ? `<br><span style="color:var(--muted);font-size:11px">${v.picking}</span>` : ''}</td>
+      <td style="white-space:normal;max-width:220px">${v.cliente}${v.especial ? ' <span class="badge" title="Facturación especial: litros de la visita no confiables, se usa el pedido">🏭</span>' : ''}</td>
+      <td class="num">${L(v.simpli)}</td><td class="num">${L(v.cantidad)}</td><td class="num">${L(v.entregado)}</td><td class="num">${L(v.facturado)}</td>
+      <td style="white-space:normal;min-width:280px">${v.acciones.map((a, i) => `${v.acciones.length > 1 ? `<b>${i + 1}.</b> ` : ''}${a}`).join('<br>')}</td></tr>`))
+    : okMsg('Todas las entregas de hoy cuadran: Cantidad = Entregado = Facturado y sin salidas abiertas.');
+  const afPasadas = f4.a_facturar.filter(o => o.fecha_entrega && o.fecha_entrega <= C.hoy);
+  if (afPasadas.length) {
+    $('cierreVentas').innerHTML += `<h3 style="font-size:14px;margin:16px 0 8px">"Órdenes a facturar" con entrega hasta hoy (${afPasadas.length}) — deben quedar en 0</h3>` +
+      tabla(['Orden', 'Cliente', 'Camión', 'Entrega'], afPasadas.map(o => `<tr><td><b>${o.so}</b></td><td>${o.cliente}${o.especial ? ' 🏭' : ''}</td><td>${o.cam}</td><td>${fF(o.fecha_entrega)}</td></tr>`));
+  }
+
+  // ── fase 2: compras ──
+  const estF = c => c.factura_estado === 'posted' ? '<span class="ok">✓ contabilizada</span>'
+    : c.factura_estado === 'draft' ? '<span class="warn">vinculada, en borrador</span>'
+    : c.factura_estado === 'borrador_sin_vincular' ? '<b class="warn">borrador sin vincular → vincular a la OC</b>'
+    : '<span style="color:var(--muted)">sin factura aún</span>';
+  $('cierreCompras').innerHTML = f2.compras.length ? tabla(
+    ['Fecha', 'OC', 'Proveedor', 'Camión', '#Litros OC', '#Corrección', 'Recepción', 'Folio', '#Litros fact.', '#Total fact.', 'Factura'],
+    f2.compras.map(c => {
+      const dif = c.factura_litros != null && Math.abs(c.factura_litros - c.litros_real) > 10;
+      if (c.devuelta) return `<tr style="color:var(--muted)"><td>${fF(c.fecha)} ${c.hora}</td><td><s>${c.po}</s></td><td>${c.proveedor}</td><td>${c.cam}</td><td class="num">${L(c.litros_real)}</td><td></td><td colspan="5"><span class="warn">↩ recepción devuelta (OC duplicada) — no suma al camión; cancelarla para limpiar</span></td></tr>`;
+      return `<tr><td>${fF(c.fecha)} ${c.hora}</td><td><b>${c.po}</b></td><td>${c.proveedor}</td><td><b>${c.cam}</b></td>
+      <td class="num">${L(c.litros_real)}</td><td class="num">${c.correccion == null ? '—' : (c.correccion > 0 ? '+' : '') + c.correccion}</td>
+      <td>${c.recibida ? '<span class="ok">✓ recibida</span>' : '<b class="bad">sin recibir → Recibir productos › Validar</b>'}</td>
+      <td>${c.factura || '—'}</td><td class="num${dif ? ' bad' : ''}">${L(c.factura_litros)}</td><td class="num">${c.factura_total == null ? '—' : '$' + L(c.factura_total)}</td><td>${estF(c)}</td></tr>`;
+    })) : okMsg('Sin compras de diésel ayer ni hoy.');
+  if (f2.borradores_sueltos.length) {
+    $('cierreCompras').innerHTML += `<h3 style="font-size:14px;margin:16px 0 8px">Facturas en borrador que no calzan con ninguna OC (${f2.borradores_sueltos.length})</h3>` +
+      tabla(['Folio', 'Proveedor', 'Fecha', '#Litros', '#Total'], f2.borradores_sueltos.map(b => `<tr><td><b>${b.folio}</b></td><td>${b.proveedor}</td><td>${fF(b.fecha)}</td><td class="num">${L(b.litros)}</td><td class="num">$${L(b.total)}</td></tr>`)) +
+      '<div class="note">Borradores tipo "Del Giro" (monto global, sin litros) o de proveedores/cargas sin OC: identificar su carga en la CC y vincularlos a mano.</div>';
+  }
+
+  // ── fase 3: traspasos ──
+  $('cierreTraspasos').innerHTML = f3.traspasos.length ? tabla(
+    ['Traspaso', 'Estado', 'Fecha', 'Origen → Destino', '#Litros'],
+    f3.traspasos.map(t => `<tr><td><b>${t.nombre}</b></td><td>${{ draft: 'borrador', confirmed: 'esperando', assigned: 'listo para validar', waiting: 'esperando' }[t.estado] || t.estado}</td><td>${fF(t.fecha)}</td><td>${t.origen} → ${t.destino}</td><td class="num">${L(t.litros)}</td></tr>`)) +
+    '<div class="note">Los antiguos en borrador probablemente sobran: cancelarlos para que no ensucien la lista.</div>'
+    : okMsg('Sin traspasos pendientes.');
+
+  // ── fase 6: mañana ──
+  const exc = f6.por_aprobar.filter(o => o.excepcion);
+  let h6 = `<div class="kpi-grid" style="margin-bottom:12px">` +
+    kpi('Por aprobar (hasta mañana)', f6.por_aprobar.length, '', 'Ventas › Órdenes › Por aprobar') +
+    kpi('Validadas para ' + fF(f6.fecha), f6.validadas_manana, '', 'Órdenes a facturar con entrega mañana') +
+    kpi('Visitas en SimpliRoute', f6.visitas_manana, f6.validadas_manana && f6.visitas_manana !== f6.validadas_manana ? 'bad' : '', f6.validadas_manana && f6.validadas_manana === f6.visitas_manana ? 'mismo número ✓' : !f6.validadas_manana ? 'aún sin validar' : 'deben coincidir con las validadas') + '</div>';
+  h6 += exc.length ? `<h3 style="font-size:14px;margin:0 0 8px">⚠ Con excepción — no se entregan hasta aclarar (${exc.length})</h3>` +
+    tabla(['Orden', 'Cliente', 'Camión', 'Entrega', 'Excepción'], exc.map(o => `<tr><td><b>${o.so}</b></td><td>${o.cliente}</td><td>${o.cam}</td><td>${fF(o.fecha_entrega)}</td><td class="bad">${o.excepcion}</td></tr>`))
+    : okMsg('Ningún pedido por aprobar tiene excepción.');
+  $('cierreManana').innerHTML = h6;
+}
+
 // ---- entregas reales por camión (SimpliRoute, se actualiza sola) ----
 function renderSimpli(S) {
   const mm = h => { const [a, b] = h.split(':').map(Number); return a * 60 + b; };
@@ -625,6 +762,8 @@ function switchTab(t) {
   document.querySelectorAll('.vw-costos').forEach(e => e.hidden = t !== 'costos');
   document.querySelectorAll('.vw-oper').forEach(e => e.hidden = t !== 'oper');
   document.querySelectorAll('.vw-mant').forEach(e => e.hidden = t !== 'mant');
+  document.querySelectorAll('.vw-cierre').forEach(e => e.hidden = t !== 'cierre');
+  try { history.replaceState(null, '', t === 'costos' ? location.pathname : '#' + t); } catch (e) {}
   document.querySelectorAll('.tab').forEach(b => b.classList.toggle('active', b.dataset.tab === t));
 }
 
@@ -753,6 +892,8 @@ function renderJornada(S, CH) {
     <br>Fuente: API SimpliRoute (auto, cron diario) — reemplazó a la planilla como fuente de horas el 29-sep-2026; el chofer es el de las visitas reales.`;
 }
 
+// link directo a un tab: costos.html#cierre (para el equipo de cierre)
+if (['oper', 'mant', 'cierre'].includes(location.hash.slice(1))) switchTab(location.hash.slice(1));
 load().catch(e => {
   $('kpis').innerHTML = `<div class="kpi"><div class="label">Error</div><div class="value bad" style="font-size:15px">${e.message}</div></div>`;
   console.error(e);
