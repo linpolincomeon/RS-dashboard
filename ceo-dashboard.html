@@ -1174,34 +1174,51 @@ function renderRiesgo(){
         // original) corre igual. Odoo no sabe quién no pagó al factor: esta lista se llena
         // A MANO cuando el factor avisa un impago (estado de cuenta Go Capital / Security).
         const SINIESTRO_DIAS=60;
+        // Cruce quincenal (14 y 28) contra el Sheet Consolidado de factoring: entra toda
+        // factura vencida sin pagar con ≥15d de mora (umbral = etapa Corte+DICOM de la
+        // política). Los 12 casos "En mora" del cruce 22-sep salieron: el Consolidado los
+        // muestra Pagado (Hoja 8/5 eran snapshots viejos); Distribuidora Maule 50773 quedó
+        // siniestrada. Vencimientos y montos verificados 1:1 contra account.move (28-sep).
         const SINIESTRO_WATCH=[
             {name:'AGRICOLA TORREVAL LIMITADA', rut:'76347403-8', factor:'Go Capital / F. Security',
              facturas:[{n:'FAC 52420',vcto:'2026-06-27',monto:1425000},{n:'FAC 52596',vcto:'2026-07-10',monto:1426000}],
-             nota:'Caso 21-sep-2026: impago al factor detectado tarde'},
-            {name:"URAN ANTONIO LUNA DOMÍNGUEZ", rut:'', factor:'según Sheet factoring', facturas:[{n:'FAC 48530',vcto:'2025-12-30',monto:2958000}],
-             nota:'Cruce Sheet factoring 22-sep-2026: En mora con el factor, nunca siniestrada'},
-            {name:"TRANSPORTE SANTA ELENITA SPA", rut:'', factor:'según Sheet factoring', facturas:[{n:'FAC 48535',vcto:'2026-01-02',monto:974780}],
-             nota:'Cruce Sheet factoring 22-sep-2026: En mora con el factor, nunca siniestrada'},
-            {name:"HUGO PATRICIO CATALAN ZAVALLA", rut:'', factor:'según Sheet factoring', facturas:[{n:'FAC 50684',vcto:'2026-03-20',monto:4655001}],
-             nota:'Cruce Sheet factoring 22-sep-2026: En mora con el factor, nunca siniestrada'},
-            {name:"SOCIEDAD COMERCIAL LUIS PARRAGUEZ G E HIJOS LTDA", rut:'', factor:'según Sheet factoring', facturas:[{n:'FAC 50688',vcto:'2026-03-20',monto:956000}],
-             nota:'Cruce Sheet factoring 22-sep-2026: En mora con el factor, nunca siniestrada'},
-            {name:"ALFREDO ALFONSO OPAZO MUÑOZ", rut:'', factor:'según Sheet factoring', facturas:[{n:'FAC 50707',vcto:'2026-03-21',monto:1792000},{n:'FAC 50718',vcto:'2026-03-21',monto:1792000}],
-             nota:'Cruce Sheet factoring 22-sep-2026: En mora con el factor, nunca siniestrada'},
-            {name:"JULIO ENRIQUE RUBILAR ROMERO", rut:'', factor:'según Sheet factoring', facturas:[{n:'FAC 50711',vcto:'2026-03-21',monto:1814000}],
-             nota:'Cruce Sheet factoring 22-sep-2026: En mora con el factor, nunca siniestrada'},
-            {name:"DOMINGO SEGUNDO GALAZ QUEZADA", rut:'', factor:'según Sheet factoring', facturas:[{n:'FAC 50750',vcto:'2026-03-22',monto:942000}],
-             nota:'Cruce Sheet factoring 22-sep-2026: En mora con el factor, nunca siniestrada'},
-            {name:"CONSTRUCTORA LO BLANCO SPA", rut:'', factor:'según Sheet factoring', facturas:[{n:'FAC 50754',vcto:'2026-03-25',monto:926000}],
-             nota:'Cruce Sheet factoring 22-sep-2026: En mora con el factor, nunca siniestrada'},
-            {name:"AGRICOLA RIOJARA LIMITADA", rut:'', factor:'según Sheet factoring', facturas:[{n:'FAC 50760',vcto:'2026-03-25',monto:901000}],
-             nota:'Cruce Sheet factoring 22-sep-2026: En mora con el factor, nunca siniestrada'},
-            {name:"CLAUDIO AMARO LOYOLA", rut:'', factor:'según Sheet factoring', facturas:[{n:'FAC 50761',vcto:'2026-03-25',monto:926000}],
-             nota:'Cruce Sheet factoring 22-sep-2026: En mora con el factor, nunca siniestrada'},
-            {name:"NUEVO SUR SPA", rut:'', factor:'según Sheet factoring', facturas:[{n:'FAC 50770',vcto:'2026-03-25',monto:957000}],
-             nota:'Cruce Sheet factoring 22-sep-2026: En mora con el factor, nunca siniestrada'},
-            {name:"DISTRIBUIDORA MAULE SPA", rut:'', factor:'según Sheet factoring', facturas:[{n:'FAC 50773',vcto:'2026-03-25',monto:1366500}],
-             nota:'Cruce Sheet factoring 22-sep-2026: En mora con el factor, nunca siniestrada'}
+             nota:'Caso 21-sep-2026: impago al factor detectado tarde; sigue Pendiente Pago al 28-sep'},
+            {name:'SOCIEDAD AGRÍCOLA Y COMERCIAL SANTA ANA SPA', rut:'77234693-K', factor:'F. Security',
+             facturas:[{n:'FAC 52909',vcto:'2026-07-31',monto:1492700}],
+             nota:'Cruce 28-sep: 59d de mora con el factor — ÚLTIMO DÍA de ventana, siniestrar YA'},
+            {name:'Agroindustrial superfruit LIMITADA', rut:'76008900-1', factor:'Go Capital',
+             facturas:[{n:'FAC 53260',vcto:'2026-08-26',monto:2280001},{n:'FAC 53490',vcto:'2026-09-09',monto:2334000},{n:'FAC 53539',vcto:'2026-09-11',monto:1167000}],
+             nota:'Cruce 28-sep: 3 facturas impagas al factor (mora 17–33d)'},
+            {name:'EMPRESAS TUCAPEL S A', rut:'91083000-7', factor:'Go Capital',
+             facturas:[{n:'FAC 53322',vcto:'2026-08-28',monto:1832101}],
+             nota:'Cruce 28-sep: 31d de mora con el factor'},
+            {name:'ARRIGONI AMBIENTAL NFU SPA', rut:'77070464-2', factor:'Go Capital',
+             facturas:[{n:'FAC 53346',vcto:'2026-08-29',monto:1004000}],
+             nota:'Cruce 28-sep: 30d de mora con el factor'},
+            {name:'AGRICOLA EL ARRAYAN LIMITADA', rut:'76340501-K', factor:'Go Capital',
+             facturas:[{n:'FAC 53412',vcto:'2026-09-04',monto:2957500}],
+             nota:'Cruce 28-sep: 24d de mora con el factor'},
+            {name:'SOCIEDAD AGRICOLA SAN GERARDO LIMITADA', rut:'77750270-0', factor:'Go Capital',
+             facturas:[{n:'FAC 53448',vcto:'2026-09-06',monto:1171001}],
+             nota:'Cruce 28-sep: 22d de mora con el factor'},
+            {name:'M2 INGENIERÍA Y CONSTRUCCIÓN SPA', rut:'76852533-1', factor:'Go Capital',
+             facturas:[{n:'FAC 53465',vcto:'2026-09-06',monto:1210001}],
+             nota:'Cruce 28-sep: 22d de mora; cliente dice que paga el 30'},
+            {name:'AGRICOLA LA CAMPANA SPA', rut:'77601271-8', factor:'Go Capital',
+             facturas:[{n:'FAC 53552',vcto:'2026-09-11',monto:1048050}],
+             nota:'Cruce 28-sep: 17d de mora con el factor'},
+            {name:'AGRICOLA RIOJARA LIMITADA', rut:'77515700-3', factor:'Go Capital',
+             facturas:[{n:'FAC 53562',vcto:'2026-09-12',monto:1196073}],
+             nota:'Cruce 28-sep: 16d de mora con el factor'},
+            {name:'AGRICOLA LA SORPRESA SPA', rut:'76524397-1', factor:'Go Capital',
+             facturas:[{n:'FAC 53567',vcto:'2026-09-12',monto:1215000}],
+             nota:'Cruce 28-sep: 16d de mora con el factor'},
+            {name:'AGRICOLA Y COMERCIAL SANTA MAGDALENA', rut:'76511307-5', factor:'Go Capital',
+             facturas:[{n:'FAC 53576',vcto:'2026-09-13',monto:2302000}],
+             nota:'Cruce 28-sep: 15d de mora con el factor'},
+            {name:'CENTRAL FRUTICOLA LONTUE SPA', rut:'76957647-9', factor:'Go Capital',
+             facturas:[{n:'FAC 53581',vcto:'2026-09-13',monto:1792499}],
+             nota:'Cruce 28-sep: 15d de mora con el factor'}
         ];
         if(SINIESTRO_WATCH.length){
             const hoy=new Date(); hoy.setHours(0,0,0,0);
