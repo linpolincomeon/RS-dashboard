@@ -122,11 +122,11 @@
 
 <div class="card vw-oper" hidden>
   <h2>👷 Productividad de choferes — anatomía de la jornada</h2>
-  <div class="note" style="margin:0 0 12px">Desde la planilla de bodegas que llenan los choferes (<code>Bodegas_por_Camion_v2</code>), no desde Odoo. La jornada de cada camión se parte en tres tramos: <b>arranque</b> (INICIO → 1ª venta), <b>activo</b> (1ª → última venta) y <b>cola</b> (última venta → CIERRE). Arranque y cola son horas con el camión y el chofer en marcha sin facturar. Valores = mediana del día típico en la ventana <span id="chofRango"></span>.</div>
+  <div class="note" style="margin:0 0 12px">Con <b>horas GPS reales de SimpliRoute</b> (se actualiza sola cada mañana; el chofer sale de las visitas reales). La jornada medible: <b>arranque</b> (salida a ruta "En camino" → 1ª entrega) y <b>activo</b> (1ª → última entrega). Lo que pasa después de la última entrega (regreso, cierre) no es visible en Simpli. Valores = mediana del día típico en la ventana <span id="chofRango"></span>.</div>
   <div class="scroll"><table id="tablaChoferes"></table></div>
   <div class="leyenda">
-    <span><i class="act" style="background:var(--accent);opacity:.8"></i>Activo (vendiendo)</span>
-    <span><i class="muerto" style="background:repeating-linear-gradient(45deg,#dedad3,#dedad3 3px,#eeebe6 3px,#eeebe6 7px)"></i>Arranque y cola (sin vender)</span>
+    <span><i class="act" style="background:var(--accent);opacity:.8"></i>Activo (entregando)</span>
+    <span><i class="muerto" style="background:repeating-linear-gradient(45deg,#dedad3,#dedad3 3px,#eeebe6 3px,#eeebe6 7px)"></i>Arranque (sin entregar)</span>
   </div>
   <div id="chofNota" class="note"></div>
 </div>
@@ -174,9 +174,13 @@ async function load() {
   ]);
   const D = await dataRes.json();
   const P = await presRes.json();
-  if (chofRes.ok) renderChoferes(await chofRes.json());
+  const CH = chofRes.ok ? await chofRes.json() : null;   // solo aporta zona/cobertura por camión
   if (planRes.ok) renderPlanMantencion(await planRes.json(), D);
-  if (srRes.ok) renderSimpli(await srRes.json());
+  if (srRes.ok) {
+    const S = await srRes.json();
+    renderSimpli(S);
+    renderJornada(S, CH);
+  }
   if (cuadRes.ok) renderCuadratura(await cuadRes.json());
   else { $('cardCuadRutas').remove(); $('cardCuadLitros').remove(); }
 
@@ -629,69 +633,108 @@ function barra(c) {
   return `<div class="tl">${seg(c.inicio, c.primera_venta, 'muerto')}${seg(c.primera_venta, c.ultima_venta, 'act')}${seg(c.ultima_venta, c.fin, 'muerto')}</div>`;
 }
 
-function renderChoferes(C) {
+// Anatomía de la jornada con horas GPS de SimpliRoute (reemplazó a la planilla
+// el 29-sep-2026). CH (choferes-data.json) solo aporta zona/cobertura por camión.
+function renderJornada(S, CH) {
   const dd = iso => new Date(iso + 'T12:00').toLocaleDateString('es-CL', { day: 'numeric', month: 'short' });
-  $('chofRango').textContent = `${dd(C.desde)} – ${dd(C.hasta)}`;
+  const mmh = h => { const [a, b] = h.split(':').map(Number); return a * 60 + b; };
+  const med = a => { if (!a.length) return null; const s = [...a].sort((x, y) => x - y); return s[Math.floor((s.length - 1) / 2)]; };
 
-  const medibles = C.choferes.filter(c => c.confiable);
-  if (!medibles.length) return;
-  const mejor = medibles.reduce((a, b) => (b.litros_hora > a.litros_hora ? b : a), medibles[0]);
+  const zonas = {};
+  (((CH || {}).choferes) || []).forEach(c => { zonas[c.cam] = { zona: c.zona, cobertura: c.cobertura }; });
+  const pat = {};
+  (S.vehiculos || []).forEach(v => { pat[v.cam] = v.patente; });
+
+  const dias = (S.diario || []).filter(d => d.completadas > 0);
+  if (!dias.length) return;
+  const desde = dias.reduce((m, d) => (d.fecha < m ? d.fecha : m), S.hasta);
+  $('chofRango').textContent = `${dd(desde)} – ${dd(S.hasta)} (operación SimpliRoute)`;
+
+  const cams = {};
+  for (const d of dias) (cams[d.cam] = cams[d.cam] || []).push(d);
+
+  const filas = Object.entries(cams).map(([cam, ds]) => {
+    ds.sort((a, b) => b.fecha.localeCompare(a.fecha));
+    // días medibles: con salida a ruta marcada Y checkout posterior
+    const ch = ds.filter(d => d.salida && d.ultimo_checkout && mmh(d.ultimo_checkout) > mmh(d.salida));
+    const f = {
+      cam,
+      chofer: (ds.find(d => d.chofer) || {}).chofer || cam,
+      patente: pat[cam] || cam,
+      zona: (zonas[cam] || {}).zona || '—',
+      cobertura: (zonas[cam] || {}).cobertura || '',
+      nDias: ds.length,
+      entregasDia: ds.reduce((s, d) => s + d.completadas, 0) / ds.length,
+      litrosDia: Math.round(ds.reduce((s, d) => s + d.litros_entregados, 0) / ds.length),
+      entregaMed: Math.round(med(ds.map(d => d.litros_entregados / Math.max(d.completadas, 1))) || 0),
+      salida: med(ch.map(d => mmh(d.salida))),
+      p1: med(ch.map(d => mmh(d.primer_checkout))),
+      ultima: med(ch.map(d => mmh(d.ultimo_checkout))),
+      nHoras: ch.length,
+      horasTot: sum(ch.map(d => (mmh(d.ultimo_checkout) - mmh(d.salida)) / 60)),
+      litrosHoras: sum(ch.map(d => d.litros_entregados)),
+    };
+    f.jornadaH = f.nHoras ? f.horasTot / f.nHoras : null;
+    f.arranque = (f.salida != null && f.p1 != null && f.p1 >= f.salida) ? f.p1 - f.salida : null;
+    f.lph = f.horasTot > 0 ? Math.round(f.litrosHoras / f.horasTot) : null;
+    f.confiable = f.nHoras >= 3 && f.lph != null;
+    return f;
+  }).sort((a, b) => (b.lph || 0) - (a.lph || 0));
+
+  const medibles = filas.filter(f => f.confiable);
+  const mejor = medibles[0];
 
   let eje = '<div class="tl-eje">';
   for (let h = 6; h <= 21; h += 3) eje += `<span style="left:${pos(h * 60)}%">${h}:00</span>`;
   eje += '</div>';
 
-  let r = `<tr><th>Chofer</th><th>Zona</th><th class="num">Días</th><th>Inicio</th><th>1ª venta</th>
-    <th>Última</th><th>Cierre</th><th class="num">Jornada</th><th class="num">Sin vender</th>
+  let r = `<tr><th>Chofer</th><th>Zona</th><th class="num">Días</th><th>Salida ruta</th><th>1ª entrega</th>
+    <th>Última</th><th class="num">Jornada</th><th class="num">Arranque</th>
     <th style="min-width:280px">Jornada típica ${eje}</th>
-    <th class="num">Vtas/día</th><th class="num">L/entrega</th><th class="num">Litros/día</th><th class="num">Litros/h</th></tr>`;
+    <th class="num">Entr/día</th><th class="num">L/entrega</th><th class="num">Litros/día</th><th class="num">Litros/h</th></tr>`;
 
-  // los no medibles van igual en la tabla (sus litros y entregas sí son válidos),
-  // pero con las columnas de hora en blanco para no inventar una jornada
-  for (const c of C.choferes) {
-    const nom = `<td><b>${c.chofer}</b>${c.confiable ? '' : ' <span class="badge nobudget">sin horas</span>'}
-      <div style="color:var(--muted);font-size:11px">${c.patente}</div></td>
-      <td${c.cobertura ? ` title="Cobertura: ${c.cobertura}"` : ''}>${c.zona}${c.cobertura ? ' <span style="color:var(--muted)">ⓘ</span>' : ''}</td>
-      <td class="num">${c.dias_habiles}<div style="color:var(--muted);font-size:11px">de ${C.dias_habiles}</div></td>`;
-    const fin = `<td class="num">${c.ventas_dia.toFixed(1)}</td>
-      <td class="num">${CLP.format(c.entrega_med)}</td>
-      <td class="num">${CLP.format(c.litros_dia)}</td>`;
-    if (!c.confiable) {
-      r += `<tr>${nom}<td colspan="7" style="color:var(--muted);font-size:12px">
-        Carga las ventas a la planilla en bloque al final del día — sus horas no reflejan la operación real</td>
+  for (const f of filas) {
+    const nom = `<td><b>${f.chofer}</b>${f.confiable ? '' : ' <span class="badge nobudget">sin horas</span>'}
+      <div style="color:var(--muted);font-size:11px">${f.patente}</div></td>
+      <td${f.cobertura ? ` title="Cobertura: ${f.cobertura}"` : ''}>${f.zona}${f.cobertura ? ' <span style="color:var(--muted)">ⓘ</span>' : ''}</td>
+      <td class="num">${f.nDias}<div style="color:var(--muted);font-size:11px">días con entregas</div></td>`;
+    const fin = `<td class="num">${f.entregasDia.toFixed(1)}</td>
+      <td class="num">${CLP.format(f.entregaMed)}</td>
+      <td class="num">${CLP.format(f.litrosDia)}</td>`;
+    if (!f.confiable) {
+      r += `<tr>${nom}<td colspan="6" style="color:var(--muted);font-size:12px">
+        Sin suficientes días con "salida a ruta" marcada en la app (necesita ≥3) — pedirle que marque <b>En camino</b> al partir</td>
         ${fin}<td class="num">—</td></tr>`;
       continue;
     }
-    const muerto = c.arranque + c.cola;
-    const cls = c.activo_pct >= 0.75 ? 'ok' : (c.activo_pct >= 0.6 ? 'warn' : 'bad');
     r += `<tr>${nom}
-      <td>${hhmm(c.inicio)}</td><td>${hhmm(c.primera_venta)}</td>
-      <td>${hhmm(c.ultima_venta)}</td><td>${hhmm(c.fin)}</td>
-      <td class="num">${c.jornada_h.toFixed(1)} h</td>
-      <td class="num ${cls}">${dur(muerto)}<div style="color:var(--muted);font-size:11px">${Math.round(100 - c.activo_pct * 100)}% de la jornada</div></td>
-      <td>${barra(c)}</td>
+      <td>${hhmm(f.salida)}</td><td>${hhmm(f.p1)}</td><td>${hhmm(f.ultima)}</td>
+      <td class="num">${f.jornadaH.toFixed(1)} h</td>
+      <td class="num">${f.arranque != null ? dur(f.arranque) : '—'}</td>
+      <td>${barra({ inicio: f.salida, primera_venta: f.p1, ultima_venta: f.ultima, fin: f.ultima })}</td>
       ${fin}
-      <td class="num ${c.litros_hora >= mejor.litros_hora * 0.75 ? 'ok' : 'bad'}">${CLP.format(c.litros_hora)}</td></tr>`;
+      <td class="num ${f.lph >= mejor.lph * 0.75 ? 'ok' : 'bad'}">${CLP.format(f.lph)}</td></tr>`;
   }
   $('tablaChoferes').innerHTML = r;
 
-  // brecha: litros que se dejan de mover con las MISMAS horas de jornada ya pagadas
-  const brecha = medibles.filter(c => c.cam !== mejor.cam)
-    .map(c => ({ c, lts: (mejor.litros_hora - c.litros_hora) * c.jornada_h * c.dias_habiles }))
+  // brecha: litros que se dejan de mover con las MISMAS horas de ruta ya pagadas
+  const brecha = medibles.filter(f => f.cam !== mejor.cam)
+    .map(f => ({ f, lts: (mejor.lph - f.lph) * f.horasTot }))
     .filter(x => x.lts > 0)
     .sort((a, b) => b.lts - a.lts);
   const totalBrecha = sum(brecha.map(x => x.lts));
-  const noConf = C.choferes.filter(c => !c.confiable);
+  const noConf = filas.filter(f => !f.confiable);
 
   $('chofNota').innerHTML = `
-    <b>Brecha de productividad:</b> al ritmo de ${CLP.format(mejor.litros_hora)} litros/hora de ${mejor.corto},
+    <b>Brecha de productividad:</b> al ritmo de ${CLP.format(mejor.lph)} litros/hora de ${mejor.chofer},
     el resto habría movido <b>${CLP.format(Math.round(totalBrecha))} litros más</b> en la ventana
-    (${brecha.map(x => `${x.c.corto} ${CLP.format(Math.round(x.lts / 1000))}k`).join(' · ')})
-    con exactamente las mismas horas de jornada que ya se pagan. Ojo: parte de la brecha es distancia de la zona, no solo gestión.
-    ${noConf.length ? `<br><b>Filas "sin horas"</b> (${noConf.map(c => c.corto).join(', ')}): registran todas las ventas del día
-    de una sola vez al cerrar, así que no se les puede medir arranque ni cola. Sus litros y entregas sí son válidos y quedan
-    fuera del cálculo de brecha. Para medirlos hay que pedirles que carguen cada venta en el momento.` : ''}
-    <br>Fuente: ${C.fuente} · ventana de ${C.dias_habiles} días hábiles · actualizar con <code>python3 extract_choferes.py &lt;xlsx&gt;</code>.`;
+    (${brecha.map(x => `${x.f.chofer} ${CLP.format(Math.round(x.lts / 1000))}k`).join(' · ')})
+    con las mismas horas de ruta ya pagadas. Ojo: parte de la brecha es distancia de la zona, no solo gestión.
+    ${noConf.length ? `<br><b>Filas "sin horas"</b> (${noConf.map(f => f.chofer).join(', ')}): no marcan
+    <b>En camino</b> al salir, así que no hay hora de inicio GPS. Sus litros y entregas sí son válidos y quedan
+    fuera del cálculo de brecha.` : ''}
+    <br><b>Jornada</b> = salida a ruta → última entrega con GPS; el regreso/cierre posterior no es visible en Simpli.
+    Fuente: API SimpliRoute (auto, cron diario) — reemplazó a la planilla de bodegas el 29-sep-2026; el chofer es el de las visitas reales.`;
 }
 
 load().catch(e => {
