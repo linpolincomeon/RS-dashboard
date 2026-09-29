@@ -655,8 +655,11 @@ function renderJornada(S, CH) {
 
   const filas = Object.entries(cams).map(([cam, ds]) => {
     ds.sort((a, b) => b.fecha.localeCompare(a.fecha));
-    // días medibles: con salida a ruta marcada Y checkout posterior
-    const ch = ds.filter(d => d.salida && d.ultimo_checkout && mmh(d.ultimo_checkout) > mmh(d.salida));
+    // días medibles: con salida a ruta marcada Y checkout posterior. Salidas
+    // antes de las 05:00 son ruido (rutas iniciadas en la app a medianoche
+    // por quien planifica, ej. TY 01:00 el 24-sep) — fuera.
+    const ch = ds.filter(d => d.salida && d.ultimo_checkout &&
+      mmh(d.salida) >= 300 && mmh(d.ultimo_checkout) > mmh(d.salida));
     const f = {
       cam,
       chofer: (ds.find(d => d.chofer) || {}).chofer || cam,
@@ -678,6 +681,13 @@ function renderJornada(S, CH) {
     f.arranque = (f.salida != null && f.p1 != null && f.p1 >= f.salida) ? f.p1 - f.salida : null;
     f.lph = f.horasTot > 0 ? Math.round(f.litrosHoras / f.horasTot) : null;
     f.confiable = f.nHoras >= 3 && f.lph != null;
+    // outliers (pedido Pauline 29-sep): el día más corto y más largo, y la
+    // entrega más tardía de la ventana — la mediana esconde los días largos
+    const js = ch.map(d => ({ fecha: d.fecha, j: mmh(d.ultimo_checkout) - mmh(d.salida) }));
+    f.jMin = js.length ? js.reduce((a, b) => (b.j < a.j ? b : a)) : null;
+    f.jMax = js.length ? js.reduce((a, b) => (b.j > a.j ? b : a)) : null;
+    const ues = ds.filter(d => d.ultimo_checkout).map(d => ({ fecha: d.fecha, m: mmh(d.ultimo_checkout) }));
+    f.ueMax = ues.length ? ues.reduce((a, b) => (b.m > a.m ? b : a)) : null;
     return f;
   }).sort((a, b) => (b.lph || 0) - (a.lph || 0));
 
@@ -707,9 +717,11 @@ function renderJornada(S, CH) {
         ${fin}<td class="num">—</td></tr>`;
       continue;
     }
+    const fCorta = iso => iso.slice(8, 10) + '-' + iso.slice(5, 7);
     r += `<tr>${nom}
-      <td>${hhmm(f.salida)}</td><td>${hhmm(f.p1)}</td><td>${hhmm(f.ultima)}</td>
-      <td class="num">${f.jornadaH.toFixed(1)} h</td>
+      <td>${hhmm(f.salida)}</td><td>${hhmm(f.p1)}</td>
+      <td>${hhmm(f.ultima)}${f.ueMax ? `<div style="color:var(--muted);font-size:11px">máx ${hhmm(f.ueMax.m)} (${fCorta(f.ueMax.fecha)})</div>` : ''}</td>
+      <td class="num">${f.jornadaH.toFixed(1)} h${f.jMin && f.jMax ? `<div style="color:var(--muted);font-size:11px">${dur(f.jMin.j)} – ${dur(f.jMax.j)}</div>` : ''}</td>
       <td class="num">${f.arranque != null ? dur(f.arranque) : '—'}</td>
       <td>${barra({ inicio: f.salida, primera_venta: f.p1, ultima_venta: f.ultima, fin: f.ultima })}</td>
       ${fin}
@@ -733,8 +745,12 @@ function renderJornada(S, CH) {
     ${noConf.length ? `<br><b>Filas "sin horas"</b> (${noConf.map(f => f.chofer).join(', ')}): no marcan
     <b>En camino</b> al salir, así que no hay hora de inicio GPS. Sus litros y entregas sí son válidos y quedan
     fuera del cálculo de brecha.` : ''}
-    <br><b>Jornada</b> = salida a ruta → última entrega con GPS; el regreso/cierre posterior no es visible en Simpli.
-    Fuente: API SimpliRoute (auto, cron diario) — reemplazó a la planilla de bodegas el 29-sep-2026; el chofer es el de las visitas reales.`;
+    <br><b>⚠ La jornada GPS es un PISO, no la jornada completa:</b> termina en la última entrega — el regreso, la descarga
+    y el cierre de bodega vienen después y Simpli no los ve. Cruce contra la planilla de bodegas (14–28 sep): el CIERRE
+    reportado llega en mediana entre +0,8 h (PH) y +5,0 h (TY) después de la última entrega — aunque varios cierres se
+    reportan en bloque de noche, así que tampoco son hora exacta. Los sub-valores grises muestran el día más corto/largo
+    y la entrega más tardía de la ventana (la mediana esconde los días largos).
+    <br>Fuente: API SimpliRoute (auto, cron diario) — reemplazó a la planilla como fuente de horas el 29-sep-2026; el chofer es el de las visitas reales.`;
 }
 
 load().catch(e => {
