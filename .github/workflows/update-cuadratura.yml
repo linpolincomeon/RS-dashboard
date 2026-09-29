@@ -2,10 +2,13 @@ name: Update Cuadratura Odoo-SimpliRoute
 
 on:
   schedule:
-    # Cada hora en jornada laboral, lun-sáb. Cron es UTC fijo:
+    # Cada 30 min en jornada laboral, lun-sáb. Cron es UTC fijo:
     # 11-21 UTC = 08:00-18:00 Chile en verano (sep-abr) / 07:00-17:00 en invierno.
-    # Minuto 37: no choca con los extractores nocturnos ni con simpliroute (09:13).
-    - cron: '37 11-21 * * 1-6'
+    # ⚠ GitHub DESCARTA la mayoría de los schedules frecuentes (auditado 29-sep:
+    # de 11 corridas/día pedidas ejecutaba 2-3, y ninguna antes de ~12:00 Chile).
+    # Por eso se piden 22 intentos/día: caen más y más temprano. Si aun así el
+    # dato está viejo, correrlo a mano: Actions → este workflow → Run workflow.
+    - cron: '7,37 11-21 * * 1-6'
   workflow_dispatch:
 
 permissions:
