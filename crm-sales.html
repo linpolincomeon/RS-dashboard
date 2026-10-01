@@ -1578,6 +1578,10 @@ function renderFidelizacion() {
     document.getElementById('noNewLost').style.display = 'block';
   } else {
     document.getElementById('noNewLost').style.display = 'none';
+    // Cruce con el remate (pedido Pauline 01-oct): si el perdido ya fue asignado
+    // a un ejecutivo (tabla Clientes Asignados, tracking 5 semanas), tag \uD83C\uDFAF.
+    const _asigPorCliente = {};
+    (D.asignaciones || []).forEach(a => { _asigPorCliente[norm(a.cliente || '')] = a; });
     newLost.forEach(c => {
       const l = c.avg_monthly_litros || 0;
       const lTag = l >= 5000 ? '<span style="color:var(--red);font-weight:700">' + fL(l) + '</span>'
@@ -1587,7 +1591,11 @@ function renderFidelizacion() {
       const noteHtml = c.last_note ? '<span style="font-size:11px;color:var(--dim)">' + H(c.last_note) + '</span>' : '<span style="color:var(--dim)">\u2014</span>';
       const tr = document.createElement('tr');
       const fechaCell = c.churn_mes ? '<span class="tag tag-y">churn ' + H(c.churn_mes) + '</span>' : (c.last_update || '\u2014');
-      tr.innerHTML = '<td>' + priority + '</td><td class="bold">' + H(c.name) + '</td><td>' + H(c.zona || '\u2014') + '</td><td>' + lTag + '</td><td>' + H(c.user || '\u2014') + '</td><td>' + fechaCell + '</td><td style="max-width:260px;white-space:normal">' + noteHtml + '</td>';
+      const _asig = _asigPorCliente[norm(c.name || '')];
+      const asigTag = _asig
+        ? ' <span class="tag tag-g" title="asignado el ' + H(_asig.fecha || '?') + '">\uD83C\uDFAF ' + H((_asig.ejecutivo || '').split(' ')[0]) + '</span>'
+        : '';
+      tr.innerHTML = '<td>' + priority + '</td><td class="bold">' + H(c.name) + asigTag + '</td><td>' + H(c.zona || '\u2014') + '</td><td>' + lTag + '</td><td>' + H(c.user || '\u2014') + '</td><td>' + fechaCell + '</td><td style="max-width:260px;white-space:normal">' + noteHtml + '</td>';
       nlb.appendChild(tr);
     });
   }
@@ -1670,23 +1678,29 @@ function renderFidelizacion() {
 function renderRecuperadosMes() {
   const cont = document.getElementById('recuperadosMesContainer');
   if (!cont) return;
-  const rec = D.recuperados_mes || [];
+  // Semanal jue-mié (pedido Pauline 01-oct, la reu es semanal): fecha desc con
+  // bandas por semana ENAP — la semana recién cerrada queda arriba el jueves.
+  const rec = (D.recuperados_mes || []).slice().sort((a, b) => (b.fecha || '').localeCompare(a.fecha || ''));
   const totalLpm = rec.reduce((s, c) => s + (c.avg_monthly_litros || 0), 0);
-  let h = '<div class="sec"><div class="sec-h"><h2>♻️ Recuperados del Mes</h2>'
-    + '<span style="font-size:12px;color:var(--dim)">' + rec.length + ' clientes · '
+  let h = '<div class="sec"><div class="sec-h"><h2>♻️ Recuperados por Semana</h2>'
+    + '<span style="font-size:12px;color:var(--dim)">últimas 4 semanas (jue-mié) · ' + rec.length + ' clientes · '
     + Math.round(totalLpm).toLocaleString('es-CL') + ' L/mes históricos recuperados</span></div>'
     + '<div class="sec-b" style="padding:0;overflow-x:auto">'
     + '<div style="padding:12px 16px;border-left:3px solid var(--green);font-size:12px;color:var(--dim);line-height:1.6">'
-    + 'Detección por facturas: compró este mes tras ≥90 días sin comprar (Perdido si llevaba ≥270d). '
+    + 'Detección por facturas: compró tras ≥90 días sin comprar (Perdido si llevaba ≥270d). '
     + 'No depende del CRM — incluye clientes sin lead o con lead sin actualizar.</div>';
   if (rec.length === 0) {
-    h += '<div class="nodata">Sin recuperados este mes</div>';
+    h += '<div class="nodata">Sin recuperados en las últimas 4 semanas</div>';
   } else {
+    const enapWk = f => { const d = new Date((f || '2000-01-01') + 'T12:00:00'); const diff = (d.getDay() - 4 + 7) % 7; d.setDate(d.getDate() - diff); return d.toISOString().slice(0, 10); };
+    let _wkP = null, _smb = false;
     h += '<table><thead><tr><th>Cliente</th><th>Zona</th><th>Origen</th><th style="text-align:right">Sin comprar</th><th>Volvió el</th><th style="text-align:right" title="Litros ÷ meses con compra (no ventana fija)">Prom. Mensual</th><th>Responsable</th></tr></thead><tbody>';
     rec.forEach(c => {
       const og = c.origen === 'Perdido'
         ? '<span class="tag tag-r">Perdido</span>' : '<span class="tag tag-y">Durmiente</span>';
-      h += '<tr><td class="bold">' + H(c.name) + '</td><td>' + H(c.zona || '—') + '</td><td>' + og + '</td>'
+      const _wk = enapWk(c.fecha);
+      if (_wk !== _wkP) { if (_wkP !== null) _smb = !_smb; _wkP = _wk; }
+      h += '<tr' + (_smb ? ' style="background:#f2f1ee"' : '') + '><td class="bold">' + H(c.name) + '</td><td>' + H(c.zona || '—') + '</td><td>' + og + '</td>'
         + '<td style="text-align:right">' + (c.gap || 0) + 'd</td><td>' + (c.fecha || '—') + '</td>'
         + '<td style="text-align:right">' + fL(c.avg_monthly_litros || 0) + '</td>'
         + '<td style="font-size:12px">' + H(c.user || '—') + '</td></tr>';

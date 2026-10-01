@@ -2156,14 +2156,15 @@ def extract_rescued_clients(models, uid):
 # recuperables activos. Top 50 por volumen 2025.
 # ==============================================================
 def extract_recuperados_mes(models, uid):
-    """Recuperados del mes por FACTURAS, no por leads CRM: cliente que facturó
-    este mes tras >=90 días sin comprar. Origen Perdido si el gap era >=270d,
-    Durmiente si no. Inmune a los 3 huecos del detector por leads (reporte
-    Madelaine 16-sep: rescates de Toro invisibles): (a) filtro CS del frontend,
-    (b) lead ya movido a Ganado, (c) cliente sin lead (cartera antigua)."""
+    """Recuperados por FACTURAS, no por leads CRM: cliente que facturó tras
+    >=90 días sin comprar. Origen Perdido si el gap era >=270d, Durmiente si no.
+    Ventana: últimas 4 SEMANAS (la reunión es semanal jue-mié, Pauline 01-oct —
+    con ventana de mes calendario la tabla partía vacía cada día 1). Inmune a
+    los 3 huecos del detector por leads (reporte Madelaine 16-sep): (a) filtro
+    CS del frontend, (b) lead ya movido a Ganado, (c) cliente sin lead."""
     today = datetime.now().date()
-    m_start = today.replace(day=1)
-    print("\nExtracting recuperados del mes (por facturas)...")
+    m_start = today - timedelta(days=28)
+    print("\nExtracting recuperados últimas 4 semanas (por facturas)...")
     cur = sr(models, uid, "account.move", [
         ["move_type", "=", "out_invoice"], ["state", "=", "posted"],
         ["invoice_date", ">=", fmt(m_start)],
@@ -2217,7 +2218,7 @@ def extract_recuperados_mes(models, uid):
                     "fecha": r["fecha"], "gap": r["gap"], "origen": r["origen"],
                     "avg_monthly_litros": avg.get(r["partner_id"], 0)})
     out.sort(key=lambda x: -x["avg_monthly_litros"])
-    print(f"  Recuperados del mes (facturas): {len(out)}")
+    print(f"  Recuperados últimas 4 semanas (facturas): {len(out)}")
     return out
 
 
@@ -3626,10 +3627,13 @@ def extract_asignaciones(models, uid):
                      "&", ["res_model", "=", "crm.lead"], ["res_id", "in", _leads_pid.get(r["pid"]) or [0]],
                      ["write_date", ">=", r["fecha"] + " 00:00:00"]]
             for a0 in sr(models, uid, "mail.activity", dom_a,
-                         ["activity_type_id", "summary", "write_date", "user_id"], limit=10, order="write_date asc"):
+                         ["activity_type_id", "summary", "note", "write_date", "user_id"], limit=10, order="write_date asc"):
                 _txt = (safe_name(a0.get("activity_type_id")) or "Actividad")
-                if a0.get("summary"):
-                    _txt += ": " + a0["summary"]
+                # el texto puede venir en summary O en note (Joaquin escribe en
+                # la nota de la actividad, caso El Membrillo 30-sep)
+                _det = a0.get("summary") or strip_html(a0.get("note") or "").strip()
+                if _det:
+                    _txt += ": " + _det
                 if not any(x in _txt.lower() for x in _ruido_a):
                     gests.append(((a0.get("write_date") or "")[:10], _txt[:150],
                                   safe_name(a0.get("user_id")) if a0.get("user_id") else ""))
