@@ -2226,8 +2226,11 @@ function renderMesVencido(){
       var desv=meta>0?Math.round(real/meta*100):0;
       var dc=desv>=100?'tag-g':desv>=60?'tag-y':'tag-r';
       var mr=m.margin_retail_pct||0, mv=m.margin_volume_pct||0;
-      var mrc=mr>=12?'tag-g':mr>=8?'tag-y':'tag-r';
-      var mvc=mv>=9?'tag-g':mv>=6?'tag-y':'tag-r';
+      // Metas vigentes (comité 13-ago): retail 8,5% · volumen 6% — el semáforo
+      // quedó con las viejas 12%/9% y pintaba amarillo a meses SOBRE la meta
+      var _mtR=(D.company_goals||{}).margen_retail||8.5, _mtV=(D.company_goals||{}).margen_volumen||6;
+      var mrc=mr>=_mtR?'tag-g':mr>=_mtR-1.5?'tag-y':'tag-r';
+      var mvc=mv>=_mtV?'tag-g':mv>=_mtV-1?'tag-y':'tag-r';
       h+='<tr'+(m.parcial?' style="background:var(--accent-light,#fdeee9)"':'')+'>'
         +'<td class="bold">'+H(m.label||'')+(m.parcial?' *':'')+'</td>'
         +'<td class="r">'+fL(meta)+'</td>'
