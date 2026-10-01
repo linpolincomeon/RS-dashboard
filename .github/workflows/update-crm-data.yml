@@ -2,8 +2,8 @@ name: Update CRM Dashboard Data
 on:
   schedule:
     - cron: '13 1 * * *'   # 22:13 Chile (verano) / 21:13 (invierno) — minuto impar para esquivar la cola de GitHub
-    - cron: '0 14 * * 5'    # VIERNES — 11:00 Chile desde el cambio de hora (era 10:00 en invierno)
-    - cron: '50 14 * * 5'   # VIERNES — 11:50 Chile desde el cambio de hora (era 10:50 en invierno)
+    - cron: '7 12 * * 4'    # JUEVES 09:07 Chile (verano) — reunión de ventas movida PERMANENTE a jueves 10:00 (Pauline 01-oct)
+    - cron: '47 12 * * 4'   # JUEVES 09:47 Chile (verano) — refresco final ~13 min antes de la reunión
   workflow_dispatch:
 permissions:
   contents: write
