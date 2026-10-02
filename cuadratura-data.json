@@ -1,11 +1,11 @@
 {
- "generated_utc": "2026-10-02T16:35+00:00",
+ "generated_utc": "2026-10-02T20:56+00:00",
  "hoy": "2026-10-02",
  "desde": "2026-09-26",
  "rutas": {
   "pendientes": [
    {
-    "picking": "VD/OUT/01736",
+    "picking": "TJVS/OUT/01972",
     "so": "S37149",
     "cliente": "Sociedad Agricola Ñilhue 2030, Luis Moraga",
     "camion": "VDKT-95",
@@ -13,36 +13,14 @@
     "programado": "01-10 20:15",
     "atrasado": true,
     "estado": "ruteada",
-    "visita_status": "pending"
-   },
-   {
-    "picking": "PYHK/OUT/01426",
-    "so": "S37163",
-    "cliente": "LUIS ALBERTO IBARRA CARRILLO, MANUEL ORELLANA, LUIS IBARRA TALCA",
-    "camion": "PYHK-28",
-    "litros": 1000,
-    "programado": "02-10 10:53",
-    "atrasado": false,
-    "estado": "ruteada",
-    "visita_status": "pending"
-   },
-   {
-    "picking": "PHXC/OUT/01730",
-    "so": "S37165",
-    "cliente": "ALEX PRADO FRUTAS Y TRANSPORTES SPA, ALEX PRADO",
-    "camion": "PHXC-44",
-    "litros": 1800,
-    "programado": "02-10 12:17",
-    "atrasado": false,
-    "estado": "ruteada",
-    "visita_status": "pending"
+    "visita_status": "failed"
    }
   ],
   "huerfanas": [],
   "sin_ref": [],
   "resumen": {
-   "total": 3,
-   "ruteadas": 3,
+   "total": 1,
+   "ruteadas": 1,
    "ruteadas_manana": 0,
    "sin_ruta": 0,
    "huerfanas": 0
@@ -50,6 +28,34 @@
  },
  "litros": {
   "por_so": [
+   {
+    "so": "S37165",
+    "fecha": "2026-10-02",
+    "cliente": "ALEX PRADO FRUTAS Y TRANSPORTES SPA",
+    "camion": "VDKT-95",
+    "especial": false,
+    "parcial": false,
+    "visitas": 1,
+    "pedido": 1800,
+    "entregado": 1800,
+    "facturado": 0,
+    "facturas": [],
+    "estado": "por_facturar"
+   },
+   {
+    "so": "S37163",
+    "fecha": "2026-10-02",
+    "cliente": "LUIS ALBERTO IBARRA CARRILLO",
+    "camion": "TYDG-23",
+    "especial": false,
+    "parcial": true,
+    "visitas": 1,
+    "pedido": 1000,
+    "entregado": 1666,
+    "facturado": 0,
+    "facturas": [],
+    "estado": "por_facturar"
+   },
    {
     "so": "S37162",
     "fecha": "2026-10-02",
@@ -2188,11 +2194,11 @@
   "dias": [
    {
     "fecha": "2026-10-02",
-    "entregas": 18,
-    "entregado": 21800,
+    "entregas": 20,
+    "entregado": 25266,
     "facturado": 7650,
-    "por_facturar": 14150,
-    "sin_factura": 12
+    "por_facturar": 17616,
+    "sin_factura": 14
    },
    {
     "fecha": "2026-10-01",
@@ -2243,8 +2249,8 @@
     "sin_factura": 0
    }
   ],
-  "por_facturar_total": 23640,
-  "entregado_hoy": 21800,
+  "por_facturar_total": 27106,
+  "entregado_hoy": 25266,
   "facturado_hoy": 7650,
   "fuera_simpli": []
  },
@@ -2286,7 +2292,15 @@
      "factura_litros": 15033
     }
    ],
-   "borradores_sueltos": [],
+   "borradores_sueltos": [
+    {
+     "folio": "850914",
+     "proveedor": "ENAP REFINERIAS S.A.",
+     "fecha": "2026-10-02",
+     "total": 15731467,
+     "litros": 10000
+    }
+   ],
    "sin_recibir": 0
   },
   "fase3": {
@@ -2328,30 +2342,12 @@
   "fase4": {
    "salidas": [
     {
-     "picking": "VD/OUT/01736",
+     "picking": "TJVS/OUT/01972",
      "so": "S37149",
      "cliente": "Sociedad Agricola Ñilhue 2030, Luis Moraga",
-     "cam": "VD",
+     "cam": "TJ",
      "fecha": "2026-10-01",
      "litros": 1000,
-     "entregada_simpli": false
-    },
-    {
-     "picking": "PYHK/OUT/01426",
-     "so": "S37163",
-     "cliente": "LUIS ALBERTO IBARRA CARRILLO, MANUEL ORELLANA, LUIS IBARRA TALCA",
-     "cam": "PY",
-     "fecha": "2026-10-02",
-     "litros": 1000,
-     "entregada_simpli": false
-    },
-    {
-     "picking": "PHXC/OUT/01730",
-     "so": "S37165",
-     "cliente": "ALEX PRADO FRUTAS Y TRANSPORTES SPA, ALEX PRADO",
-     "cam": "PH",
-     "fecha": "2026-10-02",
-     "litros": 1800,
      "entregada_simpli": false
     }
    ],
@@ -2381,26 +2377,6 @@
      ]
     },
     {
-     "so": "S37165",
-     "cliente": "ALEX PRADO FRUTAS Y TRANSPORTES SPA",
-     "especial": false,
-     "cam": "PH",
-     "cam_simpli": [],
-     "cam_odoo": [],
-     "picking": "PHXC/OUT/01730",
-     "fecha_entrega": "2026-10-02",
-     "simpli": null,
-     "cantidad": 1800,
-     "entregado": 0,
-     "facturado": 0,
-     "problemas": [
-      "sin_entrega"
-     ],
-     "acciones": [
-      "Salida PHXC/OUT/01730 abierta pero SimpliRoute no la muestra entregada: si no salió, reprogramar; si salió, validar"
-     ]
-    },
-    {
      "so": "S37150",
      "cliente": "SUGAL CHILE LIMITADA",
      "especial": true,
@@ -2422,26 +2398,6 @@
      ],
      "acciones": [
       "Facturar 1.100 L (Sugal: revisar en Ventas)"
-     ]
-    },
-    {
-     "so": "S37163",
-     "cliente": "LUIS ALBERTO IBARRA CARRILLO",
-     "especial": false,
-     "cam": "PY",
-     "cam_simpli": [],
-     "cam_odoo": [],
-     "picking": "PYHK/OUT/01426",
-     "fecha_entrega": "2026-10-02",
-     "simpli": null,
-     "cantidad": 1000,
-     "entregado": 0,
-     "facturado": 0,
-     "problemas": [
-      "sin_entrega"
-     ],
-     "acciones": [
-      "Salida PYHK/OUT/01426 abierta pero SimpliRoute no la muestra entregada: si no salió, reprogramar; si salió, validar"
      ]
     },
     {
@@ -2517,6 +2473,26 @@
      ]
     },
     {
+     "so": "S37149",
+     "cliente": "Sociedad Agricola Ñilhue 2030",
+     "especial": false,
+     "cam": "TJ",
+     "cam_simpli": [],
+     "cam_odoo": [],
+     "picking": "TJVS/OUT/01972",
+     "fecha_entrega": "2026-10-02",
+     "simpli": null,
+     "cantidad": 1000,
+     "entregado": 0,
+     "facturado": 0,
+     "problemas": [
+      "sin_entrega"
+     ],
+     "acciones": [
+      "Salida TJVS/OUT/01972 abierta pero SimpliRoute no la muestra entregada: si no salió, reprogramar; si salió, validar"
+     ]
+    },
+    {
      "so": "S37112",
      "cliente": "DOMINGO ENRIQUE TORRES VIELMA",
      "especial": false,
@@ -2543,27 +2519,38 @@
      ]
     },
     {
-     "so": "S37149",
-     "cliente": "Sociedad Agricola Ñilhue 2030",
+     "so": "S37163",
+     "cliente": "LUIS ALBERTO IBARRA CARRILLO",
      "especial": false,
-     "cam": "VD",
-     "cam_simpli": [],
-     "cam_odoo": [],
-     "picking": "VD/OUT/01736",
+     "cam": "TY",
+     "cam_simpli": [
+      "TY"
+     ],
+     "cam_odoo": [
+      "TY"
+     ],
+     "picking": null,
      "fecha_entrega": "2026-10-02",
-     "simpli": null,
+     "simpli": 1666,
      "cantidad": 1000,
-     "entregado": 0,
-     "facturado": 0,
+     "entregado": 1666,
+     "facturado": 1666,
      "problemas": [
-      "sin_entrega"
+      "cantidad"
      ],
      "acciones": [
-      "Salida VD/OUT/01736 abierta pero SimpliRoute no la muestra entregada: si no salió, reprogramar; si salió, validar"
+      "Subir Cantidad de 1.000 a 1.666 L"
      ]
     }
    ],
    "a_facturar": [
+    {
+     "so": "S37115",
+     "cliente": "SOCIEDAD AGRICOLA SANTA TERESA",
+     "cam": "SH",
+     "fecha_entrega": "2026-10-01",
+     "especial": false
+    },
     {
      "so": "S37096",
      "cliente": "SOCIEDAD AGRICOLA SANTA ROSA",
@@ -2575,13 +2562,6 @@
      "so": "S37112",
      "cliente": "DOMINGO ENRIQUE TORRES VIELMA",
      "cam": "TY",
-     "fecha_entrega": "2026-10-01",
-     "especial": false
-    },
-    {
-     "so": "S37115",
-     "cliente": "SOCIEDAD AGRICOLA SANTA TERESA",
-     "cam": "SH",
      "fecha_entrega": "2026-10-01",
      "especial": false
     },
@@ -2600,13 +2580,6 @@
      "especial": true
     },
     {
-     "so": "S37163",
-     "cliente": "LUIS ALBERTO IBARRA CARRILLO",
-     "cam": "PY",
-     "fecha_entrega": "2026-10-02",
-     "especial": false
-    },
-    {
      "so": "S37094",
      "cliente": "LA FEÑA SPA",
      "cam": "TJ",
@@ -2614,9 +2587,9 @@
      "especial": false
     },
     {
-     "so": "S37165",
-     "cliente": "ALEX PRADO FRUTAS Y TRANSPORTES SPA",
-     "cam": "PH",
+     "so": "S37163",
+     "cliente": "LUIS ALBERTO IBARRA CARRILLO",
+     "cam": "TY",
      "fecha_entrega": "2026-10-02",
      "especial": false
     },
@@ -2635,7 +2608,7 @@
      "especial": false
     }
    ],
-   "entregadas_hoy": 19,
+   "entregadas_hoy": 21,
    "bodega_ventana": 0,
    "revisadas_ventana": 139,
    "salidas_entregadas": 0
@@ -2679,35 +2652,35 @@
     },
     {
      "cam": "TY",
-     "odoo": -1500,
+     "odoo": -3166,
      "ajuste": -1400,
-     "esperado": -2900,
-     "ventas_simpli_hoy": 2900
+     "esperado": -4566,
+     "ventas_simpli_hoy": 4566
     },
     {
      "cam": "VD",
-     "odoo": 1800,
+     "odoo": 0,
      "ajuste": 0,
-     "esperado": 1800,
-     "ventas_simpli_hoy": 5300
+     "esperado": 0,
+     "ventas_simpli_hoy": 7100
     }
    ]
   },
   "fase6": {
    "por_aprobar": [
     {
-     "so": "S30777",
-     "cliente": "EL PARRON SPA",
-     "cam": "TJ",
-     "fecha_entrega": "2026-05-12",
-     "excepcion": "No tiene Línea de Crédito Aprobada"
-    },
-    {
      "so": "S30784",
      "cliente": "EL PARRON SPA",
      "cam": "TJ",
      "fecha_entrega": "2026-05-12",
      "excepcion": ""
+    },
+    {
+     "so": "S30777",
+     "cliente": "EL PARRON SPA",
+     "cam": "TJ",
+     "fecha_entrega": "2026-05-12",
+     "excepcion": "No tiene Línea de Crédito Aprobada"
     },
     {
      "so": "S31022",
@@ -2752,6 +2725,13 @@
      "excepcion": ""
     },
     {
+     "so": "S36987",
+     "cliente": "DIOGENES GERMAN CONCHA CONCHA",
+     "cam": "PY",
+     "fecha_entrega": "2026-09-28",
+     "excepcion": ""
+    },
+    {
      "so": "S36883",
      "cliente": "SUGAL CHILE LIMITADA",
      "cam": "VD",
@@ -2780,9 +2760,9 @@
      "excepcion": ""
     },
     {
-     "so": "S36987",
-     "cliente": "DIOGENES GERMAN CONCHA CONCHA",
-     "cam": "PY",
+     "so": "S36887",
+     "cliente": "SUGAL CHILE LIMITADA",
+     "cam": "VD",
      "fecha_entrega": "2026-09-28",
      "excepcion": ""
     },
@@ -2790,13 +2770,6 @@
      "so": "S36888",
      "cliente": "SUGAL CHILE LIMITADA",
      "cam": "PY",
-     "fecha_entrega": "2026-09-28",
-     "excepcion": ""
-    },
-    {
-     "so": "S36887",
-     "cliente": "SUGAL CHILE LIMITADA",
-     "cam": "VD",
      "fecha_entrega": "2026-09-28",
      "excepcion": ""
     },
@@ -2840,6 +2813,13 @@
      "cliente": "TRANSPORTES EL POLILLA SPA",
      "cam": "PY",
      "fecha_entrega": "2026-09-30",
+     "excepcion": ""
+    },
+    {
+     "so": "S37171",
+     "cliente": "SUGAL CHILE LIMITADA",
+     "cam": "PH",
+     "fecha_entrega": "2026-10-03",
      "excepcion": ""
     }
    ],
