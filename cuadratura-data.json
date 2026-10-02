@@ -1,7 +1,7 @@
 {
- "generated_utc": "2026-10-02T01:31+00:00",
- "hoy": "2026-10-01",
- "desde": "2026-09-25",
+ "generated_utc": "2026-10-02T05:24+00:00",
+ "hoy": "2026-10-02",
+ "desde": "2026-09-26",
  "rutas": {
   "pendientes": [
    {
@@ -12,7 +12,7 @@
     "litros": 1500,
     "programado": "29-09 08:43",
     "atrasado": true,
-    "estado": "ruteada_manana",
+    "estado": "ruteada",
     "visita_status": "pending"
    },
    {
@@ -22,8 +22,8 @@
     "camion": "TJVS-53",
     "litros": 2000,
     "programado": "01-10 09:58",
-    "atrasado": false,
-    "estado": "ruteada_manana",
+    "atrasado": true,
+    "estado": "ruteada",
     "visita_status": "pending"
    },
    {
@@ -33,8 +33,8 @@
     "camion": "PHXC-44",
     "litros": 500,
     "programado": "01-10 10:44",
-    "atrasado": false,
-    "estado": "ruteada_manana",
+    "atrasado": true,
+    "estado": "ruteada",
     "visita_status": "pending"
    },
    {
@@ -44,8 +44,8 @@
     "camion": "PYHK-28",
     "litros": 1000,
     "programado": "01-10 10:46",
-    "atrasado": false,
-    "estado": "ruteada_manana",
+    "atrasado": true,
+    "estado": "ruteada",
     "visita_status": "pending"
    },
    {
@@ -55,8 +55,8 @@
     "camion": "PYHK-28",
     "litros": 1500,
     "programado": "01-10 11:04",
-    "atrasado": false,
-    "estado": "ruteada_manana",
+    "atrasado": true,
+    "estado": "ruteada",
     "visita_status": "pending"
    },
    {
@@ -66,8 +66,8 @@
     "camion": "TJVS-53",
     "litros": 1000,
     "programado": "01-10 11:12",
-    "atrasado": false,
-    "estado": "ruteada_manana",
+    "atrasado": true,
+    "estado": "ruteada",
     "visita_status": "pending"
    },
    {
@@ -77,9 +77,9 @@
     "camion": "SHGP-60",
     "litros": 4600,
     "programado": "01-10 12:07",
-    "atrasado": false,
-    "estado": "ruteada",
-    "visita_status": "pending"
+    "atrasado": true,
+    "estado": "sin_ruta",
+    "visita_status": null
    },
    {
     "picking": "PHXC/OUT/01721",
@@ -88,8 +88,8 @@
     "camion": "PHXC-44",
     "litros": 800,
     "programado": "01-10 12:22",
-    "atrasado": false,
-    "estado": "ruteada_manana",
+    "atrasado": true,
+    "estado": "ruteada",
     "visita_status": "pending"
    },
    {
@@ -99,8 +99,8 @@
     "camion": "VDKT-95",
     "litros": 1500,
     "programado": "01-10 13:31",
-    "atrasado": false,
-    "estado": "ruteada_manana",
+    "atrasado": true,
+    "estado": "ruteada",
     "visita_status": "pending"
    },
    {
@@ -110,8 +110,8 @@
     "camion": "PHXC-44",
     "litros": 2000,
     "programado": "01-10 16:18",
-    "atrasado": false,
-    "estado": "ruteada_manana",
+    "atrasado": true,
+    "estado": "ruteada",
     "visita_status": "pending"
    },
    {
@@ -121,41 +121,19 @@
     "camion": "PHXC-44",
     "litros": 1000,
     "programado": "01-10 17:23",
-    "atrasado": false,
-    "estado": "ruteada_manana",
+    "atrasado": true,
+    "estado": "ruteada",
     "visita_status": "pending"
    }
   ],
-  "huerfanas": [
-   {
-    "so": "S37079",
-    "cliente": "SUGAL CHILE LIMITADA",
-    "estado_odoo": "draft",
-    "status": "completed",
-    "litros": 700
-   },
-   {
-    "so": "S37080",
-    "cliente": "SUGAL CHILE LIMITADA",
-    "estado_odoo": "draft",
-    "status": "failed",
-    "litros": 700
-   },
-   {
-    "so": "S37132",
-    "cliente": "AGRICOLA TRABUN LTDA.",
-    "estado_odoo": "draft",
-    "status": "pending",
-    "litros": 1
-   }
-  ],
+  "huerfanas": [],
   "sin_ref": [],
   "resumen": {
    "total": 11,
-   "ruteadas": 1,
-   "ruteadas_manana": 10,
-   "sin_ruta": 0,
-   "huerfanas": 3
+   "ruteadas": 10,
+   "ruteadas_manana": 0,
+   "sin_ruta": 1,
+   "huerfanas": 0
   }
  },
  "litros": {
@@ -2029,529 +2007,17 @@
      "FAC 54454"
     ],
     "estado": "ok"
-   },
-   {
-    "so": "S36815",
-    "fecha": "2026-09-25",
-    "cliente": "SERVICIO AGRICOLA SANTA FLORENCIA SPA (FILOMENA)",
-    "camion": "PHXC-44",
-    "especial": false,
-    "parcial": false,
-    "visitas": 1,
-    "pedido": 500,
-    "entregado": 500,
-    "facturado": 500,
-    "facturas": [
-     "FAC 54444"
-    ],
-    "estado": "ok"
-   },
-   {
-    "so": "S36810",
-    "fecha": "2026-09-25",
-    "cliente": "PATRICIO REYES SERRANO",
-    "camion": "TJVS-53",
-    "especial": false,
-    "parcial": true,
-    "visitas": 1,
-    "pedido": 5076,
-    "entregado": 5076,
-    "facturado": 5076,
-    "facturas": [
-     "FAC 54441"
-    ],
-    "estado": "ok"
-   },
-   {
-    "so": "S36806",
-    "fecha": "2026-09-25",
-    "cliente": "AGRICOLA HERNANDEZ Y COMPANIA",
-    "camion": "TJVS-53",
-    "especial": false,
-    "parcial": false,
-    "visitas": 1,
-    "pedido": 1500,
-    "entregado": 1500,
-    "facturado": 1500,
-    "facturas": [
-     "FAC 54443"
-    ],
-    "estado": "ok"
-   },
-   {
-    "so": "S36805",
-    "fecha": "2026-09-25",
-    "cliente": "AGRICOLA LOS ALPES LTDA",
-    "camion": "PYHK-28",
-    "especial": false,
-    "parcial": false,
-    "visitas": 1,
-    "pedido": 800,
-    "entregado": 800,
-    "facturado": 800,
-    "facturas": [
-     "FAC 54446"
-    ],
-    "estado": "ok"
-   },
-   {
-    "so": "S36802",
-    "fecha": "2026-09-25",
-    "cliente": "CLAUDIO ANTONIO GAJARDO MACHUCA",
-    "camion": "TJVS-53",
-    "especial": false,
-    "parcial": true,
-    "visitas": 1,
-    "pedido": 1000,
-    "entregado": 1000,
-    "facturado": 1000,
-    "facturas": [
-     "FAC 54445"
-    ],
-    "estado": "ok"
-   },
-   {
-    "so": "S36796",
-    "fecha": "2026-09-25",
-    "cliente": "AGRICOLA LATORRE AC SPA",
-    "camion": "PYHK-28",
-    "especial": false,
-    "parcial": true,
-    "visitas": 1,
-    "pedido": 6000,
-    "entregado": 6000,
-    "facturado": 6000,
-    "facturas": [
-     "FAC 54436"
-    ],
-    "estado": "ok"
-   },
-   {
-    "so": "S36795",
-    "fecha": "2026-09-25",
-    "cliente": "SUGAL CHILE LIMITADA",
-    "camion": "PHXC-44",
-    "especial": true,
-    "parcial": false,
-    "visitas": 1,
-    "pedido": 700,
-    "entregado": 800,
-    "facturado": 700,
-    "facturas": [
-     "FAC 54448"
-    ],
-    "estado": "diferencia"
-   },
-   {
-    "so": "S36794",
-    "fecha": "2026-09-25",
-    "cliente": "SUGAL CHILE LIMITADA",
-    "camion": "PHXC-44",
-    "especial": true,
-    "parcial": false,
-    "visitas": 1,
-    "pedido": 500,
-    "entregado": 500,
-    "facturado": 500,
-    "facturas": [
-     "FAC 54447"
-    ],
-    "estado": "ok"
-   },
-   {
-    "so": "S36793",
-    "fecha": "2026-09-25",
-    "cliente": "SUGAL CHILE LIMITADA",
-    "camion": "PHXC-44",
-    "especial": true,
-    "parcial": false,
-    "visitas": 1,
-    "pedido": 700,
-    "entregado": 700,
-    "facturado": 700,
-    "facturas": [
-     "FAC 54452"
-    ],
-    "estado": "ok"
-   },
-   {
-    "so": "S36792",
-    "fecha": "2026-09-25",
-    "cliente": "SUGAL CHILE LIMITADA",
-    "camion": "PHXC-44",
-    "especial": true,
-    "parcial": false,
-    "visitas": 1,
-    "pedido": 700,
-    "entregado": 700,
-    "facturado": 700,
-    "facturas": [
-     "FAC 54450"
-    ],
-    "estado": "ok"
-   },
-   {
-    "so": "S36791",
-    "fecha": "2026-09-25",
-    "cliente": "SUGAL CHILE LIMITADA",
-    "camion": "PHXC-44",
-    "especial": true,
-    "parcial": false,
-    "visitas": 1,
-    "pedido": 700,
-    "entregado": 700,
-    "facturado": 700,
-    "facturas": [
-     "FAC 54449"
-    ],
-    "estado": "ok"
-   },
-   {
-    "so": "S36790",
-    "fecha": "2026-09-25",
-    "cliente": "AGRICOLA AGROBOSQUES SAN ISIDRO S.A.",
-    "camion": "PHXC-44",
-    "especial": false,
-    "parcial": false,
-    "visitas": 1,
-    "pedido": 1000,
-    "entregado": 1000,
-    "facturado": 1000,
-    "facturas": [
-     "FAC 54426"
-    ],
-    "estado": "ok"
-   },
-   {
-    "so": "S36788",
-    "fecha": "2026-09-25",
-    "cliente": "SUGAL CHILE LIMITADA",
-    "camion": "PHXC-44",
-    "especial": true,
-    "parcial": false,
-    "visitas": 1,
-    "pedido": 700,
-    "entregado": 700,
-    "facturado": 700,
-    "facturas": [
-     "FAC 54451"
-    ],
-    "estado": "ok"
-   },
-   {
-    "so": "S36785",
-    "fecha": "2026-09-25",
-    "cliente": "SUGAL CHILE LIMITADA",
-    "camion": "PYHK-28",
-    "especial": true,
-    "parcial": false,
-    "visitas": 1,
-    "pedido": 1030,
-    "entregado": 1000,
-    "facturado": 0,
-    "facturas": [],
-    "estado": "por_facturar"
-   },
-   {
-    "so": "S36784",
-    "fecha": "2026-09-25",
-    "cliente": "INGENERIA Y CONSTRUCCIONES FEBLANCA SPA",
-    "camion": "TYDG-23",
-    "especial": false,
-    "parcial": true,
-    "visitas": 1,
-    "pedido": 2000,
-    "entregado": 2000,
-    "facturado": 2000,
-    "facturas": [
-     "FAC 54435"
-    ],
-    "estado": "ok"
-   },
-   {
-    "so": "S36783",
-    "fecha": "2026-09-25",
-    "cliente": "SUGAL CHILE LIMITADA",
-    "camion": "VDKT-95",
-    "especial": true,
-    "parcial": false,
-    "visitas": 1,
-    "pedido": 500,
-    "entregado": 500,
-    "facturado": 0,
-    "facturas": [],
-    "estado": "por_facturar"
-   },
-   {
-    "so": "S36781",
-    "fecha": "2026-09-25",
-    "cliente": "SUGAL CHILE LIMITADA",
-    "camion": "PHXC-44",
-    "especial": true,
-    "parcial": false,
-    "visitas": 1,
-    "pedido": 1500,
-    "entregado": 1200,
-    "facturado": 0,
-    "facturas": [],
-    "estado": "por_facturar"
-   },
-   {
-    "so": "S36780",
-    "fecha": "2026-09-25",
-    "cliente": "SUGAL CHILE LIMITADA",
-    "camion": "PHXC-44",
-    "especial": true,
-    "parcial": false,
-    "visitas": 1,
-    "pedido": 540,
-    "entregado": 800,
-    "facturado": 0,
-    "facturas": [],
-    "estado": "por_facturar"
-   },
-   {
-    "so": "S36776",
-    "fecha": "2026-09-25",
-    "cliente": "AGRICOLA LA SPEZIA LTDA",
-    "camion": "PHXC-44",
-    "especial": false,
-    "parcial": false,
-    "visitas": 1,
-    "pedido": 1000,
-    "entregado": 1000,
-    "facturado": 1000,
-    "facturas": [
-     "FAC 54428"
-    ],
-    "estado": "ok"
-   },
-   {
-    "so": "S36775",
-    "fecha": "2026-09-25",
-    "cliente": "SOC. DE TRANSPORTES TRACMAVI LTDA.",
-    "camion": "PYHK-28",
-    "especial": false,
-    "parcial": true,
-    "visitas": 1,
-    "pedido": 2380,
-    "entregado": 2380,
-    "facturado": 2380,
-    "facturas": [
-     "FAC 54425"
-    ],
-    "estado": "ok"
-   },
-   {
-    "so": "S36770",
-    "fecha": "2026-09-25",
-    "cliente": "JORGE ALFONSO CATALAN FIGUEROA",
-    "camion": "VDKT-95",
-    "especial": false,
-    "parcial": true,
-    "visitas": 1,
-    "pedido": 950,
-    "entregado": 950,
-    "facturado": 950,
-    "facturas": [
-     "FAC 54432"
-    ],
-    "estado": "ok"
-   },
-   {
-    "so": "S36764",
-    "fecha": "2026-09-25",
-    "cliente": "Agrícola el descanso SPA",
-    "camion": "TJVS-53",
-    "especial": false,
-    "parcial": false,
-    "visitas": 1,
-    "pedido": 500,
-    "entregado": 500,
-    "facturado": 500,
-    "facturas": [
-     "FAC 54440"
-    ],
-    "estado": "ok"
-   },
-   {
-    "so": "S36761",
-    "fecha": "2026-09-25",
-    "cliente": "SGB SPA",
-    "camion": "VDKT-95",
-    "especial": false,
-    "parcial": false,
-    "visitas": 1,
-    "pedido": 1000,
-    "entregado": 1000,
-    "facturado": 1000,
-    "facturas": [
-     "FAC 54427"
-    ],
-    "estado": "ok"
-   },
-   {
-    "so": "S36760",
-    "fecha": "2026-09-25",
-    "cliente": "MOVIMIENTOS DE TIERRA Y TRANSPORTES C.A.E.Z. SPA",
-    "camion": "PHXC-44",
-    "especial": false,
-    "parcial": false,
-    "visitas": 1,
-    "pedido": 500,
-    "entregado": 500,
-    "facturado": 500,
-    "facturas": [
-     "FAC 54430"
-    ],
-    "estado": "ok"
-   },
-   {
-    "so": "S36759",
-    "fecha": "2026-09-25",
-    "cliente": "CRISTIAN ANTONIO REYES SERRANO",
-    "camion": "TJVS-53",
-    "especial": false,
-    "parcial": false,
-    "visitas": 1,
-    "pedido": 1000,
-    "entregado": 1000,
-    "facturado": 1000,
-    "facturas": [
-     "FAC 54442"
-    ],
-    "estado": "ok"
-   },
-   {
-    "so": "S36758",
-    "fecha": "2026-09-25",
-    "cliente": "AGRICOLA FRUTOS DE MANANTIALES LIMITADA",
-    "camion": "VDKT-95",
-    "especial": false,
-    "parcial": false,
-    "visitas": 1,
-    "pedido": 500,
-    "entregado": 500,
-    "facturado": 500,
-    "facturas": [
-     "FAC 54431"
-    ],
-    "estado": "ok"
-   },
-   {
-    "so": "S36757",
-    "fecha": "2026-09-25",
-    "cliente": "Agricola Rinconada",
-    "camion": "PHXC-44",
-    "especial": false,
-    "parcial": false,
-    "visitas": 1,
-    "pedido": 2000,
-    "entregado": 2000,
-    "facturado": 2000,
-    "facturas": [
-     "FAC 54424"
-    ],
-    "estado": "ok"
-   },
-   {
-    "so": "S36756",
-    "fecha": "2026-09-25",
-    "cliente": "Agricola Rinconada",
-    "camion": "PHXC-44",
-    "especial": false,
-    "parcial": false,
-    "visitas": 1,
-    "pedido": 500,
-    "entregado": 500,
-    "facturado": 500,
-    "facturas": [
-     "FAC 54439"
-    ],
-    "estado": "ok"
-   },
-   {
-    "so": "S36749",
-    "fecha": "2026-09-25",
-    "cliente": "LOS MARCOS SPA",
-    "camion": "TJVS-53",
-    "especial": false,
-    "parcial": false,
-    "visitas": 1,
-    "pedido": 1000,
-    "entregado": 1000,
-    "facturado": 1000,
-    "facturas": [
-     "FAC 54434"
-    ],
-    "estado": "ok"
-   },
-   {
-    "so": "S36748",
-    "fecha": "2026-09-25",
-    "cliente": "URRA HERMANOS LTDA",
-    "camion": "VDKT-95",
-    "especial": false,
-    "parcial": false,
-    "visitas": 1,
-    "pedido": 2000,
-    "entregado": 2000,
-    "facturado": 2000,
-    "facturas": [
-     "FAC 54438"
-    ],
-    "estado": "ok"
-   },
-   {
-    "so": "S36743",
-    "fecha": "2026-09-25",
-    "cliente": "TRANSPORTES MD SPA",
-    "camion": "TJVS-53",
-    "especial": false,
-    "parcial": false,
-    "visitas": 1,
-    "pedido": 1000,
-    "entregado": 1000,
-    "facturado": 1000,
-    "facturas": [
-     "FAC 54433"
-    ],
-    "estado": "ok"
-   },
-   {
-    "so": "S36699",
-    "fecha": "2026-09-25",
-    "cliente": "AGRICOLA EL MILAGRO LTDA.",
-    "camion": "TJVS-53",
-    "especial": false,
-    "parcial": false,
-    "visitas": 1,
-    "pedido": 1000,
-    "entregado": 1000,
-    "facturado": 1000,
-    "facturas": [
-     "FAC 54437"
-    ],
-    "estado": "ok"
-   },
-   {
-    "so": "S36684",
-    "fecha": "2026-09-25",
-    "cliente": "AGRICOLA EL BUEN PASTOR LIMITADA",
-    "camion": "VDKT-95",
-    "especial": false,
-    "parcial": false,
-    "visitas": 1,
-    "pedido": 2000,
-    "entregado": 2000,
-    "facturado": 2000,
-    "facturas": [
-     "FAC 54429"
-    ],
-    "estado": "ok"
    }
   ],
   "dias": [
+   {
+    "fecha": "2026-10-02",
+    "entregas": 0,
+    "entregado": 0,
+    "facturado": 0,
+    "por_facturar": 0,
+    "sin_factura": 0
+   },
    {
     "fecha": "2026-10-01",
     "entregas": 47,
@@ -2599,27 +2065,12 @@
     "facturado": 2920,
     "por_facturar": 0,
     "sin_factura": 0
-   },
-   {
-    "fecha": "2026-09-25",
-    "entregas": 33,
-    "entregado": 42806,
-    "facturado": 39206,
-    "por_facturar": 3500,
-    "sin_factura": 4
    }
   ],
-  "por_facturar_total": 12990,
-  "entregado_hoy": 56950,
-  "facturado_hoy": 65450,
-  "fuera_simpli": [
-   {
-    "factura": "FAC 54583",
-    "so": "S37118",
-    "cliente": "SERVICIOS AGRICOLAS MARISEL ESPINAZA OÑATE E.I.R.L.",
-    "litros": 4600
-   }
-  ]
+  "por_facturar_total": 9490,
+  "entregado_hoy": 0,
+  "facturado_hoy": 0,
+  "fuera_simpli": []
  },
  "cierre": {
   "fase2": {
@@ -2657,193 +2108,6 @@
      "factura_estado": "posted",
      "factura_total": 19027257,
      "factura_litros": 15033
-    },
-    {
-     "po": "P00900",
-     "proveedor": "ENAP REFINERIAS S.A.",
-     "cam": "HH",
-     "fecha": "2026-09-30",
-     "hora": "20:01",
-     "litros": 10000,
-     "correccion": 11,
-     "litros_real": 10011,
-     "precio": 1340.41,
-     "recibida": true,
-     "devuelta": false,
-     "factura": "850564",
-     "factura_estado": "posted",
-     "factura_total": 12784494,
-     "factura_litros": 10011
-    },
-    {
-     "po": "P00899",
-     "proveedor": "ENAP REFINERIAS S.A.",
-     "cam": "VD",
-     "fecha": "2026-09-30",
-     "hora": "18:15",
-     "litros": 15000,
-     "correccion": 21,
-     "litros_real": 15021,
-     "precio": 1340.41,
-     "recibida": true,
-     "devuelta": false,
-     "factura": "850534",
-     "factura_estado": "posted",
-     "factura_total": 19182489,
-     "factura_litros": 15021
-    },
-    {
-     "po": "P00898",
-     "proveedor": "ENAP REFINERIAS S.A.",
-     "cam": "TJ",
-     "fecha": "2026-09-30",
-     "hora": "17:44",
-     "litros": 15000,
-     "correccion": 10,
-     "litros_real": 15010,
-     "precio": 1340.41,
-     "recibida": true,
-     "devuelta": false,
-     "factura": "850521",
-     "factura_estado": "posted",
-     "factura_total": 19168441,
-     "factura_litros": 15010
-    },
-    {
-     "po": "P00897",
-     "proveedor": "PRD - ADGREEN SPA",
-     "cam": "TY",
-     "fecha": "2026-09-30",
-     "hora": "17:15",
-     "litros": 15000,
-     "correccion": null,
-     "litros_real": 15000,
-     "precio": 1334.48,
-     "recibida": true,
-     "devuelta": false,
-     "factura": "1437",
-     "factura_estado": "posted",
-     "factura_total": 19049707,
-     "factura_litros": 15000
-    },
-    {
-     "po": "P00896",
-     "proveedor": "PRD - ADGREEN SPA",
-     "cam": "SH",
-     "fecha": "2026-09-30",
-     "hora": "17:15",
-     "litros": 15000,
-     "correccion": null,
-     "litros_real": 15000,
-     "precio": 1334.48,
-     "recibida": true,
-     "devuelta": false,
-     "factura": "1438",
-     "factura_estado": "posted",
-     "factura_total": 19049707,
-     "factura_litros": 15000
-    },
-    {
-     "po": "P00895",
-     "proveedor": "ADQUIM SPA",
-     "cam": "TY",
-     "fecha": "2026-09-30",
-     "hora": "17:14",
-     "litros": 15000,
-     "correccion": null,
-     "litros_real": 15000,
-     "precio": 1334.48,
-     "recibida": true,
-     "devuelta": true,
-     "factura": null,
-     "factura_estado": "sin_factura",
-     "factura_total": null,
-     "factura_litros": null
-    },
-    {
-     "po": "P00894",
-     "proveedor": "ADQUIM SPA",
-     "cam": "PY",
-     "fecha": "2026-09-30",
-     "hora": "17:13",
-     "litros": 15000,
-     "correccion": null,
-     "litros_real": 15000,
-     "precio": 1333.61,
-     "recibida": true,
-     "devuelta": false,
-     "factura": "264490",
-     "factura_estado": "posted",
-     "factura_total": 19034213,
-     "factura_litros": 15000
-    },
-    {
-     "po": "P00893",
-     "proveedor": "ENAP REFINERIAS S.A.",
-     "cam": "PH",
-     "fecha": "2026-09-30",
-     "hora": "15:43",
-     "litros": 10000,
-     "correccion": 2,
-     "litros_real": 10002,
-     "precio": 1340.41,
-     "recibida": true,
-     "devuelta": false,
-     "factura": "850458",
-     "factura_estado": "posted",
-     "factura_total": 12773001,
-     "factura_litros": 10002
-    },
-    {
-     "po": "P00891",
-     "proveedor": "ENAP REFINERIAS S.A.",
-     "cam": "HH",
-     "fecha": "2026-09-30",
-     "hora": "11:44",
-     "litros": 10000,
-     "correccion": 23,
-     "litros_real": 10023,
-     "precio": 1340.41,
-     "recibida": true,
-     "devuelta": false,
-     "factura": "850307",
-     "factura_estado": "posted",
-     "factura_total": 12799818,
-     "factura_litros": 10023
-    },
-    {
-     "po": "P00890",
-     "proveedor": "ENAP REFINERIAS S.A.",
-     "cam": "TJ",
-     "fecha": "2026-09-30",
-     "hora": "09:11",
-     "litros": 15000,
-     "correccion": 70,
-     "litros_real": 15070,
-     "precio": 1340.41,
-     "recibida": true,
-     "devuelta": false,
-     "factura": "850256",
-     "factura_estado": "posted",
-     "factura_total": 19245064,
-     "factura_litros": 15070
-    },
-    {
-     "po": "P00889",
-     "proveedor": "ENAP REFINERIAS S.A.",
-     "cam": "VD",
-     "fecha": "2026-09-30",
-     "hora": "09:08",
-     "litros": 15000,
-     "correccion": 74,
-     "litros_real": 15074,
-     "precio": 1340.41,
-     "recibida": true,
-     "devuelta": false,
-     "factura": "850254",
-     "factura_estado": "posted",
-     "factura_total": 19250172,
-     "factura_litros": 15074
     }
    ],
    "borradores_sueltos": [],
@@ -2997,30 +2261,6 @@
    ],
    "ventas": [
     {
-     "so": "S37096",
-     "cliente": "SOCIEDAD AGRICOLA SANTA ROSA",
-     "especial": false,
-     "cam": "PH",
-     "cam_simpli": [
-      "PH"
-     ],
-     "cam_odoo": [
-      "PH"
-     ],
-     "picking": null,
-     "fecha_entrega": "2026-10-01",
-     "simpli": 500,
-     "cantidad": 1000,
-     "entregado": 500,
-     "facturado": 500,
-     "problemas": [
-      "cantidad"
-     ],
-     "acciones": [
-      "Bajar Cantidad de 1.000 a 500 L en la orden"
-     ]
-    },
-    {
      "so": "S37114",
      "cliente": "MOVIMIENTOS DE TIERRA Y TRANSPORTES C.A.E.Z. SPA",
      "especial": false,
@@ -3121,34 +2361,6 @@
      ]
     },
     {
-     "so": "S37069",
-     "cliente": "AGRICOLA ALCAINO SPA",
-     "especial": false,
-     "cam": "PY",
-     "cam_simpli": [
-      "PY"
-     ],
-     "cam_odoo": [
-      "PY"
-     ],
-     "picking": null,
-     "fecha_entrega": "2026-10-01",
-     "simpli": 1500,
-     "cantidad": 1300,
-     "entregado": 1300,
-     "facturado": 1300,
-     "problemas": [
-      "cantidad",
-      "falta_validar",
-      "por_facturar"
-     ],
-     "acciones": [
-      "Faltan 200 L por validar y no hay salida abierta: revisar movimientos",
-      "Subir Cantidad de 1.300 a 1.500 L (primero validar lo entregado)",
-      "Facturar 200 L"
-     ]
-    },
-    {
      "so": "S37115",
      "cliente": "SOCIEDAD AGRICOLA SANTA TERESA",
      "especial": false,
@@ -3246,30 +2458,6 @@
      ],
      "acciones": [
       "Salida TJVS/OUT/01963 abierta pero SimpliRoute no la muestra entregada: si no salió, reprogramar; si salió, validar"
-     ]
-    },
-    {
-     "so": "S37112",
-     "cliente": "DOMINGO ENRIQUE TORRES VIELMA",
-     "especial": false,
-     "cam": "TY",
-     "cam_simpli": [
-      "TY"
-     ],
-     "cam_odoo": [
-      "TY"
-     ],
-     "picking": null,
-     "fecha_entrega": "2026-10-01",
-     "simpli": 2600,
-     "cantidad": 4000,
-     "entregado": 2600,
-     "facturado": 2600,
-     "problemas": [
-      "cantidad"
-     ],
-     "acciones": [
-      "Bajar Cantidad de 4.000 a 2.600 L en la orden"
      ]
     },
     {
@@ -3379,9 +2567,9 @@
      "especial": false
     }
    ],
-   "entregadas_hoy": 47,
+   "entregadas_hoy": 0,
    "bodega_ventana": 0,
-   "revisadas_ventana": 162,
+   "revisadas_ventana": 129,
    "salidas_entregadas": 0
   },
   "fase5": {
@@ -3391,49 +2579,49 @@
      "odoo": 4000,
      "ajuste": 0,
      "esperado": 4000,
-     "ventas_simpli_hoy": 6000
+     "ventas_simpli_hoy": 0
     },
     {
      "cam": "PH",
      "odoo": 0,
      "ajuste": 0,
      "esperado": 0,
-     "ventas_simpli_hoy": 10000
+     "ventas_simpli_hoy": 0
     },
     {
      "cam": "PY",
      "odoo": 7300,
-     "ajuste": -200,
-     "esperado": 7100,
-     "ventas_simpli_hoy": 7900
+     "ajuste": 0,
+     "esperado": 7300,
+     "ventas_simpli_hoy": 0
     },
     {
      "cam": "SH",
      "odoo": 13300,
      "ajuste": 0,
      "esperado": 13300,
-     "ventas_simpli_hoy": 1700
+     "ventas_simpli_hoy": 0
     },
     {
      "cam": "TJ",
      "odoo": 6550,
      "ajuste": 0,
      "esperado": 6550,
-     "ventas_simpli_hoy": 8450
+     "ventas_simpli_hoy": 0
     },
     {
      "cam": "TY",
      "odoo": 0,
      "ajuste": 0,
      "esperado": 0,
-     "ventas_simpli_hoy": 15000
+     "ventas_simpli_hoy": 0
     },
     {
      "cam": "VD",
      "odoo": 7100,
      "ajuste": 0,
      "esperado": 7100,
-     "ventas_simpli_hoy": 7900
+     "ventas_simpli_hoy": 0
     }
    ]
   },
@@ -3602,9 +2790,9 @@
     }
    ],
    "con_excepcion": 3,
-   "validadas_manana": 8,
-   "visitas_manana": 11,
-   "fecha": "2026-10-02"
+   "validadas_manana": 0,
+   "visitas_manana": 0,
+   "fecha": "2026-10-03"
   }
  }
 }
