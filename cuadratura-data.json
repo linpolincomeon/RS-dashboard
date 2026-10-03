@@ -1,39 +1,40 @@
 {
- "generated_utc": "2026-10-03T00:21+00:00",
- "hoy": "2026-10-02",
- "desde": "2026-09-26",
+ "generated_utc": "2026-10-03T05:07+00:00",
+ "hoy": "2026-10-03",
+ "desde": "2026-09-27",
  "rutas": {
-  "pendientes": [],
-  "huerfanas": [
+  "pendientes": [
    {
-    "so": "S37150",
-    "cliente": "SUGAL CHILE LIMITADA",
-    "estado_odoo": "draft",
-    "status": "failed",
-    "litros": 1100
+    "picking": "PHXC/OUT/01733",
+    "so": "S37043",
+    "cliente": "INVERSIONES LOS CINCO SPA, Andres",
+    "camion": "PHXC-44",
+    "litros": 800,
+    "programado": "29-09 14:35",
+    "atrasado": true,
+    "estado": "ruteada",
+    "visita_status": "pending"
    },
    {
-    "so": "S37151",
-    "cliente": "SUGAL CHILE LIMITADA",
-    "estado_odoo": "draft",
-    "status": "failed",
-    "litros": 1000
-   },
-   {
-    "so": "S37149",
-    "cliente": "Sociedad Agricola Ñilhue 2030",
-    "estado_odoo": "draft",
-    "status": "failed",
-    "litros": 1000
+    "picking": "PHXC/OUT/01732",
+    "so": "S37171",
+    "cliente": "SUGAL CHILE LIMITADA, CUATRO VIENTOS",
+    "camion": "PHXC-44",
+    "litros": 800,
+    "programado": "02-10 15:42",
+    "atrasado": true,
+    "estado": "ruteada",
+    "visita_status": "pending"
    }
   ],
+  "huerfanas": [],
   "sin_ref": [],
   "resumen": {
-   "total": 0,
-   "ruteadas": 0,
+   "total": 2,
+   "ruteadas": 2,
    "ruteadas_manana": 0,
    "sin_ruta": 0,
-   "huerfanas": 3
+   "huerfanas": 0
   }
  },
  "litros": {
@@ -2191,41 +2192,17 @@
     "facturado": 0,
     "facturas": [],
     "estado": "por_facturar"
-   },
-   {
-    "so": "S36864",
-    "fecha": "2026-09-26",
-    "cliente": "SUGAL CHILE LIMITADA",
-    "camion": "VDKT-95",
-    "especial": true,
-    "parcial": false,
-    "visitas": 1,
-    "pedido": 420,
-    "entregado": 500,
-    "facturado": 420,
-    "facturas": [
-     "FAC 54453"
-    ],
-    "estado": "diferencia"
-   },
-   {
-    "so": "S36817",
-    "fecha": "2026-09-26",
-    "cliente": "AGRICOLA MILLAMALAL E.I.R.L",
-    "camion": "PYHK-28",
-    "especial": false,
-    "parcial": false,
-    "visitas": 1,
-    "pedido": 2500,
-    "entregado": 2500,
-    "facturado": 2500,
-    "facturas": [
-     "FAC 54454"
-    ],
-    "estado": "ok"
    }
   ],
   "dias": [
+   {
+    "fecha": "2026-10-03",
+    "entregas": 0,
+    "entregado": 0,
+    "facturado": 0,
+    "por_facturar": 0,
+    "sin_factura": 0
+   },
    {
     "fecha": "2026-10-02",
     "entregas": 20,
@@ -2273,68 +2250,17 @@
     "facturado": 0,
     "por_facturar": 890,
     "sin_factura": 1
-   },
-   {
-    "fecha": "2026-09-26",
-    "entregas": 2,
-    "entregado": 3000,
-    "facturado": 2920,
-    "por_facturar": 0,
-    "sin_factura": 0
    }
   ],
   "por_facturar_total": 11590,
-  "entregado_hoy": 25266,
-  "facturado_hoy": 23166,
+  "entregado_hoy": 0,
+  "facturado_hoy": 0,
   "fuera_simpli": []
  },
  "cierre": {
   "fase2": {
-   "compras": [
-    {
-     "po": "P00902",
-     "proveedor": "ENAP REFINERIAS S.A.",
-     "cam": "TY",
-     "fecha": "2026-10-01",
-     "hora": "08:03",
-     "litros": 15000,
-     "correccion": 26,
-     "litros_real": 15026,
-     "precio": 1330.88,
-     "recibida": true,
-     "devuelta": false,
-     "factura": "850624",
-     "factura_estado": "posted",
-     "factura_total": 19018398,
-     "factura_litros": 15026
-    },
-    {
-     "po": "P00901",
-     "proveedor": "ENAP REFINERIAS S.A.",
-     "cam": "SH",
-     "fecha": "2026-10-01",
-     "hora": "08:02",
-     "litros": 15000,
-     "correccion": 33,
-     "litros_real": 15033,
-     "precio": 1330.88,
-     "recibida": true,
-     "devuelta": false,
-     "factura": "850625",
-     "factura_estado": "posted",
-     "factura_total": 19027257,
-     "factura_litros": 15033
-    }
-   ],
-   "borradores_sueltos": [
-    {
-     "folio": "850914",
-     "proveedor": "ENAP REFINERIAS S.A.",
-     "fecha": "2026-10-02",
-     "total": 15731467,
-     "litros": 10000
-    }
-   ],
+   "compras": [],
+   "borradores_sueltos": [],
    "sin_recibir": 0
   },
   "fase3": {
@@ -2382,32 +2308,65 @@
    ]
   },
   "fase4": {
-   "salidas": [],
+   "salidas": [
+    {
+     "picking": "PHXC/OUT/01733",
+     "so": "S37043",
+     "cliente": "INVERSIONES LOS CINCO SPA, Andres",
+     "cam": "PH",
+     "fecha": "2026-09-29",
+     "litros": 800,
+     "entregada_simpli": false
+    },
+    {
+     "picking": "PHXC/OUT/01732",
+     "so": "S37171",
+     "cliente": "SUGAL CHILE LIMITADA, CUATRO VIENTOS",
+     "cam": "PH",
+     "fecha": "2026-10-02",
+     "litros": 800,
+     "entregada_simpli": false
+    }
+   ],
    "ventas": [
     {
-     "so": "S37112",
-     "cliente": "DOMINGO ENRIQUE TORRES VIELMA",
+     "so": "S37043",
+     "cliente": "INVERSIONES LOS CINCO SPA",
      "especial": false,
-     "cam": "TY",
-     "cam_simpli": [
-      "TY"
-     ],
-     "cam_odoo": [
-      "TY"
-     ],
-     "picking": null,
-     "fecha_entrega": "2026-10-01",
-     "simpli": 4000,
-     "cantidad": 4000,
-     "entregado": 2600,
-     "facturado": 2600,
+     "cam": "PH",
+     "cam_simpli": [],
+     "cam_odoo": [],
+     "picking": "PHXC/OUT/01733",
+     "fecha_entrega": "2026-10-03",
+     "simpli": null,
+     "cantidad": 800,
+     "entregado": 0,
+     "facturado": 0,
      "problemas": [
-      "falta_validar",
-      "por_facturar"
+      "sin_entrega"
      ],
      "acciones": [
-      "Faltan 1.400 L por validar y no hay salida abierta: revisar movimientos",
-      "Facturar 1.400 L"
+      "Salida PHXC/OUT/01733 abierta pero SimpliRoute no la muestra entregada: si no salió, reprogramar; si salió, validar"
+     ]
+    },
+    {
+     "so": "S37171",
+     "cliente": "SUGAL CHILE LIMITADA",
+     "especial": true,
+     "cam": "PH",
+     "cam_simpli": [],
+     "cam_odoo": [],
+     "picking": "PHXC/OUT/01732",
+     "fecha_entrega": "2026-10-03",
+     "simpli": null,
+     "cantidad": 800,
+     "entregado": 0,
+     "facturado": 0,
+     "problemas": [
+      "sin_entrega"
+     ],
+     "acciones": [
+      "Salida PHXC/OUT/01732 abierta pero SimpliRoute no la muestra entregada: si no salió, reprogramar; si salió, validar"
      ]
     }
    ],
@@ -2425,9 +2384,23 @@
      "cam": "TY",
      "fecha_entrega": "2026-10-01",
      "especial": false
+    },
+    {
+     "so": "S37043",
+     "cliente": "INVERSIONES LOS CINCO SPA",
+     "cam": "PH",
+     "fecha_entrega": "2026-10-03",
+     "especial": false
+    },
+    {
+     "so": "S37171",
+     "cliente": "SUGAL CHILE LIMITADA",
+     "cam": "PH",
+     "fecha_entrega": "2026-10-03",
+     "especial": true
     }
    ],
-   "entregadas_hoy": 21,
+   "entregadas_hoy": 0,
    "bodega_ventana": 0,
    "revisadas_ventana": 138,
    "salidas_entregadas": 0
@@ -2446,42 +2419,42 @@
      "odoo": 0,
      "ajuste": 0,
      "esperado": 0,
-     "ventas_simpli_hoy": 4650
+     "ventas_simpli_hoy": 0
     },
     {
      "cam": "PY",
      "odoo": 4600,
      "ajuste": 0,
      "esperado": 4600,
-     "ventas_simpli_hoy": 2600
+     "ventas_simpli_hoy": 0
     },
     {
      "cam": "SH",
      "odoo": 6000,
      "ajuste": 0,
      "esperado": 6000,
-     "ventas_simpli_hoy": 2700
+     "ventas_simpli_hoy": 0
     },
     {
      "cam": "TJ",
      "odoo": 1000,
      "ajuste": 0,
      "esperado": 1000,
-     "ventas_simpli_hoy": 5050
+     "ventas_simpli_hoy": 0
     },
     {
      "cam": "TY",
      "odoo": -3066,
-     "ajuste": -1400,
-     "esperado": -4466,
-     "ventas_simpli_hoy": 4566
+     "ajuste": 0,
+     "esperado": -3066,
+     "ventas_simpli_hoy": 0
     },
     {
      "cam": "VD",
      "odoo": 0,
      "ajuste": 0,
      "esperado": 0,
-     "ventas_simpli_hoy": 7100
+     "ventas_simpli_hoy": 0
     }
    ]
   },
@@ -2635,17 +2608,17 @@
      "excepcion": ""
     },
     {
-     "so": "S37171",
-     "cliente": "SUGAL CHILE LIMITADA",
+     "so": "S37149",
+     "cliente": "Sociedad Agricola Ñilhue 2030",
      "cam": "PH",
      "fecha_entrega": "2026-10-03",
-     "excepcion": ""
+     "excepcion": "No tiene Línea de Crédito Aprobada"
     }
    ],
-   "con_excepcion": 2,
+   "con_excepcion": 3,
    "validadas_manana": 0,
    "visitas_manana": 0,
-   "fecha": "2026-10-03"
+   "fecha": "2026-10-04"
   }
  }
 }
