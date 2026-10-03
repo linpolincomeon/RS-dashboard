@@ -1,37 +1,14 @@
 {
- "generated_utc": "2026-10-03T05:07+00:00",
+ "generated_utc": "2026-10-03T15:07+00:00",
  "hoy": "2026-10-03",
  "desde": "2026-09-27",
  "rutas": {
-  "pendientes": [
-   {
-    "picking": "PHXC/OUT/01733",
-    "so": "S37043",
-    "cliente": "INVERSIONES LOS CINCO SPA, Andres",
-    "camion": "PHXC-44",
-    "litros": 800,
-    "programado": "29-09 14:35",
-    "atrasado": true,
-    "estado": "ruteada",
-    "visita_status": "pending"
-   },
-   {
-    "picking": "PHXC/OUT/01732",
-    "so": "S37171",
-    "cliente": "SUGAL CHILE LIMITADA, CUATRO VIENTOS",
-    "camion": "PHXC-44",
-    "litros": 800,
-    "programado": "02-10 15:42",
-    "atrasado": true,
-    "estado": "ruteada",
-    "visita_status": "pending"
-   }
-  ],
+  "pendientes": [],
   "huerfanas": [],
   "sin_ref": [],
   "resumen": {
-   "total": 2,
-   "ruteadas": 2,
+   "total": 0,
+   "ruteadas": 0,
    "ruteadas_manana": 0,
    "sin_ruta": 0,
    "huerfanas": 0
@@ -39,6 +16,52 @@
  },
  "litros": {
   "por_so": [
+   {
+    "so": "S37171",
+    "fecha": "2026-10-03",
+    "cliente": "SUGAL CHILE LIMITADA",
+    "camion": "PHXC-44",
+    "especial": true,
+    "parcial": false,
+    "visitas": 1,
+    "pedido": 800,
+    "entregado": 800,
+    "facturado": 0,
+    "facturas": [],
+    "estado": "por_facturar"
+   },
+   {
+    "so": "S37149",
+    "fecha": "2026-10-03",
+    "cliente": "Sociedad Agricola Ñilhue 2030",
+    "camion": "PHXC-44",
+    "especial": false,
+    "parcial": false,
+    "visitas": 1,
+    "pedido": 1000,
+    "entregado": 1000,
+    "facturado": 1000,
+    "facturas": [
+     "FAC 54635"
+    ],
+    "estado": "ok"
+   },
+   {
+    "so": "S37043",
+    "fecha": "2026-10-03",
+    "cliente": "INVERSIONES LOS CINCO SPA",
+    "camion": "PHXC-44",
+    "especial": false,
+    "parcial": false,
+    "visitas": 1,
+    "pedido": 800,
+    "entregado": 800,
+    "facturado": 800,
+    "facturas": [
+     "FAC 54634"
+    ],
+    "estado": "ok"
+   },
    {
     "so": "S37165",
     "fecha": "2026-10-02",
@@ -2197,11 +2220,11 @@
   "dias": [
    {
     "fecha": "2026-10-03",
-    "entregas": 0,
-    "entregado": 0,
-    "facturado": 0,
-    "por_facturar": 0,
-    "sin_factura": 0
+    "entregas": 3,
+    "entregado": 2600,
+    "facturado": 1800,
+    "por_facturar": 800,
+    "sin_factura": 1
    },
    {
     "fecha": "2026-10-02",
@@ -2252,14 +2275,83 @@
     "sin_factura": 1
    }
   ],
-  "por_facturar_total": 11590,
-  "entregado_hoy": 0,
-  "facturado_hoy": 0,
+  "por_facturar_total": 12390,
+  "entregado_hoy": 2600,
+  "facturado_hoy": 1800,
   "fuera_simpli": []
  },
  "cierre": {
   "fase2": {
-   "compras": [],
+   "compras": [
+    {
+     "po": "P00905",
+     "proveedor": "ENAP REFINERIAS S.A.",
+     "cam": "PH",
+     "fecha": "2026-10-03",
+     "hora": "11:33",
+     "litros": 10000,
+     "correccion": 3,
+     "litros_real": 10003,
+     "precio": 1321.97,
+     "recibida": true,
+     "devuelta": false,
+     "factura": "850914",
+     "factura_estado": "borrador_sin_vincular",
+     "factura_total": 15731467,
+     "factura_litros": 10000
+    },
+    {
+     "po": "P00903",
+     "proveedor": "ENAP REFINERIAS S.A.",
+     "cam": "PH",
+     "fecha": "2026-10-02",
+     "hora": "21:30",
+     "litros": 10000,
+     "correccion": 3,
+     "litros_real": 10003,
+     "precio": 1321.97,
+     "recibida": true,
+     "devuelta": true,
+     "factura": null,
+     "factura_estado": "sin_factura",
+     "factura_total": null,
+     "factura_litros": null
+    },
+    {
+     "po": "P00907",
+     "proveedor": "ADQUIM SPA",
+     "cam": "TY",
+     "fecha": "2026-10-02",
+     "hora": "11:43",
+     "litros": 15000,
+     "correccion": null,
+     "litros_real": 15000,
+     "precio": 1333.61,
+     "recibida": true,
+     "devuelta": false,
+     "factura": null,
+     "factura_estado": "sin_factura",
+     "factura_total": null,
+     "factura_litros": null
+    },
+    {
+     "po": "P00906",
+     "proveedor": "ADQUIM SPA",
+     "cam": "PY",
+     "fecha": "2026-10-02",
+     "hora": "11:38",
+     "litros": 15000,
+     "correccion": null,
+     "litros_real": 15000,
+     "precio": 1333.61,
+     "recibida": true,
+     "devuelta": false,
+     "factura": null,
+     "factura_estado": "sin_factura",
+     "factura_total": null,
+     "factura_litros": null
+    }
+   ],
    "borradores_sueltos": [],
    "sin_recibir": 0
   },
@@ -2308,65 +2400,30 @@
    ]
   },
   "fase4": {
-   "salidas": [
-    {
-     "picking": "PHXC/OUT/01733",
-     "so": "S37043",
-     "cliente": "INVERSIONES LOS CINCO SPA, Andres",
-     "cam": "PH",
-     "fecha": "2026-09-29",
-     "litros": 800,
-     "entregada_simpli": false
-    },
-    {
-     "picking": "PHXC/OUT/01732",
-     "so": "S37171",
-     "cliente": "SUGAL CHILE LIMITADA, CUATRO VIENTOS",
-     "cam": "PH",
-     "fecha": "2026-10-02",
-     "litros": 800,
-     "entregada_simpli": false
-    }
-   ],
+   "salidas": [],
    "ventas": [
-    {
-     "so": "S37043",
-     "cliente": "INVERSIONES LOS CINCO SPA",
-     "especial": false,
-     "cam": "PH",
-     "cam_simpli": [],
-     "cam_odoo": [],
-     "picking": "PHXC/OUT/01733",
-     "fecha_entrega": "2026-10-03",
-     "simpli": null,
-     "cantidad": 800,
-     "entregado": 0,
-     "facturado": 0,
-     "problemas": [
-      "sin_entrega"
-     ],
-     "acciones": [
-      "Salida PHXC/OUT/01733 abierta pero SimpliRoute no la muestra entregada: si no salió, reprogramar; si salió, validar"
-     ]
-    },
     {
      "so": "S37171",
      "cliente": "SUGAL CHILE LIMITADA",
      "especial": true,
      "cam": "PH",
-     "cam_simpli": [],
-     "cam_odoo": [],
-     "picking": "PHXC/OUT/01732",
+     "cam_simpli": [
+      "PH"
+     ],
+     "cam_odoo": [
+      "PH"
+     ],
+     "picking": null,
      "fecha_entrega": "2026-10-03",
-     "simpli": null,
+     "simpli": 800,
      "cantidad": 800,
-     "entregado": 0,
+     "entregado": 800,
      "facturado": 0,
      "problemas": [
-      "sin_entrega"
+      "por_facturar"
      ],
      "acciones": [
-      "Salida PHXC/OUT/01732 abierta pero SimpliRoute no la muestra entregada: si no salió, reprogramar; si salió, validar"
+      "Facturar 800 L (Sugal: revisar en Ventas)"
      ]
     }
    ],
@@ -2386,13 +2443,6 @@
      "especial": false
     },
     {
-     "so": "S37043",
-     "cliente": "INVERSIONES LOS CINCO SPA",
-     "cam": "PH",
-     "fecha_entrega": "2026-10-03",
-     "especial": false
-    },
-    {
      "so": "S37171",
      "cliente": "SUGAL CHILE LIMITADA",
      "cam": "PH",
@@ -2400,9 +2450,9 @@
      "especial": true
     }
    ],
-   "entregadas_hoy": 0,
+   "entregadas_hoy": 3,
    "bodega_ventana": 0,
-   "revisadas_ventana": 138,
+   "revisadas_ventana": 139,
    "salidas_entregadas": 0
   },
   "fase5": {
@@ -2416,16 +2466,16 @@
     },
     {
      "cam": "PH",
-     "odoo": 0,
+     "odoo": 7400,
      "ajuste": 0,
-     "esperado": 0,
-     "ventas_simpli_hoy": 0
+     "esperado": 7400,
+     "ventas_simpli_hoy": 2600
     },
     {
      "cam": "PY",
-     "odoo": 4600,
+     "odoo": 19600,
      "ajuste": 0,
-     "esperado": 4600,
+     "esperado": 19600,
      "ventas_simpli_hoy": 0
     },
     {
@@ -2444,9 +2494,9 @@
     },
     {
      "cam": "TY",
-     "odoo": -3066,
+     "odoo": 11934,
      "ajuste": 0,
-     "esperado": -3066,
+     "esperado": 11934,
      "ventas_simpli_hoy": 0
     },
     {
@@ -2461,18 +2511,18 @@
   "fase6": {
    "por_aprobar": [
     {
-     "so": "S30784",
-     "cliente": "EL PARRON SPA",
-     "cam": "TJ",
-     "fecha_entrega": "2026-05-12",
-     "excepcion": ""
-    },
-    {
      "so": "S30777",
      "cliente": "EL PARRON SPA",
      "cam": "TJ",
      "fecha_entrega": "2026-05-12",
      "excepcion": "No tiene Línea de Crédito Aprobada"
+    },
+    {
+     "so": "S30784",
+     "cliente": "EL PARRON SPA",
+     "cam": "TJ",
+     "fecha_entrega": "2026-05-12",
+     "excepcion": ""
     },
     {
      "so": "S31022",
@@ -2517,13 +2567,6 @@
      "excepcion": ""
     },
     {
-     "so": "S36987",
-     "cliente": "DIOGENES GERMAN CONCHA CONCHA",
-     "cam": "PY",
-     "fecha_entrega": "2026-09-28",
-     "excepcion": ""
-    },
-    {
      "so": "S36883",
      "cliente": "SUGAL CHILE LIMITADA",
      "cam": "VD",
@@ -2552,9 +2595,9 @@
      "excepcion": ""
     },
     {
-     "so": "S36887",
-     "cliente": "SUGAL CHILE LIMITADA",
-     "cam": "VD",
+     "so": "S36987",
+     "cliente": "DIOGENES GERMAN CONCHA CONCHA",
+     "cam": "PY",
      "fecha_entrega": "2026-09-28",
      "excepcion": ""
     },
@@ -2562,6 +2605,13 @@
      "so": "S36888",
      "cliente": "SUGAL CHILE LIMITADA",
      "cam": "PY",
+     "fecha_entrega": "2026-09-28",
+     "excepcion": ""
+    },
+    {
+     "so": "S36887",
+     "cliente": "SUGAL CHILE LIMITADA",
+     "cam": "VD",
      "fecha_entrega": "2026-09-28",
      "excepcion": ""
     },
@@ -2606,16 +2656,9 @@
      "cam": "PY",
      "fecha_entrega": "2026-09-30",
      "excepcion": ""
-    },
-    {
-     "so": "S37149",
-     "cliente": "Sociedad Agricola Ñilhue 2030",
-     "cam": "PH",
-     "fecha_entrega": "2026-10-03",
-     "excepcion": "No tiene Línea de Crédito Aprobada"
     }
    ],
-   "con_excepcion": 3,
+   "con_excepcion": 2,
    "validadas_manana": 0,
    "visitas_manana": 0,
    "fecha": "2026-10-04"
