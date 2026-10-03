@@ -1,17 +1,25 @@
 {
- "generated_utc": "2026-10-03T15:07+00:00",
+ "generated_utc": "2026-10-03T18:39+00:00",
  "hoy": "2026-10-03",
  "desde": "2026-09-27",
  "rutas": {
   "pendientes": [],
-  "huerfanas": [],
+  "huerfanas": [
+   {
+    "so": "S37171",
+    "cliente": "SUGAL CHILE LIMITADA",
+    "estado_odoo": "draft",
+    "status": "failed",
+    "litros": 800
+   }
+  ],
   "sin_ref": [],
   "resumen": {
    "total": 0,
    "ruteadas": 0,
    "ruteadas_manana": 0,
    "sin_ruta": 0,
-   "huerfanas": 0
+   "huerfanas": 1
   }
  },
  "litros": {
@@ -388,11 +396,12 @@
     "visitas": 2,
     "pedido": 4000,
     "entregado": 4000,
-    "facturado": 2600,
+    "facturado": 4000,
     "facturas": [
-     "FAC 54613"
+     "FAC 54613",
+     "FAC 54636"
     ],
-    "estado": "diferencia"
+    "estado": "ok"
    },
    {
     "so": "S37102",
@@ -2238,7 +2247,7 @@
     "fecha": "2026-10-01",
     "entregas": 47,
     "entregado": 58150,
-    "facturado": 55350,
+    "facturado": 56750,
     "por_facturar": 1400,
     "sin_factura": 2
    },
@@ -2277,7 +2286,7 @@
   ],
   "por_facturar_total": 12390,
   "entregado_hoy": 2600,
-  "facturado_hoy": 1800,
+  "facturado_hoy": 3200,
   "fuera_simpli": []
  },
  "cierre": {
@@ -2401,32 +2410,7 @@
   },
   "fase4": {
    "salidas": [],
-   "ventas": [
-    {
-     "so": "S37171",
-     "cliente": "SUGAL CHILE LIMITADA",
-     "especial": true,
-     "cam": "PH",
-     "cam_simpli": [
-      "PH"
-     ],
-     "cam_odoo": [
-      "PH"
-     ],
-     "picking": null,
-     "fecha_entrega": "2026-10-03",
-     "simpli": 800,
-     "cantidad": 800,
-     "entregado": 800,
-     "facturado": 0,
-     "problemas": [
-      "por_facturar"
-     ],
-     "acciones": [
-      "Facturar 800 L (Sugal: revisar en Ventas)"
-     ]
-    }
-   ],
+   "ventas": [],
    "a_facturar": [
     {
      "so": "S37096",
@@ -2434,20 +2418,6 @@
      "cam": "PH",
      "fecha_entrega": "2026-10-01",
      "especial": false
-    },
-    {
-     "so": "S37112",
-     "cliente": "DOMINGO ENRIQUE TORRES VIELMA",
-     "cam": "TY",
-     "fecha_entrega": "2026-10-01",
-     "especial": false
-    },
-    {
-     "so": "S37171",
-     "cliente": "SUGAL CHILE LIMITADA",
-     "cam": "PH",
-     "fecha_entrega": "2026-10-03",
-     "especial": true
     }
    ],
    "entregadas_hoy": 3,
@@ -2494,9 +2464,9 @@
     },
     {
      "cam": "TY",
-     "odoo": 11934,
+     "odoo": 10534,
      "ajuste": 0,
-     "esperado": 11934,
+     "esperado": 10534,
      "ventas_simpli_hoy": 0
     },
     {
