@@ -1,29 +1,39 @@
 {
- "generated_utc": "2026-10-02T20:56+00:00",
+ "generated_utc": "2026-10-03T00:21+00:00",
  "hoy": "2026-10-02",
  "desde": "2026-09-26",
  "rutas": {
-  "pendientes": [
+  "pendientes": [],
+  "huerfanas": [
    {
-    "picking": "TJVS/OUT/01972",
+    "so": "S37150",
+    "cliente": "SUGAL CHILE LIMITADA",
+    "estado_odoo": "draft",
+    "status": "failed",
+    "litros": 1100
+   },
+   {
+    "so": "S37151",
+    "cliente": "SUGAL CHILE LIMITADA",
+    "estado_odoo": "draft",
+    "status": "failed",
+    "litros": 1000
+   },
+   {
     "so": "S37149",
-    "cliente": "Sociedad Agricola Ñilhue 2030, Luis Moraga",
-    "camion": "VDKT-95",
-    "litros": 1000,
-    "programado": "01-10 20:15",
-    "atrasado": true,
-    "estado": "ruteada",
-    "visita_status": "failed"
+    "cliente": "Sociedad Agricola Ñilhue 2030",
+    "estado_odoo": "draft",
+    "status": "failed",
+    "litros": 1000
    }
   ],
-  "huerfanas": [],
   "sin_ref": [],
   "resumen": {
-   "total": 1,
-   "ruteadas": 1,
+   "total": 0,
+   "ruteadas": 0,
    "ruteadas_manana": 0,
    "sin_ruta": 0,
-   "huerfanas": 0
+   "huerfanas": 3
   }
  },
  "litros": {
@@ -38,9 +48,11 @@
     "visitas": 1,
     "pedido": 1800,
     "entregado": 1800,
-    "facturado": 0,
-    "facturas": [],
-    "estado": "por_facturar"
+    "facturado": 1800,
+    "facturas": [
+     "FAC 54623"
+    ],
+    "estado": "ok"
    },
    {
     "so": "S37163",
@@ -50,11 +62,13 @@
     "especial": false,
     "parcial": true,
     "visitas": 1,
-    "pedido": 1000,
+    "pedido": 1666,
     "entregado": 1666,
-    "facturado": 0,
-    "facturas": [],
-    "estado": "por_facturar"
+    "facturado": 1666,
+    "facturas": [
+     "FAC 54622"
+    ],
+    "estado": "ok"
    },
    {
     "so": "S37162",
@@ -66,9 +80,11 @@
     "visitas": 1,
     "pedido": 650,
     "entregado": 650,
-    "facturado": 0,
-    "facturas": [],
-    "estado": "por_facturar"
+    "facturado": 650,
+    "facturas": [
+     "FAC 54624"
+    ],
+    "estado": "ok"
    },
    {
     "so": "S37157",
@@ -80,9 +96,11 @@
     "visitas": 1,
     "pedido": 1800,
     "entregado": 1800,
-    "facturado": 0,
-    "facturas": [],
-    "estado": "por_facturar"
+    "facturado": 1800,
+    "facturas": [
+     "FAC 54626"
+    ],
+    "estado": "ok"
    },
    {
     "so": "S37155",
@@ -94,9 +112,11 @@
     "visitas": 1,
     "pedido": 1000,
     "entregado": 1000,
-    "facturado": 0,
-    "facturas": [],
-    "estado": "por_facturar"
+    "facturado": 1000,
+    "facturas": [
+     "FAC 54629"
+    ],
+    "estado": "ok"
    },
    {
     "so": "S37153",
@@ -108,9 +128,11 @@
     "visitas": 1,
     "pedido": 1000,
     "entregado": 1000,
-    "facturado": 0,
-    "facturas": [],
-    "estado": "por_facturar"
+    "facturado": 1000,
+    "facturas": [
+     "FAC 54631"
+    ],
+    "estado": "ok"
    },
    {
     "so": "S37151",
@@ -150,9 +172,11 @@
     "visitas": 1,
     "pedido": 1000,
     "entregado": 1000,
-    "facturado": 0,
-    "facturas": [],
-    "estado": "por_facturar"
+    "facturado": 1000,
+    "facturas": [
+     "FAC 54633"
+    ],
+    "estado": "ok"
    },
    {
     "so": "S37133",
@@ -178,7 +202,7 @@
     "especial": false,
     "parcial": true,
     "visitas": 1,
-    "pedido": 1500,
+    "pedido": 1950,
     "entregado": 1950,
     "facturado": 1950,
     "facturas": [
@@ -212,9 +236,11 @@
     "visitas": 1,
     "pedido": 1000,
     "entregado": 1000,
-    "facturado": 0,
-    "facturas": [],
-    "estado": "por_facturar"
+    "facturado": 1000,
+    "facturas": [
+     "FAC 54627"
+    ],
+    "estado": "ok"
    },
    {
     "so": "S37116",
@@ -226,9 +252,11 @@
     "visitas": 1,
     "pedido": 1500,
     "entregado": 1500,
-    "facturado": 0,
-    "facturas": [],
-    "estado": "por_facturar"
+    "facturado": 1500,
+    "facturas": [
+     "FAC 54628"
+    ],
+    "estado": "ok"
    },
    {
     "so": "S37115",
@@ -238,7 +266,7 @@
     "especial": false,
     "parcial": false,
     "visitas": 1,
-    "pedido": 1000,
+    "pedido": 900,
     "entregado": 900,
     "facturado": 900,
     "facturas": [
@@ -272,9 +300,11 @@
     "visitas": 1,
     "pedido": 2000,
     "entregado": 2000,
-    "facturado": 0,
-    "facturas": [],
-    "estado": "por_facturar"
+    "facturado": 2000,
+    "facturas": [
+     "FAC 54632"
+    ],
+    "estado": "ok"
    },
    {
     "so": "S37097",
@@ -286,9 +316,11 @@
     "visitas": 1,
     "pedido": 1000,
     "entregado": 1000,
-    "facturado": 0,
-    "facturas": [],
-    "estado": "por_facturar"
+    "facturado": 1000,
+    "facturas": [
+     "FAC 54625"
+    ],
+    "estado": "ok"
    },
    {
     "so": "S37094",
@@ -298,11 +330,13 @@
     "especial": false,
     "parcial": true,
     "visitas": 1,
-    "pedido": 2000,
+    "pedido": 1100,
     "entregado": 1100,
-    "facturado": 0,
-    "facturas": [],
-    "estado": "por_facturar"
+    "facturado": 1100,
+    "facturas": [
+     "FAC 54630"
+    ],
+    "estado": "ok"
    },
    {
     "so": "S37026",
@@ -2196,9 +2230,9 @@
     "fecha": "2026-10-02",
     "entregas": 20,
     "entregado": 25266,
-    "facturado": 7650,
-    "por_facturar": 17616,
-    "sin_factura": 14
+    "facturado": 23166,
+    "por_facturar": 2100,
+    "sin_factura": 2
    },
    {
     "fecha": "2026-10-01",
@@ -2249,9 +2283,9 @@
     "sin_factura": 0
    }
   ],
-  "por_facturar_total": 27106,
+  "por_facturar_total": 11590,
   "entregado_hoy": 25266,
-  "facturado_hoy": 7650,
+  "facturado_hoy": 23166,
   "fuera_simpli": []
  },
  "cierre": {
@@ -2306,6 +2340,14 @@
   "fase3": {
    "traspasos": [
     {
+     "nombre": "TJVS/INT/00011",
+     "estado": "draft",
+     "fecha": "2026-10-02",
+     "origen": "PH",
+     "destino": "PH",
+     "litros": 500
+    },
+    {
      "nombre": "HHPT/INT/00336",
      "estado": "confirmed",
      "fecha": "2026-09-16",
@@ -2340,158 +2382,8 @@
    ]
   },
   "fase4": {
-   "salidas": [
-    {
-     "picking": "TJVS/OUT/01972",
-     "so": "S37149",
-     "cliente": "Sociedad Agricola Ñilhue 2030, Luis Moraga",
-     "cam": "TJ",
-     "fecha": "2026-10-01",
-     "litros": 1000,
-     "entregada_simpli": false
-    }
-   ],
+   "salidas": [],
    "ventas": [
-    {
-     "so": "S37151",
-     "cliente": "SUGAL CHILE LIMITADA",
-     "especial": true,
-     "cam": "PH",
-     "cam_simpli": [
-      "PH"
-     ],
-     "cam_odoo": [
-      "PH"
-     ],
-     "picking": null,
-     "fecha_entrega": "2026-10-02",
-     "simpli": 850,
-     "cantidad": 850,
-     "entregado": 850,
-     "facturado": 0,
-     "problemas": [
-      "por_facturar"
-     ],
-     "acciones": [
-      "Facturar 850 L (Sugal: revisar en Ventas)"
-     ]
-    },
-    {
-     "so": "S37150",
-     "cliente": "SUGAL CHILE LIMITADA",
-     "especial": true,
-     "cam": "PY",
-     "cam_simpli": [
-      "PY"
-     ],
-     "cam_odoo": [
-      "PY"
-     ],
-     "picking": null,
-     "fecha_entrega": "2026-10-02",
-     "simpli": 1100,
-     "cantidad": 1100,
-     "entregado": 1100,
-     "facturado": 0,
-     "problemas": [
-      "por_facturar"
-     ],
-     "acciones": [
-      "Facturar 1.100 L (Sugal: revisar en Ventas)"
-     ]
-    },
-    {
-     "so": "S37115",
-     "cliente": "SOCIEDAD AGRICOLA SANTA TERESA",
-     "especial": false,
-     "cam": "SH",
-     "cam_simpli": [
-      "SH"
-     ],
-     "cam_odoo": [
-      "SH"
-     ],
-     "picking": null,
-     "fecha_entrega": "2026-10-01",
-     "simpli": 900,
-     "cantidad": 1000,
-     "entregado": 900,
-     "facturado": 900,
-     "problemas": [
-      "cantidad"
-     ],
-     "acciones": [
-      "Bajar Cantidad de 1.000 a 900 L en la orden"
-     ]
-    },
-    {
-     "so": "S37094",
-     "cliente": "LA FEÑA SPA",
-     "especial": false,
-     "cam": "TJ",
-     "cam_simpli": [
-      "TJ"
-     ],
-     "cam_odoo": [
-      "TJ"
-     ],
-     "picking": null,
-     "fecha_entrega": "2026-10-02",
-     "simpli": 1100,
-     "cantidad": 2000,
-     "entregado": 1100,
-     "facturado": 1100,
-     "problemas": [
-      "cantidad"
-     ],
-     "acciones": [
-      "Bajar Cantidad de 2.000 a 1.100 L en la orden"
-     ]
-    },
-    {
-     "so": "S37120",
-     "cliente": "LUIS ARTEMIO JORQUERA JORQUERA",
-     "especial": false,
-     "cam": "TJ",
-     "cam_simpli": [
-      "TJ"
-     ],
-     "cam_odoo": [
-      "TJ"
-     ],
-     "picking": null,
-     "fecha_entrega": "2026-10-02",
-     "simpli": 1950,
-     "cantidad": 1500,
-     "entregado": 1950,
-     "facturado": 1950,
-     "problemas": [
-      "cantidad"
-     ],
-     "acciones": [
-      "Subir Cantidad de 1.500 a 1.950 L"
-     ]
-    },
-    {
-     "so": "S37149",
-     "cliente": "Sociedad Agricola Ñilhue 2030",
-     "especial": false,
-     "cam": "TJ",
-     "cam_simpli": [],
-     "cam_odoo": [],
-     "picking": "TJVS/OUT/01972",
-     "fecha_entrega": "2026-10-02",
-     "simpli": null,
-     "cantidad": 1000,
-     "entregado": 0,
-     "facturado": 0,
-     "problemas": [
-      "sin_entrega"
-     ],
-     "acciones": [
-      "Salida TJVS/OUT/01972 abierta pero SimpliRoute no la muestra entregada: si no salió, reprogramar; si salió, validar"
-     ]
-    },
     {
      "so": "S37112",
      "cliente": "DOMINGO ENRIQUE TORRES VIELMA",
@@ -2517,40 +2409,9 @@
       "Faltan 1.400 L por validar y no hay salida abierta: revisar movimientos",
       "Facturar 1.400 L"
      ]
-    },
-    {
-     "so": "S37163",
-     "cliente": "LUIS ALBERTO IBARRA CARRILLO",
-     "especial": false,
-     "cam": "TY",
-     "cam_simpli": [
-      "TY"
-     ],
-     "cam_odoo": [
-      "TY"
-     ],
-     "picking": null,
-     "fecha_entrega": "2026-10-02",
-     "simpli": 1666,
-     "cantidad": 1000,
-     "entregado": 1666,
-     "facturado": 1666,
-     "problemas": [
-      "cantidad"
-     ],
-     "acciones": [
-      "Subir Cantidad de 1.000 a 1.666 L"
-     ]
     }
    ],
    "a_facturar": [
-    {
-     "so": "S37115",
-     "cliente": "SOCIEDAD AGRICOLA SANTA TERESA",
-     "cam": "SH",
-     "fecha_entrega": "2026-10-01",
-     "especial": false
-    },
     {
      "so": "S37096",
      "cliente": "SOCIEDAD AGRICOLA SANTA ROSA",
@@ -2564,53 +2425,11 @@
      "cam": "TY",
      "fecha_entrega": "2026-10-01",
      "especial": false
-    },
-    {
-     "so": "S37150",
-     "cliente": "SUGAL CHILE LIMITADA",
-     "cam": "PY",
-     "fecha_entrega": "2026-10-02",
-     "especial": true
-    },
-    {
-     "so": "S37151",
-     "cliente": "SUGAL CHILE LIMITADA",
-     "cam": "TJ",
-     "fecha_entrega": "2026-10-02",
-     "especial": true
-    },
-    {
-     "so": "S37094",
-     "cliente": "LA FEÑA SPA",
-     "cam": "TJ",
-     "fecha_entrega": "2026-10-02",
-     "especial": false
-    },
-    {
-     "so": "S37163",
-     "cliente": "LUIS ALBERTO IBARRA CARRILLO",
-     "cam": "TY",
-     "fecha_entrega": "2026-10-02",
-     "especial": false
-    },
-    {
-     "so": "S37120",
-     "cliente": "LUIS ARTEMIO JORQUERA JORQUERA",
-     "cam": "TJ",
-     "fecha_entrega": "2026-10-02",
-     "especial": false
-    },
-    {
-     "so": "S37149",
-     "cliente": "Sociedad Agricola Ñilhue 2030",
-     "cam": "VD",
-     "fecha_entrega": "2026-10-02",
-     "especial": false
     }
    ],
    "entregadas_hoy": 21,
    "bodega_ventana": 0,
-   "revisadas_ventana": 139,
+   "revisadas_ventana": 138,
    "salidas_entregadas": 0
   },
   "fase5": {
@@ -2624,16 +2443,16 @@
     },
     {
      "cam": "PH",
-     "odoo": -500,
+     "odoo": 0,
      "ajuste": 0,
-     "esperado": -500,
+     "esperado": 0,
      "ventas_simpli_hoy": 4650
     },
     {
      "cam": "PY",
-     "odoo": 4700,
+     "odoo": 4600,
      "ajuste": 0,
-     "esperado": 4700,
+     "esperado": 4600,
      "ventas_simpli_hoy": 2600
     },
     {
@@ -2645,16 +2464,16 @@
     },
     {
      "cam": "TJ",
-     "odoo": 1500,
+     "odoo": 1000,
      "ajuste": 0,
-     "esperado": 1500,
+     "esperado": 1000,
      "ventas_simpli_hoy": 5050
     },
     {
      "cam": "TY",
-     "odoo": -3166,
+     "odoo": -3066,
      "ajuste": -1400,
-     "esperado": -4566,
+     "esperado": -4466,
      "ventas_simpli_hoy": 4566
     },
     {
