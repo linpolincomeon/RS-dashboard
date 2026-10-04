@@ -1,8 +1,8 @@
 {
- "generated_utc": "2026-10-03T14:19+00:00",
+ "generated_utc": "2026-10-04T14:47+00:00",
  "fuente": "API SimpliRoute · /routes/visits por planned_date",
- "desde": "2026-08-20",
- "hasta": "2026-10-03",
+ "desde": "2026-08-21",
+ "hasta": "2026-10-04",
  "vehiculos": [
   {
    "id": 734082,
@@ -108,17 +108,17 @@
    "fecha": "2026-10-03",
    "cam": "PH",
    "chofer": "Matias",
-   "completadas": 2,
-   "especiales": 0,
+   "completadas": 3,
+   "especiales": 1,
    "parciales": 0,
    "fallidas": 0,
    "canceladas": 0,
-   "pendientes": 1,
-   "litros_entregados": 1800,
+   "pendientes": 0,
+   "litros_entregados": 2600,
    "litros_planificados": 2600,
    "salida": "08:00",
    "primer_checkout": "09:38",
-   "ultimo_checkout": "10:07"
+   "ultimo_checkout": "11:22"
   },
   {
    "fecha": "2026-10-02",
@@ -2331,16 +2331,16 @@
    "cam": "PH",
    "patente": "PHXC-44",
    "chofer": "Matias",
-   "status": "pending",
-   "especial": false,
+   "status": "failed",
+   "especial": true,
    "litros": 800.0,
    "cliente": "SUGAL CHILE LIMITADA",
    "rut": "",
    "ref": "PHXC/OUT/01732 - S37171",
    "so": "S37171",
    "salida": "09:33",
-   "checkout": null,
-   "motivo": ""
+   "checkout": "11:22",
+   "motivo": "800 litros entregados"
   },
   {
    "id": 935665581,
@@ -3664,6 +3664,23 @@
    "rut": "",
    "ref": "PHXC/OUT/01720 - S37132",
    "so": "S37132",
+   "salida": null,
+   "checkout": null,
+   "motivo": ""
+  },
+  {
+   "id": 935999857,
+   "fecha": "2026-10-01",
+   "cam": null,
+   "patente": null,
+   "chofer": null,
+   "status": "pending",
+   "especial": false,
+   "litros": 1400.0,
+   "cliente": "DOMINGO ENRIQUE TORRES VIELMA",
+   "rut": "",
+   "ref": "TYDG/OUT/00288 - S37112",
+   "so": "S37112",
    "salida": null,
    "checkout": null,
    "motivo": ""
