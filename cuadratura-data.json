@@ -1,25 +1,17 @@
 {
- "generated_utc": "2026-10-04T00:31+00:00",
- "hoy": "2026-10-03",
- "desde": "2026-09-27",
+ "generated_utc": "2026-10-04T05:41+00:00",
+ "hoy": "2026-10-04",
+ "desde": "2026-09-28",
  "rutas": {
   "pendientes": [],
-  "huerfanas": [
-   {
-    "so": "S37171",
-    "cliente": "SUGAL CHILE LIMITADA",
-    "estado_odoo": "draft",
-    "status": "failed",
-    "litros": 800
-   }
-  ],
+  "huerfanas": [],
   "sin_ref": [],
   "resumen": {
    "total": 0,
    "ruteadas": 0,
    "ruteadas_manana": 0,
    "sin_ruta": 0,
-   "huerfanas": 1
+   "huerfanas": 0
   }
  },
  "litros": {
@@ -2210,23 +2202,17 @@
      "FAC 54482"
     ],
     "estado": "ok"
-   },
-   {
-    "so": "S36858",
-    "fecha": "2026-09-27",
-    "cliente": "SUGAL CHILE LIMITADA",
-    "camion": "PHXC-44",
-    "especial": false,
-    "parcial": false,
-    "visitas": 1,
-    "pedido": 890,
-    "entregado": 890,
-    "facturado": 0,
-    "facturas": [],
-    "estado": "por_facturar"
    }
   ],
   "dias": [
+   {
+    "fecha": "2026-10-04",
+    "entregas": 0,
+    "entregado": 0,
+    "facturado": 0,
+    "por_facturar": 0,
+    "sin_factura": 0
+   },
    {
     "fecha": "2026-10-03",
     "entregas": 3,
@@ -2274,19 +2260,11 @@
     "facturado": 73600,
     "por_facturar": 4200,
     "sin_factura": 5
-   },
-   {
-    "fecha": "2026-09-27",
-    "entregas": 1,
-    "entregado": 890,
-    "facturado": 0,
-    "por_facturar": 890,
-    "sin_factura": 1
    }
   ],
-  "por_facturar_total": 12390,
-  "entregado_hoy": 2600,
-  "facturado_hoy": 3200,
+  "por_facturar_total": 11500,
+  "entregado_hoy": 0,
+  "facturado_hoy": 0,
   "fuera_simpli": []
  },
  "cierre": {
@@ -2308,57 +2286,6 @@
      "factura_estado": "borrador_sin_vincular",
      "factura_total": 15731467,
      "factura_litros": 10000
-    },
-    {
-     "po": "P00903",
-     "proveedor": "ENAP REFINERIAS S.A.",
-     "cam": "PH",
-     "fecha": "2026-10-02",
-     "hora": "21:30",
-     "litros": 10000,
-     "correccion": 3,
-     "litros_real": 10003,
-     "precio": 1321.97,
-     "recibida": true,
-     "devuelta": true,
-     "factura": null,
-     "factura_estado": "sin_factura",
-     "factura_total": null,
-     "factura_litros": null
-    },
-    {
-     "po": "P00907",
-     "proveedor": "ADQUIM SPA",
-     "cam": "TY",
-     "fecha": "2026-10-02",
-     "hora": "11:43",
-     "litros": 15000,
-     "correccion": null,
-     "litros_real": 15000,
-     "precio": 1333.61,
-     "recibida": true,
-     "devuelta": false,
-     "factura": null,
-     "factura_estado": "sin_factura",
-     "factura_total": null,
-     "factura_litros": null
-    },
-    {
-     "po": "P00906",
-     "proveedor": "ADQUIM SPA",
-     "cam": "PY",
-     "fecha": "2026-10-02",
-     "hora": "11:38",
-     "litros": 15000,
-     "correccion": null,
-     "litros_real": 15000,
-     "precio": 1333.61,
-     "recibida": true,
-     "devuelta": false,
-     "factura": null,
-     "factura_estado": "sin_factura",
-     "factura_total": null,
-     "factura_litros": null
     }
    ],
    "borradores_sueltos": [],
@@ -2420,9 +2347,9 @@
      "especial": false
     }
    ],
-   "entregadas_hoy": 3,
+   "entregadas_hoy": 0,
    "bodega_ventana": 0,
-   "revisadas_ventana": 139,
+   "revisadas_ventana": 138,
    "salidas_entregadas": 0
   },
   "fase5": {
@@ -2439,7 +2366,7 @@
      "odoo": 7400,
      "ajuste": 0,
      "esperado": 7400,
-     "ventas_simpli_hoy": 2600
+     "ventas_simpli_hoy": 0
     },
     {
      "cam": "PY",
@@ -2481,18 +2408,18 @@
   "fase6": {
    "por_aprobar": [
     {
-     "so": "S30777",
-     "cliente": "EL PARRON SPA",
-     "cam": "TJ",
-     "fecha_entrega": "2026-05-12",
-     "excepcion": "No tiene Línea de Crédito Aprobada"
-    },
-    {
      "so": "S30784",
      "cliente": "EL PARRON SPA",
      "cam": "TJ",
      "fecha_entrega": "2026-05-12",
      "excepcion": ""
+    },
+    {
+     "so": "S30777",
+     "cliente": "EL PARRON SPA",
+     "cam": "TJ",
+     "fecha_entrega": "2026-05-12",
+     "excepcion": "No tiene Línea de Crédito Aprobada"
     },
     {
      "so": "S31022",
@@ -2509,7 +2436,7 @@
      "excepcion": ""
     },
     {
-     "so": "S36781",
+     "so": "S36780",
      "cliente": "SUGAL CHILE LIMITADA",
      "cam": "PH",
      "fecha_entrega": "2026-09-25",
@@ -2523,7 +2450,7 @@
      "excepcion": ""
     },
     {
-     "so": "S36780",
+     "so": "S36781",
      "cliente": "SUGAL CHILE LIMITADA",
      "cam": "PH",
      "fecha_entrega": "2026-09-25",
@@ -2544,21 +2471,14 @@
      "excepcion": ""
     },
     {
-     "so": "S36884",
+     "so": "S36887",
      "cliente": "SUGAL CHILE LIMITADA",
      "cam": "VD",
      "fecha_entrega": "2026-09-28",
      "excepcion": ""
     },
     {
-     "so": "S36885",
-     "cliente": "SUGAL CHILE LIMITADA",
-     "cam": "VD",
-     "fecha_entrega": "2026-09-28",
-     "excepcion": ""
-    },
-    {
-     "so": "S36886",
+     "so": "S36888",
      "cliente": "SUGAL CHILE LIMITADA",
      "cam": "PY",
      "fecha_entrega": "2026-09-28",
@@ -2572,14 +2492,21 @@
      "excepcion": ""
     },
     {
-     "so": "S36888",
+     "so": "S36886",
      "cliente": "SUGAL CHILE LIMITADA",
      "cam": "PY",
      "fecha_entrega": "2026-09-28",
      "excepcion": ""
     },
     {
-     "so": "S36887",
+     "so": "S36885",
+     "cliente": "SUGAL CHILE LIMITADA",
+     "cam": "VD",
+     "fecha_entrega": "2026-09-28",
+     "excepcion": ""
+    },
+    {
+     "so": "S36884",
      "cliente": "SUGAL CHILE LIMITADA",
      "cam": "VD",
      "fecha_entrega": "2026-09-28",
@@ -2626,12 +2553,47 @@
      "cam": "PY",
      "fecha_entrega": "2026-09-30",
      "excepcion": ""
+    },
+    {
+     "so": "S37174",
+     "cliente": "AGRICOLA EL CABRINO LIMITADA",
+     "cam": "PH",
+     "fecha_entrega": "2026-10-05",
+     "excepcion": ""
+    },
+    {
+     "so": "S37169",
+     "cliente": "MAESTRANZA Y SERVICIOS INTEGRALES METALMECANICOS CACHAPOAL S A",
+     "cam": "PH",
+     "fecha_entrega": "2026-10-05",
+     "excepcion": ""
+    },
+    {
+     "so": "S37167",
+     "cliente": "CONSTRUCCION E INGENIERIA AGUAS CLARAS SPA",
+     "cam": "VD",
+     "fecha_entrega": "2026-10-05",
+     "excepcion": ""
+    },
+    {
+     "so": "S37166",
+     "cliente": "AGRICOLA TUCUQUERE SPA",
+     "cam": "VD",
+     "fecha_entrega": "2026-10-05",
+     "excepcion": ""
+    },
+    {
+     "so": "S37164",
+     "cliente": "SOCIEDAD COMERCIAL LUIS PARRAGUEZ G E HIJOS LTDA",
+     "cam": "VD",
+     "fecha_entrega": "2026-10-05",
+     "excepcion": ""
     }
    ],
    "con_excepcion": 2,
    "validadas_manana": 0,
    "visitas_manana": 0,
-   "fecha": "2026-10-04"
+   "fecha": "2026-10-05"
   }
  }
 }
