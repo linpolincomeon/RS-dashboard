@@ -81,7 +81,7 @@
 
 <div class="card vw-cierre" hidden id="cardCierre">
   <h2>✅ Cierre diario — qué corregir hoy</h2>
-  <div class="note" style="margin:0 0 12px">Cruce automático Odoo ↔ SimpliRoute del instructivo de cierre (fases 2–6). Muestra <b>solo lo que no cuadra</b> y la acción a tomar. Referencia de lo entregado = <b>SimpliRoute</b> (calza al litro con la planilla de bodegas en los camiones que la llenan). Solo lectura: las correcciones se hacen en Odoo. <span id="cierreStamp"></span></div>
+  <div class="note" style="margin:0 0 12px">Cruce automático Odoo ↔ SimpliRoute del instructivo de cierre (fases 2, 4, 5 y 6). Muestra <b>solo lo que no cuadra</b> y la acción a tomar. Referencia de lo entregado = <b>SimpliRoute</b> (calza al litro con la planilla de bodegas en los camiones que la llenan). Solo lectura: las correcciones se hacen en Odoo. <span id="cierreStamp"></span></div>
   <div class="kpi-grid" id="cierreKpis" style="margin-bottom:0"></div>
 </div>
 <div class="card vw-cierre" hidden>
@@ -98,10 +98,6 @@
   <h2>2 · Compras (cargas) — factura, litros y recepción</h2>
   <div class="note" style="margin:0 0 12px">Compras diésel de ayer y hoy. Las facturas ENAP llegan solas a Odoo como <b>borrador sin vincular</b>: aquí se cruzan por proveedor y litros con su orden de compra. El monto final a comparar con la CC es el de la factura una vez vinculada.</div>
   <div id="cierreCompras"></div>
-</div>
-<div class="card vw-cierre" hidden>
-  <h2>3 · Traspasos entre bodegas sin terminar</h2>
-  <div id="cierreTraspasos"></div>
 </div>
 <div class="card vw-cierre" hidden>
   <h2>6 · Pedidos de mañana</h2>
@@ -612,15 +608,15 @@ function renderCierre(C) {
   $('cierreStamp').innerHTML = `Dato de las <b>${gen.toLocaleTimeString('es-CL', { hour: '2-digit', minute: '2-digit', timeZone: 'America/Santiago' })}</b>` +
     (mins > 45 ? ` — <b class="bad">hace ${mins} min: para el cierre, correr "Update Cuadratura" (Actions → Run workflow) y recargar</b>` : ` (hace ${mins} min)`);
 
-  const f2 = K.fase2, f3 = K.fase3, f4 = K.fase4, f5 = K.fase5, f6 = K.fase6;
+  const f2 = K.fase2, f4 = K.fase4, f5 = K.fase5, f6 = K.fase6;
+  const ocBorrador = f2.oc_borrador || [];
   const comprasProb = f2.compras.filter(c => !c.recibida || c.factura_estado !== 'posted');
   const hoyCompras = f2.compras.filter(c => c.fecha === C.hoy && !c.devuelta);
   const nDevueltas = f2.compras.filter(c => c.devuelta).length;
   const saldosMal = f5.saldos.filter(s => s.ajuste);
 
   $('cierreKpis').innerHTML =
-    kpi('2 · Cargas hoy', hoyCompras.length, '', `${L(hoyCompras.reduce((a, c) => a + c.litros_real, 0))} L · ${f2.sin_recibir ? `<b class="bad">${f2.sin_recibir} sin recibir</b>` : 'todas recibidas'}${nDevueltas ? ` · <span class="warn">${nDevueltas} OC duplicadas/devueltas</span>` : ''}`) +
-    kpi('3 · Traspasos abiertos', f3.traspasos.length, f3.traspasos.length ? 'warn' : 'ok', 'sin validar en Odoo') +
+    kpi('2 · Cargas hoy', hoyCompras.length, ocBorrador.length ? 'bad' : '', `${L(hoyCompras.reduce((a, c) => a + c.litros_real, 0))} L · ${f2.sin_recibir ? `<b class="bad">${f2.sin_recibir} sin recibir</b>` : 'todas recibidas'}${nDevueltas ? ` · <span class="warn">${nDevueltas} OC duplicadas/devueltas</span>` : ''}${ocBorrador.length ? ` · <b class="bad">${ocBorrador.length} OC en BORRADOR</b>` : ''}`) +
     kpi('4 · Órdenes a corregir', f4.ventas.length, f4.ventas.length ? 'bad' : 'ok', `de ${f4.entregadas_hoy} entregadas hoy`) +
     kpi('5 · Camiones con ajuste', saldosMal.length, saldosMal.length ? 'warn' : 'ok', saldosMal.length ? 'cuadran al aplicar la fase 4' : 'Odoo = SimpliRoute') +
     kpi('6 · Mañana con excepción', f6.con_excepcion, f6.con_excepcion ? 'bad' : 'ok', `${f6.por_aprobar.length} por aprobar`);
@@ -684,12 +680,12 @@ function renderCierre(C) {
       '<div class="note">Borradores tipo "Del Giro" (monto global, sin litros) o de proveedores/cargas sin OC: identificar su carga en la CC y vincularlos a mano.</div>';
   }
 
-  // ── fase 3: traspasos ──
-  $('cierreTraspasos').innerHTML = f3.traspasos.length ? tabla(
-    ['Traspaso', 'Estado', 'Fecha', 'Origen → Destino', '#Litros'],
-    f3.traspasos.map(t => `<tr><td><b>${t.nombre}</b></td><td>${{ draft: 'borrador', confirmed: 'esperando', assigned: 'listo para validar', waiting: 'esperando' }[t.estado] || t.estado}</td><td>${fF(t.fecha)}</td><td>${t.origen} → ${t.destino}</td><td class="num">${L(t.litros)}</td></tr>`)) +
-    '<div class="note">Los antiguos en borrador probablemente sobran: cancelarlos para que no ensucien la lista.</div>'
-    : okMsg('Sin traspasos pendientes.');
+  if (ocBorrador.length) {
+    $('cierreCompras').innerHTML += `<h3 style="font-size:14px;margin:16px 0 8px">🚨 OC de diésel en BORRADOR (${ocBorrador.length}) — la carga NO está en el stock del camión</h3>` +
+      tabla(['OC', 'Proveedor', 'Camión', 'Fecha', '#Litros', 'Creada por'],
+        ocBorrador.map(b => `<tr><td><b>${b.po}</b></td><td>${b.proveedor}</td><td><b>${b.cam}</b></td><td>${fF(b.fecha)} ${b.hora}</td><td class="num">${L(b.litros)}</td><td>${b.creada_por}</td></tr>`)) +
+      '<div class="note">Confirmar la OC y validar la recepción en Odoo. Mientras no se haga, el camión vende con stock de menos y puede quedar negativo (caso VD −900 L, 05-oct: OC P00908 quedó en borrador desde el 02-oct).</div>';
+  }
 
   // ── fase 6: mañana ──
   const exc = f6.por_aprobar.filter(o => o.excepcion);

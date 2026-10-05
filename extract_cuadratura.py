@@ -277,26 +277,35 @@ def extract_cierre(models, uid, hoy, off, visitas, picks, pedido_por_so_ref):
     ) for j, x in enumerate(borr) if j not in bj
         and (x.get('invoice_date') or '') >= ayer_s]
 
-    # ── Fase 3: traspasos entre bodegas sin terminar ──
-    ints = sr_odoo(models, uid, 'stock.picking', [
-        ['picking_type_code', '=', 'internal'],
-        ['state', 'not in', ['done', 'cancel']],
-    ], ['name', 'state', 'scheduled_date', 'location_id', 'location_dest_id', 'origin'],
-        limit=500, order='scheduled_date desc')
-    int_qty = defaultdict(float)
-    if ints:
-        for mv in sr_odoo(models, uid, 'stock.move', [
-            ['picking_id', 'in', [i['id'] for i in ints]],
+    # ── OC de diésel en BORRADOR (hallazgo 05-oct, caso P00908/VD): la carga
+    # se crea pero nadie la confirma → no existe para el stock y el camión
+    # vende hasta quedar NEGATIVO (VD −900 L). Las queries de compras de arriba
+    # solo ven state purchase/done, así que esto era invisible al cierre.
+    # Ventana 5 días para cubrir fin de semana.
+    # (La fase 3 del instructivo —traspasos sin terminar— se eliminó el 05-oct
+    # a pedido de Pauline: la lista eran puros borradores antiguos/PH→PH.)
+    borr_pos = sr_odoo(models, uid, 'purchase.order', [
+        ['state', 'in', ['draft', 'sent']],
+        ['date_order', '>=', a_utc((hoy - dt.timedelta(days=5)).isoformat())],
+    ], ['name', 'partner_id', 'picking_type_id', 'date_order', 'create_uid'], limit=200)
+    oc_borrador = []
+    if borr_pos:
+        bl = defaultdict(float)
+        for l in sr_odoo(models, uid, 'purchase.order.line', [
+            ['order_id', 'in', [p['id'] for p in borr_pos]],
             ['product_id', '=', DIESEL_PRODUCT_ID],
-        ], ['picking_id', 'product_uom_qty'], limit=2000):
-            int_qty[mv['picking_id'][0]] += mv['product_uom_qty'] or 0
-    traspasos = [dict(
-        nombre=i['name'], estado=i['state'],
-        fecha=a_cl(i['scheduled_date']).strftime('%Y-%m-%d'),
-        origen=cam2(safe_name(i.get('location_id'))),
-        destino=cam2(safe_name(i.get('location_dest_id'))),
-        litros=round(int_qty.get(i['id'], 0)),
-    ) for i in ints]
+        ], ['order_id', 'product_qty'], limit=500):
+            bl[l['order_id'][0]] += l['product_qty'] or 0
+        for p in borr_pos:
+            if bl.get(p['id']):
+                f = a_cl(p['date_order'])
+                oc_borrador.append(dict(
+                    po=p['name'], proveedor=safe_name(p.get('partner_id')),
+                    cam=cam2(safe_name(p.get('picking_type_id'))),
+                    fecha=f.date().isoformat(), hora=f.strftime('%H:%M'),
+                    litros=round(bl[p['id']]),
+                    creada_por=safe_name(p.get('create_uid')),
+                ))
 
     # ── Fase 4: ventas — Cantidad = Entregado = Facturado, por orden ──
     # Referencia = litros entregados en SimpliRoute (verificado 29-sep: calzan al
@@ -499,8 +508,8 @@ def extract_cierre(models, uid, hoy, off, visitas, picks, pedido_por_so_ref):
 
     return dict(
         fase2=dict(compras=compras, borradores_sueltos=borradores_sueltos,
+                   oc_borrador=oc_borrador,
                    sin_recibir=sum(1 for c in compras if not c['recibida'])),
-        fase3=dict(traspasos=traspasos),
         fase4=dict(salidas=salidas, ventas=ventas, a_facturar=ordenes_a_facturar,
                    entregadas_hoy=len(entregadas_hoy), bodega_ventana=bodega_ventana,
                    revisadas_ventana=len(sos),
@@ -791,7 +800,7 @@ def main():
           f"por facturar (7d) {out['litros']['por_facturar_total']:,} L")
     c = out['cierre']
     print(f"  cierre: {c['fase2']['sin_recibir']} compras sin recibir · "
-          f"{len(c['fase3']['traspasos'])} traspasos abiertos · "
+          f"{len(c['fase2']['oc_borrador'])} OC en borrador · "
           f"{len(c['fase4']['salidas'])} salidas pendientes · "
           f"{len(c['fase4']['ventas'])} órdenes con problema · "
           f"{c['fase6']['con_excepcion']} con excepción mañana")
