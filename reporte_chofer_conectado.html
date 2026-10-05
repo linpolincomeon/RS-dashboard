@@ -611,7 +611,9 @@
     const litros = document.getElementById('litros').value;
     const btn = document.getElementById('submit-btn');
     const trasladoOK = (tipoSel !== 'traslado_sale' && tipoSel !== 'traslado_entra') || otroCamionSel;
-    btn.disabled = !(camionSel && tipoSel && litros && parseInt(litros, 10) > 0 && trasladoOK);
+    // INICIO y CIERRE aceptan 0 (camión que parte o termina vacío); el resto exige >0
+    const minLitros = (tipoSel === 'inicio' || tipoSel === 'cierre') ? 0 : 1;
+    btn.disabled = !(camionSel && tipoSel && litros && parseInt(litros, 10) >= minLitros && trasladoOK);
   }
 
   function enviar(){
