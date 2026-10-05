@@ -1,5 +1,5 @@
 {
- "generated_utc": "2026-10-05T13:30+00:00",
+ "generated_utc": "2026-10-05T13:41+00:00",
  "hoy": "2026-10-05",
  "desde": "2026-09-29",
  "rutas": {
@@ -68,7 +68,7 @@
     "programado": "04-10 18:55",
     "atrasado": true,
     "estado": "ruteada",
-    "visita_status": "pending"
+    "visita_status": "failed"
    },
    {
     "picking": "PHXC/OUT/01740",
@@ -195,6 +195,22 @@
     "facturado": 600,
     "facturas": [
      "FAC 54641"
+    ],
+    "estado": "ok"
+   },
+   {
+    "so": "S37177",
+    "fecha": "2026-10-05",
+    "cliente": "SUGAL CHILE LIMITADA",
+    "camion": "PHXC-44",
+    "especial": true,
+    "parcial": false,
+    "visitas": 1,
+    "pedido": 600,
+    "entregado": 600,
+    "facturado": 600,
+    "facturas": [
+     "FAC 54642"
     ],
     "estado": "ok"
    },
@@ -1821,9 +1837,9 @@
   "dias": [
    {
     "fecha": "2026-10-05",
-    "entregas": 6,
-    "entregado": 4600,
-    "facturado": 4444,
+    "entregas": 7,
+    "entregado": 5200,
+    "facturado": 5044,
     "por_facturar": 0,
     "sin_factura": 0
    },
@@ -1877,8 +1893,8 @@
    }
   ],
   "por_facturar_total": 7300,
-  "entregado_hoy": 4600,
-  "facturado_hoy": 3944,
+  "entregado_hoy": 5200,
+  "facturado_hoy": 4544,
   "fuera_simpli": []
  },
  "cierre": {
@@ -1952,7 +1968,7 @@
      "cam": "PH",
      "fecha": "2026-10-04",
      "litros": 600,
-     "entregada_simpli": false
+     "entregada_simpli": true
     },
     {
      "picking": "PHXC/OUT/01740",
@@ -2130,19 +2146,21 @@
      "cliente": "SUGAL CHILE LIMITADA",
      "especial": true,
      "cam": "PH",
-     "cam_simpli": [],
+     "cam_simpli": [
+      "PH"
+     ],
      "cam_odoo": [],
      "picking": "PHXC/OUT/01741",
      "fecha_entrega": "2026-10-05",
-     "simpli": null,
+     "simpli": 600,
      "cantidad": 600,
      "entregado": 0,
-     "facturado": 0,
+     "facturado": 600,
      "problemas": [
-      "sin_entrega"
+      "falta_validar"
      ],
      "acciones": [
-      "Salida PHXC/OUT/01741 abierta pero SimpliRoute no la muestra entregada: si no salió, reprogramar; si salió, validar"
+      "Validar PHXC/OUT/01741 por 600 L"
      ]
     },
     {
@@ -2429,13 +2447,6 @@
      "especial": false
     },
     {
-     "so": "S37177",
-     "cliente": "SUGAL CHILE LIMITADA",
-     "cam": "PH",
-     "fecha_entrega": "2026-10-05",
-     "especial": true
-    },
-    {
      "so": "S37179",
      "cliente": "SUGAL CHILE LIMITADA",
      "cam": "PH",
@@ -2492,10 +2503,10 @@
      "especial": false
     }
    ],
-   "entregadas_hoy": 6,
+   "entregadas_hoy": 7,
    "bodega_ventana": 0,
    "revisadas_ventana": 115,
-   "salidas_entregadas": 3
+   "salidas_entregadas": 4
   },
   "fase5": {
    "saldos": [
@@ -2509,9 +2520,9 @@
     {
      "cam": "PH",
      "odoo": 7400,
-     "ajuste": -2044,
-     "esperado": 5356,
-     "ventas_simpli_hoy": 2700
+     "ajuste": -2644,
+     "esperado": 4756,
+     "ventas_simpli_hoy": 3300
     },
     {
      "cam": "PY",
