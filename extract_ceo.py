@@ -514,47 +514,69 @@ def extract_weekly(models, uid, supplier_ids, contado_term_ids, ruta_stage_id, t
 # stock comprado a $1.300 el miércoles se sigue vendiendo a costo $1.300 el jueves
 # aunque ENAP haya subido. Se arma un pool ÚNICO de compañía (no por camión: los
 # camiones rotan stock en 1-3 días y el kardex por camión tiene descuadres) con
-# capas = facturas de compra posted de ENAP/Adquim/Adgreen (litros y $ TOTAL de la
-# factura = precio final $/L, NC de proveedor restan; ajustes de precio sin litros
-# —"Del Giro" qty 1— se ignoran) y se consumen en orden de llegada con los litros facturados (NC restan).
+# capas = facturas de compra posted de CUALQUIER proveedor con línea diésel ≥1.000 L
+# (litros y $ TOTAL de la factura = precio final $/L, NC de proveedor restan; ajustes
+# de precio sin litros —"Del Giro" qty 1— se ignoran) y se consumen en orden de llegada con los litros facturados (NC restan).
 # Desde abr-2026 (antes las compras venían como "Del Giro" sin litros); jun+ ya no
 # arrastra stock inicial. Si no hay capa disponible se costea al último precio de
 # compra y se reporta en fifo_cobertura.
 FIFO_START = "2026-04-01"
 
 
-def extract_margen_fifo(models, uid, supplier_ids, weekly):
+def extract_margen_fifo(models, uid, weekly):
     from collections import defaultdict, deque
     print("Margen PEPS: capas de compra desde", FIFO_START)
     buys = defaultdict(lambda: [0.0, 0.0])
-    # Base = precio FINAL $/L (total de factura), igual que margin_zone y el Mantenedor.
-    # NO usar el neto de línea: en compras ENAP oscila con el componente variable
-    # del impuesto (sep-2026: neto 1.166→1.240→1.340 con total fijo en 1.277).
-    plines = fetch_all(models, uid, "account.move.line", [
+    # Capas = CUALQUIER proveedor (ENAP, Adquim, Adgreen, Esmax=Aramco, JLC/Capdevila,
+    # HN...): factura posted con al menos una línea de diésel de ≥1.000 L. Copec/Esmax
+    # chico (petróleo de camiones, líneas de ~100 L) quedan fuera solos.
+    # Base = precio FINAL $/L = amount_total de la factura / litros. NO el neto de línea
+    # (en ENAP oscila con el impuesto variable: sep-2026 1.166→1.240→1.340 con total
+    # fijo $1.277) ni price_total de línea (sale al doble por los impuestos de compra).
+    def _es_diesel(l):
+        n = (l.get("name") or "").lower()
+        return (l.get("product_id") and l["product_id"][0] == DIESEL_B1_PRODUCT) or \
+            any(k in n for k in ("diesel", "pd b1", "pd a1", "aramco", "del giro"))
+    big = fetch_all(models, uid, "account.move.line", [
         ["move_id.move_type", "in", ["in_invoice", "in_refund"]],
         ["parent_state", "=", "posted"],
-        ["move_id.partner_id", "in", supplier_ids],
         ["move_id.invoice_date", ">=", FIFO_START],
         ["display_type", "=", "product"],
-    ], ["move_id", "quantity"])
-    litros_mov = defaultdict(float)
-    for l in plines:
-        q = l.get("quantity") or 0
-        if abs(q) > 1:  # "Del Giro" qty 1 = ajuste de precio sin litros
-            litros_mov[l["move_id"][0]] += q
-    mids = list(litros_mov)
-    pmoves = []
-    for off in range(0, len(mids), 500):
-        pmoves += sr(models, uid, "account.move", [["id", "in", mids[off:off + 500]]],
-                     ["invoice_date", "date", "amount_total", "move_type"], limit=500)
+        "|", ["quantity", ">=", 1000], ["quantity", "<=", -1000],
+    ], ["move_id", "product_id", "name", "quantity"])
+    mids = sorted({l["move_id"][0] for l in big if _es_diesel(l)})
+    alllines, pmoves = [], []
+    for off in range(0, len(mids), 300):
+        chunk = mids[off:off + 300]
+        alllines += sr(models, uid, "account.move.line",
+                       [["move_id", "in", chunk], ["display_type", "=", "product"]],
+                       ["move_id", "product_id", "name", "quantity", "price_unit"], limit=5000)
+        pmoves += sr(models, uid, "account.move", [["id", "in", chunk]],
+                     ["invoice_date", "date", "amount_total", "move_type", "partner_id"], limit=300)
+    by_mv = defaultdict(list)
+    for l in alllines:
+        by_mv[l["move_id"][0]].append(l)
+    relleno = []
     for mv in pmoves:
-        q = litros_mov[mv["id"]]
+        ls = [l for l in by_mv[mv["id"]] if _es_diesel(l) and abs(l.get("quantity") or 0) > 1]
+        ref = min((l["price_unit"] for l in ls if abs(l["quantity"]) >= 1000), default=0)
+        q = 0.0
+        for l in ls:
+            # línea de relleno contable (ej. Esmax 29-sep: "Diesel" 3.848 × $2.401 para
+            # cuadrar el total) → no son litros; el $ sí está en amount_total
+            if ref and l["price_unit"] > ref * 1.3:
+                relleno.append((mv["invoice_date"], mv["partner_id"][1][:20], l["quantity"]))
+                continue
+            q += l["quantity"]
         if q <= 0:
             continue
         s = -1 if mv["move_type"] == "in_refund" else 1
         d = mv.get("invoice_date") or mv["date"]
         buys[d][0] += s * q
         buys[d][1] += s * (mv.get("amount_total") or 0)
+    if relleno:
+        print("  líneas de relleno excluidas de litros:", relleno)
+    plines = pmoves
 
     slines = fetch_all(models, uid, "account.move.line", [
         ["move_id.move_type", "in", ["out_invoice", "out_refund"]],
@@ -626,7 +648,7 @@ def extract_margen_fifo(models, uid, supplier_ids, weekly):
         w["costo_fifo_l"] = round(ct / lit, 1) if lit > 0 else None
         w["margen_fifo_l"] = round((rt - ct) / lit, 1) if lit > 0 else None
         w["fifo_cobertura"] = round(1 - short / lit, 3) if lit > 0 else None
-    print(f"  {len(plines)} líneas compra, {len(slines)} líneas venta diésel, "
+    print(f"  {len(plines)} facturas compra, {len(slines)} líneas venta diésel, "
           f"stock en capas hoy {sum(x[0] for x in layers):,.0f} L")
 
 
@@ -1880,7 +1902,7 @@ def main():
     ruta_stage_id = lookup_ruta_stage_id(models, uid)
 
     weekly = extract_weekly(models, uid, supplier_ids, contado_term_ids, ruta_stage_id, term_map)
-    extract_margen_fifo(models, uid, supplier_ids, weekly)
+    extract_margen_fifo(models, uid, weekly)
     daily = extract_daily(models, uid)
     banks = extract_bank_balances(models, uid)
     total_cash = sum(b["balance"] for b in banks)
