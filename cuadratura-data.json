@@ -1,25 +1,106 @@
 {
- "generated_utc": "2026-10-06T00:55+00:00",
- "hoy": "2026-10-05",
- "desde": "2026-09-29",
+ "generated_utc": "2026-10-06T06:09+00:00",
+ "hoy": "2026-10-06",
+ "desde": "2026-09-30",
  "rutas": {
-  "pendientes": [],
-  "huerfanas": [
+  "pendientes": [
    {
-    "so": "S37185",
-    "cliente": "SUGAL CHILE LIMITADA",
-    "estado_odoo": "to_approve",
-    "status": "failed",
-    "litros": 1000
+    "picking": "PYHK/OUT/01434",
+    "so": "S37194",
+    "cliente": "SOC. DE TRANSPORTES TRACMAVI LTDA., Cristopher",
+    "camion": "PYHK-28",
+    "litros": 1500,
+    "programado": "05-10 09:18",
+    "atrasado": true,
+    "estado": "ruteada",
+    "visita_status": "pending"
+   },
+   {
+    "picking": "TJVS/OUT/01984",
+    "so": "S37219",
+    "cliente": "AGRIZANO S A, HUERTOSTA.MONICALOSNICHES- JAVIERLEYTON",
+    "camion": "TJVS-53",
+    "litros": 1000,
+    "programado": "05-10 12:40",
+    "atrasado": true,
+    "estado": "ruteada",
+    "visita_status": "pending"
+   },
+   {
+    "picking": "PYHK/OUT/01433",
+    "so": "S37228",
+    "cliente": "CONSTRUCTORA LO BLANCO SPA, CONSTRUCTORA LO BLANCO-Salvador",
+    "camion": "PYHK-28",
+    "litros": 1000,
+    "programado": "05-10 15:24",
+    "atrasado": true,
+    "estado": "ruteada",
+    "visita_status": "pending"
+   },
+   {
+    "picking": "PHXC/OUT/01753",
+    "so": "S37230",
+    "cliente": "CBARRIOS CONSTRUCTORA SPA, Obra Coya, Rancagua",
+    "camion": "PHXC-44",
+    "litros": 1500,
+    "programado": "05-10 15:33",
+    "atrasado": true,
+    "estado": "ruteada",
+    "visita_status": "pending"
+   },
+   {
+    "picking": "PHXC/OUT/01752",
+    "so": "S37232",
+    "cliente": "AGRICOLA OMEGA TRES LIMITADA, AGRICOLA OMEGA TRES- PEÑAFLOR",
+    "camion": "PHXC-44",
+    "litros": 1000,
+    "programado": "05-10 15:42",
+    "atrasado": true,
+    "estado": "ruteada",
+    "visita_status": "pending"
+   },
+   {
+    "picking": "PYHK/OUT/01432",
+    "so": "S37233",
+    "cliente": "AGRICOLA LOS ALPES LTDA, AGRICOLA LOS ALPES - AURORA - SAN CLEMENTE",
+    "camion": "PYHK-28",
+    "litros": 800,
+    "programado": "05-10 16:18",
+    "atrasado": true,
+    "estado": "ruteada",
+    "visita_status": "pending"
+   },
+   {
+    "picking": "PYHK/OUT/01435",
+    "so": "S37234",
+    "cliente": "SUGAL CHILE LIMITADA, LA BALLICA",
+    "camion": "PYHK-28",
+    "litros": 800,
+    "programado": "05-10 17:07",
+    "atrasado": true,
+    "estado": "ruteada",
+    "visita_status": "pending"
+   },
+   {
+    "picking": "VD/OUT/01756",
+    "so": "S37235",
+    "cliente": "SUGAL CHILE LIMITADA, LA BODEGA",
+    "camion": "VDKT-95",
+    "litros": 1000,
+    "programado": "05-10 17:09",
+    "atrasado": true,
+    "estado": "ruteada",
+    "visita_status": "pending"
    }
   ],
+  "huerfanas": [],
   "sin_ref": [],
   "resumen": {
-   "total": 0,
-   "ruteadas": 0,
+   "total": 8,
+   "ruteadas": 8,
    "ruteadas_manana": 0,
    "sin_ruta": 0,
-   "huerfanas": 1
+   "huerfanas": 0
   }
  },
  "litros": {
@@ -2012,6 +2093,14 @@
   ],
   "dias": [
    {
+    "fecha": "2026-10-06",
+    "entregas": 0,
+    "entregado": 0,
+    "facturado": 0,
+    "por_facturar": 0,
+    "sin_factura": 0
+   },
+   {
     "fecha": "2026-10-05",
     "entregas": 28,
     "entregado": 25406,
@@ -2058,19 +2147,11 @@
     "facturado": 66950,
     "por_facturar": 3000,
     "sin_factura": 2
-   },
-   {
-    "fecha": "2026-09-29",
-    "entregas": 0,
-    "entregado": 0,
-    "facturado": 0,
-    "por_facturar": 0,
-    "sin_factura": 0
    }
   ],
   "por_facturar_total": 8300,
-  "entregado_hoy": 25406,
-  "facturado_hoy": 23380,
+  "entregado_hoy": 0,
+  "facturado_hoy": 0,
   "fuera_simpli": []
  },
  "cierre": {
@@ -2116,20 +2197,303 @@
    "sin_recibir": 0
   },
   "fase4": {
-   "salidas": [],
-   "ventas": [],
+   "salidas": [
+    {
+     "picking": "PYHK/OUT/01434",
+     "so": "S37194",
+     "cliente": "SOC. DE TRANSPORTES TRACMAVI LTDA., Cristopher",
+     "cam": "PY",
+     "fecha": "2026-10-05",
+     "litros": 1500,
+     "entregada_simpli": false
+    },
+    {
+     "picking": "TJVS/OUT/01984",
+     "so": "S37219",
+     "cliente": "AGRIZANO S A, HUERTOSTA.MONICALOSNICHES- JAVIERLEYTON",
+     "cam": "TJ",
+     "fecha": "2026-10-05",
+     "litros": 1000,
+     "entregada_simpli": false
+    },
+    {
+     "picking": "PYHK/OUT/01433",
+     "so": "S37228",
+     "cliente": "CONSTRUCTORA LO BLANCO SPA, CONSTRUCTORA LO BLANCO-Salvador",
+     "cam": "PY",
+     "fecha": "2026-10-05",
+     "litros": 1000,
+     "entregada_simpli": false
+    },
+    {
+     "picking": "PHXC/OUT/01753",
+     "so": "S37230",
+     "cliente": "CBARRIOS CONSTRUCTORA SPA, Obra Coya, Rancagua",
+     "cam": "PH",
+     "fecha": "2026-10-05",
+     "litros": 1500,
+     "entregada_simpli": false
+    },
+    {
+     "picking": "PHXC/OUT/01752",
+     "so": "S37232",
+     "cliente": "AGRICOLA OMEGA TRES LIMITADA, AGRICOLA OMEGA TRES- PEÑAFLOR",
+     "cam": "PH",
+     "fecha": "2026-10-05",
+     "litros": 1000,
+     "entregada_simpli": false
+    },
+    {
+     "picking": "PYHK/OUT/01432",
+     "so": "S37233",
+     "cliente": "AGRICOLA LOS ALPES LTDA, AGRICOLA LOS ALPES - AURORA - SAN CLEMENTE",
+     "cam": "PY",
+     "fecha": "2026-10-05",
+     "litros": 800,
+     "entregada_simpli": false
+    },
+    {
+     "picking": "PYHK/OUT/01435",
+     "so": "S37234",
+     "cliente": "SUGAL CHILE LIMITADA, LA BALLICA",
+     "cam": "PY",
+     "fecha": "2026-10-05",
+     "litros": 800,
+     "entregada_simpli": false
+    },
+    {
+     "picking": "VD/OUT/01756",
+     "so": "S37235",
+     "cliente": "SUGAL CHILE LIMITADA, LA BODEGA",
+     "cam": "VD",
+     "fecha": "2026-10-05",
+     "litros": 1000,
+     "entregada_simpli": false
+    }
+   ],
+   "ventas": [
+    {
+     "so": "S37230",
+     "cliente": "CBARRIOS CONSTRUCTORA SPA",
+     "especial": false,
+     "cam": "PH",
+     "cam_simpli": [],
+     "cam_odoo": [],
+     "picking": "PHXC/OUT/01753",
+     "fecha_entrega": "2026-10-06",
+     "simpli": null,
+     "cantidad": 1500,
+     "entregado": 0,
+     "facturado": 0,
+     "problemas": [
+      "sin_entrega"
+     ],
+     "acciones": [
+      "Salida PHXC/OUT/01753 abierta pero SimpliRoute no la muestra entregada: si no salió, reprogramar; si salió, validar"
+     ]
+    },
+    {
+     "so": "S37232",
+     "cliente": "AGRICOLA OMEGA TRES LIMITADA",
+     "especial": false,
+     "cam": "PH",
+     "cam_simpli": [],
+     "cam_odoo": [],
+     "picking": "PHXC/OUT/01752",
+     "fecha_entrega": "2026-10-06",
+     "simpli": null,
+     "cantidad": 1000,
+     "entregado": 0,
+     "facturado": 0,
+     "problemas": [
+      "sin_entrega"
+     ],
+     "acciones": [
+      "Salida PHXC/OUT/01752 abierta pero SimpliRoute no la muestra entregada: si no salió, reprogramar; si salió, validar"
+     ]
+    },
+    {
+     "so": "S37194",
+     "cliente": "SOC. DE TRANSPORTES TRACMAVI LTDA.",
+     "especial": false,
+     "cam": "PY",
+     "cam_simpli": [],
+     "cam_odoo": [],
+     "picking": "PYHK/OUT/01434",
+     "fecha_entrega": "2026-10-06",
+     "simpli": null,
+     "cantidad": 1500,
+     "entregado": 0,
+     "facturado": 0,
+     "problemas": [
+      "sin_entrega"
+     ],
+     "acciones": [
+      "Salida PYHK/OUT/01434 abierta pero SimpliRoute no la muestra entregada: si no salió, reprogramar; si salió, validar"
+     ]
+    },
+    {
+     "so": "S37228",
+     "cliente": "CONSTRUCTORA LO BLANCO SPA",
+     "especial": false,
+     "cam": "PY",
+     "cam_simpli": [],
+     "cam_odoo": [],
+     "picking": "PYHK/OUT/01433",
+     "fecha_entrega": "2026-10-06",
+     "simpli": null,
+     "cantidad": 1000,
+     "entregado": 0,
+     "facturado": 0,
+     "problemas": [
+      "sin_entrega"
+     ],
+     "acciones": [
+      "Salida PYHK/OUT/01433 abierta pero SimpliRoute no la muestra entregada: si no salió, reprogramar; si salió, validar"
+     ]
+    },
+    {
+     "so": "S37233",
+     "cliente": "AGRICOLA LOS ALPES LTDA",
+     "especial": false,
+     "cam": "PY",
+     "cam_simpli": [],
+     "cam_odoo": [],
+     "picking": "PYHK/OUT/01432",
+     "fecha_entrega": "2026-10-06",
+     "simpli": null,
+     "cantidad": 800,
+     "entregado": 0,
+     "facturado": 0,
+     "problemas": [
+      "sin_entrega"
+     ],
+     "acciones": [
+      "Salida PYHK/OUT/01432 abierta pero SimpliRoute no la muestra entregada: si no salió, reprogramar; si salió, validar"
+     ]
+    },
+    {
+     "so": "S37234",
+     "cliente": "SUGAL CHILE LIMITADA",
+     "especial": true,
+     "cam": "PY",
+     "cam_simpli": [],
+     "cam_odoo": [],
+     "picking": "PYHK/OUT/01435",
+     "fecha_entrega": "2026-10-06",
+     "simpli": null,
+     "cantidad": 800,
+     "entregado": 0,
+     "facturado": 0,
+     "problemas": [
+      "sin_entrega"
+     ],
+     "acciones": [
+      "Salida PYHK/OUT/01435 abierta pero SimpliRoute no la muestra entregada: si no salió, reprogramar; si salió, validar"
+     ]
+    },
+    {
+     "so": "S37219",
+     "cliente": "AGRIZANO S A",
+     "especial": false,
+     "cam": "TJ",
+     "cam_simpli": [],
+     "cam_odoo": [],
+     "picking": "TJVS/OUT/01984",
+     "fecha_entrega": "2026-10-06",
+     "simpli": null,
+     "cantidad": 1000,
+     "entregado": 0,
+     "facturado": 0,
+     "problemas": [
+      "sin_entrega"
+     ],
+     "acciones": [
+      "Salida TJVS/OUT/01984 abierta pero SimpliRoute no la muestra entregada: si no salió, reprogramar; si salió, validar"
+     ]
+    },
+    {
+     "so": "S37235",
+     "cliente": "SUGAL CHILE LIMITADA",
+     "especial": true,
+     "cam": "VD",
+     "cam_simpli": [],
+     "cam_odoo": [],
+     "picking": "VD/OUT/01756",
+     "fecha_entrega": "2026-10-06",
+     "simpli": null,
+     "cantidad": 1000,
+     "entregado": 0,
+     "facturado": 0,
+     "problemas": [
+      "sin_entrega"
+     ],
+     "acciones": [
+      "Salida VD/OUT/01756 abierta pero SimpliRoute no la muestra entregada: si no salió, reprogramar; si salió, validar"
+     ]
+    }
+   ],
    "a_facturar": [
     {
-     "so": "S37079",
+     "so": "S37194",
+     "cliente": "SOC. DE TRANSPORTES TRACMAVI LTDA.",
+     "cam": "PY",
+     "fecha_entrega": "2026-10-06",
+     "especial": false
+    },
+    {
+     "so": "S37219",
+     "cliente": "AGRIZANO S A",
+     "cam": "TJ",
+     "fecha_entrega": "2026-10-06",
+     "especial": false
+    },
+    {
+     "so": "S37228",
+     "cliente": "CONSTRUCTORA LO BLANCO SPA",
+     "cam": "PY",
+     "fecha_entrega": "2026-10-06",
+     "especial": false
+    },
+    {
+     "so": "S37230",
+     "cliente": "CBARRIOS CONSTRUCTORA SPA",
+     "cam": "PH",
+     "fecha_entrega": "2026-10-06",
+     "especial": false
+    },
+    {
+     "so": "S37232",
+     "cliente": "AGRICOLA OMEGA TRES LIMITADA",
+     "cam": "PH",
+     "fecha_entrega": "2026-10-06",
+     "especial": false
+    },
+    {
+     "so": "S37233",
+     "cliente": "AGRICOLA LOS ALPES LTDA",
+     "cam": "PY",
+     "fecha_entrega": "2026-10-06",
+     "especial": false
+    },
+    {
+     "so": "S37234",
      "cliente": "SUGAL CHILE LIMITADA",
      "cam": "PY",
-     "fecha_entrega": "2026-10-01",
+     "fecha_entrega": "2026-10-06",
+     "especial": true
+    },
+    {
+     "so": "S37235",
+     "cliente": "SUGAL CHILE LIMITADA",
+     "cam": "VD",
+     "fecha_entrega": "2026-10-06",
      "especial": true
     }
    ],
-   "entregadas_hoy": 28,
+   "entregadas_hoy": 0,
    "bodega_ventana": 0,
-   "revisadas_ventana": 125,
+   "revisadas_ventana": 133,
    "salidas_entregadas": 0
   },
   "fase5": {
@@ -2146,7 +2510,7 @@
      "odoo": 10000,
      "ajuste": 0,
      "esperado": 10000,
-     "ventas_simpli_hoy": 8056
+     "ventas_simpli_hoy": 0
     },
     {
      "cam": "PY",
@@ -2167,39 +2531,39 @@
      "odoo": 7800,
      "ajuste": 0,
      "esperado": 7800,
-     "ventas_simpli_hoy": 8200
+     "ventas_simpli_hoy": 0
     },
     {
      "cam": "TY",
      "odoo": 6884,
      "ajuste": 0,
      "esperado": 6884,
-     "ventas_simpli_hoy": 3650
+     "ventas_simpli_hoy": 0
     },
     {
      "cam": "VD",
      "odoo": 9870,
      "ajuste": 0,
      "esperado": 9870,
-     "ventas_simpli_hoy": 5500
+     "ventas_simpli_hoy": 0
     }
    ]
   },
   "fase6": {
    "por_aprobar": [
     {
-     "so": "S30777",
-     "cliente": "EL PARRON SPA",
-     "cam": "TJ",
-     "fecha_entrega": "2026-05-12",
-     "excepcion": "No tiene Línea de Crédito Aprobada"
-    },
-    {
      "so": "S30784",
      "cliente": "EL PARRON SPA",
      "cam": "TJ",
      "fecha_entrega": "2026-05-12",
      "excepcion": ""
+    },
+    {
+     "so": "S30777",
+     "cliente": "EL PARRON SPA",
+     "cam": "TJ",
+     "fecha_entrega": "2026-05-12",
+     "excepcion": "No tiene Línea de Crédito Aprobada"
     },
     {
      "so": "S36783",
@@ -2237,28 +2601,14 @@
      "excepcion": ""
     },
     {
-     "so": "S36888",
-     "cliente": "SUGAL CHILE LIMITADA",
+     "so": "S36987",
+     "cliente": "DIOGENES GERMAN CONCHA CONCHA",
      "cam": "PY",
      "fecha_entrega": "2026-09-28",
      "excepcion": ""
     },
     {
-     "so": "S36885",
-     "cliente": "SUGAL CHILE LIMITADA",
-     "cam": "VD",
-     "fecha_entrega": "2026-09-28",
-     "excepcion": ""
-    },
-    {
      "so": "S36884",
-     "cliente": "SUGAL CHILE LIMITADA",
-     "cam": "VD",
-     "fecha_entrega": "2026-09-28",
-     "excepcion": ""
-    },
-    {
-     "so": "S36883",
      "cliente": "SUGAL CHILE LIMITADA",
      "cam": "VD",
      "fecha_entrega": "2026-09-28",
@@ -2272,9 +2622,16 @@
      "excepcion": ""
     },
     {
-     "so": "S36987",
-     "cliente": "DIOGENES GERMAN CONCHA CONCHA",
+     "so": "S36888",
+     "cliente": "SUGAL CHILE LIMITADA",
      "cam": "PY",
+     "fecha_entrega": "2026-09-28",
+     "excepcion": ""
+    },
+    {
+     "so": "S36883",
+     "cliente": "SUGAL CHILE LIMITADA",
+     "cam": "VD",
      "fecha_entrega": "2026-09-28",
      "excepcion": ""
     },
@@ -2286,6 +2643,13 @@
      "excepcion": ""
     },
     {
+     "so": "S36885",
+     "cliente": "SUGAL CHILE LIMITADA",
+     "cam": "VD",
+     "fecha_entrega": "2026-09-28",
+     "excepcion": ""
+    },
+    {
      "so": "S36994",
      "cliente": "SUGAL CHILE LIMITADA",
      "cam": "PY",
@@ -2293,8 +2657,8 @@
      "excepcion": ""
     },
     {
-     "so": "S37021",
-     "cliente": "SERVICIOS AGRICOLAS Y COMERCIAL SANTA PAULA SPA",
+     "so": "S36993",
+     "cliente": "SUGAL CHILE LIMITADA",
      "cam": "PY",
      "fecha_entrega": "2026-09-29",
      "excepcion": ""
@@ -2307,8 +2671,8 @@
      "excepcion": ""
     },
     {
-     "so": "S36993",
-     "cliente": "SUGAL CHILE LIMITADA",
+     "so": "S37021",
+     "cliente": "SERVICIOS AGRICOLAS Y COMERCIAL SANTA PAULA SPA",
      "cam": "PY",
      "fecha_entrega": "2026-09-29",
      "excepcion": ""
@@ -2326,6 +2690,13 @@
      "cam": "PY",
      "fecha_entrega": "2026-09-30",
      "excepcion": "No tiene Línea de Crédito Aprobada"
+    },
+    {
+     "so": "S37079",
+     "cliente": "SUGAL CHILE LIMITADA",
+     "cam": "PY",
+     "fecha_entrega": "2026-10-01",
+     "excepcion": ""
     },
     {
      "so": "S37080",
@@ -2363,13 +2734,6 @@
      "excepcion": ""
     },
     {
-     "so": "S37202",
-     "cliente": "EL ESTRIBILLO SPA",
-     "cam": "TJ",
-     "fecha_entrega": "2026-10-05",
-     "excepcion": ""
-    },
-    {
      "so": "S37215",
      "cliente": "AGRIC Y GANAD LAS CASAS DE CALLEUQUE",
      "cam": "VD",
@@ -2377,66 +2741,31 @@
      "excepcion": ""
     },
     {
-     "so": "S37228",
-     "cliente": "CONSTRUCTORA LO BLANCO SPA",
-     "cam": "PY",
-     "fecha_entrega": "2026-10-06",
-     "excepcion": ""
-    },
-    {
-     "so": "S37194",
-     "cliente": "SOC. DE TRANSPORTES TRACMAVI LTDA.",
-     "cam": "PY",
-     "fecha_entrega": "2026-10-06",
-     "excepcion": ""
-    },
-    {
-     "so": "S37235",
-     "cliente": "SUGAL CHILE LIMITADA",
-     "cam": "VD",
-     "fecha_entrega": "2026-10-06",
-     "excepcion": ""
-    },
-    {
-     "so": "S37233",
-     "cliente": "AGRICOLA LOS ALPES LTDA",
-     "cam": "PY",
-     "fecha_entrega": "2026-10-06",
-     "excepcion": ""
-    },
-    {
-     "so": "S37234",
-     "cliente": "SUGAL CHILE LIMITADA",
-     "cam": "PY",
-     "fecha_entrega": "2026-10-06",
-     "excepcion": ""
-    },
-    {
-     "so": "S37219",
-     "cliente": "AGRIZANO S A",
+     "so": "S37202",
+     "cliente": "EL ESTRIBILLO SPA",
      "cam": "TJ",
-     "fecha_entrega": "2026-10-06",
+     "fecha_entrega": "2026-10-05",
      "excepcion": ""
     },
     {
-     "so": "S37230",
-     "cliente": "CBARRIOS CONSTRUCTORA SPA",
-     "cam": "PH",
-     "fecha_entrega": "2026-10-06",
+     "so": "S37173",
+     "cliente": "FRANCISCO GONZALEZ PIZARRO",
+     "cam": "TJ",
+     "fecha_entrega": "2026-10-07",
      "excepcion": ""
     },
     {
-     "so": "S37232",
-     "cliente": "AGRICOLA OMEGA TRES LIMITADA",
-     "cam": "PH",
-     "fecha_entrega": "2026-10-06",
+     "so": "S37237",
+     "cliente": "GUSTAVO ORLANDO VIELMA VIELMA",
+     "cam": "PY",
+     "fecha_entrega": "2026-10-07",
      "excepcion": ""
     }
    ],
    "con_excepcion": 2,
    "validadas_manana": 0,
    "visitas_manana": 0,
-   "fecha": "2026-10-06"
+   "fecha": "2026-10-07"
   }
  }
 }
