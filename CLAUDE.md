@@ -130,6 +130,7 @@ RM no tiene fila propia en el Mantenedor: "Paine y Lampa se cotizan a precio San
 ## Documentación adicional
 
 Si la tarea toca recaudación, cash flow, calculadora de excepción o debugging histórico: leer `REFERENCIA.md` (raíz del repo) antes de escribir código.
+Si toca márgenes (zona vs PEPS, por qué el retail se ve bajo, proveedores de diésel): leer `MARGEN_PEPS.md`.
 
 ## Estado actual (julio 2026)
 
