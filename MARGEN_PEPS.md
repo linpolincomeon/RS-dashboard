@@ -16,7 +16,9 @@ Documento de respaldo del KPI "Margen Real PEPS" del CEO dashboard. Leer antes d
 
 **Nota de nombre:** Pauline lo llamó "LIFO", pero lo que describió ("el stock comprado a $1.300 el
 miércoles se sigue vendiendo a costo $1.300 el jueves aunque ENAP suba") es **PEPS/FIFO**. LIFO
-sería lo contrario (costear primero lo último comprado = costo nuevo). En el dashboard se usa PEPS.
+sería lo contrario (costear primero lo último comprado = costo nuevo). **En el dashboard la etiqueta
+visible es "LIFO"** (pedido Pauline 06-10: el equipo no conoce "PEPS"); el método implementado y los
+campos del JSON (`*_fifo`) son primero-entra-primero-sale. No cambiar la etiqueta sin su OK.
 
 ## 2. ¿`margin_zone` es FIFO? No — es costo de reposición del día
 

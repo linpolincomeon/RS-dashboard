@@ -402,7 +402,9 @@ function render(){
     else if(curTab==='equipo') renderEquipo();
     setupTabs();
 }
-// Margen PEPS (costo real de compra por capas, ver extract_margen_fifo y MARGEN_PEPS.md).
+// Margen real por capas de compra (ver extract_margen_fifo y MARGEN_PEPS.md). Etiqueta
+// visible "LIFO" a pedido de Pauline 06-10-2026 (el equipo no conoce "PEPS"); el método
+// implementado es primero-entra-primero-sale. No cambiar la etiqueta sin su OK.
 // Cifra principal = PEPS de la semana; semáforo sobre el ACUMULADO de 4 semanas (semanal,
 // una alza ENAP da 13% y una baja 4% — se compensan en el mes); margin_zone queda como
 // "oficial comercial" en el subtítulo. Decisión Pauline 06-10-2026.
@@ -423,7 +425,7 @@ function kpiMargen(label,idx,pk,zk,lk,wk,meta){
     const sub=`acum. 4 sem ${acum!=null?fP(acum):'—'} vs meta ${meta!=null?fP(meta):'—'}`
         +(w[lk]!=null?` · $${fNum(Math.round(w[lk]))}/L`:'')
         +` · oficial (zona) ${fP(w[zk]||0)}`+cob;
-    return kpi(label+' PEPS',fP(m),prev&&prev[pk]!=null?pD(m,prev[pk]):null,cls,sub);
+    return kpi(label+' LIFO',fP(m),prev&&prev[pk]!=null?pD(m,prev[pk]):null,cls,sub);
 }
 // ── RS (was Ventas) ──
 function renderVentas(){
@@ -501,7 +503,7 @@ function renderVentas(){
     h+='<div class="table-card" style="overflow-x:auto"><table><thead><tr>';
     h+='<th>Semana</th><th class="r">Ventas</th><th class="r">Litros</th><th class="r">Desv.</th><th class="r">Nº Comp.</th><th class="r">Nº Cli.</th>';
     if(hasNM){h+='<th class="r">M.Retail</th><th class="r">M.Volumen</th>';}else{h+='<th class="r">Margen</th>';}
-    h+='<th class="r" title="Margen Retail con costo real de compra por capas (PEPS)">PEPS R</th><th class="r" title="Margen Volumen PEPS">PEPS V</th>';
+    h+='<th class="r" title="Margen Retail con costo real de compra por capas">LIFO R</th><th class="r" title="Margen Volumen con costo real de compra">LIFO V</th>';
     h+='<th class="r">$/L</th><th class="r">Recaud.</th><th class="r">Compras</th>';
     h+='</tr></thead><tbody>';
     D.weeks.slice(0,fN).forEach((w,i)=>{
@@ -527,7 +529,7 @@ function renderVentas(){
         h+=`<td class="r">${fM(w.compras_odoo||w.compras_enap||0)}</td>`;
         h+=`</tr>`;
     });
-    h+='</tbody></table><div class="note">* Parcial · M.Retail/M.Volumen = margin_zone oficial comercial (Odoo, costo del día) · PEPS = margen real: el stock se costea al precio de la factura de compra con que se compró, hasta agotarlo (solo diésel B1, ver MARGEN_PEPS.md) · NC descontadas · Semana comercial Jue→Mié</div></div>';
+    h+='</tbody></table><div class="note">* Parcial · M.Retail/M.Volumen = margin_zone oficial comercial (Odoo, costo del día) · LIFO = margen real: el stock se costea al precio de la factura de compra con que se compró, hasta agotarlo (solo diésel B1, ver MARGEN_PEPS.md) · NC descontadas · Semana comercial Jue→Mié</div></div>';
     el.innerHTML=h;
     // ── Charts ──
     const labels=wk.map(w=>w.label.split('-')[0]);
