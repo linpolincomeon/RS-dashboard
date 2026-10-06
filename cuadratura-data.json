@@ -1,44 +1,52 @@
 {
- "generated_utc": "2026-10-06T17:07+00:00",
+ "generated_utc": "2026-10-06T21:51+00:00",
  "hoy": "2026-10-06",
  "desde": "2026-09-30",
  "rutas": {
-  "pendientes": [
+  "pendientes": [],
+  "huerfanas": [
    {
-    "picking": "VD/OUT/01757",
-    "so": "S37215",
-    "cliente": "AGRIC Y GANAD LAS CASAS DE CALLEUQUE, JUAN VALDES",
-    "camion": "VDKT-95",
-    "litros": 800,
-    "programado": "05-10 12:02",
-    "atrasado": true,
-    "estado": "ruteada",
-    "visita_status": "pending"
+    "so": "S37235",
+    "cliente": "SUGAL CHILE LIMITADA",
+    "estado_odoo": "to_approve",
+    "status": "failed",
+    "litros": 1000
    },
    {
-    "picking": "PYHK/OUT/01436",
-    "so": "S37244",
-    "cliente": "LUIS ALBERTO IBARRA CARRILLO, MANUEL ORELLANA, LUIS IBARRA TALCA",
-    "camion": "PYHK-28",
-    "litros": 1000,
-    "programado": "06-10 09:31",
-    "atrasado": false,
-    "estado": "ruteada",
-    "visita_status": "pending"
+    "so": "S37234",
+    "cliente": "SUGAL CHILE LIMITADA",
+    "estado_odoo": "to_approve",
+    "status": "failed",
+    "litros": 800
    }
   ],
-  "huerfanas": [],
   "sin_ref": [],
   "resumen": {
-   "total": 2,
-   "ruteadas": 2,
+   "total": 0,
+   "ruteadas": 0,
    "ruteadas_manana": 0,
    "sin_ruta": 0,
-   "huerfanas": 0
+   "huerfanas": 2
   }
  },
  "litros": {
   "por_so": [
+   {
+    "so": "S37260",
+    "fecha": "2026-10-06",
+    "cliente": "TRANSPORTE SANTA ELENITA SPA",
+    "camion": "VDKT-95",
+    "especial": false,
+    "parcial": false,
+    "visitas": 1,
+    "pedido": 1000,
+    "entregado": 1000,
+    "facturado": 1000,
+    "facturas": [
+     "FAC 54673"
+    ],
+    "estado": "ok"
+   },
    {
     "so": "S37250",
     "fecha": "2026-10-06",
@@ -52,6 +60,22 @@
     "facturado": 700,
     "facturas": [
      "FAC 54671"
+    ],
+    "estado": "ok"
+   },
+   {
+    "so": "S37244",
+    "fecha": "2026-10-06",
+    "cliente": "LUIS ALBERTO IBARRA CARRILLO",
+    "camion": "PYHK-28",
+    "especial": false,
+    "parcial": false,
+    "visitas": 1,
+    "pedido": 1630,
+    "entregado": 1630,
+    "facturado": 1630,
+    "facturas": [
+     "FAC 54674"
     ],
     "estado": "ok"
    },
@@ -123,7 +147,7 @@
     "especial": false,
     "parcial": true,
     "visitas": 1,
-    "pedido": 1000,
+    "pedido": 940,
     "entregado": 940,
     "facturado": 940,
     "facturas": [
@@ -180,6 +204,22 @@
     "estado": "ok"
    },
    {
+    "so": "S37215",
+    "fecha": "2026-10-06",
+    "cliente": "AGRIC Y GANAD LAS CASAS DE CALLEUQUE",
+    "camion": "TJVS-53",
+    "especial": false,
+    "parcial": false,
+    "visitas": 1,
+    "pedido": 800,
+    "entregado": 800,
+    "facturado": 800,
+    "facturas": [
+     "FAC 54672"
+    ],
+    "estado": "ok"
+   },
+   {
     "so": "S37202",
     "fecha": "2026-10-06",
     "cliente": "EL ESTRIBILLO SPA",
@@ -187,7 +227,7 @@
     "especial": false,
     "parcial": true,
     "visitas": 1,
-    "pedido": 1000,
+    "pedido": 950,
     "entregado": 950,
     "facturado": 950,
     "facturas": [
@@ -203,7 +243,7 @@
     "especial": false,
     "parcial": true,
     "visitas": 1,
-    "pedido": 1500,
+    "pedido": 1400,
     "entregado": 1400,
     "facturado": 1400,
     "facturas": [
@@ -2200,9 +2240,9 @@
   "dias": [
    {
     "fecha": "2026-10-06",
-    "entregas": 11,
-    "entregado": 11390,
-    "facturado": 9590,
+    "entregas": 14,
+    "entregado": 14820,
+    "facturado": 13020,
     "por_facturar": 1800,
     "sin_factura": 2
    },
@@ -2256,8 +2296,8 @@
    }
   ],
   "por_facturar_total": 10100,
-  "entregado_hoy": 11390,
-  "facturado_hoy": 9590,
+  "entregado_hoy": 14820,
+  "facturado_hoy": 13020,
   "fuera_simpli": []
  },
  "cierre": {
@@ -2303,242 +2343,12 @@
    "sin_recibir": 0
   },
   "fase4": {
-   "salidas": [
-    {
-     "picking": "VD/OUT/01757",
-     "so": "S37215",
-     "cliente": "AGRIC Y GANAD LAS CASAS DE CALLEUQUE, JUAN VALDES",
-     "cam": "VD",
-     "fecha": "2026-10-05",
-     "litros": 800,
-     "entregada_simpli": false
-    },
-    {
-     "picking": "PYHK/OUT/01436",
-     "so": "S37244",
-     "cliente": "LUIS ALBERTO IBARRA CARRILLO, MANUEL ORELLANA, LUIS IBARRA TALCA",
-     "cam": "PY",
-     "fecha": "2026-10-06",
-     "litros": 1000,
-     "entregada_simpli": false
-    }
-   ],
-   "ventas": [
-    {
-     "so": "S37194",
-     "cliente": "SOC. DE TRANSPORTES TRACMAVI LTDA.",
-     "especial": false,
-     "cam": "PY",
-     "cam_simpli": [
-      "PY"
-     ],
-     "cam_odoo": [
-      "PY"
-     ],
-     "picking": null,
-     "fecha_entrega": "2026-10-06",
-     "simpli": 1400,
-     "cantidad": 1500,
-     "entregado": 1400,
-     "facturado": 1400,
-     "problemas": [
-      "cantidad"
-     ],
-     "acciones": [
-      "Bajar Cantidad de 1.500 a 1.400 L en la orden"
-     ]
-    },
-    {
-     "so": "S37244",
-     "cliente": "LUIS ALBERTO IBARRA CARRILLO",
-     "especial": false,
-     "cam": "PY",
-     "cam_simpli": [],
-     "cam_odoo": [],
-     "picking": "PYHK/OUT/01436",
-     "fecha_entrega": "2026-10-06",
-     "simpli": null,
-     "cantidad": 1000,
-     "entregado": 0,
-     "facturado": 0,
-     "problemas": [
-      "sin_entrega"
-     ],
-     "acciones": [
-      "Salida PYHK/OUT/01436 abierta pero SimpliRoute no la muestra entregada: si no salió, reprogramar; si salió, validar"
-     ]
-    },
-    {
-     "so": "S37202",
-     "cliente": "EL ESTRIBILLO SPA",
-     "especial": false,
-     "cam": "TJ",
-     "cam_simpli": [
-      "TJ"
-     ],
-     "cam_odoo": [
-      "TJ"
-     ],
-     "picking": null,
-     "fecha_entrega": "2026-10-05",
-     "simpli": 950,
-     "cantidad": 1000,
-     "entregado": 950,
-     "facturado": 950,
-     "problemas": [
-      "cantidad"
-     ],
-     "acciones": [
-      "Bajar Cantidad de 1.000 a 950 L en la orden"
-     ]
-    },
-    {
-     "so": "S37235",
-     "cliente": "SUGAL CHILE LIMITADA",
-     "especial": true,
-     "cam": "TJ",
-     "cam_simpli": [
-      "TJ"
-     ],
-     "cam_odoo": [
-      "TJ"
-     ],
-     "picking": null,
-     "fecha_entrega": "2026-10-06",
-     "simpli": 1000,
-     "cantidad": 1000,
-     "entregado": 1000,
-     "facturado": 0,
-     "problemas": [
-      "por_facturar"
-     ],
-     "acciones": [
-      "Facturar 1.000 L (Sugal: revisar en Ventas)"
-     ]
-    },
-    {
-     "so": "S37234",
-     "cliente": "SUGAL CHILE LIMITADA",
-     "especial": true,
-     "cam": "TY",
-     "cam_simpli": [
-      "TY"
-     ],
-     "cam_odoo": [
-      "TY"
-     ],
-     "picking": null,
-     "fecha_entrega": "2026-10-06",
-     "simpli": 800,
-     "cantidad": 800,
-     "entregado": 800,
-     "facturado": 0,
-     "problemas": [
-      "por_facturar"
-     ],
-     "acciones": [
-      "Facturar 800 L (Sugal: revisar en Ventas)"
-     ]
-    },
-    {
-     "so": "S37215",
-     "cliente": "AGRIC Y GANAD LAS CASAS DE CALLEUQUE",
-     "especial": false,
-     "cam": "VD",
-     "cam_simpli": [],
-     "cam_odoo": [],
-     "picking": "VD/OUT/01757",
-     "fecha_entrega": "2026-10-05",
-     "simpli": null,
-     "cantidad": 800,
-     "entregado": 0,
-     "facturado": 0,
-     "problemas": [
-      "sin_entrega"
-     ],
-     "acciones": [
-      "Salida VD/OUT/01757 abierta pero SimpliRoute no la muestra entregada: si no salió, reprogramar; si salió, validar"
-     ]
-    },
-    {
-     "so": "S37232",
-     "cliente": "AGRICOLA OMEGA TRES LIMITADA",
-     "especial": false,
-     "cam": "VD",
-     "cam_simpli": [
-      "VD"
-     ],
-     "cam_odoo": [
-      "VD"
-     ],
-     "picking": null,
-     "fecha_entrega": "2026-10-06",
-     "simpli": 940,
-     "cantidad": 1000,
-     "entregado": 940,
-     "facturado": 940,
-     "problemas": [
-      "cantidad"
-     ],
-     "acciones": [
-      "Bajar Cantidad de 1.000 a 940 L en la orden"
-     ]
-    }
-   ],
-   "a_facturar": [
-    {
-     "so": "S37202",
-     "cliente": "EL ESTRIBILLO SPA",
-     "cam": "TJ",
-     "fecha_entrega": "2026-10-05",
-     "especial": false
-    },
-    {
-     "so": "S37215",
-     "cliente": "AGRIC Y GANAD LAS CASAS DE CALLEUQUE",
-     "cam": "VD",
-     "fecha_entrega": "2026-10-05",
-     "especial": false
-    },
-    {
-     "so": "S37234",
-     "cliente": "SUGAL CHILE LIMITADA",
-     "cam": "PY",
-     "fecha_entrega": "2026-10-06",
-     "especial": true
-    },
-    {
-     "so": "S37235",
-     "cliente": "SUGAL CHILE LIMITADA",
-     "cam": "VD",
-     "fecha_entrega": "2026-10-06",
-     "especial": true
-    },
-    {
-     "so": "S37244",
-     "cliente": "LUIS ALBERTO IBARRA CARRILLO",
-     "cam": "PY",
-     "fecha_entrega": "2026-10-06",
-     "especial": false
-    },
-    {
-     "so": "S37232",
-     "cliente": "AGRICOLA OMEGA TRES LIMITADA",
-     "cam": "VD",
-     "fecha_entrega": "2026-10-06",
-     "especial": false
-    },
-    {
-     "so": "S37194",
-     "cliente": "SOC. DE TRANSPORTES TRACMAVI LTDA.",
-     "cam": "PY",
-     "fecha_entrega": "2026-10-06",
-     "especial": false
-    }
-   ],
-   "entregadas_hoy": 11,
+   "salidas": [],
+   "ventas": [],
+   "a_facturar": [],
+   "entregadas_hoy": 14,
    "bodega_ventana": 0,
-   "revisadas_ventana": 138,
+   "revisadas_ventana": 139,
    "salidas_entregadas": 0
   },
   "fase5": {
@@ -2559,10 +2369,10 @@
     },
     {
      "cam": "PY",
-     "odoo": 11800,
+     "odoo": 10170,
      "ajuste": 0,
-     "esperado": 11800,
-     "ventas_simpli_hoy": 3200
+     "esperado": 10170,
+     "ventas_simpli_hoy": 4830
     },
     {
      "cam": "SH",
@@ -2573,10 +2383,10 @@
     },
     {
      "cam": "TJ",
-     "odoo": 3550,
+     "odoo": 2750,
      "ajuste": 0,
-     "esperado": 3550,
-     "ventas_simpli_hoy": 4250
+     "esperado": 2750,
+     "ventas_simpli_hoy": 5050
     },
     {
      "cam": "TY",
@@ -2587,22 +2397,15 @@
     },
     {
      "cam": "VD",
-     "odoo": 6730,
+     "odoo": 5730,
      "ajuste": 0,
-     "esperado": 6730,
-     "ventas_simpli_hoy": 3140
+     "esperado": 5730,
+     "ventas_simpli_hoy": 4140
     }
    ]
   },
   "fase6": {
    "por_aprobar": [
-    {
-     "so": "S30784",
-     "cliente": "EL PARRON SPA",
-     "cam": "TJ",
-     "fecha_entrega": "2026-05-12",
-     "excepcion": ""
-    },
     {
      "so": "S30777",
      "cliente": "EL PARRON SPA",
@@ -2611,10 +2414,10 @@
      "excepcion": "No tiene Línea de Crédito Aprobada"
     },
     {
-     "so": "S36783",
-     "cliente": "SUGAL CHILE LIMITADA",
-     "cam": "VD",
-     "fecha_entrega": "2026-09-25",
+     "so": "S30784",
+     "cliente": "EL PARRON SPA",
+     "cam": "TJ",
+     "fecha_entrega": "2026-05-12",
      "excepcion": ""
     },
     {
@@ -2625,14 +2428,21 @@
      "excepcion": ""
     },
     {
-     "so": "S36780",
+     "so": "S36781",
      "cliente": "SUGAL CHILE LIMITADA",
      "cam": "PH",
      "fecha_entrega": "2026-09-25",
      "excepcion": ""
     },
     {
-     "so": "S36781",
+     "so": "S36783",
+     "cliente": "SUGAL CHILE LIMITADA",
+     "cam": "VD",
+     "fecha_entrega": "2026-09-25",
+     "excepcion": ""
+    },
+    {
+     "so": "S36780",
      "cliente": "SUGAL CHILE LIMITADA",
      "cam": "PH",
      "fecha_entrega": "2026-09-25",
@@ -2646,42 +2456,7 @@
      "excepcion": ""
     },
     {
-     "so": "S36987",
-     "cliente": "DIOGENES GERMAN CONCHA CONCHA",
-     "cam": "PY",
-     "fecha_entrega": "2026-09-28",
-     "excepcion": ""
-    },
-    {
-     "so": "S36884",
-     "cliente": "SUGAL CHILE LIMITADA",
-     "cam": "VD",
-     "fecha_entrega": "2026-09-28",
-     "excepcion": ""
-    },
-    {
-     "so": "S36887",
-     "cliente": "SUGAL CHILE LIMITADA",
-     "cam": "VD",
-     "fecha_entrega": "2026-09-28",
-     "excepcion": ""
-    },
-    {
      "so": "S36888",
-     "cliente": "SUGAL CHILE LIMITADA",
-     "cam": "PY",
-     "fecha_entrega": "2026-09-28",
-     "excepcion": ""
-    },
-    {
-     "so": "S36883",
-     "cliente": "SUGAL CHILE LIMITADA",
-     "cam": "VD",
-     "fecha_entrega": "2026-09-28",
-     "excepcion": ""
-    },
-    {
-     "so": "S36886",
      "cliente": "SUGAL CHILE LIMITADA",
      "cam": "PY",
      "fecha_entrega": "2026-09-28",
@@ -2695,6 +2470,41 @@
      "excepcion": ""
     },
     {
+     "so": "S36884",
+     "cliente": "SUGAL CHILE LIMITADA",
+     "cam": "VD",
+     "fecha_entrega": "2026-09-28",
+     "excepcion": ""
+    },
+    {
+     "so": "S36883",
+     "cliente": "SUGAL CHILE LIMITADA",
+     "cam": "VD",
+     "fecha_entrega": "2026-09-28",
+     "excepcion": ""
+    },
+    {
+     "so": "S36887",
+     "cliente": "SUGAL CHILE LIMITADA",
+     "cam": "VD",
+     "fecha_entrega": "2026-09-28",
+     "excepcion": ""
+    },
+    {
+     "so": "S36987",
+     "cliente": "DIOGENES GERMAN CONCHA CONCHA",
+     "cam": "PY",
+     "fecha_entrega": "2026-09-28",
+     "excepcion": ""
+    },
+    {
+     "so": "S36886",
+     "cliente": "SUGAL CHILE LIMITADA",
+     "cam": "PY",
+     "fecha_entrega": "2026-09-28",
+     "excepcion": ""
+    },
+    {
      "so": "S36994",
      "cliente": "SUGAL CHILE LIMITADA",
      "cam": "PY",
@@ -2702,8 +2512,8 @@
      "excepcion": ""
     },
     {
-     "so": "S36993",
-     "cliente": "SUGAL CHILE LIMITADA",
+     "so": "S37021",
+     "cliente": "SERVICIOS AGRICOLAS Y COMERCIAL SANTA PAULA SPA",
      "cam": "PY",
      "fecha_entrega": "2026-09-29",
      "excepcion": ""
@@ -2716,8 +2526,8 @@
      "excepcion": ""
     },
     {
-     "so": "S37021",
-     "cliente": "SERVICIOS AGRICOLAS Y COMERCIAL SANTA PAULA SPA",
+     "so": "S36993",
+     "cliente": "SUGAL CHILE LIMITADA",
      "cam": "PY",
      "fecha_entrega": "2026-09-29",
      "excepcion": ""
@@ -2737,13 +2547,6 @@
      "excepcion": "No tiene Línea de Crédito Aprobada"
     },
     {
-     "so": "S37079",
-     "cliente": "SUGAL CHILE LIMITADA",
-     "cam": "PY",
-     "fecha_entrega": "2026-10-01",
-     "excepcion": ""
-    },
-    {
      "so": "S37080",
      "cliente": "SUGAL CHILE LIMITADA",
      "cam": "VD",
@@ -2751,16 +2554,23 @@
      "excepcion": ""
     },
     {
-     "so": "S37151",
+     "so": "S37079",
      "cliente": "SUGAL CHILE LIMITADA",
-     "cam": "TJ",
-     "fecha_entrega": "2026-10-02",
+     "cam": "PY",
+     "fecha_entrega": "2026-10-01",
      "excepcion": ""
     },
     {
      "so": "S37150",
      "cliente": "SUGAL CHILE LIMITADA",
      "cam": "PY",
+     "fecha_entrega": "2026-10-02",
+     "excepcion": ""
+    },
+    {
+     "so": "S37151",
+     "cliente": "SUGAL CHILE LIMITADA",
+     "cam": "TJ",
      "fecha_entrega": "2026-10-02",
      "excepcion": ""
     },
@@ -2779,6 +2589,20 @@
      "excepcion": ""
     },
     {
+     "so": "S37235",
+     "cliente": "SUGAL CHILE LIMITADA",
+     "cam": "VD",
+     "fecha_entrega": "2026-10-06",
+     "excepcion": ""
+    },
+    {
+     "so": "S37234",
+     "cliente": "SUGAL CHILE LIMITADA",
+     "cam": "PY",
+     "fecha_entrega": "2026-10-06",
+     "excepcion": ""
+    },
+    {
      "so": "S37173",
      "cliente": "FRANCISCO GONZALEZ PIZARRO",
      "cam": "TJ",
@@ -2786,9 +2610,9 @@
      "excepcion": ""
     },
     {
-     "so": "S37245",
-     "cliente": "AGRICOLA LA PATAGUILLA LTDA",
-     "cam": "PH",
+     "so": "S37261",
+     "cliente": "HECTOR JAVIER ALVARADO VELIZ",
+     "cam": "TJ",
      "fecha_entrega": "2026-10-07",
      "excepcion": ""
     },
@@ -2796,6 +2620,13 @@
      "so": "S37237",
      "cliente": "GUSTAVO ORLANDO VIELMA VIELMA",
      "cam": "PY",
+     "fecha_entrega": "2026-10-07",
+     "excepcion": ""
+    },
+    {
+     "so": "S37245",
+     "cliente": "AGRICOLA LA PATAGUILLA LTDA",
+     "cam": "PH",
      "fecha_entrega": "2026-10-07",
      "excepcion": ""
     },
