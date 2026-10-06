@@ -509,6 +509,114 @@ def extract_weekly(models, uid, supplier_ids, contado_term_ids, ruta_stage_id, t
     return results
 
 
+# ── MARGEN PEPS (costo real de compra por capas) ──
+# Pedido Pauline 06-10-2026: margin_zone usa el costo del DÍA; en la realidad el
+# stock comprado a $1.300 el miércoles se sigue vendiendo a costo $1.300 el jueves
+# aunque ENAP haya subido. Se arma un pool ÚNICO de compañía (no por camión: los
+# camiones rotan stock en 1-3 días y el kardex por camión tiene descuadres) con
+# capas = facturas de compra posted de ENAP/Adquim/Adgreen (litros y $ neto de la
+# línea, NC de proveedor restan; ajustes de precio sin litros —"Del Giro" qty 1—
+# se ignoran) y se consumen en orden de llegada con los litros facturados (NC restan).
+# Desde abr-2026 (antes las compras venían como "Del Giro" sin litros); jun+ ya no
+# arrastra stock inicial. Si no hay capa disponible se costea al último precio de
+# compra y se reporta en fifo_cobertura.
+FIFO_START = "2026-04-01"
+
+
+def extract_margen_fifo(models, uid, supplier_ids, weekly):
+    from collections import defaultdict, deque
+    print("Margen PEPS: capas de compra desde", FIFO_START)
+    buys = defaultdict(lambda: [0.0, 0.0])
+    plines = fetch_all(models, uid, "account.move.line", [
+        ["move_id.move_type", "in", ["in_invoice", "in_refund"]],
+        ["parent_state", "=", "posted"],
+        ["move_id.partner_id", "in", supplier_ids],
+        ["move_id.invoice_date", ">=", FIFO_START],
+        ["display_type", "=", "product"],
+    ], ["invoice_date", "date", "quantity", "price_subtotal", "move_type"])
+    for l in plines:
+        q, v = l.get("quantity") or 0, l.get("price_subtotal") or 0
+        if abs(q) <= 1 and abs(v) > 1000:
+            continue
+        s = -1 if l["move_type"] == "in_refund" else 1
+        d = l.get("invoice_date") or l["date"]
+        buys[d][0] += s * q
+        buys[d][1] += s * v
+
+    slines = fetch_all(models, uid, "account.move.line", [
+        ["move_id.move_type", "in", ["out_invoice", "out_refund"]],
+        ["parent_state", "=", "posted"],
+        ["move_id.invoice_date", ">=", FIFO_START],
+        ["display_type", "=", "product"],
+        ["product_id", "=", DIESEL_B1_PRODUCT],
+    ], ["invoice_date", "date", "partner_id", "quantity", "price_subtotal", "move_type"])
+    pids = list({l["partner_id"][0] for l in slines if l.get("partner_id")})
+    vol_ids = set()
+    for off in range(0, len(pids), 500):
+        for p in sr(models, uid, "res.partner", [["id", "in", pids[off:off + 500]]],
+                    ["id", "is_volume_client"], limit=500):
+            if p.get("is_volume_client"):
+                vol_ids.add(p["id"])
+    net_l = defaultdict(float)
+    for l in slines:
+        l["_d"] = l.get("invoice_date") or l["date"]
+        l["_s"] = -1 if l["move_type"] == "out_refund" else 1
+        net_l[l["_d"]] += l["_s"] * (l.get("quantity") or 0)
+
+    # Consumo día a día: compras del día entran antes que las ventas del día
+    layers, cost_l, sin_capa, last_price, last_cost = deque(), {}, {}, None, None
+    for d in sorted(set(buys) | set(net_l)):
+        q, v = buys.get(d, (0, 0))
+        if q > 0:
+            last_price = v / q
+            layers.append([q, last_price])
+        need, cost, short = net_l.get(d, 0), 0.0, 0.0
+        if need > 0:
+            rem = need
+            while rem > 1e-6 and layers:
+                lay = layers[0]
+                t = min(rem, lay[0])
+                cost += t * lay[1]
+                lay[0] -= t
+                rem -= t
+                if lay[0] <= 1e-6:
+                    layers.popleft()
+            if rem > 1e-6:
+                short = rem
+                cost += rem * (last_price or 0)
+            cost_l[d] = cost / need
+            last_cost = cost_l[d]
+        elif need < 0 and last_cost:
+            # NC con litros (reversa) → devuelve litros al frente del pool
+            layers.appendleft([-need, last_cost])
+            cost_l[d] = last_cost
+        sin_capa[d] = short
+
+    for w in weekly:
+        rev = {"r": 0.0, "v": 0.0}
+        cst = {"r": 0.0, "v": 0.0}
+        lit = 0.0
+        for l in slines:
+            d = l["_d"]
+            if not (w["start"] <= d <= w["end"]) or d not in cost_l:
+                continue
+            seg = "v" if (l.get("partner_id") and l["partner_id"][0] in vol_ids) else "r"
+            q = l["_s"] * (l.get("quantity") or 0)
+            rev[seg] += l["_s"] * (l.get("price_subtotal") or 0)
+            cst[seg] += q * cost_l[d]
+            lit += q
+        rt, ct = rev["r"] + rev["v"], cst["r"] + cst["v"]
+        short = sum(s for d, s in sin_capa.items() if w["start"] <= d <= w["end"])
+        w["margin_fifo"] = round((rt - ct) / rt, 5) if rt > 0 else None
+        w["margin_fifo_retail"] = round((rev["r"] - cst["r"]) / rev["r"], 5) if rev["r"] > 0 else None
+        w["margin_fifo_volumen"] = round((rev["v"] - cst["v"]) / rev["v"], 5) if rev["v"] > 0 else None
+        w["costo_fifo_l"] = round(ct / lit, 1) if lit > 0 else None
+        w["margen_fifo_l"] = round((rt - ct) / lit, 1) if lit > 0 else None
+        w["fifo_cobertura"] = round(1 - short / lit, 3) if lit > 0 else None
+    print(f"  {len(plines)} líneas compra, {len(slines)} líneas venta diésel, "
+          f"stock en capas hoy {sum(x[0] for x in layers):,.0f} L")
+
+
 # ── DAILY SALES (last 16 business days) ──
 def extract_daily(models, uid):
     print("Extracting daily sales (16 business days)...")
@@ -1759,6 +1867,7 @@ def main():
     ruta_stage_id = lookup_ruta_stage_id(models, uid)
 
     weekly = extract_weekly(models, uid, supplier_ids, contado_term_ids, ruta_stage_id, term_map)
+    extract_margen_fifo(models, uid, supplier_ids, weekly)
     daily = extract_daily(models, uid)
     banks = extract_bank_balances(models, uid)
     total_cash = sum(b["balance"] for b in banks)

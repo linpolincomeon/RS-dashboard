@@ -402,6 +402,14 @@ function render(){
     else if(curTab==='equipo') renderEquipo();
     setupTabs();
 }
+// Margen PEPS (costo real de compra por capas, ver extract_margen_fifo) vs margin_zone (costo del día)
+function kpiPeps(w,prev,mpond){
+    const m=w.margin_fifo, dif=(m-(w.margin||0))*100;
+    const cob=w.fifo_cobertura!=null&&w.fifo_cobertura<0.95?` · ⚠ ${Math.round((1-w.fifo_cobertura)*100)}% sin capa`:'';
+    return kpi('Margen Real PEPS',fP(m),prev&&prev.margin_fifo!=null?pD(m,prev.margin_fifo):null,
+        mpond!=null?(m>=mpond?'c-green':m>=mpond*.9?'c-amber':'c-red'):'c-blue',
+        `costo compra $${fNum(Math.round(w.costo_fifo_l||0))}/L · $${fNum(Math.round(w.margen_fifo_l||0))}/L · ${dif>=0?'+':''}${dif.toFixed(1)}pt vs costo día${cob}`);
+}
 // ── RS (was Ventas) ──
 function renderVentas(){
     const el=document.getElementById('p-ventas');
@@ -427,6 +435,7 @@ function renderVentas(){
         h+=kpi('Margen Compañía',fP(mComp),pD(mComp,prev.margin||0),
             mpond!=null?(mComp>=mpond?'c-green':mComp>=mpond*.9?'c-amber':'c-red'):'c-blue',
             `Ponderado · meta ${mpond!=null?fP(mpond):'—'}${plComp!=null?' · $'+plComp+'/L':''}`);
+        if(last.margin_fifo!=null) h+=kpiPeps(last,prev,mpond);
     } else {
         h+=kpi('Margen Bruto',fP(last.margin),pD(last.margin,prev.margin),last.margin>=.085?'c-green':'c-red','margin_zone ponderado');
     }
@@ -473,6 +482,7 @@ function renderVentas(){
     h+='<div class="table-card" style="overflow-x:auto"><table><thead><tr>';
     h+='<th>Semana</th><th class="r">Ventas</th><th class="r">Litros</th><th class="r">Desv.</th><th class="r">Nº Comp.</th><th class="r">Nº Cli.</th>';
     if(hasNM){h+='<th class="r">M.Retail</th><th class="r">M.Volumen</th>';}else{h+='<th class="r">Margen</th>';}
+    h+='<th class="r" title="Margen con costo real de compra por capas (PEPS)">M.PEPS</th>';
     h+='<th class="r">$/L</th><th class="r">Recaud.</th><th class="r">Compras</th>';
     h+='</tr></thead><tbody>';
     D.weeks.slice(0,fN).forEach((w,i)=>{
@@ -491,12 +501,13 @@ function renderVentas(){
         } else {
             h+=`<td class="r ${w.margin>=.085?'ok':''}">${fP(w.margin)}</td>`;
         }
+        h+=`<td class="r">${w.margin_fifo!=null?fP(w.margin_fifo):'—'}</td>`;
         h+=`<td class="r">$${fNum(w.precio_bruto||w.precio_neto||w.precio||0)}</td>`;
         h+=`<td class="r">${fM(w.recaud)}</td>`;
         h+=`<td class="r">${fM(w.compras_odoo||w.compras_enap||0)}</td>`;
         h+=`</tr>`;
     });
-    h+='</tbody></table><div class="note">* Parcial · Margen = margin_zone (Odoo) · NC descontadas · Semana comercial Jue→Mié</div></div>';
+    h+='</tbody></table><div class="note">* Parcial · M.Retail/M.Volumen = margin_zone (Odoo, costo del día) · M.PEPS = costo real de compra: el stock se costea al precio de la factura ENAP/Adquim con que se compró, hasta agotarlo (solo diésel B1) · NC descontadas · Semana comercial Jue→Mié</div></div>';
     el.innerHTML=h;
     // ── Charts ──
     const labels=wk.map(w=>w.label.split('-')[0]);
@@ -563,6 +574,15 @@ function renderGerencia(){
         mpondG!=null?(wm>=mpondG?'c-green':wm>=mpondG*.9?'c-amber':'c-red'):'c-blue',
         `ponderado por monto · meta ${mpondG!=null?fP(mpondG):'—'}${plCompG!=null?' · $'+plCompG+'/L':''}`);
     h+='</div>';
+    if(w.margin_fifo!=null){
+        // Margen PEPS: costo real de compra por capas (pedido Pauline 06-10-2026)
+        const fr=w.margin_fifo_retail, fv=w.margin_fifo_volumen;
+        h+='<div class="section-label" style="font-size:13px">Margen real PEPS — costo de la factura de compra hasta agotar ese stock</div><div class="kpi-grid">';
+        if(fr!=null) h+=kpi('PEPS Retail',fP(fr),null,fr>=mMeta?'c-green':fr>=mMeta*.9?'c-amber':'c-red',`costo día: ${fP(wRetail)}`);
+        if(fv!=null) h+=kpi('PEPS Volumen',fP(fv),null,fv>=crMeta?'c-green':fv>=crMeta*.9?'c-amber':'c-red',`costo día: ${fP(wVol)}`);
+        h+=kpiPeps(w,null,mpondG);
+        h+='</div>';
+    }
     // Per-term detail
     const bt=w.margin_by_term||{};
     const terms=Object.keys(bt);
