@@ -402,13 +402,28 @@ function render(){
     else if(curTab==='equipo') renderEquipo();
     setupTabs();
 }
-// Margen PEPS (costo real de compra por capas, ver extract_margen_fifo) vs margin_zone (costo del día)
-function kpiPeps(w,prev,mpond){
-    const m=w.margin_fifo, dif=(m-(w.margin||0))*100;
+// Margen PEPS (costo real de compra por capas, ver extract_margen_fifo y MARGEN_PEPS.md).
+// Cifra principal = PEPS de la semana; semáforo sobre el ACUMULADO de 4 semanas (semanal,
+// una alza ENAP da 13% y una baja 4% — se compensan en el mes); margin_zone queda como
+// "oficial comercial" en el subtítulo. Decisión Pauline 06-10-2026.
+function pepsAcum(idx,key,wkey){
+    let num=0,den=0;
+    for(let i=idx;i<Math.min(idx+4,D.weeks.length);i++){
+        const w=D.weeks[i], m=w[key], wt=w[wkey]||0;
+        if(m==null||!wt) continue; num+=m*wt; den+=wt;
+    }
+    return den?num/den:null;
+}
+function kpiMargen(label,idx,pk,zk,lk,wk,meta){
+    const w=D.weeks[idx], prev=D.weeks[idx+1], m=w[pk];
+    if(m==null) return '';
+    const acum=pepsAcum(idx,pk,wk), ref=acum!=null?acum:m;
+    const cls=meta!=null?(ref>=meta?'c-green':ref>=meta*.9?'c-amber':'c-red'):'c-blue';
     const cob=w.fifo_cobertura!=null&&w.fifo_cobertura<0.95?` · ⚠ ${Math.round((1-w.fifo_cobertura)*100)}% sin capa`:'';
-    return kpi('Margen Real PEPS',fP(m),prev&&prev.margin_fifo!=null?pD(m,prev.margin_fifo):null,
-        mpond!=null?(m>=mpond?'c-green':m>=mpond*.9?'c-amber':'c-red'):'c-blue',
-        `costo compra $${fNum(Math.round(w.costo_fifo_l||0))}/L · $${fNum(Math.round(w.margen_fifo_l||0))}/L · ${dif>=0?'+':''}${dif.toFixed(1)}pt vs costo día${cob}`);
+    const sub=`acum. 4 sem ${acum!=null?fP(acum):'—'} vs meta ${meta!=null?fP(meta):'—'}`
+        +(w[lk]!=null?` · $${fNum(Math.round(w[lk]))}/L`:'')
+        +` · oficial (zona) ${fP(w[zk]||0)}`+cob;
+    return kpi(label+' PEPS',fP(m),prev&&prev[pk]!=null?pD(m,prev[pk]):null,cls,sub);
 }
 // ── RS (was Ventas) ──
 function renderVentas(){
@@ -426,7 +441,12 @@ function renderVentas(){
     h+=kpi('Nº Compras',fNum(last.facturas),pD(last.facturas,prev.facturas),'c-purple',`${last.facturas_contado||'—'} contado · ${last.facturas_credito||'—'} crédito`);
     h+=kpi('Nº Clientes',fNum(last.clientes),pD(last.clientes,prev.clientes),'c-teal','clientes únicos');
     h+=kpi('Litros vs PPTO base',(dv*100).toFixed(0)+'%',null,dv>=.8?'c-green':dv>=.6?'c-amber':'c-red',`PPTO base: ${fK(last.ppto)} · Real: ${fK(last.litros)}`);
-    if(hasNM){
+    if(hasNM&&last.margin_fifo!=null){
+        const mpondP=metaPondSemana(last,mRetail,mVol);
+        h+=kpiMargen('Margen Retail',selW,'margin_fifo_retail','margin_retail','margen_fifo_l_retail','litros_retail',mRetail);
+        h+=kpiMargen('Margen Volumen',selW,'margin_fifo_volumen','margin_volumen','margen_fifo_l_volumen','litros_volumen',mVol);
+        h+=kpiMargen('Margen Compañía',selW,'margin_fifo','margin','margen_fifo_l','ventas',mpondP);
+    } else if(hasNM){
         h+=kpi('Margen Retail',fP(mcrRetail),pD(mcrRetail,prev.margin_retail||0),mcrRetail>=mRetail?'c-green':mcrRetail>=mRetail*.9?'c-amber':'c-red',`meta ${fP(mRetail)}`);
         h+=kpi('Margen Volumen',fP(mcVol),pD(mcVol,prev.margin_volumen||0),mcVol>=mVol?'c-green':mcVol>=mVol*.9?'c-amber':'c-red',`meta ${fP(mVol)}`);
         // Margen Compañía: ponderado (w.margin) vs meta ponderada según mix real (pedido Pauline 03-sep-2026)
@@ -435,7 +455,6 @@ function renderVentas(){
         h+=kpi('Margen Compañía',fP(mComp),pD(mComp,prev.margin||0),
             mpond!=null?(mComp>=mpond?'c-green':mComp>=mpond*.9?'c-amber':'c-red'):'c-blue',
             `Ponderado · meta ${mpond!=null?fP(mpond):'—'}${plComp!=null?' · $'+plComp+'/L':''}`);
-        if(last.margin_fifo!=null) h+=kpiPeps(last,prev,mpond);
     } else {
         h+=kpi('Margen Bruto',fP(last.margin),pD(last.margin,prev.margin),last.margin>=.085?'c-green':'c-red','margin_zone ponderado');
     }
@@ -482,7 +501,7 @@ function renderVentas(){
     h+='<div class="table-card" style="overflow-x:auto"><table><thead><tr>';
     h+='<th>Semana</th><th class="r">Ventas</th><th class="r">Litros</th><th class="r">Desv.</th><th class="r">Nº Comp.</th><th class="r">Nº Cli.</th>';
     if(hasNM){h+='<th class="r">M.Retail</th><th class="r">M.Volumen</th>';}else{h+='<th class="r">Margen</th>';}
-    h+='<th class="r" title="Margen con costo real de compra por capas (PEPS)">M.PEPS</th>';
+    h+='<th class="r" title="Margen Retail con costo real de compra por capas (PEPS)">PEPS R</th><th class="r" title="Margen Volumen PEPS">PEPS V</th>';
     h+='<th class="r">$/L</th><th class="r">Recaud.</th><th class="r">Compras</th>';
     h+='</tr></thead><tbody>';
     D.weeks.slice(0,fN).forEach((w,i)=>{
@@ -501,13 +520,14 @@ function renderVentas(){
         } else {
             h+=`<td class="r ${w.margin>=.085?'ok':''}">${fP(w.margin)}</td>`;
         }
-        h+=`<td class="r">${w.margin_fifo!=null?fP(w.margin_fifo):'—'}</td>`;
+        h+=`<td class="r ${w.margin_fifo_retail!=null&&w.margin_fifo_retail>=mRetail?'ok':''}">${w.margin_fifo_retail!=null?fP(w.margin_fifo_retail):'—'}</td>`;
+        h+=`<td class="r ${w.margin_fifo_volumen!=null&&w.margin_fifo_volumen>=mVol?'ok':''}">${w.margin_fifo_volumen!=null?fP(w.margin_fifo_volumen):'—'}</td>`;
         h+=`<td class="r">$${fNum(w.precio_bruto||w.precio_neto||w.precio||0)}</td>`;
         h+=`<td class="r">${fM(w.recaud)}</td>`;
         h+=`<td class="r">${fM(w.compras_odoo||w.compras_enap||0)}</td>`;
         h+=`</tr>`;
     });
-    h+='</tbody></table><div class="note">* Parcial · M.Retail/M.Volumen = margin_zone (Odoo, costo del día) · M.PEPS = costo real de compra: el stock se costea al precio de la factura ENAP/Adquim con que se compró, hasta agotarlo (solo diésel B1) · NC descontadas · Semana comercial Jue→Mié</div></div>';
+    h+='</tbody></table><div class="note">* Parcial · M.Retail/M.Volumen = margin_zone oficial comercial (Odoo, costo del día) · PEPS = margen real: el stock se costea al precio de la factura de compra con que se compró, hasta agotarlo (solo diésel B1, ver MARGEN_PEPS.md) · NC descontadas · Semana comercial Jue→Mié</div></div>';
     el.innerHTML=h;
     // ── Charts ──
     const labels=wk.map(w=>w.label.split('-')[0]);
@@ -566,23 +586,20 @@ function renderGerencia(){
     const wRetail=w.margin_retail||0, wVol=w.margin_volumen||0, wm=w.margin||0;
     const fc=(w.facturas_contado||0)+(w.facturas_credito||0);
     h+='<div class="kpi-grid">';
-    h+=kpi('Margen Retail',fP(wRetail),null,wRetail>=mMeta?'c-green':wRetail>=mMeta*.9?'c-amber':'c-red',`meta ${fP(mMeta)} · ${fc||w.facturas||0} facturas`);
-    h+=kpi('Margen Volumen',fP(wVol),null,wVol>=crMeta?'c-green':wVol>=crMeta*.9?'c-amber':'c-red',`meta ${fP(crMeta)}`);
     const mpondG=metaPondSemana(w,mMeta,crMeta);
-    const plCompG=(w.litros>0&&w.neto>0)?Math.round(wm*w.neto/w.litros):null;
-    h+=kpi('Margen Compañía',fP(wm),null,
-        mpondG!=null?(wm>=mpondG?'c-green':wm>=mpondG*.9?'c-amber':'c-red'):'c-blue',
-        `ponderado por monto · meta ${mpondG!=null?fP(mpondG):'—'}${plCompG!=null?' · $'+plCompG+'/L':''}`);
-    h+='</div>';
     if(w.margin_fifo!=null){
-        // Margen PEPS: costo real de compra por capas (pedido Pauline 06-10-2026)
-        const fr=w.margin_fifo_retail, fv=w.margin_fifo_volumen;
-        h+='<div class="section-label" style="font-size:13px">Margen real PEPS — costo de la factura de compra hasta agotar ese stock</div><div class="kpi-grid">';
-        if(fr!=null) h+=kpi('PEPS Retail',fP(fr),null,fr>=mMeta?'c-green':fr>=mMeta*.9?'c-amber':'c-red',`costo día: ${fP(wRetail)}`);
-        if(fv!=null) h+=kpi('PEPS Volumen',fP(fv),null,fv>=crMeta?'c-green':fv>=crMeta*.9?'c-amber':'c-red',`costo día: ${fP(wVol)}`);
-        h+=kpiPeps(w,null,mpondG);
-        h+='</div>';
+        h+=kpiMargen('Margen Retail',selW,'margin_fifo_retail','margin_retail','margen_fifo_l_retail','litros_retail',mMeta);
+        h+=kpiMargen('Margen Volumen',selW,'margin_fifo_volumen','margin_volumen','margen_fifo_l_volumen','litros_volumen',crMeta);
+        h+=kpiMargen('Margen Compañía',selW,'margin_fifo','margin','margen_fifo_l','ventas',mpondG);
+    } else {
+        h+=kpi('Margen Retail',fP(wRetail),null,wRetail>=mMeta?'c-green':wRetail>=mMeta*.9?'c-amber':'c-red',`meta ${fP(mMeta)} · ${fc||w.facturas||0} facturas`);
+        h+=kpi('Margen Volumen',fP(wVol),null,wVol>=crMeta?'c-green':wVol>=crMeta*.9?'c-amber':'c-red',`meta ${fP(crMeta)}`);
+        const plCompG=(w.litros>0&&w.neto>0)?Math.round(wm*w.neto/w.litros):null;
+        h+=kpi('Margen Compañía',fP(wm),null,
+            mpondG!=null?(wm>=mpondG?'c-green':wm>=mpondG*.9?'c-amber':'c-red'):'c-blue',
+            `ponderado por monto · meta ${mpondG!=null?fP(mpondG):'—'}${plCompG!=null?' · $'+plCompG+'/L':''}`);
     }
+    h+='</div>';
     // Per-term detail
     const bt=w.margin_by_term||{};
     const terms=Object.keys(bt);

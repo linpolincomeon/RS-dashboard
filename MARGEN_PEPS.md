@@ -113,11 +113,11 @@ y bajó el PEPS de la semana 24–30 sep de 6,9% a 6,1%.
 
 ## 6. Pendientes / decisiones abiertas
 
-- **Propuesta CEO dashboard (sin OK aún):** PEPS como cifra principal de Margen Retail / Volumen /
-  Compañía con semáforo vs meta sobre el **acumulado del mes** (semanal en alzas da 13% y en bajas
-  4%); `margin_zone` como "oficial comercial" al lado; **margen $/L** en cada tarjeta (la métrica
-  que no se distorsiona con las alzas). Dashboards comerciales sin cambios.
-- Delta del KPI PEPS es variación relativa (▲57,7%) por convención de los otros KPIs; candidato a
+- ✅ **Implementado 06-10 (OK Pauline):** en el CEO dashboard PEPS es la cifra principal de Margen
+  Retail / Volumen / Compañía; semáforo vs meta sobre el **acumulado de 4 semanas** (semanal en
+  alzas da 13% y en bajas 4%); `margin_zone` como "oficial (zona)" en el subtítulo; **margen $/L**
+  PEPS en cada tarjeta. Tabla semanal con PEPS R / PEPS V. Dashboards comerciales sin cambios.
+- Delta del KPI PEPS es variación relativa (▲105%) por convención de los otros KPIs; candidato a
   pasar a puntos.
 - Modelo con 116k L en capas vs 55k L en `stock.quant`: ~½ día de venta de exceso, sin efecto en
   márgenes; sospecha de facturas de compra duplicadas/devueltas (OC P00873–879 del 29-sep).

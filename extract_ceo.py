@@ -630,6 +630,7 @@ def extract_margen_fifo(models, uid, weekly):
     for w in weekly:
         rev = {"r": 0.0, "v": 0.0}
         cst = {"r": 0.0, "v": 0.0}
+        lits = {"r": 0.0, "v": 0.0}
         lit = 0.0
         for l in slines:
             d = l["_d"]
@@ -639,6 +640,7 @@ def extract_margen_fifo(models, uid, weekly):
             q = l["_s"] * (l.get("quantity") or 0)
             rev[seg] += l["_s"] * (l.get("price_total") or 0)
             cst[seg] += q * cost_l[d]
+            lits[seg] += q
             lit += q
         rt, ct = rev["r"] + rev["v"], cst["r"] + cst["v"]
         short = sum(s for d, s in sin_capa.items() if w["start"] <= d <= w["end"])
@@ -647,6 +649,8 @@ def extract_margen_fifo(models, uid, weekly):
         w["margin_fifo_volumen"] = round((rev["v"] - cst["v"]) / rev["v"], 5) if rev["v"] > 0 else None
         w["costo_fifo_l"] = round(ct / lit, 1) if lit > 0 else None
         w["margen_fifo_l"] = round((rt - ct) / lit, 1) if lit > 0 else None
+        w["margen_fifo_l_retail"] = round((rev["r"] - cst["r"]) / lits["r"], 1) if lits["r"] > 0 else None
+        w["margen_fifo_l_volumen"] = round((rev["v"] - cst["v"]) / lits["v"], 1) if lits["v"] > 0 else None
         w["fifo_cobertura"] = round(1 - short / lit, 3) if lit > 0 else None
     print(f"  {len(plines)} facturas compra, {len(slines)} líneas venta diésel, "
           f"stock en capas hoy {sum(x[0] for x in layers):,.0f} L")
