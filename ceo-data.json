@@ -1,32 +1,32 @@
 {
-  "updated": "2026-10-06T03:48:11.887148",
+  "updated": "2026-10-06T12:43:21.161011",
   "weeks": [
     {
       "label": "01oct-07oct",
       "start": "2026-10-01",
       "end": "2026-10-07",
-      "ventas": 169740621,
-      "neto": 169951837,
-      "litros": 115197,
-      "litros_retail": 90043,
+      "ventas": 183064841,
+      "neto": 182649324,
+      "litros": 124087,
+      "litros_retail": 98933,
       "litros_volumen": 25154,
-      "precio_neto": 1475,
-      "precio_bruto": 1472,
-      "margin": 0.07294,
-      "margin_retail": 0.07593,
+      "precio_neto": 1472,
+      "precio_bruto": 1474,
+      "margin": 0.07417,
+      "margin_retail": 0.07721,
       "margin_volumen": 0.06212,
-      "facturas": 97,
+      "facturas": 105,
       "nc": 0,
-      "clientes": 80,
-      "recaud": 172982915,
+      "clientes": 86,
+      "recaud": 182227276,
       "cheques": 6366798,
-      "transf": 166616117,
+      "transf": 175860478,
       "factoring": 0,
-      "compras_odoo": 13714775,
+      "compras_odoo": 48079177,
       "cheq_cartera_saldo": 0,
       "cheq_recibidos": 0,
-      "facturas_contado": 12,
-      "facturas_credito": 85,
+      "facturas_contado": 13,
+      "facturas_credito": 92,
       "margin_by_term": {
         "Prepago": {
           "margin": 0.01789,
@@ -35,15 +35,15 @@
           "days": 0
         },
         "1 Día": {
-          "margin": 0.04935,
-          "normalizado": 0.05902,
-          "count": 9,
+          "margin": 0.05162,
+          "normalizado": 0.06129,
+          "count": 10,
           "days": 1
         },
         "7 Días": {
-          "margin": 0.05294,
-          "normalizado": 0.06061,
-          "count": 16,
+          "margin": 0.05698,
+          "normalizado": 0.06464,
+          "count": 17,
           "days": 7
         },
         "15 Días": {
@@ -53,9 +53,9 @@
           "days": 15
         },
         "30 Días": {
-          "margin": 0.08151,
-          "normalizado": 0.08151,
-          "count": 55,
+          "margin": 0.08181,
+          "normalizado": 0.08181,
+          "count": 59,
           "days": 30
         },
         "45 Días": {
@@ -65,9 +65,9 @@
           "days": 45
         },
         "60 Días": {
-          "margin": 0.08124,
-          "normalizado": 0.07124,
-          "count": 10,
+          "margin": 0.08327,
+          "normalizado": 0.07327,
+          "count": 12,
           "days": 60
         }
       },
@@ -77,7 +77,15 @@
       "ppto": 279386,
       "ppto_retail": 201226,
       "ppto_volumen": 78160,
-      "parcial": true
+      "parcial": true,
+      "margin_fifo": 0.13675,
+      "margin_fifo_retail": 0.13966,
+      "margin_fifo_volumen": 0.12511,
+      "costo_fifo_l": 1272.1,
+      "margen_fifo_l": 201.5,
+      "margen_fifo_l_retail": 206.5,
+      "margen_fifo_l_volumen": 181.9,
+      "fifo_cobertura": 1.0
     },
     {
       "label": "24sep-30sep",
@@ -149,7 +157,15 @@
       "ppto": 217111,
       "ppto_retail": 138951,
       "ppto_volumen": 78160,
-      "parcial": false
+      "parcial": false,
+      "margin_fifo": 0.061,
+      "margin_fifo_retail": 0.06785,
+      "margin_fifo_volumen": 0.05263,
+      "costo_fifo_l": 1285.2,
+      "margen_fifo_l": 83.5,
+      "margen_fifo_l_retail": 93.6,
+      "margen_fifo_l_volumen": 71.4,
+      "fifo_cobertura": 1.0
     },
     {
       "label": "17sep-23sep",
@@ -227,7 +243,15 @@
       "ppto": 217111,
       "ppto_retail": 138951,
       "ppto_volumen": 78160,
-      "parcial": false
+      "parcial": false,
+      "margin_fifo": 0.07679,
+      "margin_fifo_retail": 0.0864,
+      "margin_fifo_volumen": 0.06279,
+      "costo_fifo_l": 1276.0,
+      "margen_fifo_l": 106.1,
+      "margen_fifo_l_retail": 120.7,
+      "margen_fifo_l_volumen": 85.5,
+      "fifo_cobertura": 1.0
     },
     {
       "label": "10sep-16sep",
@@ -305,7 +329,15 @@
       "ppto": 217111,
       "ppto_retail": 138951,
       "ppto_volumen": 78160,
-      "parcial": false
+      "parcial": false,
+      "margin_fifo": 0.11854,
+      "margin_fifo_retail": 0.13523,
+      "margin_fifo_volumen": 0.09188,
+      "costo_fifo_l": 1205.4,
+      "margen_fifo_l": 162.1,
+      "margen_fifo_l_retail": 187.5,
+      "margen_fifo_l_volumen": 122.9,
+      "fifo_cobertura": 1.0
     },
     {
       "label": "03sep-09sep",
@@ -383,7 +415,15 @@
       "ppto": 217111,
       "ppto_retail": 138951,
       "ppto_volumen": 78160,
-      "parcial": false
+      "parcial": false,
+      "margin_fifo": 0.07977,
+      "margin_fifo_retail": 0.0905,
+      "margin_fifo_volumen": 0.06599,
+      "costo_fifo_l": 1183.9,
+      "margen_fifo_l": 102.6,
+      "margen_fifo_l_retail": 117.8,
+      "margen_fifo_l_volumen": 83.7,
+      "fifo_cobertura": 1.0
     },
     {
       "label": "27aug-02sep",
@@ -467,7 +507,15 @@
       "ppto": 223716,
       "ppto_retail": 147653,
       "ppto_volumen": 76064,
-      "parcial": false
+      "parcial": false,
+      "margin_fifo": 0.08567,
+      "margin_fifo_retail": 0.09488,
+      "margin_fifo_volumen": 0.07012,
+      "costo_fifo_l": 1184.0,
+      "margen_fifo_l": 110.9,
+      "margen_fifo_l_retail": 124.1,
+      "margen_fifo_l_volumen": 89.3,
+      "fifo_cobertura": 1.0
     },
     {
       "label": "20aug-26aug",
@@ -545,7 +593,15 @@
       "ppto": 223716,
       "ppto_retail": 147653,
       "ppto_volumen": 76064,
-      "parcial": false
+      "parcial": false,
+      "margin_fifo": 0.12506,
+      "margin_fifo_retail": 0.13322,
+      "margin_fifo_volumen": 0.11375,
+      "costo_fifo_l": 1117.1,
+      "margen_fifo_l": 159.7,
+      "margen_fifo_l_retail": 171.6,
+      "margen_fifo_l_volumen": 143.4,
+      "fifo_cobertura": 1.0
     },
     {
       "label": "13aug-19aug",
@@ -629,7 +685,15 @@
       "ppto": 223716,
       "ppto_retail": 147653,
       "ppto_volumen": 76064,
-      "parcial": false
+      "parcial": false,
+      "margin_fifo": 0.08223,
+      "margin_fifo_retail": 0.09344,
+      "margin_fifo_volumen": 0.06902,
+      "costo_fifo_l": 1086.5,
+      "margen_fifo_l": 97.3,
+      "margen_fifo_l_retail": 112.0,
+      "margen_fifo_l_volumen": 80.5,
+      "fifo_cobertura": 1.0
     },
     {
       "label": "06aug-12aug",
@@ -707,7 +771,15 @@
       "ppto": 223716,
       "ppto_retail": 147653,
       "ppto_volumen": 76064,
-      "parcial": false
+      "parcial": false,
+      "margin_fifo": 0.07685,
+      "margin_fifo_retail": 0.09854,
+      "margin_fifo_volumen": 0.06059,
+      "costo_fifo_l": 1088.0,
+      "margen_fifo_l": 90.6,
+      "margen_fifo_l_retail": 118.9,
+      "margen_fifo_l_volumen": 70.2,
+      "fifo_cobertura": 1.0
     },
     {
       "label": "30jul-05aug",
@@ -791,7 +863,15 @@
       "ppto": 228412,
       "ppto_retail": 155320,
       "ppto_volumen": 73092,
-      "parcial": false
+      "parcial": false,
+      "margin_fifo": 0.08348,
+      "margin_fifo_retail": 0.10802,
+      "margin_fifo_volumen": 0.06252,
+      "costo_fifo_l": 1076.7,
+      "margen_fifo_l": 98.1,
+      "margen_fifo_l_retail": 130.5,
+      "margen_fifo_l_volumen": 71.7,
+      "fifo_cobertura": 1.0
     },
     {
       "label": "23jul-29jul",
@@ -869,7 +949,15 @@
       "ppto": 228412,
       "ppto_retail": 155320,
       "ppto_volumen": 73092,
-      "parcial": false
+      "parcial": false,
+      "margin_fifo": 0.06623,
+      "margin_fifo_retail": 0.08994,
+      "margin_fifo_volumen": 0.04622,
+      "costo_fifo_l": 1060.1,
+      "margen_fifo_l": 75.2,
+      "margen_fifo_l_retail": 104.7,
+      "margen_fifo_l_volumen": 51.4,
+      "fifo_cobertura": 1.0
     },
     {
       "label": "16jul-22jul",
@@ -947,7 +1035,15 @@
       "ppto": 228412,
       "ppto_retail": 155320,
       "ppto_volumen": 73092,
-      "parcial": false
+      "parcial": false,
+      "margin_fifo": 0.06884,
+      "margin_fifo_retail": 0.10476,
+      "margin_fifo_volumen": 0.04449,
+      "costo_fifo_l": 1064.6,
+      "margen_fifo_l": 78.7,
+      "margen_fifo_l_retail": 124.5,
+      "margen_fifo_l_volumen": 49.6,
+      "fifo_cobertura": 1.0
     },
     {
       "label": "09jul-15jul",
@@ -1025,7 +1121,15 @@
       "ppto": 228412,
       "ppto_retail": 155320,
       "ppto_volumen": 73092,
-      "parcial": false
+      "parcial": false,
+      "margin_fifo": 0.04893,
+      "margin_fifo_retail": 0.08627,
+      "margin_fifo_volumen": 0.01879,
+      "costo_fifo_l": 1093.5,
+      "margen_fifo_l": 56.3,
+      "margen_fifo_l_retail": 102.5,
+      "margen_fifo_l_volumen": 21.1,
+      "fifo_cobertura": 1.0
     },
     {
       "label": "02jul-08jul",
@@ -1103,7 +1207,15 @@
       "ppto": 228412,
       "ppto_retail": 155320,
       "ppto_volumen": 73092,
-      "parcial": false
+      "parcial": false,
+      "margin_fifo": 0.06617,
+      "margin_fifo_retail": 0.08916,
+      "margin_fifo_volumen": 0.05174,
+      "costo_fifo_l": 1218.7,
+      "margen_fifo_l": 86.4,
+      "margen_fifo_l_retail": 119.3,
+      "margen_fifo_l_volumen": 66.5,
+      "fifo_cobertura": 1.0
     },
     {
       "label": "25jun-01jul",
@@ -1175,7 +1287,15 @@
       "ppto": 178726,
       "ppto_retail": 125108,
       "ppto_volumen": 53618,
-      "parcial": false
+      "parcial": false,
+      "margin_fifo": 0.08458,
+      "margin_fifo_retail": 0.09475,
+      "margin_fifo_volumen": 0.06614,
+      "costo_fifo_l": 1217.7,
+      "margen_fifo_l": 112.5,
+      "margen_fifo_l_retail": 127.5,
+      "margen_fifo_l_volumen": 86.2,
+      "fifo_cobertura": 1.0
     },
     {
       "label": "18jun-24jun",
@@ -1253,15 +1373,23 @@
       "ppto": 178726,
       "ppto_retail": 125108,
       "ppto_volumen": 53618,
-      "parcial": false
+      "parcial": false,
+      "margin_fifo": 0.05434,
+      "margin_fifo_retail": 0.06613,
+      "margin_fifo_volumen": 0.04013,
+      "costo_fifo_l": 1244.2,
+      "margen_fifo_l": 71.5,
+      "margen_fifo_l_retail": 88.5,
+      "margen_fifo_l_volumen": 51.8,
+      "fifo_cobertura": 1.0
     }
   ],
   "daily": [
     {
       "date": "06oct",
       "day": "Mar",
-      "litros": 0,
-      "neto": 0
+      "litros": 8890,
+      "neto": 12697487
     },
     {
       "date": "05oct",
@@ -1356,10 +1484,6 @@
   ],
   "banks": [
     {
-      "name": "DE CHILE",
-      "balance": 45740513
-    },
-    {
       "name": "ESTADO",
       "balance": 9867496
     },
@@ -1368,12 +1492,16 @@
       "balance": 9603910
     },
     {
-      "name": "BCI",
-      "balance": 4376347
+      "name": "DE CHILE",
+      "balance": 9109739
     },
     {
       "name": "CAJA",
       "balance": 3291177
+    },
+    {
+      "name": "BCI",
+      "balance": 2610692
     },
     {
       "name": "SANTANDER",
@@ -1384,17 +1512,17 @@
       "balance": -1935215
     }
   ],
-  "total_cash": 71774985,
+  "total_cash": 33378556,
   "receivables": {
-    "open_invoices": 312,
-    "total_due": 671763353,
-    "current": 551455284,
-    "overdue": 120308069,
-    "pct_overdue": 17.9,
+    "open_invoices": 317,
+    "total_due": 681838573,
+    "current": 562883504,
+    "overdue": 118955069,
+    "pct_overdue": 17.4,
     "aging": {
-      "0-30": 73230683,
-      "31-60": 12174001,
-      "61-90": 4883101,
+      "0-30": 71874683,
+      "31-60": 16134002,
+      "61-90": 926100,
       "90+": 30020284
     },
     "top_debtors": [
@@ -1440,7 +1568,7 @@
       },
       {
         "name": "JOSE RODRIGO ORMAZABAL VIDAL",
-        "amount": 14520003
+        "amount": 14523003
       },
       {
         "name": "AGRICOLA LATORRE AC SPA",
@@ -1471,12 +1599,12 @@
         "amount": 9254350
       },
       {
-        "name": "INGENERIA Y CONSTRUCCIONES FEBLANCA SPA",
-        "amount": 8955000
-      },
-      {
         "name": "AGRICOLA MIGUEL TORRES SPA",
         "amount": 8288002
+      },
+      {
+        "name": "SOCIEDAD DE TRANSPORTES DON CARLOS LIMITADA",
+        "amount": 8190000
       }
     ]
   },
@@ -1484,7 +1612,7 @@
     "avla_fecha": "2026-09-24",
     "buckets": {
       "normal": {
-        "monto": 62201850,
+        "monto": 60845850,
         "n": 24
       },
       "corte_dicom": {
@@ -1492,7 +1620,7 @@
         "n": 6
       },
       "siniestro": {
-        "monto": 14520003,
+        "monto": 14523003,
         "n": 1
       },
       "judicial": {
@@ -1589,12 +1717,12 @@
       {
         "name": "JOSE RODRIGO ORMAZABAL VIDAL",
         "rut": "14464809-9",
-        "monto": 14520003,
+        "monto": 14523003,
         "n_facturas": 4,
-        "dias": 66,
-        "oldest_due": "2026-08-01",
+        "dias": 60,
+        "oldest_due": "2026-08-07",
         "etapa": "siniestro",
-        "cubierto": 14520003,
+        "cubierto": 14523003,
         "no_cubierto": 0
       },
       {
@@ -1692,23 +1820,22 @@
           ]
         },
         "Curico": {
-          "total": 13,
-          "on_time": 11,
+          "total": 15,
+          "on_time": 13,
           "late": 2,
-          "pct": 84.62,
+          "pct": 86.67,
           "late_clients": [
-            "AGRIZANO S A (prom: 2026-10-06, fact: sin factura)",
+            "EL ESTRIBILLO SPA (prom: 2026-10-05, fact: 2026-10-06)",
             "AGRICOLA EL MILAGRO LTDA. (prom: 2026-10-01, fact: 2026-10-02)"
           ]
         },
         "Rancagua": {
-          "total": 29,
-          "on_time": 27,
-          "late": 2,
-          "pct": 93.1,
+          "total": 30,
+          "on_time": 29,
+          "late": 1,
+          "pct": 96.67,
           "late_clients": [
-            "AGRICOLA OMEGA TRES LIMITADA (prom: 2026-10-06, fact: sin factura)",
-            "CBARRIOS CONSTRUCTORA SPA (prom: 2026-10-06, fact: sin factura)"
+            "COMPAÑIA PAPELERA DEL PACIFICO S.A (prom: 2026-10-06, fact: sin factura)"
           ]
         },
         "San Fernando": {
@@ -1722,22 +1849,22 @@
           ]
         },
         "Talca": {
-          "total": 15,
-          "on_time": 12,
-          "late": 3,
-          "pct": 80.0,
+          "total": 16,
+          "on_time": 15,
+          "late": 1,
+          "pct": 93.75,
           "late_clients": [
-            "AGRICOLA LOS ALPES LTDA (prom: 2026-10-06, fact: sin factura)",
-            "CONSTRUCTORA LO BLANCO SPA (prom: 2026-10-06, fact: sin factura)",
-            "SOC. DE TRANSPORTES TRACMAVI LTDA. (prom: 2026-10-06, fact: sin factura)"
+            "LUIS ALBERTO IBARRA CARRILLO (prom: 2026-10-06, fact: sin factura)"
           ]
         },
         "VI Costa": {
-          "total": 9,
+          "total": 10,
           "on_time": 9,
-          "late": 0,
-          "pct": 100.0,
-          "late_clients": []
+          "late": 1,
+          "pct": 90.0,
+          "late_clients": [
+            "AGRIC Y GANAD LAS CASAS DE CALLEUQUE (prom: 2026-10-05, fact: sin factura)"
+          ]
         }
       }
     },
@@ -2750,18 +2877,18 @@
     }
   ],
   "riesgo": {
-    "cubierto": 562856755,
-    "cubierto_count": 277,
-    "no_cubierto": 108906598,
-    "no_cubierto_count": 47,
-    "pct_monto": 16.21,
-    "pct_count": 14.51,
+    "cubierto": 572476856,
+    "cubierto_count": 281,
+    "no_cubierto": 109361717,
+    "no_cubierto_count": 48,
+    "pct_monto": 16.04,
+    "pct_count": 14.59,
     "avla_fecha_descarga": "2026-09-24",
-    "avla_ruts_matched": 136,
+    "avla_ruts_matched": 137,
     "avla_ruts_total": 828
   },
   "churn": {
-    "dormant_count": 58,
+    "dormant_count": 57,
     "lost_count": 199,
     "newly_lost_this_month": 7,
     "churn_pct": 3.3,
@@ -2799,7 +2926,7 @@
         "threshold": 28.5,
         "litros_prom_mes": 4224,
         "ejecutivo": "Comber Sigall Pauline",
-        "crm_lead": "Durmiente",
+        "crm_lead": "Won",
         "gestion": "⏰ ALERTA: JUAN VILLAR ESPINOZA SPA lleva 23 dias sin comprar (freq: 15d) · 2026-08-19"
       },
       {
@@ -2943,7 +3070,7 @@
         "threshold": 42.0,
         "litros_prom_mes": 1750,
         "ejecutivo": "Carolina Avilés",
-        "crm_lead": "Durmiente",
+        "crm_lead": "Won",
         "gestion": "⏰ follow up on quote sent · 2026-06-08"
       },
       {
@@ -2967,7 +3094,7 @@
         "threshold": 12.0,
         "litros_prom_mes": 2500,
         "ejecutivo": "SEBASTIAN ENRIQUE TORO GONZALEZ",
-        "crm_lead": "Durmiente",
+        "crm_lead": "Won",
         "gestion": "⏰ LLAMAR · 2026-01-26"
       },
       {
@@ -2979,7 +3106,7 @@
         "threshold": 30.0,
         "litros_prom_mes": 1250,
         "ejecutivo": "Comber Sigall Pauline",
-        "crm_lead": "Durmiente",
+        "crm_lead": "Won",
         "gestion": "⏰ Re-engage dormant client · 2026-05-26"
       },
       {
@@ -2991,7 +3118,7 @@
         "threshold": 13.5,
         "litros_prom_mes": 4833,
         "ejecutivo": "TomEnergy",
-        "crm_lead": "Durmiente",
+        "crm_lead": "Won",
         "gestion": "⏰ ALZA · 2026-03-31"
       },
       {
@@ -3051,7 +3178,7 @@
         "threshold": 40.5,
         "litros_prom_mes": 450,
         "ejecutivo": "TomEnergy",
-        "crm_lead": "Durmiente",
+        "crm_lead": "Won",
         "gestion": "⏰ ALERTA: SOCIEDADA AGRICOLA Y COMERCIAL BETHANIA DEL SUR LTDA lleva 23 dias sin comprar (freq: 15d) · 2026-09-17"
       },
       {
@@ -3075,7 +3202,7 @@
         "threshold": 36.0,
         "litros_prom_mes": 4833,
         "ejecutivo": "(ant) Joaquin Muñoz Encalada",
-        "crm_lead": "Durmiente",
+        "crm_lead": "Won",
         "gestion": "⏰ Re-engage dormant client · 2026-07-01"
       },
       {
@@ -3103,18 +3230,6 @@
         "gestion": null
       },
       {
-        "partner_id": 4986,
-        "name": "CONSTRUCTORA LO BLANCO SPA",
-        "last_invoice": "2026-08-31",
-        "days_since": 36,
-        "freq_days": 9,
-        "threshold": 13.5,
-        "litros_prom_mes": 3000,
-        "ejecutivo": "TomEnergy",
-        "crm_lead": null,
-        "gestion": "⏰ ALERTA: CONSTRUCTORA LO BLANCO SPA lleva 11 dias sin comprar (freq: 3d) · 2026-08-30"
-      },
-      {
         "partner_id": 4925,
         "name": "ALFREDO ALFONSO OPAZO MUÑOZ",
         "last_invoice": "2026-09-01",
@@ -3123,7 +3238,7 @@
         "threshold": 9.0,
         "litros_prom_mes": 5905,
         "ejecutivo": "TomEnergy",
-        "crm_lead": "Durmiente",
+        "crm_lead": "Won",
         "gestion": "⏰ pv contactado wsup · 2025-11-29"
       },
       {
@@ -3147,7 +3262,7 @@
         "threshold": 10.5,
         "litros_prom_mes": 17850,
         "ejecutivo": "Comber Sigall Pauline",
-        "crm_lead": "Won",
+        "crm_lead": "Durmiente",
         "gestion": "⏰ pedir linea · 2025-12-24"
       },
       {
@@ -3159,7 +3274,7 @@
         "threshold": 30.0,
         "litros_prom_mes": 3792,
         "ejecutivo": "TomEnergy",
-        "crm_lead": "Durmiente",
+        "crm_lead": "Won",
         "gestion": "⏰ 2/9 compra 17/8 compran por esta razon social compran por otra RS · 2026-10-20"
       },
       {
@@ -3365,6 +3480,18 @@
         "ejecutivo": "TomEnergy",
         "crm_lead": "Won",
         "gestion": "⏰ ALERTA: BOMBAS DE HORMIGON G&P SPA lleva 7 dias sin comprar (freq: 3d) · 2026-05-07"
+      },
+      {
+        "partner_id": 17494,
+        "name": "AGRICOLA ESTERO VATICANO LIMITADA",
+        "last_invoice": "2026-09-15",
+        "days_since": 21,
+        "freq_days": 13,
+        "threshold": 19.5,
+        "litros_prom_mes": 437,
+        "ejecutivo": "TomEnergy",
+        "crm_lead": "Won",
+        "gestion": "Nota 2026-08-31 · Joaquin Muñoz"
       }
     ],
     "lost": [
@@ -3546,7 +3673,7 @@
         "litros_prom_mes": 250,
         "ejecutivo": "TomEnergy",
         "crm_lead": "Perdidos",
-        "gestion": "⏰ INVERSIONES FRUTICOLAS: 28/09 camila dicen que no le a llegado informacion si necesitan petroleo, va a consular · 2026-10-03"
+        "gestion": "⏰ INVERSIONES FRUTICOLAS: 06/10 hicieron pedido el 05-10. 28/09 camila dicen que no le a llegado informacion si necesitan petroleo, va a consular · 2026-10-12"
       },
       {
         "partner_id": 7586,
@@ -3606,7 +3733,7 @@
         "litros_prom_mes": 269,
         "ejecutivo": "TomEnergy",
         "crm_lead": "Perdidos",
-        "gestion": null
+        "gestion": "⏰ 06/10 elias (jefe de campo) esta con licencia, me va a enviar el numero de quien esta gestionando el campo en la actualidad · 2026-10-08"
       },
       {
         "partner_id": 7878,
@@ -4019,10 +4146,10 @@
           "5667"
         ],
         "target_total": 549935,
-        "mtd_litros": 10003,
-        "compliance_pct": 1.8,
-        "projected": 51682,
-        "projected_pct": 9.4,
+        "mtd_litros": 35067,
+        "compliance_pct": 6.4,
+        "projected": 181180,
+        "projected_pct": 32.9,
         "plants": {
           "Linares": {
             "target": 45000,
@@ -4040,10 +4167,10 @@
           },
           "San Fernando": {
             "target": 302961,
-            "mtd": 10003,
-            "compliance_pct": 3.3,
-            "projected": 51682,
-            "projected_pct": 17.1
+            "mtd": 35067,
+            "compliance_pct": 11.6,
+            "projected": 181180,
+            "projected_pct": 59.8
           }
         }
       },
@@ -4076,10 +4203,10 @@
       }
     },
     "total_target": 963064,
-    "total_mtd": 10003,
-    "total_compliance_pct": 1.0,
-    "total_projected": 51682,
-    "total_projected_pct": 5.4
+    "total_mtd": 35067,
+    "total_compliance_pct": 3.6,
+    "total_projected": 181180,
+    "total_projected_pct": 18.8
   },
   "operaciones": {
     "months": [
@@ -4172,11 +4299,11 @@
         "month": "2026-10",
         "label": "Oct 2026",
         "budget": 15623001,
-        "actual": 7426550,
-        "compliance_pct": 47.5,
+        "actual": 7440149,
+        "compliance_pct": 47.6,
         "categories": {
           "Petróleo": 5973357,
-          "Mantención y Reparación": 1053193,
+          "Mantención y Reparación": 1066792,
           "Gastos Traslados (TAG)": 0,
           "Seguros": 0,
           "Gastos Vehículos": 0,
@@ -4236,18 +4363,18 @@
       },
       {
         "month": "2026-09",
-        "cxc": 1467721110,
-        "cxc_acc": 1465369110,
+        "cxc": 1469004110,
+        "cxc_acc": 1466652110,
         "cheques": 2352000,
-        "avg_cxc_3m": 1153362675,
+        "avg_cxc_3m": 1153790342,
         "net_sales": 1939588398,
         "dso": 17.8
       }
     ],
-    "cxc_hoy": 1524279059,
+    "cxc_hoy": 1534351279,
     "por_semana": {
-      "2026-10-07": 1524279059,
-      "2026-09-30": 1467721110,
+      "2026-10-07": 1534351279,
+      "2026-09-30": 1469004110,
       "2026-09-23": 1327473170,
       "2026-09-16": 1306911196,
       "2026-09-09": 1275745508,
