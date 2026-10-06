@@ -514,9 +514,9 @@ def extract_weekly(models, uid, supplier_ids, contado_term_ids, ruta_stage_id, t
 # stock comprado a $1.300 el miércoles se sigue vendiendo a costo $1.300 el jueves
 # aunque ENAP haya subido. Se arma un pool ÚNICO de compañía (no por camión: los
 # camiones rotan stock en 1-3 días y el kardex por camión tiene descuadres) con
-# capas = facturas de compra posted de ENAP/Adquim/Adgreen (litros y $ neto de la
-# línea, NC de proveedor restan; ajustes de precio sin litros —"Del Giro" qty 1—
-# se ignoran) y se consumen en orden de llegada con los litros facturados (NC restan).
+# capas = facturas de compra posted de ENAP/Adquim/Adgreen (litros y $ TOTAL de la
+# factura = precio final $/L, NC de proveedor restan; ajustes de precio sin litros
+# —"Del Giro" qty 1— se ignoran) y se consumen en orden de llegada con los litros facturados (NC restan).
 # Desde abr-2026 (antes las compras venían como "Del Giro" sin litros); jun+ ya no
 # arrastra stock inicial. Si no hay capa disponible se costea al último precio de
 # compra y se reporta en fifo_cobertura.
@@ -527,21 +527,34 @@ def extract_margen_fifo(models, uid, supplier_ids, weekly):
     from collections import defaultdict, deque
     print("Margen PEPS: capas de compra desde", FIFO_START)
     buys = defaultdict(lambda: [0.0, 0.0])
+    # Base = precio FINAL $/L (total de factura), igual que margin_zone y el Mantenedor.
+    # NO usar el neto de línea: en compras ENAP oscila con el componente variable
+    # del impuesto (sep-2026: neto 1.166→1.240→1.340 con total fijo en 1.277).
     plines = fetch_all(models, uid, "account.move.line", [
         ["move_id.move_type", "in", ["in_invoice", "in_refund"]],
         ["parent_state", "=", "posted"],
         ["move_id.partner_id", "in", supplier_ids],
         ["move_id.invoice_date", ">=", FIFO_START],
         ["display_type", "=", "product"],
-    ], ["invoice_date", "date", "quantity", "price_subtotal", "move_type"])
+    ], ["move_id", "quantity"])
+    litros_mov = defaultdict(float)
     for l in plines:
-        q, v = l.get("quantity") or 0, l.get("price_subtotal") or 0
-        if abs(q) <= 1 and abs(v) > 1000:
+        q = l.get("quantity") or 0
+        if abs(q) > 1:  # "Del Giro" qty 1 = ajuste de precio sin litros
+            litros_mov[l["move_id"][0]] += q
+    mids = list(litros_mov)
+    pmoves = []
+    for off in range(0, len(mids), 500):
+        pmoves += sr(models, uid, "account.move", [["id", "in", mids[off:off + 500]]],
+                     ["invoice_date", "date", "amount_total", "move_type"], limit=500)
+    for mv in pmoves:
+        q = litros_mov[mv["id"]]
+        if q <= 0:
             continue
-        s = -1 if l["move_type"] == "in_refund" else 1
-        d = l.get("invoice_date") or l["date"]
+        s = -1 if mv["move_type"] == "in_refund" else 1
+        d = mv.get("invoice_date") or mv["date"]
         buys[d][0] += s * q
-        buys[d][1] += s * v
+        buys[d][1] += s * (mv.get("amount_total") or 0)
 
     slines = fetch_all(models, uid, "account.move.line", [
         ["move_id.move_type", "in", ["out_invoice", "out_refund"]],
@@ -549,7 +562,7 @@ def extract_margen_fifo(models, uid, supplier_ids, weekly):
         ["move_id.invoice_date", ">=", FIFO_START],
         ["display_type", "=", "product"],
         ["product_id", "=", DIESEL_B1_PRODUCT],
-    ], ["invoice_date", "date", "partner_id", "quantity", "price_subtotal", "move_type"])
+    ], ["invoice_date", "date", "partner_id", "quantity", "price_total", "move_type"])
     pids = list({l["partner_id"][0] for l in slines if l.get("partner_id")})
     vol_ids = set()
     for off in range(0, len(pids), 500):
@@ -602,7 +615,7 @@ def extract_margen_fifo(models, uid, supplier_ids, weekly):
                 continue
             seg = "v" if (l.get("partner_id") and l["partner_id"][0] in vol_ids) else "r"
             q = l["_s"] * (l.get("quantity") or 0)
-            rev[seg] += l["_s"] * (l.get("price_subtotal") or 0)
+            rev[seg] += l["_s"] * (l.get("price_total") or 0)
             cst[seg] += q * cost_l[d]
             lit += q
         rt, ct = rev["r"] + rev["v"], cst["r"] + cst["v"]
