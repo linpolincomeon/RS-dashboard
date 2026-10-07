@@ -394,6 +394,9 @@ function switchTab(t){
 function setFilter(n){fN=n;if(selW>=n)selW=0;render()}
 function selectWeek(i){selW=i;render()}
 function render(){
+    // Asegura que el panel del tab actual sea visible también en la carga inicial
+    // (el markup no trae ningún .panel.active; antes solo switchTab lo ponía).
+    document.querySelectorAll('.panel').forEach(p=>p.classList.toggle('active',p.id==='p-'+curTab));
     if(curTab==='ventas') renderVentas();
     else if(curTab==='gerencia') renderGerencia();
     else if(curTab==='resumen') renderResumen();
