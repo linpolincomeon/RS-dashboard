@@ -172,11 +172,18 @@
   <div id="planMantNota" class="note"></div>
 </div>
 
-<div class="card vw-mant" hidden>
-  <h2>📅 Gantt: mantenciones y vencimientos por camión</h2>
-  <div class="note" style="margin:0 0 12px">Eventos de la hoja Vencimientos de "Proyectos y Control". Rojo = vencido u ocurre este mes. Se actualiza regenerando <code>presupuesto-camiones.json</code>.</div>
+<div class="card vw-mant" hidden id="cardVenc">
+  <h2>📅 Vencimientos — camiones, choferes y camionetas</h2>
+  <div class="note" style="margin:0 0 12px">Fuente: hoja <a id="vencLink" href="#" target="_blank" rel="noopener">"Vencimientos" de Proyectos y Control</a> → <code>vencimientos.json</code> en el repo (<span id="vencStamp"></span>). <b class="bad">Rojo</b> = vencido · <b class="warn">naranjo</b> = dentro de 30 días · <b class="ok">verde</b> = dentro de 90 días. TCT/Aramco son n° de tarjeta, no fechas.</div>
+  <div id="vencAlertas"></div>
+  <h3 style="font-size:14px;margin:16px 0 8px">🚛 Gantt camiones</h3>
   <div class="scroll" id="gantt"></div>
   <div id="ganttLeyenda" class="note"></div>
+  <h3 style="font-size:14px;margin:16px 0 8px">👷 Choferes — INIVIT y licencia</h3>
+  <div class="scroll" id="vencChoferes"></div>
+  <h3 style="font-size:14px;margin:16px 0 8px">🚙 Camionetas</h3>
+  <div class="scroll" id="vencCamionetas"></div>
+  <div id="vencNotas" class="note"></div>
 </div>
 
 <div class="card vw-costos">
@@ -198,7 +205,7 @@ const sum = a => a.reduce((s, x) => s + x, 0);
 function cumplClass(pct) { return pct <= 100 ? 'ok' : (pct <= 115 ? 'warn' : 'bad'); }
 
 async function load() {
-  const [dataRes, presRes, chofRes, planRes, srRes, cuadRes, crmRes] = await Promise.all([
+  const [dataRes, presRes, chofRes, planRes, srRes, cuadRes, crmRes, vencRes] = await Promise.all([
     fetch('costos-data.json?ts=' + Date.now()),
     fetch('presupuesto-camiones.json?ts=' + Date.now()),
     fetch('choferes-data.json?ts=' + Date.now()),
@@ -206,6 +213,7 @@ async function load() {
     fetch('simpliroute-data.json?ts=' + Date.now()),
     fetch('cuadratura-data.json?ts=' + Date.now()),
     fetch('crm-data.json?ts=' + Date.now()).catch(() => null),
+    fetch('vencimientos.json?ts=' + Date.now()).catch(() => null),
   ]);
   const D = await dataRes.json();
   const P = await presRes.json();
@@ -384,43 +392,8 @@ async function load() {
     });
   }
 
-  // ---- gantt de eventos ----
-  const EVENT_ICON = {
-    'Revisión Técnica': '🔧', 'Hermeticidad': '🛢', 'Permiso Circulación': '📄',
-    'SOAP': '🛡', 'Extintores': '🧯', 'Recertificación Estanque': '✅', 'Mantenimiento': '⚙️',
-  };
-  const hoy = new Date().toISOString().slice(0, 10);
-  const evs = (P.eventos || []).filter(e => e.fecha && e.fecha <= '2027-12-31');
-  // ventana: mes actual - 1 hasta dic 2027
-  const gMeses = [];
-  {
-    let y = 2026, m = new Date().getMonth(); // mes anterior como inicio
-    if (m === 0) { y = 2025; m = 12; }
-    while (y < 2027 || (y === 2027 && m <= 12)) {
-      gMeses.push(`${y}-${String(m).padStart(2, '0')}`);
-      m++; if (m > 12) { m = 1; y++; }
-    }
-  }
-  const gLabel = ym => MESES_L[parseInt(ym.slice(5), 10) - 1] + ' ' + ym.slice(2, 4);
-  const camsG = [...new Set(evs.map(e => e.camion))].sort();
-  let gh = `<table><tr><th>Camión</th>${gMeses.map(m => `<th style="text-align:center">${gLabel(m)}</th>`).join('')}</tr>`;
-  for (const camG of camsG) {
-    gh += `<tr><td><b>${camG}</b></td>`;
-    for (const m of gMeses) {
-      const cell = evs.filter(e => e.camion === camG && e.fecha.slice(0, 7) === m);
-      if (!cell.length) { gh += '<td></td>'; continue; }
-      gh += `<td style="text-align:center">` + cell.map(e => {
-        const vencido = e.fecha < hoy;
-        const esteMes = e.fecha.slice(0, 7) === hoy.slice(0, 7);
-        return `<span title="${e.tipo} — ${e.fecha}" style="display:inline-block;padding:1px 4px;border-radius:6px;font-size:11px;white-space:nowrap;${vencido ? 'background:#fde8e2;color:var(--bad);font-weight:700' : esteMes ? 'background:#fdf0e7;color:var(--warn);font-weight:700' : 'background:#f0efec'}">${EVENT_ICON[e.tipo] || '•'} ${e.fecha.slice(8)}</span>`;
-      }).join('<br>') + '</td>';
-    }
-    gh += '</tr>';
-  }
-  gh += '</table>';
-  $('gantt').innerHTML = gh;
-  $('ganttLeyenda').innerHTML = Object.entries(EVENT_ICON).map(([t, i]) => `${i} ${t}`).join(' · ')
-    + (evs.some(e => e.fecha < hoy) ? `<br><b class="bad">⚠ Vencidos: ${evs.filter(e => e.fecha < hoy).map(e => `${e.camion} ${e.tipo} (${e.fecha})`).join(' · ')}</b>` : '');
+  // ---- vencimientos (vencimientos.json; fallback P.eventos del presupuesto) ----
+  renderVencimientos(vencRes && vencRes.ok ? await vencRes.json() : null, P);
 
   // ---- sin asignar ----
   let sa = `<tr><th>Cuenta</th>${MESES_L.slice(0, N).map(m => `<th class="num">${m}</th>`).join('')}<th class="num">YTD</th></tr>`;
@@ -531,6 +504,108 @@ function renderPlanMantencion(PLAN, D) {
 }
 
 // ---- cuadratura Odoo <-> SimpliRoute (cron horario en jornada laboral) ----
+// ── Vencimientos: camiones (Gantt), choferes (INIVIT/licencia) y camionetas ──
+// Fuente: vencimientos.json (hoja "Vencimientos" de Proyectos y Control, pegada por Pauline y
+// transcrita a mano al repo). Si el archivo falta, cae a P.eventos del presupuesto (solo camiones).
+function renderVencimientos(V, P) {
+  const esc = v => String(v == null ? '' : v).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  const EVENT_ICON = {
+    'Revisión Técnica': '🔧', 'Hermeticidad': '🛢', 'Permiso Circulación': '📄',
+    'SOAP': '🛡', 'Extintores': '🧯', 'Recertificación Estanque': '✅', 'Mantenimiento': '⚙️',
+    'INIVIT': '🪪', 'Licencia': '🪪', 'Gases': '💨',
+  };
+  const hoy = new Date().toISOString().slice(0, 10);
+  const isISO = v => /^\d{4}-\d{2}-\d{2}$/.test(v || '');
+  const dias = iso => Math.round((new Date(iso + 'T12:00:00') - new Date(hoy + 'T12:00:00')) / 864e5);
+  const fmtF = iso => isISO(iso) ? iso.slice(8, 10) + '-' + iso.slice(5, 7) + '-' + iso.slice(0, 4) : (iso || '—');
+  const cls = iso => !isISO(iso) ? '' : dias(iso) < 0 ? 'bad' : dias(iso) <= 30 ? 'warn' : dias(iso) <= 90 ? 'ok' : '';
+  const cell = iso => `<td class="${cls(iso)}" style="${cls(iso) ? 'font-weight:700' : ''}">${esc(fmtF(iso))}</td>`;
+  const estadoTxt = iso => { const n = dias(iso); return n < 0 ? `VENCIDO hace ${-n} d` : n === 0 ? 'HOY' : `en ${n} d`; };
+
+  const TIPOS = (V && V.tipos) || {};
+  // eventos de camiones (para Gantt y alertas)
+  let evs = [];
+  if (V && V.camiones) {
+    for (const c of V.camiones) for (const [k, f] of Object.entries(c.items || {})) if (isISO(f)) evs.push({ camion: c.patente, tipo: TIPOS[k] || k, fecha: f });
+  } else {
+    evs = (P.eventos || []).filter(e => e.fecha);
+  }
+  if (V) {
+    $('vencStamp').textContent = 'hoja transcrita el ' + fmtF(V.actualizado);
+    if (V.sheet_url) $('vencLink').href = V.sheet_url;
+  } else {
+    $('vencStamp').textContent = 'sin vencimientos.json — mostrando eventos del presupuesto';
+  }
+
+  // ── alertas consolidadas: vencidos + próximos 90 días (camiones, choferes, camionetas activas) ──
+  const al = evs.map(e => ({ fecha: e.fecha, que: e.tipo, quien: e.camion, grupo: 'Camión' }));
+  for (const ch of (V && V.choferes) || []) {
+    if (isISO(ch.inivit)) al.push({ fecha: ch.inivit, que: 'INIVIT', quien: ch.nombre, grupo: 'Chofer', extra: ch.estado });
+    if (isISO(ch.licencia)) al.push({ fecha: ch.licencia, que: 'Licencia', quien: ch.nombre, grupo: 'Chofer', extra: ch.estado });
+  }
+  for (const v of (V && V.camionetas) || []) {
+    if ((v.estado || '').toLowerCase() === 'vendida') continue;
+    for (const [k, lab] of [['perm_circulacion', 'Permiso Circulación'], ['soap', 'SOAP'], ['rev_tecnica', 'Revisión Técnica'], ['gases', 'Gases']])
+      if (isISO(v[k])) al.push({ fecha: v[k], que: lab, quien: `${v.patente}${v.nombre ? ' ' + v.nombre : ''}`, grupo: 'Camioneta', extra: v.estado });
+  }
+  const urg = al.filter(a => dias(a.fecha) <= 90).sort((a, b) => a.fecha.localeCompare(b.fecha));
+  const nVenc = urg.filter(a => dias(a.fecha) < 0).length;
+  let ah = `<div class="kpi-grid" style="margin-bottom:12px">` +
+    `<div class="kpi"><div class="label">Vencidos</div><div class="value ${nVenc ? 'bad' : 'ok'}">${nVenc}</div><div class="sub">según la hoja — confirmar si ya se renovó y actualizarla</div></div>` +
+    `<div class="kpi"><div class="label">Próximos 30 días</div><div class="value ${urg.some(a => dias(a.fecha) >= 0 && dias(a.fecha) <= 30) ? 'warn' : 'ok'}">${urg.filter(a => dias(a.fecha) >= 0 && dias(a.fecha) <= 30).length}</div><div class="sub">camiones + choferes + camionetas</div></div>` +
+    `<div class="kpi"><div class="label">Próximos 31–90 días</div><div class="value">${urg.filter(a => dias(a.fecha) > 30).length}</div><div class="sub">para planificar</div></div></div>`;
+  ah += '<div class="scroll"><table><tr><th>Fecha</th><th>Estado</th><th>Qué</th><th>Quién / patente</th><th>Grupo</th></tr>' +
+    (urg.length ? urg.map(a => `<tr><td><b>${fmtF(a.fecha)}</b></td><td class="${cls(a.fecha)}"><b>${estadoTxt(a.fecha)}</b></td><td>${EVENT_ICON[a.que] || '•'} ${esc(a.que)}</td><td>${esc(a.quien)}${a.extra ? ` <span class="badge">${esc(a.extra)}</span>` : ''}</td><td style="color:var(--muted)">${a.grupo}</td></tr>`).join('')
+      : '<tr><td colspan="5" style="color:var(--muted)">Nada vencido ni por vencer en 90 días</td></tr>') + '</table></div>';
+  $('vencAlertas').innerHTML = ah;
+
+  // ── Gantt camiones (ventana: mes anterior → dic del próximo año) ──
+  const gEvs = evs.filter(e => e.fecha <= `${new Date().getFullYear() + 1}-12-31`);
+  const gMeses = [];
+  {
+    let y = new Date().getFullYear(), m = new Date().getMonth(); // mes anterior como inicio
+    if (m === 0) { y--; m = 12; }
+    const yEnd = new Date().getFullYear() + 1;
+    while (y < yEnd || (y === yEnd && m <= 12)) { gMeses.push(`${y}-${String(m).padStart(2, '0')}`); m++; if (m > 12) { m = 1; y++; } }
+  }
+  const gLabel = ym => MESES_L[parseInt(ym.slice(5), 10) - 1] + ' ' + ym.slice(2, 4);
+  const camsG = [...new Set(gEvs.map(e => e.camion))].sort();
+  let gh = `<table><tr><th>Camión</th>${gMeses.map(m => `<th style="text-align:center">${gLabel(m)}</th>`).join('')}</tr>`;
+  for (const camG of camsG) {
+    gh += `<tr><td><b>${camG}</b></td>`;
+    for (const m of gMeses) {
+      const c = gEvs.filter(e => e.camion === camG && e.fecha.slice(0, 7) === m);
+      if (!c.length) { gh += '<td></td>'; continue; }
+      gh += `<td style="text-align:center">` + c.map(e => {
+        const vencido = e.fecha < hoy, esteMes = e.fecha.slice(0, 7) === hoy.slice(0, 7);
+        return `<span title="${esc(e.tipo)} — ${fmtF(e.fecha)}" style="display:inline-block;padding:1px 4px;border-radius:6px;font-size:11px;white-space:nowrap;${vencido ? 'background:#fde8e2;color:var(--bad);font-weight:700' : esteMes ? 'background:#fdf0e7;color:var(--warn);font-weight:700' : 'background:#f0efec'}">${EVENT_ICON[e.tipo] || '•'} ${e.fecha.slice(8)}</span>`;
+      }).join('<br>') + '</td>';
+    }
+    gh += '</tr>';
+  }
+  $('gantt').innerHTML = gh + '</table>';
+  $('ganttLeyenda').innerHTML = Object.entries(EVENT_ICON).filter(([t]) => evs.some(e => e.tipo === t)).map(([t, i]) => `${i} ${t}`).join(' · ') +
+    ' · más allá de la ventana: ' + evs.filter(e => e.fecha > gMeses[gMeses.length - 1] + '-31').map(e => `${e.camion} ${e.tipo} ${fmtF(e.fecha)}`).join(' · ');
+
+  // ── choferes ──
+  const chs = (V && V.choferes) || [];
+  $('vencChoferes').innerHTML = chs.length
+    ? '<table><tr><th>Chofer</th><th>INIVIT</th><th>Licencia</th><th>Estado (hoja)</th></tr>' +
+      chs.map(c => `<tr><td><b>${esc(c.nombre)}</b></td>${cell(c.inivit)}${cell(c.licencia)}<td>${c.estado ? `<span class="badge${/venc/i.test(c.estado) ? ' nobudget' : ''}">${esc(c.estado)}</span>` : ''}</td></tr>`).join('') + '</table>'
+    : '<div class="note">Sin datos de choferes en vencimientos.json</div>';
+
+  // ── camionetas ──
+  const cms = (V && V.camionetas) || [];
+  $('vencCamionetas').innerHTML = cms.length
+    ? '<table><tr><th>Patente</th><th>Vehículo</th><th>Perm. Circ.</th><th>SOAP</th><th>Rev. Técnica</th><th>Gases</th><th>TCT</th><th>Aramco</th><th>Estado / nota</th></tr>' +
+      cms.map(v => { const off = (v.estado || '').toLowerCase() === 'vendida'; const c = off ? (x => `<td style="color:var(--muted)">${esc(fmtF(x))}</td>`) : cell;
+        return `<tr style="${off ? 'opacity:.55' : ''}"><td><b>${esc(v.patente)}</b></td><td>${esc(v.nombre)}</td>${c(v.perm_circulacion)}${c(v.soap)}${c(v.rev_tecnica)}${c(v.gases)}<td style="color:var(--muted)">${esc(v.tct || '—')}</td><td style="color:var(--muted)">${esc(v.aramco || '—')}</td><td>${v.estado ? `<span class="badge">${esc(v.estado)}</span> ` : ''}${esc(v.nota || '')}</td></tr>`; }).join('') + '</table>'
+    : '<div class="note">Sin datos de camionetas en vencimientos.json</div>';
+
+  $('vencNotas').innerHTML = ((V && V.notas) || []).map(n => 'ℹ️ ' + esc(n)).join('<br>') +
+    (V && V.camiones ? '<br>🔑 Copia de llaves: ' + V.camiones.filter(c => c.copia_llaves).map(c => `${c.patente} ${esc(c.copia_llaves)}`).join(' · ') : '');
+}
+
 // ── SLA de entrega (bloque `operaciones` de crm-data.json) ──
 // Restaurado el 07-10-2026 (pedido Pauline): estos KPIs vivían en el tab Operaciones de
 // crm-sales.html, eliminado el 21-sep al consolidar operaciones acá. Mismo contrato de datos.

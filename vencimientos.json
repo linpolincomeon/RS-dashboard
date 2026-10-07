@@ -1,0 +1,258 @@
+{
+ "fuente": "Hoja 'Vencimientos' de 'Proyectos y Control' (Drive). Pauline pega la hoja en el chat y se actualiza este archivo a mano; el dashboard (costos.html, tab Mantención) lo lee tal cual. Fechas ISO.",
+ "sheet_url": "https://docs.google.com/spreadsheets/d/1ADhyzQ3soonP-oUp-cosx9-EfaFvI6QM/edit?gid=248151910#gid=248151910",
+ "actualizado": "2026-10-07",
+ "notas": [
+  "TODO PERMISO DE CIRCULACIÓN EN 2 CUOTAS (nota de la hoja).",
+  "Permiso de circulación y SOAP de 6 camiones figuran 30-09-2026 en la hoja (solo TYDG-23 está en 2027): confirmar si se renovaron y actualizar la hoja.",
+  "Choferes de la hoja tal cual (Tato jubiló; PHXC-44 hoy = Matías Valdés, HHPT-71 = Fernando Garroz)."
+ ],
+ "tipos": {
+  "perm_circulacion": "Permiso Circulación",
+  "soap": "SOAP",
+  "rev_tecnica": "Revisión Técnica",
+  "hermeticidad": "Hermeticidad",
+  "recert_estanque": "Recertificación Estanque",
+  "extintores": "Extintores",
+  "mantenimiento": "Mantenimiento"
+ },
+ "camiones": [
+  {
+   "patente": "HHPT-71",
+   "chofer": "",
+   "items": {
+    "perm_circulacion": "2026-09-30",
+    "soap": "2026-09-30",
+    "rev_tecnica": "2027-02-18",
+    "hermeticidad": "2026-10-29",
+    "recert_estanque": "2030-10-02",
+    "extintores": "2027-08-30"
+   },
+   "tct": "3462",
+   "aramco": "3462",
+   "copia_llaves": "Sí (en la camioneta roja)"
+  },
+  {
+   "patente": "PYHK-28",
+   "chofer": "Mario",
+   "items": {
+    "perm_circulacion": "2026-09-30",
+    "soap": "2026-09-30",
+    "rev_tecnica": "2026-12-22",
+    "hermeticidad": "2026-12-25",
+    "recert_estanque": "2031-08-05",
+    "extintores": "2027-03-01"
+   },
+   "tct": "4321",
+   "aramco": "3462"
+  },
+  {
+   "patente": "SHGP-60",
+   "chofer": "Roberto",
+   "items": {
+    "perm_circulacion": "2026-09-30",
+    "soap": "2026-09-30",
+    "rev_tecnica": "2026-11-07",
+    "hermeticidad": "2026-10-06",
+    "recert_estanque": "2028-03-01",
+    "extintores": "2027-09-01"
+   },
+   "tct": "3462",
+   "aramco": "3462"
+  },
+  {
+   "patente": "TJVS-53",
+   "chofer": "Jose Luis",
+   "items": {
+    "perm_circulacion": "2026-09-30",
+    "soap": "2026-09-30",
+    "rev_tecnica": "2026-12-19",
+    "hermeticidad": "2026-12-23",
+    "recert_estanque": "2029-06-30",
+    "extintores": "2027-05-30"
+   },
+   "tct": "3462",
+   "aramco": "3462",
+   "copia_llaves": "Sí (oficina)"
+  },
+  {
+   "patente": "PHXC-44",
+   "chofer": "Tato",
+   "items": {
+    "perm_circulacion": "2026-09-30",
+    "soap": "2026-09-30",
+    "rev_tecnica": "2027-01-10",
+    "hermeticidad": "2026-12-03",
+    "recert_estanque": "2030-11-25",
+    "extintores": "2027-08-30"
+   },
+   "tct": "1234",
+   "aramco": "3462"
+  },
+  {
+   "patente": "VDKT-95",
+   "chofer": "Nino / Fernando",
+   "items": {
+    "perm_circulacion": "2026-09-30",
+    "soap": "2026-09-30",
+    "rev_tecnica": "2027-08-23",
+    "hermeticidad": "2027-02-22",
+    "recert_estanque": "2030-05-14",
+    "extintores": "2027-07-01"
+   },
+   "tct": "3462",
+   "aramco": "3462"
+  },
+  {
+   "patente": "TYDG-23",
+   "chofer": "Patricio",
+   "items": {
+    "perm_circulacion": "2027-09-30",
+    "soap": "2027-09-30",
+    "rev_tecnica": "2026-10-24",
+    "hermeticidad": "2026-10-13",
+    "recert_estanque": "2031-04-15",
+    "extintores": "2027-04-30",
+    "mantenimiento": "2026-10-24"
+   },
+   "tct": "3462",
+   "aramco": "3462",
+   "nota": "Mantenimiento 20.000 km el 24-10-2026 (misma fecha que la revisión técnica)"
+  }
+ ],
+ "choferes": [
+  {
+   "nombre": "Mario Marín",
+   "inivit": "2027-09-01",
+   "licencia": "2027-10-28",
+   "estado": "PLANIFICAR"
+  },
+  {
+   "nombre": "Jaime Henríquez",
+   "inivit": "2026-11-13",
+   "licencia": "2026-06-27",
+   "estado": "VENCIDO"
+  },
+  {
+   "nombre": "Tato",
+   "inivit": "2026-09-03",
+   "licencia": "2030-10-03",
+   "estado": "AVISADO"
+  },
+  {
+   "nombre": "José Luis Valenzuela",
+   "inivit": "2028-04-16",
+   "licencia": "2030-06-27"
+  },
+  {
+   "nombre": "Jorge Aguilera Vásquez",
+   "inivit": "2027-12-23",
+   "licencia": "2027-10-17"
+  },
+  {
+   "nombre": "Roberto",
+   "inivit": "2027-10-16",
+   "licencia": "2027-10-20"
+  },
+  {
+   "nombre": "Patricio Garrido",
+   "inivit": "2027-11-12",
+   "licencia": "2029-01-08",
+   "estado": "REVISADO"
+  },
+  {
+   "nombre": "Jorge Rojas Soto",
+   "inivit": "2028-08-28",
+   "licencia": "2029-07-28"
+  }
+ ],
+ "camionetas": [
+  {
+   "patente": "JSFF35",
+   "nombre": "(partner)",
+   "perm_circulacion": "2026-08-30",
+   "soap": "2027-03-30",
+   "rev_tecnica": "2026-08-30",
+   "gases": "2026-08-30",
+   "tct": "3462",
+   "aramco": "3462",
+   "estado": "vendida"
+  },
+  {
+   "patente": "SHRH79",
+   "nombre": "Peugeot",
+   "perm_circulacion": "2027-03-30",
+   "soap": "2027-03-30",
+   "rev_tecnica": "2027-01-30",
+   "gases": "2026-06-30",
+   "tct": "3462",
+   "aramco": "3462",
+   "estado": "En venta"
+  },
+  {
+   "patente": "LGPW23",
+   "nombre": "",
+   "perm_circulacion": "2027-03-30",
+   "soap": "2027-03-30",
+   "rev_tecnica": "2027-06-30",
+   "gases": "2027-06-30",
+   "tct": "3462",
+   "aramco": "3462"
+  },
+  {
+   "patente": "SPHV83",
+   "nombre": "Katana (Seba)",
+   "perm_circulacion": "2027-03-30",
+   "soap": "2027-03-30",
+   "rev_tecnica": "2027-06-30",
+   "gases": "2027-06-30",
+   "tct": "3462",
+   "aramco": "3462"
+  },
+  {
+   "patente": "VJKH49-5",
+   "nombre": "Silverado (PV)",
+   "perm_circulacion": "2027-03-30",
+   "soap": "2027-03-30",
+   "rev_tecnica": "2028-01-30",
+   "gases": "2028-01-30",
+   "aramco": "3462"
+  },
+  {
+   "patente": "LTHS83",
+   "nombre": "RAM",
+   "estado": "vendida"
+  },
+  {
+   "patente": "TYRG41",
+   "nombre": "Hilux",
+   "perm_circulacion": "2027-03-30",
+   "soap": "2027-03-30",
+   "rev_tecnica": "2027-04-30",
+   "gases": "2027-04-30",
+   "tct": "3462",
+   "aramco": "3462"
+  },
+  {
+   "patente": "VDFP72",
+   "nombre": "Opel",
+   "perm_circulacion": "2027-03-30",
+   "soap": "2027-03-30",
+   "rev_tecnica": "Lo ve Tom",
+   "gases": "Lo ve Tom",
+   "nota": "maneja Tom este vehículo"
+  },
+  {
+   "patente": "WBBV-85",
+   "nombre": "",
+   "tct": "3462",
+   "aramco": "3462"
+  },
+  {
+   "patente": "WBCT-52",
+   "nombre": "",
+   "tct": "3462",
+   "aramco": "3462"
+  }
+ ]
+}
