@@ -434,6 +434,7 @@ function renderPlanMantencion(PLAN, D) {
 
   // última ejecución real por (ítem, camión) desde las glosas
   const ult = {};
+  const grp = {}; // ítems con monto_min: se agrupa por camión+día y se exige el mínimo (ej. neumáticos)
   for (const m of D.movimientos) {
     if (m.camion === 'CAMIONETAS' || m.monto <= 0) continue;
     const g = norm(m.glosa);
@@ -441,8 +442,20 @@ function renderPlanMantencion(PLAN, D) {
       if (!it.keywords.some(k => g.includes(k))) continue;
       if ((it.excluir || []).some(k => g.includes(k))) continue;
       const key = it.id + '|' + m.camion;
+      if (it.monto_min) {
+        const gk = key + '|' + m.d;
+        grp[gk] = grp[gk] ? { ...grp[gk], monto: grp[gk].monto + m.monto } : { ...m };
+        continue;
+      }
       if (!ult[key] || m.d > ult[key].d) ult[key] = m;
     }
+  }
+  for (const [gk, m] of Object.entries(grp)) {
+    const [id, cam] = gk.split('|');
+    const it = PLAN.items.find(i => i.id === id);
+    if (m.monto < it.monto_min) continue;
+    const key = id + '|' + cam;
+    if (!ult[key] || m.d > ult[key].d) ult[key] = m;
   }
   // overrides manuales del JSON
   for (const [cam, items] of Object.entries(PLAN.ultima_manual || {})) {
@@ -493,7 +506,7 @@ function renderPlanMantencion(PLAN, D) {
   }
   h += '</table>';
   const totSinReg = Object.values(sinReg).reduce((s, v) => s + v.length, 0);
-  h += `<details style="margin-top:12px"><summary>Sin registro todavía (${totSinReg}) — la primera factura con glosa clara los activa</summary>
+  h += `<details style="margin-top:12px"><summary>Sin registro todavía (${totSinReg}) — la primera factura con glosa clara los activa (neumáticos: solo compras ≥ $500k en el día, no vulcanizaciones ni unidades sueltas)</summary>
     <table style="margin-top:8px">${cams.map(c =>
       `<tr><td style="vertical-align:top"><b>${c}</b></td><td style="white-space:normal;color:var(--muted)">${(sinReg[c] || []).join(' · ') || '—'}</td></tr>`).join('')}
     </table></details>`;
