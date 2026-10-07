@@ -119,6 +119,14 @@
   <div class="truck-grid" id="trucks"></div>
 </div>
 
+<div class="card vw-oper" hidden id="cardSla">
+  <h2>⏱️ SLA de entrega — pedido → factura (Odoo)</h2>
+  <div class="note" style="margin:0 0 12px"><b>SLA Entrega 24h</b> = pedido facturado a más tardar el día siguiente de ponerse (si es preorder con fecha de entrega posterior, vale esa fecha como plazo; meta 95%). <b>Entrega → Factura</b> = días promedio desde la fecha de entrega ORIGINAL (snapshot inmune a ediciones) hasta la 1ª factura. Por semana comercial ENAP (jue–mié); se actualiza con el cron CRM (<span id="slaStamp"></span>).</div>
+  <div id="slaSemanas" style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px"></div>
+  <div class="kpi-grid" id="slaKpis" style="margin-bottom:12px"></div>
+  <div id="slaDetalle"></div>
+</div>
+
 <div class="card vw-oper" hidden id="cardCuadRutas">
   <h2>🔁 Cuadratura Odoo ↔ SimpliRoute — rutas de hoy</h2>
   <div class="note" style="margin:0 0 12px">Todo lo <b>aprobado en Odoo</b> (despacho pendiente con fecha de hoy o atrasado) debe tener <b>ruta en SimpliRoute</b> — y toda visita en ruta debe corresponder a una orden aprobada. Se actualiza cada hora en jornada laboral (<span id="cuadStamp"></span>).</div>
@@ -190,13 +198,14 @@ const sum = a => a.reduce((s, x) => s + x, 0);
 function cumplClass(pct) { return pct <= 100 ? 'ok' : (pct <= 115 ? 'warn' : 'bad'); }
 
 async function load() {
-  const [dataRes, presRes, chofRes, planRes, srRes, cuadRes] = await Promise.all([
+  const [dataRes, presRes, chofRes, planRes, srRes, cuadRes, crmRes] = await Promise.all([
     fetch('costos-data.json?ts=' + Date.now()),
     fetch('presupuesto-camiones.json?ts=' + Date.now()),
     fetch('choferes-data.json?ts=' + Date.now()),
     fetch('plan-mantencion.json?ts=' + Date.now()),
     fetch('simpliroute-data.json?ts=' + Date.now()),
     fetch('cuadratura-data.json?ts=' + Date.now()),
+    fetch('crm-data.json?ts=' + Date.now()).catch(() => null),
   ]);
   const D = await dataRes.json();
   const P = await presRes.json();
@@ -212,6 +221,11 @@ async function load() {
     renderCuadratura(C);
     if (C.cierre) renderCierre(C);
   } else { $('cardCuadRutas').remove(); $('cardCuadLitros').remove(); }
+  if (crmRes && crmRes.ok) {
+    const CRM = await crmRes.json();
+    if (CRM.operaciones && (CRM.operaciones.sla_semanas || []).length) { SLA_OP = CRM.operaciones; SLA_UPD = CRM.updated || CRM.generated_utc || ''; renderSla(0); }
+    else $('cardSla').remove();
+  } else $('cardSla').remove();
 
   // último mes con gasto real
   const totalGLMes = D.meses.map((_, i) => sum(Object.values(D.flota_gl).map(v => v[i])));
@@ -517,6 +531,80 @@ function renderPlanMantencion(PLAN, D) {
 }
 
 // ---- cuadratura Odoo <-> SimpliRoute (cron horario en jornada laboral) ----
+// ── SLA de entrega (bloque `operaciones` de crm-data.json) ──
+// Restaurado el 07-10-2026 (pedido Pauline): estos KPIs vivían en el tab Operaciones de
+// crm-sales.html, eliminado el 21-sep al consolidar operaciones acá. Mismo contrato de datos.
+let SLA_OP = null, SLA_UPD = '';
+function renderSla(idx) {
+  const OP = SLA_OP; if (!OP) return;
+  const esc = v => String(v == null ? '' : v).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  const L = v => CLP.format(Math.round(v));
+  const kpi = (label, val, cls, sub) =>
+    `<div class="kpi"><div class="label">${label}</div><div class="value ${cls || ''}">${val}</div>${sub ? `<div class="sub">${sub}</div>` : ''}</div>`;
+  const semanas = OP.sla_semanas || [];
+  const sla = semanas[idx] || {};
+  const wkStart = sla.week_start || '', wkEnd = sla.week_end || '';
+  const inWk = r => wkStart && wkEnd ? (r.fecha >= wkStart && r.fecha <= wkEnd) : true;
+  const rows = (OP.camiones_diario || []).filter(inWk);
+  const rowsZ = (OP.zonas_diario || []).filter(inWk);
+  const camiones = (OP.camiones || []).filter(c => rows.some(r => r.camion === c));
+  const zonas = (OP.zonas || []).filter(z => rowsZ.some(r => r.zona === z));
+  const litrosSem = rows.reduce((a, r) => a + (r.litros || 0), 0);
+
+  if (SLA_UPD) {
+    const u = new Date(SLA_UPD);
+    $('slaStamp').textContent = isNaN(u) ? SLA_UPD : 'datos al ' + u.toLocaleString('es-CL', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit', timeZone: 'America/Santiago' });
+  }
+  $('slaSemanas').innerHTML = semanas.map((w, i) =>
+    `<button onclick="renderSla(${i})" style="font-size:12px;padding:4px 10px;border-radius:8px;cursor:pointer;border:1px solid ${i === idx ? 'var(--accent)' : 'var(--border)'};color:${i === idx ? 'var(--accent)' : 'inherit'};background:${i === idx ? '#fdf0e7' : 'var(--card)'};font-weight:${i === idx ? 700 : 400}">${esc(w.label)}${i === 0 ? ' ●' : ''}</button>`).join('');
+
+  const pct = sla.prom_pct || 0;
+  const inc = sla.prom_incumplidas || [];
+  const semCls = v => v >= 95 ? 'ok' : v >= 85 ? 'warn' : 'bad';
+  let k = kpi('🚚 SLA Entrega 24h', pct + '%', semCls(pct), 'facturado ≤24h del pedido (o fecha acordada) · meta 95%');
+  k += kpi('Pedidos de la semana', sla.pedidos_semana || 0, '', `${sla.prom_total || 0} evaluados · ${sla.prom_preorders || 0} preorder` +
+    (sla.prom_en_curso ? ` · ${sla.prom_en_curso} en reparto` : '') + (sla.prom_movidos ? ` · ⚠ ${sla.prom_movidos} plazo movido` : ''));
+  k += kpi('⏰ Fuera de plazo', inc.length, inc.length ? 'bad' : 'ok', 'facturados después del plazo comprometido');
+  if (sla.ent_prom_dias != null) {
+    k += kpi('⚡ Entrega → Factura', sla.ent_prom_dias.toLocaleString('es-CL') + ' d prom', semCls(sla.ent_24h_pct || 0),
+      `${sla.ent_24h_pct || 0}% ≤24h de la fecha de entrega · ${sla.ent_0d_pct || 0}% mismo día · ${sla.ent_n || 0} pedidos`);
+  }
+  k += kpi('Litros entregados', L(litrosSem) + ' L', '', 'facturas diésel de la semana');
+  k += kpi('Camiones activos', camiones.filter(c => c !== 'Sin camión').length, '', 'con entregas en la semana');
+  $('slaKpis').innerHTML = k;
+
+  const h3 = t => `<h3 style="font-size:14px;margin:16px 0 8px">${t}</h3>`;
+  const matriz = (titulo, cols, data, keyFn) => {
+    const dias = [...new Set(data.map(r => r.fecha))].sort().reverse();
+    const byD = {}, totC = {};
+    data.forEach(r => { const key = keyFn(r); (byD[r.fecha] = byD[r.fecha] || {})[key] = (byD[r.fecha][key] || 0) + r.litros; totC[key] = (totC[key] || 0) + r.litros; });
+    const totAll = data.reduce((a, r) => a + r.litros, 0);
+    let m = h3(titulo + ` <span style="font-weight:400;color:var(--muted);font-size:12px">${esc(wkStart)} → ${esc(wkEnd)}</span>`) +
+      '<div class="scroll"><table><tr><th>Fecha</th>' + cols.map(c => `<th class="num">${esc(c)}</th>`).join('') + '<th class="num" style="border-left:2px solid var(--border)">Total día</th></tr>';
+    if (!dias.length) m += `<tr><td colspan="${cols.length + 2}" style="color:var(--muted)">Sin entregas en la semana</td></tr>`;
+    dias.forEach(f => {
+      const mm = byD[f] || {}, tot = Object.values(mm).reduce((a, v) => a + v, 0);
+      m += `<tr><td><b>${f.slice(8, 10)}-${f.slice(5, 7)}</b></td>` + cols.map(c => `<td class="num">${mm[c] ? L(mm[c]) : '<span style="color:var(--muted)">—</span>'}</td>`).join('') +
+        `<td class="num" style="border-left:2px solid var(--border)"><b>${L(tot)}</b></td></tr>`;
+    });
+    m += '<tr style="font-weight:700;border-top:2px solid var(--border)"><td>Total semana</td>' + cols.map(c => `<td class="num">${L(totC[c] || 0)}</td>`).join('') +
+      `<td class="num" style="border-left:2px solid var(--border)">${L(totAll)}</td></tr></table></div>`;
+    return m;
+  };
+  let h = matriz('🚛 Litros diarios por camión', camiones, rows, r => r.camion);
+  h += matriz('🗺️ Litros diarios por zona', zonas, rowsZ, r => r.zona);
+
+  h += h3(`⏰ Fuera de plazo — ${esc(sla.label || 'semana')} <span class="badge">${inc.length}</span>`) +
+    '<div class="scroll"><table><tr><th>Cliente</th><th>Orden</th><th>Pedido (hora Chile)</th><th>Plazo</th><th>Facturado el</th><th class="num">Días después</th></tr>';
+  if (!inc.length) h += '<tr><td colspan="6" style="color:var(--muted)">Todos los pedidos dentro de plazo 🎉</td></tr>';
+  inc.forEach(r => {
+    const mv = r.movido ? ` <span class="badge nobudget" title="fecha de entrega cambiada en Odoo después del pedido">⚠ movido ${esc(r.movido)}</span>` : '';
+    h += `<tr><td><b>${esc(r.cliente)}</b></td><td>${esc(r.orden)}</td><td>${esc(r.pedido)}</td><td>${esc(r.limite || '—')}${mv}</td><td>${esc(r.facturado)}</td><td class="num ${r.dias > 2 ? 'bad' : 'warn'}"><b>+${r.dias}d</b></td></tr>`;
+  });
+  h += '</table></div>';
+  $('slaDetalle').innerHTML = h;
+}
+
 function renderCuadratura(C) {
   const L = v => CLP.format(Math.round(v));
   const fF = f => `${f.slice(8, 10)}-${f.slice(5, 7)}`;
