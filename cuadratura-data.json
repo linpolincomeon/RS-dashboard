@@ -1,5 +1,5 @@
 {
- "generated_utc": "2026-10-07T17:45+00:00",
+ "generated_utc": "2026-10-07T22:59+00:00",
  "hoy": "2026-10-07",
  "desde": "2026-10-01",
  "rutas": {
@@ -16,29 +16,7 @@
     "visita_status": "pending"
    },
    {
-    "picking": "PHXC/OUT/01759",
-    "so": "S37268",
-    "cliente": "VICTOR MANUEL GONZALEZ NEIRA, VICTOR GONZALEZ",
-    "camion": "PHXC-44",
-    "litros": 250,
-    "programado": "07-10 08:42",
-    "atrasado": false,
-    "estado": "ruteada",
-    "visita_status": "pending"
-   },
-   {
-    "picking": "PHXC/OUT/01758",
-    "so": "S37269",
-    "cliente": "SOCIEDAD AGRICOLA SAN JUAN LIMITADA, AGRICOLA SAN JUAN",
-    "camion": "PHXC-44",
-    "litros": 250,
-    "programado": "07-10 08:47",
-    "atrasado": false,
-    "estado": "ruteada",
-    "visita_status": "pending"
-   },
-   {
-    "picking": "TJVS/OUT/01991",
+    "picking": "PYHK/OUT/01442",
     "so": "S37271",
     "cliente": "SOCIEDAD FORESTAL Y AGRICOLA LAS PITRAS DE PAULA LIMITADA, GRACIELA LEPE, HUALAÑE",
     "camion": "TJVS-53",
@@ -46,28 +24,25 @@
     "programado": "07-10 09:12",
     "atrasado": false,
     "estado": "ruteada",
-    "visita_status": "pending"
-   },
-   {
-    "picking": "PYHK/OUT/01440",
-    "so": "S37272",
-    "cliente": "SOCIEDAD AGRICOLA SANTA TERESA, LONGAVI-Javiera",
-    "camion": "PYHK-28",
-    "litros": 1000,
-    "programado": "07-10 09:28",
-    "atrasado": false,
-    "estado": "ruteada",
-    "visita_status": "pending"
+    "visita_status": "failed"
    }
   ],
-  "huerfanas": [],
+  "huerfanas": [
+   {
+    "so": "S37272",
+    "cliente": "SOCIEDAD AGRICOLA SANTA TERESA",
+    "estado_odoo": "to_approve",
+    "status": "failed",
+    "litros": 1000
+   }
+  ],
   "sin_ref": [],
   "resumen": {
-   "total": 5,
-   "ruteadas": 5,
+   "total": 2,
+   "ruteadas": 2,
    "ruteadas_manana": 0,
    "sin_ruta": 0,
-   "huerfanas": 0
+   "huerfanas": 1
   }
  },
  "litros": {
@@ -85,6 +60,38 @@
     "facturado": 800,
     "facturas": [
      "FAC 54682"
+    ],
+    "estado": "ok"
+   },
+   {
+    "so": "S37269",
+    "fecha": "2026-10-07",
+    "cliente": "SOCIEDAD AGRICOLA SAN JUAN LIMITADA",
+    "camion": "VDKT-95",
+    "especial": false,
+    "parcial": true,
+    "visitas": 1,
+    "pedido": 250,
+    "entregado": 246,
+    "facturado": 246,
+    "facturas": [
+     "FAC 54684"
+    ],
+    "estado": "ok"
+   },
+   {
+    "so": "S37268",
+    "fecha": "2026-10-07",
+    "cliente": "VICTOR MANUEL GONZALEZ NEIRA",
+    "camion": "VDKT-95",
+    "especial": false,
+    "parcial": false,
+    "visitas": 1,
+    "pedido": 250,
+    "entregado": 250,
+    "facturado": 250,
+    "facturas": [
+     "FAC 54685"
     ],
     "estado": "ok"
    },
@@ -1965,9 +1972,9 @@
   "dias": [
    {
     "fecha": "2026-10-07",
-    "entregas": 8,
-    "entregado": 8000,
-    "facturado": 8000,
+    "entregas": 10,
+    "entregado": 8496,
+    "facturado": 8496,
     "por_facturar": 0,
     "sin_factura": 0
    },
@@ -2021,13 +2028,38 @@
    }
   ],
   "por_facturar_total": 7100,
-  "entregado_hoy": 8000,
-  "facturado_hoy": 8000,
-  "fuera_simpli": []
+  "entregado_hoy": 8496,
+  "facturado_hoy": 13096,
+  "fuera_simpli": [
+   {
+    "factura": "FAC 54683",
+    "so": "S37118",
+    "cliente": "SOC. DE TRANSPORTES Y AGRICOLA ESPINAZA RIVERA LIMITADA",
+    "litros": 4600
+   }
+  ]
  },
  "cierre": {
   "fase2": {
-   "compras": [],
+   "compras": [
+    {
+     "po": "P00911",
+     "proveedor": "ENAP REFINERIAS S.A.",
+     "cam": "TJ",
+     "fecha": "2026-10-07",
+     "hora": "18:44",
+     "litros": 14935,
+     "correccion": null,
+     "litros_real": 14935,
+     "precio": 1321.97,
+     "recibida": true,
+     "devuelta": true,
+     "factura": "851515",
+     "factura_estado": "borrador_sin_vincular",
+     "factura_total": 23502812,
+     "factura_litros": 14940
+    }
+   ],
    "borradores_sueltos": [],
    "oc_borrador": [],
    "sin_recibir": 0
@@ -2044,83 +2076,16 @@
      "entregada_simpli": false
     },
     {
-     "picking": "PHXC/OUT/01759",
-     "so": "S37268",
-     "cliente": "VICTOR MANUEL GONZALEZ NEIRA, VICTOR GONZALEZ",
-     "cam": "PH",
-     "fecha": "2026-10-07",
-     "litros": 250,
-     "entregada_simpli": false
-    },
-    {
-     "picking": "PHXC/OUT/01758",
-     "so": "S37269",
-     "cliente": "SOCIEDAD AGRICOLA SAN JUAN LIMITADA, AGRICOLA SAN JUAN",
-     "cam": "PH",
-     "fecha": "2026-10-07",
-     "litros": 250,
-     "entregada_simpli": false
-    },
-    {
-     "picking": "TJVS/OUT/01991",
+     "picking": "PYHK/OUT/01442",
      "so": "S37271",
      "cliente": "SOCIEDAD FORESTAL Y AGRICOLA LAS PITRAS DE PAULA LIMITADA, GRACIELA LEPE, HUALAÑE",
-     "cam": "TJ",
-     "fecha": "2026-10-07",
-     "litros": 2000,
-     "entregada_simpli": false
-    },
-    {
-     "picking": "PYHK/OUT/01440",
-     "so": "S37272",
-     "cliente": "SOCIEDAD AGRICOLA SANTA TERESA, LONGAVI-Javiera",
      "cam": "PY",
      "fecha": "2026-10-07",
-     "litros": 1000,
+     "litros": 2000,
      "entregada_simpli": false
     }
    ],
    "ventas": [
-    {
-     "so": "S37268",
-     "cliente": "VICTOR MANUEL GONZALEZ NEIRA",
-     "especial": false,
-     "cam": "PH",
-     "cam_simpli": [],
-     "cam_odoo": [],
-     "picking": "PHXC/OUT/01759",
-     "fecha_entrega": "2026-10-07",
-     "simpli": null,
-     "cantidad": 250,
-     "entregado": 0,
-     "facturado": 0,
-     "problemas": [
-      "sin_entrega"
-     ],
-     "acciones": [
-      "Salida PHXC/OUT/01759 abierta pero SimpliRoute no la muestra entregada: si no salió, reprogramar; si salió, validar"
-     ]
-    },
-    {
-     "so": "S37269",
-     "cliente": "SOCIEDAD AGRICOLA SAN JUAN LIMITADA",
-     "especial": false,
-     "cam": "PH",
-     "cam_simpli": [],
-     "cam_odoo": [],
-     "picking": "PHXC/OUT/01758",
-     "fecha_entrega": "2026-10-07",
-     "simpli": null,
-     "cantidad": 250,
-     "entregado": 0,
-     "facturado": 0,
-     "problemas": [
-      "sin_entrega"
-     ],
-     "acciones": [
-      "Salida PHXC/OUT/01758 abierta pero SimpliRoute no la muestra entregada: si no salió, reprogramar; si salió, validar"
-     ]
-    },
     {
      "so": "S37256",
      "cliente": "SOCIEDAD AGRICOLA EL CARRETON SPA",
@@ -2142,23 +2107,23 @@
      ]
     },
     {
-     "so": "S37272",
-     "cliente": "SOCIEDAD AGRICOLA SANTA TERESA",
+     "so": "S37271",
+     "cliente": "SOCIEDAD FORESTAL Y AGRICOLA LAS PITRAS DE PAULA LIMITADA",
      "especial": false,
      "cam": "PY",
      "cam_simpli": [],
      "cam_odoo": [],
-     "picking": "PYHK/OUT/01440",
+     "picking": "PYHK/OUT/01442",
      "fecha_entrega": "2026-10-07",
      "simpli": null,
-     "cantidad": 1000,
+     "cantidad": 2000,
      "entregado": 0,
      "facturado": 0,
      "problemas": [
       "sin_entrega"
      ],
      "acciones": [
-      "Salida PYHK/OUT/01440 abierta pero SimpliRoute no la muestra entregada: si no salió, reprogramar; si salió, validar"
+      "Salida PYHK/OUT/01442 abierta pero SimpliRoute no la muestra entregada: si no salió, reprogramar; si salió, validar"
      ]
     },
     {
@@ -2210,23 +2175,27 @@
      ]
     },
     {
-     "so": "S37271",
-     "cliente": "SOCIEDAD FORESTAL Y AGRICOLA LAS PITRAS DE PAULA LIMITADA",
+     "so": "S37269",
+     "cliente": "SOCIEDAD AGRICOLA SAN JUAN LIMITADA",
      "especial": false,
-     "cam": "TJ",
-     "cam_simpli": [],
-     "cam_odoo": [],
-     "picking": "TJVS/OUT/01991",
+     "cam": "VD",
+     "cam_simpli": [
+      "VD"
+     ],
+     "cam_odoo": [
+      "VD"
+     ],
+     "picking": null,
      "fecha_entrega": "2026-10-07",
-     "simpli": null,
-     "cantidad": 2000,
-     "entregado": 0,
-     "facturado": 0,
+     "simpli": 246,
+     "cantidad": 250,
+     "entregado": 246,
+     "facturado": 246,
      "problemas": [
-      "sin_entrega"
+      "cantidad"
      ],
      "acciones": [
-      "Salida TJVS/OUT/01991 abierta pero SimpliRoute no la muestra entregada: si no salió, reprogramar; si salió, validar"
+      "Bajar Cantidad de 250 a 246 L en la orden"
      ]
     }
    ],
@@ -2246,16 +2215,9 @@
      "especial": false
     },
     {
-     "so": "S37268",
-     "cliente": "VICTOR MANUEL GONZALEZ NEIRA",
-     "cam": "PH",
-     "fecha_entrega": "2026-10-07",
-     "especial": false
-    },
-    {
      "so": "S37269",
      "cliente": "SOCIEDAD AGRICOLA SAN JUAN LIMITADA",
-     "cam": "PH",
+     "cam": "VD",
      "fecha_entrega": "2026-10-07",
      "especial": false
     },
@@ -2272,18 +2234,11 @@
      "cam": "TJ",
      "fecha_entrega": "2026-10-07",
      "especial": false
-    },
-    {
-     "so": "S37272",
-     "cliente": "SOCIEDAD AGRICOLA SANTA TERESA",
-     "cam": "PY",
-     "fecha_entrega": "2026-10-07",
-     "especial": false
     }
    ],
-   "entregadas_hoy": 8,
+   "entregadas_hoy": 10,
    "bodega_ventana": 0,
-   "revisadas_ventana": 124,
+   "revisadas_ventana": 123,
    "salidas_entregadas": 0
   },
   "fase5": {
@@ -2318,9 +2273,9 @@
     },
     {
      "cam": "TJ",
-     "odoo": 250,
+     "odoo": 15185,
      "ajuste": 0,
-     "esperado": 250,
+     "esperado": 15185,
      "ventas_simpli_hoy": 2500
     },
     {
@@ -2332,10 +2287,10 @@
     },
     {
      "cam": "VD",
-     "odoo": 4230,
+     "odoo": 3734,
      "ajuste": 0,
-     "esperado": 4230,
-     "ventas_simpli_hoy": 1500
+     "esperado": 3734,
+     "ventas_simpli_hoy": 1996
     }
    ]
   },
@@ -2354,6 +2309,13 @@
      "cam": "TJ",
      "fecha_entrega": "2026-05-12",
      "excepcion": "No tiene Línea de Crédito Aprobada"
+    },
+    {
+     "so": "S36781",
+     "cliente": "SUGAL CHILE LIMITADA",
+     "cam": "PH",
+     "fecha_entrega": "2026-09-25",
+     "excepcion": ""
     },
     {
      "so": "S36783",
@@ -2377,13 +2339,6 @@
      "excepcion": ""
     },
     {
-     "so": "S36781",
-     "cliente": "SUGAL CHILE LIMITADA",
-     "cam": "PH",
-     "fecha_entrega": "2026-09-25",
-     "excepcion": ""
-    },
-    {
      "so": "S36858",
      "cliente": "SUGAL CHILE LIMITADA",
      "cam": "PH",
@@ -2391,16 +2346,9 @@
      "excepcion": ""
     },
     {
-     "so": "S36987",
-     "cliente": "DIOGENES GERMAN CONCHA CONCHA",
-     "cam": "PY",
-     "fecha_entrega": "2026-09-28",
-     "excepcion": ""
-    },
-    {
-     "so": "S36884",
+     "so": "S36888",
      "cliente": "SUGAL CHILE LIMITADA",
-     "cam": "VD",
+     "cam": "PY",
      "fecha_entrega": "2026-09-28",
      "excepcion": ""
     },
@@ -2412,16 +2360,9 @@
      "excepcion": ""
     },
     {
-     "so": "S36888",
-     "cliente": "SUGAL CHILE LIMITADA",
+     "so": "S36987",
+     "cliente": "DIOGENES GERMAN CONCHA CONCHA",
      "cam": "PY",
-     "fecha_entrega": "2026-09-28",
-     "excepcion": ""
-    },
-    {
-     "so": "S36883",
-     "cliente": "SUGAL CHILE LIMITADA",
-     "cam": "VD",
      "fecha_entrega": "2026-09-28",
      "excepcion": ""
     },
@@ -2440,14 +2381,28 @@
      "excepcion": ""
     },
     {
-     "so": "S36994",
+     "so": "S36884",
+     "cliente": "SUGAL CHILE LIMITADA",
+     "cam": "VD",
+     "fecha_entrega": "2026-09-28",
+     "excepcion": ""
+    },
+    {
+     "so": "S36883",
+     "cliente": "SUGAL CHILE LIMITADA",
+     "cam": "VD",
+     "fecha_entrega": "2026-09-28",
+     "excepcion": ""
+    },
+    {
+     "so": "S36993",
      "cliente": "SUGAL CHILE LIMITADA",
      "cam": "PY",
      "fecha_entrega": "2026-09-29",
      "excepcion": ""
     },
     {
-     "so": "S36993",
+     "so": "S36994",
      "cliente": "SUGAL CHILE LIMITADA",
      "cam": "PY",
      "fecha_entrega": "2026-09-29",
@@ -2496,16 +2451,16 @@
      "excepcion": ""
     },
     {
-     "so": "S37150",
+     "so": "S37151",
      "cliente": "SUGAL CHILE LIMITADA",
-     "cam": "PY",
+     "cam": "TJ",
      "fecha_entrega": "2026-10-02",
      "excepcion": ""
     },
     {
-     "so": "S37151",
+     "so": "S37150",
      "cliente": "SUGAL CHILE LIMITADA",
-     "cam": "TJ",
+     "cam": "PY",
      "fecha_entrega": "2026-10-02",
      "excepcion": ""
     },
@@ -2524,6 +2479,13 @@
      "excepcion": ""
     },
     {
+     "so": "S37234",
+     "cliente": "SUGAL CHILE LIMITADA",
+     "cam": "PY",
+     "fecha_entrega": "2026-10-06",
+     "excepcion": ""
+    },
+    {
      "so": "S37235",
      "cliente": "SUGAL CHILE LIMITADA",
      "cam": "VD",
@@ -2531,10 +2493,31 @@
      "excepcion": ""
     },
     {
-     "so": "S37234",
-     "cliente": "SUGAL CHILE LIMITADA",
+     "so": "S37272",
+     "cliente": "SOCIEDAD AGRICOLA SANTA TERESA",
      "cam": "PY",
-     "fecha_entrega": "2026-10-06",
+     "fecha_entrega": "2026-10-07",
+     "excepcion": ""
+    },
+    {
+     "so": "S37280",
+     "cliente": "MHM SPA",
+     "cam": "PY",
+     "fecha_entrega": "2026-10-08",
+     "excepcion": ""
+    },
+    {
+     "so": "S37284",
+     "cliente": "AGRICOLA LO BELTRAN LIMITADA",
+     "cam": "VD",
+     "fecha_entrega": "2026-10-08",
+     "excepcion": ""
+    },
+    {
+     "so": "S37273",
+     "cliente": "Servicios de construcción y maquinarias Talmaqq Ltda.",
+     "cam": "PY",
+     "fecha_entrega": "2026-10-08",
      "excepcion": ""
     },
     {
@@ -2545,8 +2528,36 @@
      "excepcion": ""
     },
     {
-     "so": "S37280",
-     "cliente": "MHM SPA",
+     "so": "S37282",
+     "cliente": "PETROVAL LTDA",
+     "cam": "PY",
+     "fecha_entrega": "2026-10-08",
+     "excepcion": ""
+    },
+    {
+     "so": "S37283",
+     "cliente": "AGRICOLA LO BELTRAN LIMITADA",
+     "cam": "VD",
+     "fecha_entrega": "2026-10-08",
+     "excepcion": ""
+    },
+    {
+     "so": "S37298",
+     "cliente": "AGRICOLA TRICAHUE LIMITADA",
+     "cam": "VD",
+     "fecha_entrega": "2026-10-08",
+     "excepcion": ""
+    },
+    {
+     "so": "S37302",
+     "cliente": "PATRICIO VISCAY ALBORNOZ",
+     "cam": "PY",
+     "fecha_entrega": "2026-10-08",
+     "excepcion": ""
+    },
+    {
+     "so": "S37307",
+     "cliente": "SUGAL CHILE LIMITADA",
      "cam": "PY",
      "fecha_entrega": "2026-10-08",
      "excepcion": ""
