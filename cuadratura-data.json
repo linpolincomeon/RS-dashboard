@@ -1,7 +1,7 @@
 {
- "generated_utc": "2026-10-08T02:38+00:00",
- "hoy": "2026-10-07",
- "desde": "2026-10-01",
+ "generated_utc": "2026-10-08T05:51+00:00",
+ "hoy": "2026-10-08",
+ "desde": "2026-10-02",
  "rutas": {
   "pendientes": [
    {
@@ -12,7 +12,7 @@
     "litros": 500,
     "programado": "06-10 13:17",
     "atrasado": true,
-    "estado": "ruteada_manana",
+    "estado": "ruteada",
     "visita_status": "pending"
    },
    {
@@ -22,9 +22,9 @@
     "camion": "TJVS-53",
     "litros": 2000,
     "programado": "07-10 09:12",
-    "atrasado": false,
+    "atrasado": true,
     "estado": "ruteada",
-    "visita_status": "failed"
+    "visita_status": "pending"
    },
    {
     "picking": "PYHK/OUT/01445",
@@ -33,8 +33,8 @@
     "camion": "PYHK-28",
     "litros": 5000,
     "programado": "07-10 10:12",
-    "atrasado": false,
-    "estado": "ruteada_manana",
+    "atrasado": true,
+    "estado": "ruteada",
     "visita_status": "pending"
    },
    {
@@ -44,8 +44,8 @@
     "camion": "PYHK-28",
     "litros": 1000,
     "programado": "07-10 13:46",
-    "atrasado": false,
-    "estado": "ruteada_manana",
+    "atrasado": true,
+    "estado": "ruteada",
     "visita_status": "pending"
    },
    {
@@ -55,8 +55,8 @@
     "camion": "PHXC-44",
     "litros": 2000,
     "programado": "07-10 14:27",
-    "atrasado": false,
-    "estado": "ruteada_manana",
+    "atrasado": true,
+    "estado": "ruteada",
     "visita_status": "pending"
    },
    {
@@ -66,8 +66,8 @@
     "camion": "PYHK-28",
     "litros": 3000,
     "programado": "07-10 14:58",
-    "atrasado": false,
-    "estado": "ruteada_manana",
+    "atrasado": true,
+    "estado": "ruteada",
     "visita_status": "pending"
    },
    {
@@ -77,8 +77,8 @@
     "camion": "VDKT-95",
     "litros": 800,
     "programado": "07-10 15:00",
-    "atrasado": false,
-    "estado": "ruteada_manana",
+    "atrasado": true,
+    "estado": "ruteada",
     "visita_status": "pending"
    },
    {
@@ -88,8 +88,8 @@
     "camion": "VDKT-95",
     "litros": 300,
     "programado": "07-10 15:00",
-    "atrasado": false,
-    "estado": "ruteada_manana",
+    "atrasado": true,
+    "estado": "ruteada",
     "visita_status": "pending"
    },
    {
@@ -99,8 +99,8 @@
     "camion": "VDKT-95",
     "litros": 1200,
     "programado": "07-10 15:44",
-    "atrasado": false,
-    "estado": "ruteada_manana",
+    "atrasado": true,
+    "estado": "ruteada",
     "visita_status": "pending"
    },
    {
@@ -110,8 +110,8 @@
     "camion": "PYHK-28",
     "litros": 1500,
     "programado": "07-10 16:55",
-    "atrasado": false,
-    "estado": "ruteada_manana",
+    "atrasado": true,
+    "estado": "ruteada",
     "visita_status": "pending"
    },
    {
@@ -121,27 +121,19 @@
     "camion": "PYHK-28",
     "litros": 900,
     "programado": "07-10 18:56",
-    "atrasado": false,
-    "estado": "ruteada_manana",
+    "atrasado": true,
+    "estado": "ruteada",
     "visita_status": "pending"
    }
   ],
-  "huerfanas": [
-   {
-    "so": "S37272",
-    "cliente": "SOCIEDAD AGRICOLA SANTA TERESA",
-    "estado_odoo": "to_approve",
-    "status": "failed",
-    "litros": 1000
-   }
-  ],
+  "huerfanas": [],
   "sin_ref": [],
   "resumen": {
    "total": 11,
-   "ruteadas": 1,
-   "ruteadas_manana": 10,
+   "ruteadas": 11,
+   "ruteadas_manana": 0,
    "sin_ruta": 0,
-   "huerfanas": 1
+   "huerfanas": 0
   }
  },
  "litros": {
@@ -1271,6 +1263,23 @@
     "estado": "ok"
    },
    {
+    "so": "S37112",
+    "fecha": "2026-10-02",
+    "cliente": "DOMINGO ENRIQUE TORRES VIELMA",
+    "camion": "TYDG-23",
+    "especial": false,
+    "parcial": true,
+    "visitas": 1,
+    "pedido": 4000,
+    "entregado": 1400,
+    "facturado": 4000,
+    "facturas": [
+     "FAC 54613",
+     "FAC 54636"
+    ],
+    "estado": "diferencia"
+   },
+   {
     "so": "S37105",
     "fecha": "2026-10-02",
     "cliente": "SOCIEDAD AGRICOLA SAN SEBASTIAN LIMITADA",
@@ -1333,742 +1342,17 @@
      "FAC 54618"
     ],
     "estado": "ok"
-   },
-   {
-    "so": "S37112",
-    "fecha": "2026-10-01",
-    "cliente": "DOMINGO ENRIQUE TORRES VIELMA",
-    "camion": "TYDG-23",
-    "especial": false,
-    "parcial": true,
-    "visitas": 2,
-    "pedido": 4000,
-    "entregado": 4000,
-    "facturado": 4000,
-    "facturas": [
-     "FAC 54613",
-     "FAC 54636"
-    ],
-    "estado": "ok"
-   },
-   {
-    "so": "S37102",
-    "fecha": "2026-10-01",
-    "cliente": "CBARRIOS CONSTRUCTORA SPA",
-    "camion": "VDKT-95",
-    "especial": false,
-    "parcial": true,
-    "visitas": 1,
-    "pedido": 840,
-    "entregado": 840,
-    "facturado": 840,
-    "facturas": [
-     "FAC 54589"
-    ],
-    "estado": "ok"
-   },
-   {
-    "so": "S37101",
-    "fecha": "2026-10-01",
-    "cliente": "ARIDOS LO VALDIVIA LIMITADA",
-    "camion": "PHXC-44",
-    "especial": false,
-    "parcial": true,
-    "visitas": 1,
-    "pedido": 1880,
-    "entregado": 1880,
-    "facturado": 1880,
-    "facturas": [
-     "FAC 54586"
-    ],
-    "estado": "ok"
-   },
-   {
-    "so": "S37100",
-    "fecha": "2026-10-01",
-    "cliente": "MARGARITA MARIA ALARCON VERGARA",
-    "camion": "SHGP-60",
-    "especial": false,
-    "parcial": false,
-    "visitas": 1,
-    "pedido": 1000,
-    "entregado": 1000,
-    "facturado": 1000,
-    "facturas": [
-     "FAC 54585"
-    ],
-    "estado": "ok"
-   },
-   {
-    "so": "S37095",
-    "fecha": "2026-10-01",
-    "cliente": "AGRICOLA LA PATAGUILLA LTDA",
-    "camion": "HHPT-71",
-    "especial": false,
-    "parcial": false,
-    "visitas": 1,
-    "pedido": 2000,
-    "entregado": 2000,
-    "facturado": 2000,
-    "facturas": [
-     "FAC 54591"
-    ],
-    "estado": "ok"
-   },
-   {
-    "so": "S37093",
-    "fecha": "2026-10-01",
-    "cliente": "SUGAL CHILE LIMITADA",
-    "camion": "TYDG-23",
-    "especial": false,
-    "parcial": false,
-    "visitas": 1,
-    "pedido": 800,
-    "entregado": 800,
-    "facturado": 800,
-    "facturas": [
-     "FAC 54588"
-    ],
-    "estado": "ok"
-   },
-   {
-    "so": "S37092",
-    "fecha": "2026-10-01",
-    "cliente": "FERNANDO ROMERO ORTIZ",
-    "camion": "VDKT-95",
-    "especial": false,
-    "parcial": false,
-    "visitas": 1,
-    "pedido": 900,
-    "entregado": 900,
-    "facturado": 900,
-    "facturas": [
-     "FAC 54572"
-    ],
-    "estado": "ok"
-   },
-   {
-    "so": "S37091",
-    "fecha": "2026-10-01",
-    "cliente": "CARLOS SOTO CORREA",
-    "camion": "VDKT-95",
-    "especial": false,
-    "parcial": false,
-    "visitas": 1,
-    "pedido": 1000,
-    "entregado": 1000,
-    "facturado": 1000,
-    "facturas": [
-     "FAC 54584"
-    ],
-    "estado": "ok"
-   },
-   {
-    "so": "S37090",
-    "fecha": "2026-10-01",
-    "cliente": "SUGAL CHILE LIMITADA",
-    "camion": "TYDG-23",
-    "especial": false,
-    "parcial": false,
-    "visitas": 1,
-    "pedido": 800,
-    "entregado": 800,
-    "facturado": 800,
-    "facturas": [
-     "FAC 54593"
-    ],
-    "estado": "ok"
-   },
-   {
-    "so": "S37089",
-    "fecha": "2026-10-01",
-    "cliente": "SUGAL CHILE LIMITADA",
-    "camion": "TYDG-23",
-    "especial": false,
-    "parcial": false,
-    "visitas": 1,
-    "pedido": 1000,
-    "entregado": 1000,
-    "facturado": 1000,
-    "facturas": [
-     "FAC 54594"
-    ],
-    "estado": "ok"
-   },
-   {
-    "so": "S37088",
-    "fecha": "2026-10-01",
-    "cliente": "SUGAL CHILE LIMITADA",
-    "camion": "TYDG-23",
-    "especial": false,
-    "parcial": false,
-    "visitas": 1,
-    "pedido": 800,
-    "entregado": 800,
-    "facturado": 800,
-    "facturas": [
-     "FAC 54595"
-    ],
-    "estado": "ok"
-   },
-   {
-    "so": "S37085",
-    "fecha": "2026-10-01",
-    "cliente": "SERVICIOS AGRICOLAS LUIS PULGAR E.I.R.L.",
-    "camion": "PHXC-44",
-    "especial": false,
-    "parcial": false,
-    "visitas": 1,
-    "pedido": 1000,
-    "entregado": 1000,
-    "facturado": 1000,
-    "facturas": [
-     "FAC 54571"
-    ],
-    "estado": "ok"
-   },
-   {
-    "so": "S37084",
-    "fecha": "2026-10-01",
-    "cliente": "SERVICIOS AGRICOLAS LUIS PULGAR E.I.R.L.",
-    "camion": "TJVS-53",
-    "especial": false,
-    "parcial": false,
-    "visitas": 1,
-    "pedido": 1000,
-    "entregado": 1000,
-    "facturado": 1000,
-    "facturas": [
-     "FAC 54575"
-    ],
-    "estado": "ok"
-   },
-   {
-    "so": "S37083",
-    "fecha": "2026-10-01",
-    "cliente": "AGROSERVICIOS JR SPA",
-    "camion": "TJVS-53",
-    "especial": false,
-    "parcial": false,
-    "visitas": 1,
-    "pedido": 2000,
-    "entregado": 2000,
-    "facturado": 2000,
-    "facturas": [
-     "FAC 54587"
-    ],
-    "estado": "ok"
-   },
-   {
-    "so": "S37082",
-    "fecha": "2026-10-01",
-    "cliente": "AGRICOLA LA HACIENDA LTDA",
-    "camion": "PYHK-28",
-    "especial": false,
-    "parcial": false,
-    "visitas": 1,
-    "pedido": 2000,
-    "entregado": 2000,
-    "facturado": 2000,
-    "facturas": [
-     "FAC 54610"
-    ],
-    "estado": "ok"
-   },
-   {
-    "so": "S37081",
-    "fecha": "2026-10-01",
-    "cliente": "AGRICOLA XIONGDI SPA",
-    "camion": "PHXC-44",
-    "especial": false,
-    "parcial": true,
-    "visitas": 1,
-    "pedido": 1600,
-    "entregado": 1600,
-    "facturado": 1600,
-    "facturas": [
-     "FAC 54597"
-    ],
-    "estado": "ok"
-   },
-   {
-    "so": "S37080",
-    "fecha": "2026-10-01",
-    "cliente": "SUGAL CHILE LIMITADA",
-    "camion": "VDKT-95",
-    "especial": true,
-    "parcial": false,
-    "visitas": 1,
-    "pedido": 700,
-    "entregado": 700,
-    "facturado": 0,
-    "facturas": [],
-    "estado": "por_facturar"
-   },
-   {
-    "so": "S37079",
-    "fecha": "2026-10-01",
-    "cliente": "SUGAL CHILE LIMITADA",
-    "camion": "PYHK-28",
-    "especial": false,
-    "parcial": false,
-    "visitas": 1,
-    "pedido": 700,
-    "entregado": 700,
-    "facturado": 0,
-    "facturas": [],
-    "estado": "por_facturar"
-   },
-   {
-    "so": "S37077",
-    "fecha": "2026-10-01",
-    "cliente": "AGRICOLA SANTA LAURA LIMITADA",
-    "camion": "VDKT-95",
-    "especial": false,
-    "parcial": false,
-    "visitas": 1,
-    "pedido": 1000,
-    "entregado": 1000,
-    "facturado": 1000,
-    "facturas": [
-     "FAC 54581"
-    ],
-    "estado": "ok"
-   },
-   {
-    "so": "S37070",
-    "fecha": "2026-10-01",
-    "cliente": "SERVICIOS REVIVA SPA",
-    "camion": "TYDG-23",
-    "especial": false,
-    "parcial": false,
-    "visitas": 1,
-    "pedido": 2000,
-    "entregado": 2000,
-    "facturado": 2000,
-    "facturas": [
-     "FAC 54574"
-    ],
-    "estado": "ok"
-   },
-   {
-    "so": "S37069",
-    "fecha": "2026-10-01",
-    "cliente": "AGRICOLA ALCAINO SPA",
-    "camion": "PYHK-28",
-    "especial": false,
-    "parcial": true,
-    "visitas": 1,
-    "pedido": 1300,
-    "entregado": 1300,
-    "facturado": 1300,
-    "facturas": [
-     "FAC 54615"
-    ],
-    "estado": "ok"
-   },
-   {
-    "so": "S37065",
-    "fecha": "2026-10-01",
-    "cliente": "AGRICOLA Y COMERCIAL DON CARLOS",
-    "camion": "PYHK-28",
-    "especial": false,
-    "parcial": false,
-    "visitas": 1,
-    "pedido": 1500,
-    "entregado": 1500,
-    "facturado": 1500,
-    "facturas": [
-     "FAC 54609"
-    ],
-    "estado": "ok"
-   },
-   {
-    "so": "S37064",
-    "fecha": "2026-10-01",
-    "cliente": "AGRICOLA PERSICA SPA",
-    "camion": "PHXC-44",
-    "especial": false,
-    "parcial": true,
-    "visitas": 1,
-    "pedido": 2250,
-    "entregado": 2250,
-    "facturado": 2250,
-    "facturas": [
-     "FAC 54579"
-    ],
-    "estado": "ok"
-   },
-   {
-    "so": "S37063",
-    "fecha": "2026-10-01",
-    "cliente": "UNO DESARROLLOS CONSTRUCTIVOS SPA",
-    "camion": "TYDG-23",
-    "especial": false,
-    "parcial": false,
-    "visitas": 1,
-    "pedido": 1000,
-    "entregado": 1000,
-    "facturado": 1000,
-    "facturas": [
-     "FAC 54605"
-    ],
-    "estado": "ok"
-   },
-   {
-    "so": "S37062",
-    "fecha": "2026-10-01",
-    "cliente": "Soc. Agrícola Libertad SPA",
-    "camion": "TJVS-53",
-    "especial": false,
-    "parcial": true,
-    "visitas": 1,
-    "pedido": 2000,
-    "entregado": 2000,
-    "facturado": 2000,
-    "facturas": [
-     "FAC 54602"
-    ],
-    "estado": "ok"
-   },
-   {
-    "so": "S37057",
-    "fecha": "2026-10-01",
-    "cliente": "NUEVA PICARQUIN SPA",
-    "camion": "VDKT-95",
-    "especial": false,
-    "parcial": false,
-    "visitas": 1,
-    "pedido": 450,
-    "entregado": 450,
-    "facturado": 450,
-    "facturas": [
-     "FAC 54614"
-    ],
-    "estado": "ok"
-   },
-   {
-    "so": "S37056",
-    "fecha": "2026-10-01",
-    "cliente": "TRANSPORTE SANTA ELENITA SPA",
-    "camion": "VDKT-95",
-    "especial": false,
-    "parcial": false,
-    "visitas": 1,
-    "pedido": 1000,
-    "entregado": 1000,
-    "facturado": 1000,
-    "facturas": [
-     "FAC 54598"
-    ],
-    "estado": "ok"
-   },
-   {
-    "so": "S37055",
-    "fecha": "2026-10-01",
-    "cliente": "ARRIGONI AMBIENTAL NFU SPA",
-    "camion": "VDKT-95",
-    "especial": true,
-    "parcial": false,
-    "visitas": 1,
-    "pedido": 910,
-    "entregado": 910,
-    "facturado": 910,
-    "facturas": [
-     "FAC 54577"
-    ],
-    "estado": "ok"
-   },
-   {
-    "so": "S37052",
-    "fecha": "2026-10-01",
-    "cliente": "JOSE TORRES FUENTES",
-    "camion": "PYHK-28",
-    "especial": false,
-    "parcial": true,
-    "visitas": 1,
-    "pedido": 700,
-    "entregado": 700,
-    "facturado": 700,
-    "facturas": [
-     "FAC 54612"
-    ],
-    "estado": "ok"
-   },
-   {
-    "so": "S37051",
-    "fecha": "2026-10-01",
-    "cliente": "ALEJANDRO GARNHAM POBLETE",
-    "camion": "VDKT-95",
-    "especial": false,
-    "parcial": false,
-    "visitas": 1,
-    "pedido": 1000,
-    "entregado": 1000,
-    "facturado": 1000,
-    "facturas": [
-     "FAC 54570"
-    ],
-    "estado": "ok"
-   },
-   {
-    "so": "S37050",
-    "fecha": "2026-10-01",
-    "cliente": "SOC AGRICOLA GRANJA SAN RAFAEL LIMITADA",
-    "camion": "PYHK-28",
-    "especial": false,
-    "parcial": false,
-    "visitas": 1,
-    "pedido": 1000,
-    "entregado": 1000,
-    "facturado": 1000,
-    "facturas": [
-     "FAC 54611"
-    ],
-    "estado": "ok"
-   },
-   {
-    "so": "S37048",
-    "fecha": "2026-10-01",
-    "cliente": "RODRIGO VALDERRAMA LABRA",
-    "camion": "TJVS-53",
-    "especial": false,
-    "parcial": false,
-    "visitas": 1,
-    "pedido": 700,
-    "entregado": 700,
-    "facturado": 700,
-    "facturas": [
-     "FAC 54607"
-    ],
-    "estado": "ok"
-   },
-   {
-    "so": "S37047",
-    "fecha": "2026-10-01",
-    "cliente": "AGRÍCOLA , GANADERA, FORESTAL CASTELLANI SPA.",
-    "camion": "HHPT-71",
-    "especial": false,
-    "parcial": false,
-    "visitas": 1,
-    "pedido": 1000,
-    "entregado": 1000,
-    "facturado": 1000,
-    "facturas": [
-     "FAC 54573"
-    ],
-    "estado": "ok"
-   },
-   {
-    "so": "S37045",
-    "fecha": "2026-10-01",
-    "cliente": "CIA AGRICOLA Y FORESTAL EL ALAMO LIMITADA",
-    "camion": "TYDG-23",
-    "especial": false,
-    "parcial": false,
-    "visitas": 1,
-    "pedido": 6000,
-    "entregado": 6000,
-    "facturado": 6000,
-    "facturas": [
-     "FAC 54578"
-    ],
-    "estado": "ok"
-   },
-   {
-    "so": "S37042",
-    "fecha": "2026-10-01",
-    "cliente": "AGRICOLA PRIMOS Z SPA",
-    "camion": "PHXC-44",
-    "especial": false,
-    "parcial": false,
-    "visitas": 1,
-    "pedido": 1000,
-    "entregado": 1000,
-    "facturado": 1000,
-    "facturas": [
-     "FAC 54596"
-    ],
-    "estado": "ok"
-   },
-   {
-    "so": "S37030",
-    "fecha": "2026-10-01",
-    "cliente": "SOC AGRICOLA SAN FRANCISCO SPA",
-    "camion": "HHPT-71",
-    "especial": false,
-    "parcial": false,
-    "visitas": 1,
-    "pedido": 1000,
-    "entregado": 1000,
-    "facturado": 1000,
-    "facturas": [
-     "FAC 54599"
-    ],
-    "estado": "ok"
-   },
-   {
-    "so": "S37027",
-    "fecha": "2026-10-01",
-    "cliente": "JHOVANY ALEXANDER MOLINA GOMEZ",
-    "camion": "PHXC-44",
-    "especial": false,
-    "parcial": true,
-    "visitas": 1,
-    "pedido": 870,
-    "entregado": 870,
-    "facturado": 870,
-    "facturas": [
-     "FAC 54590"
-    ],
-    "estado": "ok"
-   },
-   {
-    "so": "S37024",
-    "fecha": "2026-10-01",
-    "cliente": "AGRICOLA LA CAMPANA SPA",
-    "camion": "PYHK-28",
-    "especial": false,
-    "parcial": true,
-    "visitas": 1,
-    "pedido": 1200,
-    "entregado": 1200,
-    "facturado": 1200,
-    "facturas": [
-     "FAC 54608"
-    ],
-    "estado": "ok"
-   },
-   {
-    "so": "S37022",
-    "fecha": "2026-10-01",
-    "cliente": "JOSÉ LÓPEZ PONCE",
-    "camion": "HHPT-71",
-    "especial": false,
-    "parcial": false,
-    "visitas": 1,
-    "pedido": 1000,
-    "entregado": 1000,
-    "facturado": 1000,
-    "facturas": [
-     "FAC 54580"
-    ],
-    "estado": "ok"
-   },
-   {
-    "so": "S37019",
-    "fecha": "2026-10-01",
-    "cliente": "AGRICOLA COLLADO IBACACHE LIMITADA",
-    "camion": "TJVS-53",
-    "especial": false,
-    "parcial": true,
-    "visitas": 1,
-    "pedido": 1000,
-    "entregado": 1000,
-    "facturado": 1000,
-    "facturas": [
-     "FAC 54606"
-    ],
-    "estado": "ok"
-   },
-   {
-    "so": "S37015",
-    "fecha": "2026-10-01",
-    "cliente": "Agrícola La Encina Ltda.",
-    "camion": "TJVS-53",
-    "especial": false,
-    "parcial": false,
-    "visitas": 1,
-    "pedido": 500,
-    "entregado": 500,
-    "facturado": 500,
-    "facturas": [
-     "FAC 54603"
-    ],
-    "estado": "ok"
-   },
-   {
-    "so": "S36974",
-    "fecha": "2026-10-01",
-    "cliente": "AGRICOLA ARDILLA INTERNACIONAL SPA",
-    "camion": "PHXC-44",
-    "especial": false,
-    "parcial": false,
-    "visitas": 1,
-    "pedido": 900,
-    "entregado": 900,
-    "facturado": 900,
-    "facturas": [
-     "FAC 54600"
-    ],
-    "estado": "ok"
-   },
-   {
-    "so": "S36944",
-    "fecha": "2026-10-01",
-    "cliente": "GIOVANETTI GONZALEZ ROQUE ANTONIO",
-    "camion": "HHPT-71",
-    "especial": false,
-    "parcial": false,
-    "visitas": 1,
-    "pedido": 1000,
-    "entregado": 1000,
-    "facturado": 1000,
-    "facturas": [
-     "FAC 54601"
-    ],
-    "estado": "ok"
-   },
-   {
-    "so": "S36922",
-    "fecha": "2026-10-01",
-    "cliente": "SAMUEL BUDINICH SPA",
-    "camion": "VDKT-95",
-    "especial": false,
-    "parcial": false,
-    "visitas": 1,
-    "pedido": 500,
-    "entregado": 500,
-    "facturado": 500,
-    "facturas": [
-     "FAC 54576"
-    ],
-    "estado": "ok"
-   },
-   {
-    "so": "S36918",
-    "fecha": "2026-10-01",
-    "cliente": "SUCESION LUIS PIZARRO",
-    "camion": "VDKT-95",
-    "especial": false,
-    "parcial": false,
-    "visitas": 1,
-    "pedido": 300,
-    "entregado": 300,
-    "facturado": 300,
-    "facturas": [
-     "FAC 54592"
-    ],
-    "estado": "ok"
-   },
-   {
-    "so": "S36821",
-    "fecha": "2026-10-01",
-    "cliente": "Comercializadora Agrotuncahue",
-    "camion": "TJVS-53",
-    "especial": false,
-    "parcial": false,
-    "visitas": 1,
-    "pedido": 550,
-    "entregado": 550,
-    "facturado": 550,
-    "facturas": [
-     "FAC 54582"
-    ],
-    "estado": "ok"
    }
   ],
   "dias": [
+   {
+    "fecha": "2026-10-08",
+    "entregas": 0,
+    "entregado": 0,
+    "facturado": 0,
+    "por_facturar": 0,
+    "sin_factura": 0
+   },
    {
     "fecha": "2026-10-07",
     "entregas": 10,
@@ -2111,32 +1395,17 @@
    },
    {
     "fecha": "2026-10-02",
-    "entregas": 20,
-    "entregado": 25266,
-    "facturado": 23166,
+    "entregas": 21,
+    "entregado": 26666,
+    "facturado": 27166,
     "por_facturar": 2100,
-    "sin_factura": 2
-   },
-   {
-    "fecha": "2026-10-01",
-    "entregas": 46,
-    "entregado": 57650,
-    "facturado": 56250,
-    "por_facturar": 1400,
     "sin_factura": 2
    }
   ],
-  "por_facturar_total": 7100,
-  "entregado_hoy": 8496,
-  "facturado_hoy": 13096,
-  "fuera_simpli": [
-   {
-    "factura": "FAC 54683",
-    "so": "S37118",
-    "cliente": "SOC. DE TRANSPORTES Y AGRICOLA ESPINAZA RIVERA LIMITADA",
-    "litros": 4600
-   }
-  ]
+  "por_facturar_total": 5700,
+  "entregado_hoy": 0,
+  "facturado_hoy": 0,
+  "fuera_simpli": []
  },
  "cierre": {
   "fase2": {
@@ -2566,9 +1835,9 @@
      "especial": true
     }
    ],
-   "entregadas_hoy": 10,
+   "entregadas_hoy": 0,
    "bodega_ventana": 0,
-   "revisadas_ventana": 132,
+   "revisadas_ventana": 87,
    "salidas_entregadas": 0
   },
   "fase5": {
@@ -2592,21 +1861,21 @@
      "odoo": 8170,
      "ajuste": 0,
      "esperado": 8170,
-     "ventas_simpli_hoy": 2000
+     "ventas_simpli_hoy": 0
     },
     {
      "cam": "SH",
      "odoo": 8600,
      "ajuste": 0,
      "esperado": 8600,
-     "ventas_simpli_hoy": 2000
+     "ventas_simpli_hoy": 0
     },
     {
      "cam": "TJ",
      "odoo": 15250,
      "ajuste": 0,
      "esperado": 15250,
-     "ventas_simpli_hoy": 2500
+     "ventas_simpli_hoy": 0
     },
     {
      "cam": "TY",
@@ -2620,7 +1889,7 @@
      "odoo": 3734,
      "ajuste": 0,
      "esperado": 3734,
-     "ventas_simpli_hoy": 1996
+     "ventas_simpli_hoy": 0
     }
    ]
   },
@@ -2641,9 +1910,9 @@
      "excepcion": "No tiene Línea de Crédito Aprobada"
     },
     {
-     "so": "S36780",
+     "so": "S36783",
      "cliente": "SUGAL CHILE LIMITADA",
-     "cam": "PH",
+     "cam": "VD",
      "fecha_entrega": "2026-09-25",
      "excepcion": ""
     },
@@ -2655,16 +1924,16 @@
      "excepcion": ""
     },
     {
-     "so": "S36781",
+     "so": "S36780",
      "cliente": "SUGAL CHILE LIMITADA",
      "cam": "PH",
      "fecha_entrega": "2026-09-25",
      "excepcion": ""
     },
     {
-     "so": "S36783",
+     "so": "S36781",
      "cliente": "SUGAL CHILE LIMITADA",
-     "cam": "VD",
+     "cam": "PH",
      "fecha_entrega": "2026-09-25",
      "excepcion": ""
     },
@@ -2676,14 +1945,14 @@
      "excepcion": ""
     },
     {
-     "so": "S36883",
-     "cliente": "SUGAL CHILE LIMITADA",
-     "cam": "VD",
+     "so": "S36987",
+     "cliente": "DIOGENES GERMAN CONCHA CONCHA",
+     "cam": "PY",
      "fecha_entrega": "2026-09-28",
      "excepcion": ""
     },
     {
-     "so": "S36885",
+     "so": "S36884",
      "cliente": "SUGAL CHILE LIMITADA",
      "cam": "VD",
      "fecha_entrega": "2026-09-28",
@@ -2704,9 +1973,9 @@
      "excepcion": ""
     },
     {
-     "so": "S36987",
-     "cliente": "DIOGENES GERMAN CONCHA CONCHA",
-     "cam": "PY",
+     "so": "S36883",
+     "cliente": "SUGAL CHILE LIMITADA",
+     "cam": "VD",
      "fecha_entrega": "2026-09-28",
      "excepcion": ""
     },
@@ -2718,10 +1987,17 @@
      "excepcion": ""
     },
     {
-     "so": "S36884",
+     "so": "S36885",
      "cliente": "SUGAL CHILE LIMITADA",
      "cam": "VD",
      "fecha_entrega": "2026-09-28",
+     "excepcion": ""
+    },
+    {
+     "so": "S36994",
+     "cliente": "SUGAL CHILE LIMITADA",
+     "cam": "PY",
+     "fecha_entrega": "2026-09-29",
      "excepcion": ""
     },
     {
@@ -2741,13 +2017,6 @@
     {
      "so": "S37021",
      "cliente": "SERVICIOS AGRICOLAS Y COMERCIAL SANTA PAULA SPA",
-     "cam": "PY",
-     "fecha_entrega": "2026-09-29",
-     "excepcion": ""
-    },
-    {
-     "so": "S36994",
-     "cliente": "SUGAL CHILE LIMITADA",
      "cam": "PY",
      "fecha_entrega": "2026-09-29",
      "excepcion": ""
@@ -2828,12 +2097,19 @@
      "cam": "PY",
      "fecha_entrega": "2026-10-07",
      "excepcion": ""
+    },
+    {
+     "so": "S37305",
+     "cliente": "INVERSIONES VB SPA",
+     "cam": "PH",
+     "fecha_entrega": "2026-10-09",
+     "excepcion": ""
     }
    ],
    "con_excepcion": 2,
-   "validadas_manana": 10,
-   "visitas_manana": 11,
-   "fecha": "2026-10-08"
+   "validadas_manana": 0,
+   "visitas_manana": 0,
+   "fecha": "2026-10-09"
   }
  }
 }
