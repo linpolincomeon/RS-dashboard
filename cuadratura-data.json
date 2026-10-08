@@ -1,37 +1,14 @@
 {
- "generated_utc": "2026-10-08T17:49+00:00",
+ "generated_utc": "2026-10-08T23:14+00:00",
  "hoy": "2026-10-08",
  "desde": "2026-10-02",
  "rutas": {
-  "pendientes": [
-   {
-    "picking": "PYHK/OUT/01443",
-    "so": "S37302",
-    "cliente": "PATRICIO VISCAY ALBORNOZ, Cristopher",
-    "camion": "PYHK-28",
-    "litros": 1500,
-    "programado": "07-10 16:55",
-    "atrasado": true,
-    "estado": "ruteada",
-    "visita_status": "pending"
-   },
-   {
-    "picking": "TJVS/OUT/01995",
-    "so": "S37312",
-    "cliente": "AGRICOLA EL MILAGRO LTDA., AGRICOLA EL MILAGRO-Denis",
-    "camion": "TJVS-53",
-    "litros": 1000,
-    "programado": "08-10 08:00",
-    "atrasado": false,
-    "estado": "ruteada",
-    "visita_status": "pending"
-   }
-  ],
+  "pendientes": [],
   "huerfanas": [],
   "sin_ref": [],
   "resumen": {
-   "total": 2,
-   "ruteadas": 2,
+   "total": 0,
+   "ruteadas": 0,
    "ruteadas_manana": 0,
    "sin_ruta": 0,
    "huerfanas": 0
@@ -136,6 +113,22 @@
     "estado": "ok"
    },
    {
+    "so": "S37312",
+    "fecha": "2026-10-08",
+    "cliente": "AGRICOLA EL MILAGRO LTDA.",
+    "camion": "SHGP-60",
+    "especial": false,
+    "parcial": false,
+    "visitas": 1,
+    "pedido": 1000,
+    "entregado": 1100,
+    "facturado": 1100,
+    "facturas": [
+     "FAC 54704"
+    ],
+    "estado": "ok"
+   },
+   {
     "so": "S37311",
     "fecha": "2026-10-08",
     "cliente": "AGRICOLA EL ESFUERZO LIMITADA",
@@ -152,22 +145,6 @@
     "estado": "ok"
    },
    {
-    "so": "S37310",
-    "fecha": "2026-10-08",
-    "cliente": "RENE MONTENEGRO MARQUEZ",
-    "camion": "PHXC-44",
-    "especial": false,
-    "parcial": false,
-    "visitas": 1,
-    "pedido": 1000,
-    "entregado": 1000,
-    "facturado": 1000,
-    "facturas": [
-     "FAC 54699"
-    ],
-    "estado": "ok"
-   },
-   {
     "so": "S37307",
     "fecha": "2026-10-08",
     "cliente": "SUGAL CHILE LIMITADA",
@@ -180,6 +157,22 @@
     "facturado": 0,
     "facturas": [],
     "estado": "por_facturar"
+   },
+   {
+    "so": "S37302",
+    "fecha": "2026-10-08",
+    "cliente": "PATRICIO VISCAY ALBORNOZ",
+    "camion": "PYHK-28",
+    "especial": false,
+    "parcial": false,
+    "visitas": 1,
+    "pedido": 1500,
+    "entregado": 1500,
+    "facturado": 1500,
+    "facturas": [
+     "FAC 54703"
+    ],
+    "estado": "ok"
    },
    {
     "so": "S37298",
@@ -1534,9 +1527,9 @@
   "dias": [
    {
     "fecha": "2026-10-08",
-    "entregas": 18,
-    "entregado": 25690,
-    "facturado": 24790,
+    "entregas": 19,
+    "entregado": 27290,
+    "facturado": 26390,
     "por_facturar": 900,
     "sin_factura": 1
    },
@@ -1590,13 +1583,37 @@
    }
   ],
   "por_facturar_total": 6600,
-  "entregado_hoy": 25690,
-  "facturado_hoy": 24790,
-  "fuera_simpli": []
+  "entregado_hoy": 27290,
+  "facturado_hoy": 27390,
+  "fuera_simpli": [
+   {
+    "factura": "FAC 54699",
+    "so": "S37310",
+    "cliente": "RENE MONTENEGRO MARQUEZ",
+    "litros": 1000
+   }
+  ]
  },
  "cierre": {
   "fase2": {
    "compras": [
+    {
+     "po": "P00912",
+     "proveedor": "ADQUIM SPA",
+     "cam": "SH",
+     "fecha": "2026-10-08",
+     "hora": "19:24",
+     "litros": 15000,
+     "correccion": null,
+     "litros_real": 15000,
+     "precio": 1362.92,
+     "recibida": true,
+     "devuelta": false,
+     "factura": null,
+     "factura_estado": "sin_factura",
+     "factura_total": null,
+     "factura_litros": null
+    },
     {
      "po": "P00911",
      "proveedor": "ENAP REFINERIAS S.A.",
@@ -1615,70 +1632,43 @@
      "factura_litros": 14935
     }
    ],
-   "borradores_sueltos": [],
+   "borradores_sueltos": [
+    {
+     "folio": "265094",
+     "proveedor": "ADQUIM SPA",
+     "fecha": "2026-10-08",
+     "total": 15443380,
+     "litros": null
+    }
+   ],
    "oc_borrador": [],
    "sin_recibir": 0
   },
   "fase4": {
-   "salidas": [
-    {
-     "picking": "PYHK/OUT/01443",
-     "so": "S37302",
-     "cliente": "PATRICIO VISCAY ALBORNOZ, Cristopher",
-     "cam": "PY",
-     "fecha": "2026-10-07",
-     "litros": 1500,
-     "entregada_simpli": false
-    },
-    {
-     "picking": "TJVS/OUT/01995",
-     "so": "S37312",
-     "cliente": "AGRICOLA EL MILAGRO LTDA., AGRICOLA EL MILAGRO-Denis",
-     "cam": "TJ",
-     "fecha": "2026-10-08",
-     "litros": 1000,
-     "entregada_simpli": false
-    }
-   ],
+   "salidas": [],
    "ventas": [
-    {
-     "so": "S37302",
-     "cliente": "PATRICIO VISCAY ALBORNOZ",
-     "especial": false,
-     "cam": "PY",
-     "cam_simpli": [],
-     "cam_odoo": [],
-     "picking": "PYHK/OUT/01443",
-     "fecha_entrega": "2026-10-08",
-     "simpli": null,
-     "cantidad": 1500,
-     "entregado": 0,
-     "facturado": 0,
-     "problemas": [
-      "sin_entrega"
-     ],
-     "acciones": [
-      "Salida PYHK/OUT/01443 abierta pero SimpliRoute no la muestra entregada: si no salió, reprogramar; si salió, validar"
-     ]
-    },
     {
      "so": "S37312",
      "cliente": "AGRICOLA EL MILAGRO LTDA.",
      "especial": false,
-     "cam": "TJ",
-     "cam_simpli": [],
-     "cam_odoo": [],
-     "picking": "TJVS/OUT/01995",
+     "cam": "SH",
+     "cam_simpli": [
+      "SH"
+     ],
+     "cam_odoo": [
+      "SH"
+     ],
+     "picking": null,
      "fecha_entrega": "2026-10-08",
-     "simpli": null,
+     "simpli": 1100,
      "cantidad": 1000,
-     "entregado": 0,
-     "facturado": 0,
+     "entregado": 1100,
+     "facturado": 1100,
      "problemas": [
-      "sin_entrega"
+      "cantidad"
      ],
      "acciones": [
-      "Salida TJVS/OUT/01995 abierta pero SimpliRoute no la muestra entregada: si no salió, reprogramar; si salió, validar"
+      "Subir Cantidad de 1.000 a 1.100 L"
      ]
     },
     {
@@ -1794,13 +1784,6 @@
      "especial": false
     },
     {
-     "so": "S37302",
-     "cliente": "PATRICIO VISCAY ALBORNOZ",
-     "cam": "PY",
-     "fecha_entrega": "2026-10-08",
-     "especial": false
-    },
-    {
      "so": "S37307",
      "cliente": "SUGAL CHILE LIMITADA",
      "cam": "TY",
@@ -1810,7 +1793,7 @@
     {
      "so": "S37312",
      "cliente": "AGRICOLA EL MILAGRO LTDA.",
-     "cam": "TJ",
+     "cam": "SH",
      "fecha_entrega": "2026-10-08",
      "especial": false
     },
@@ -1822,9 +1805,9 @@
      "especial": false
     }
    ],
-   "entregadas_hoy": 18,
+   "entregadas_hoy": 19,
    "bodega_ventana": 0,
-   "revisadas_ventana": 96,
+   "revisadas_ventana": 95,
    "salidas_entregadas": 0
   },
   "fase5": {
@@ -1841,21 +1824,21 @@
      "odoo": 6000,
      "ajuste": 0,
      "esperado": 6000,
-     "ventas_simpli_hoy": 4000
+     "ventas_simpli_hoy": 3000
     },
     {
      "cam": "PY",
-     "odoo": 3370,
+     "odoo": 1870,
      "ajuste": 0,
-     "esperado": 3370,
-     "ventas_simpli_hoy": 4800
+     "esperado": 1870,
+     "ventas_simpli_hoy": 6300
     },
     {
      "cam": "SH",
-     "odoo": 1100,
+     "odoo": 15000,
      "ajuste": 0,
-     "esperado": 1100,
-     "ventas_simpli_hoy": 7500
+     "esperado": 15000,
+     "ventas_simpli_hoy": 8600
     },
     {
      "cam": "TJ",
@@ -1883,6 +1866,13 @@
   "fase6": {
    "por_aprobar": [
     {
+     "so": "S30784",
+     "cliente": "EL PARRON SPA",
+     "cam": "TJ",
+     "fecha_entrega": "2026-05-12",
+     "excepcion": ""
+    },
+    {
      "so": "S30777",
      "cliente": "EL PARRON SPA",
      "cam": "TJ",
@@ -1890,10 +1880,17 @@
      "excepcion": "No tiene Línea de Crédito Aprobada"
     },
     {
-     "so": "S30784",
-     "cliente": "EL PARRON SPA",
-     "cam": "TJ",
-     "fecha_entrega": "2026-05-12",
+     "so": "S36785",
+     "cliente": "SUGAL CHILE LIMITADA",
+     "cam": "PY",
+     "fecha_entrega": "2026-09-25",
+     "excepcion": ""
+    },
+    {
+     "so": "S36781",
+     "cliente": "SUGAL CHILE LIMITADA",
+     "cam": "PH",
+     "fecha_entrega": "2026-09-25",
      "excepcion": ""
     },
     {
@@ -1904,21 +1901,7 @@
      "excepcion": ""
     },
     {
-     "so": "S36785",
-     "cliente": "SUGAL CHILE LIMITADA",
-     "cam": "PY",
-     "fecha_entrega": "2026-09-25",
-     "excepcion": ""
-    },
-    {
      "so": "S36780",
-     "cliente": "SUGAL CHILE LIMITADA",
-     "cam": "PH",
-     "fecha_entrega": "2026-09-25",
-     "excepcion": ""
-    },
-    {
-     "so": "S36781",
      "cliente": "SUGAL CHILE LIMITADA",
      "cam": "PH",
      "fecha_entrega": "2026-09-25",
@@ -2023,16 +2006,16 @@
      "excepcion": "No tiene Línea de Crédito Aprobada"
     },
     {
-     "so": "S37079",
+     "so": "S37080",
      "cliente": "SUGAL CHILE LIMITADA",
-     "cam": "PY",
+     "cam": "VD",
      "fecha_entrega": "2026-10-01",
      "excepcion": ""
     },
     {
-     "so": "S37080",
+     "so": "S37079",
      "cliente": "SUGAL CHILE LIMITADA",
-     "cam": "VD",
+     "cam": "PY",
      "fecha_entrega": "2026-10-01",
      "excepcion": ""
     },
@@ -2065,16 +2048,16 @@
      "excepcion": ""
     },
     {
-     "so": "S37235",
+     "so": "S37234",
      "cliente": "SUGAL CHILE LIMITADA",
-     "cam": "VD",
+     "cam": "PY",
      "fecha_entrega": "2026-10-06",
      "excepcion": ""
     },
     {
-     "so": "S37234",
+     "so": "S37235",
      "cliente": "SUGAL CHILE LIMITADA",
-     "cam": "PY",
+     "cam": "VD",
      "fecha_entrega": "2026-10-06",
      "excepcion": ""
     },
@@ -2086,22 +2069,15 @@
      "excepcion": "Limite de Credito Excedido"
     },
     {
-     "so": "S37255",
-     "cliente": "SOCIEDAD AGRICOLA LIRCAY SPA.",
-     "cam": "PY",
-     "fecha_entrega": "2026-10-09",
-     "excepcion": ""
-    },
-    {
-     "so": "S37305",
-     "cliente": "INVERSIONES VB SPA",
+     "so": "S37351",
+     "cliente": "CARLOS SOTO CORREA",
      "cam": "PH",
      "fecha_entrega": "2026-10-09",
      "excepcion": ""
     },
     {
-     "so": "S37345",
-     "cliente": "CONSTRUCTORA JAVAG SPA.",
+     "so": "S37340",
+     "cliente": "LUIS ALBERTO IBARRA CARRILLO",
      "cam": "PY",
      "fecha_entrega": "2026-10-09",
      "excepcion": ""
@@ -2114,9 +2090,30 @@
      "excepcion": ""
     },
     {
-     "so": "S37340",
-     "cliente": "LUIS ALBERTO IBARRA CARRILLO",
+     "so": "S37345",
+     "cliente": "CONSTRUCTORA JAVAG SPA.",
      "cam": "PY",
+     "fecha_entrega": "2026-10-09",
+     "excepcion": ""
+    },
+    {
+     "so": "S37255",
+     "cliente": "SOCIEDAD AGRICOLA LIRCAY SPA.",
+     "cam": "PY",
+     "fecha_entrega": "2026-10-09",
+     "excepcion": ""
+    },
+    {
+     "so": "S37352",
+     "cliente": "ALEJANDRO GARCIA-HUIDOBRO SANFUENTES",
+     "cam": "PH",
+     "fecha_entrega": "2026-10-09",
+     "excepcion": ""
+    },
+    {
+     "so": "S37305",
+     "cliente": "INVERSIONES VB SPA",
+     "cam": "PH",
      "fecha_entrega": "2026-10-09",
      "excepcion": ""
     }
