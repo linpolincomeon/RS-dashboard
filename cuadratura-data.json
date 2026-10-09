@@ -1,26 +1,14 @@
 {
- "generated_utc": "2026-10-09T17:24+00:00",
+ "generated_utc": "2026-10-09T21:51+00:00",
  "hoy": "2026-10-09",
  "desde": "2026-10-03",
  "rutas": {
-  "pendientes": [
-   {
-    "picking": "PHXC/OUT/01770",
-    "so": "S37366",
-    "cliente": "Agricola la Compañia, Luis Moraga",
-    "camion": "PHXC-44",
-    "litros": 2000,
-    "programado": "09-10 12:16",
-    "atrasado": false,
-    "estado": "ruteada",
-    "visita_status": "pending"
-   }
-  ],
+  "pendientes": [],
   "huerfanas": [],
   "sin_ref": [],
   "resumen": {
-   "total": 1,
-   "ruteadas": 1,
+   "total": 0,
+   "ruteadas": 0,
    "ruteadas_manana": 0,
    "sin_ruta": 0,
    "huerfanas": 0
@@ -28,6 +16,22 @@
  },
  "litros": {
   "por_so": [
+   {
+    "so": "S37366",
+    "fecha": "2026-10-09",
+    "cliente": "Agricola la Compañia",
+    "camion": "VDKT-95",
+    "especial": false,
+    "parcial": false,
+    "visitas": 1,
+    "pedido": 2000,
+    "entregado": 2000,
+    "facturado": 2000,
+    "facturas": [
+     "FAC 54717"
+    ],
+    "estado": "ok"
+   },
    {
     "so": "S37361",
     "fecha": "2026-10-09",
@@ -1382,9 +1386,9 @@
   "dias": [
    {
     "fecha": "2026-10-09",
-    "entregas": 11,
-    "entregado": 20620,
-    "facturado": 20620,
+    "entregas": 12,
+    "entregado": 22620,
+    "facturado": 22620,
     "por_facturar": 0,
     "sin_factura": 0
    },
@@ -1438,8 +1442,8 @@
    }
   ],
   "por_facturar_total": 4500,
-  "entregado_hoy": 20620,
-  "facturado_hoy": 21620,
+  "entregado_hoy": 22620,
+  "facturado_hoy": 23620,
   "fuera_simpli": [
    {
     "factura": "FAC 54710",
@@ -1524,38 +1528,8 @@
    "sin_recibir": 0
   },
   "fase4": {
-   "salidas": [
-    {
-     "picking": "PHXC/OUT/01770",
-     "so": "S37366",
-     "cliente": "Agricola la Compañia, Luis Moraga",
-     "cam": "PH",
-     "fecha": "2026-10-09",
-     "litros": 2000,
-     "entregada_simpli": false
-    }
-   ],
+   "salidas": [],
    "ventas": [
-    {
-     "so": "S37366",
-     "cliente": "Agricola la Compañia",
-     "especial": false,
-     "cam": "PH",
-     "cam_simpli": [],
-     "cam_odoo": [],
-     "picking": "PHXC/OUT/01770",
-     "fecha_entrega": "2026-10-09",
-     "simpli": null,
-     "cantidad": 2000,
-     "entregado": 0,
-     "facturado": 0,
-     "problemas": [
-      "sin_entrega"
-     ],
-     "acciones": [
-      "Salida PHXC/OUT/01770 abierta pero SimpliRoute no la muestra entregada: si no salió, reprogramar; si salió, validar"
-     ]
-    },
     {
      "so": "S37340",
      "cliente": "LUIS ALBERTO IBARRA CARRILLO",
@@ -1619,16 +1593,9 @@
      "cam": "TJ",
      "fecha_entrega": "2026-10-09",
      "especial": false
-    },
-    {
-     "so": "S37366",
-     "cliente": "Agricola la Compañia",
-     "cam": "PH",
-     "fecha_entrega": "2026-10-09",
-     "especial": false
     }
    ],
-   "entregadas_hoy": 11,
+   "entregadas_hoy": 12,
    "bodega_ventana": 0,
    "revisadas_ventana": 86,
    "salidas_entregadas": 0
@@ -1679,10 +1646,10 @@
     },
     {
      "cam": "VD",
-     "odoo": 12004,
+     "odoo": 10004,
      "ajuste": 0,
-     "esperado": 12004,
-     "ventas_simpli_hoy": 3000
+     "esperado": 10004,
+     "ventas_simpli_hoy": 5000
     }
    ]
   },
