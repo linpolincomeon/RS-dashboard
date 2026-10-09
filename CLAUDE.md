@@ -118,15 +118,15 @@ Correcciones al 01-10-2026 (ejecutivos/gestión):
 
 | Zona | Bomba (final $/L) | ENAP (final $/L facturado) |
 |---|---|---|
-| Rancagua | 1441 | 1279 |
-| San Fernando | 1431 | 1279 |
-| VI Costa | 1406 | 1279 |
-| Talca / Curicó / Chillán | 1382 | 1268 |
-| Región Metropolitana | 1431 | 1279 |
+| Rancagua | 1533 | 1371 |
+| Región Metropolitana | 1533 | 1371 |
+| San Fernando | 1523 | 1371 |
+| VI Costa | 1498 | 1371 |
+| Talca / Curicó / Chillán | 1474 | 1360 |
 
-Valores de **septiembre 2026** (alza de costo ~+$187/L acumulada ago→sep, actualizado 10-sep). Los de agosto eran 1254/1244/1219/1195 bomba y 1092/1081 ENAP (también finales: factura ENAP 19-ago total/L $1.092–1.096 ✓).
+Valores de **octubre 2026** (alza 01-oct, ~+$92/L sobre sep; `ZONAS_BRUTO` actualizado 09-oct tras reporte de Pauline: Tres Canales salía B−17 con precios de sep). Los de septiembre eran 1441/1431/1406/1382 bomba y 1279/1268 ENAP; los de agosto 1254/1244/1219/1195 bomba y 1092/1081 ENAP (todos finales de factura). Mínimos del Mantenedor oct: Crédito 1482 · Volumen 1451 · Contado 1466 (ENAP 1371) y 1470/1439/1455 (ENAP 1360) = `ENAP/(1−margen_min)` ✓, márgenes sin cambio.
 
-RM no tiene fila propia en el Mantenedor: "Paine y Lampa se cotizan a precio San Fernando" (nota de la hoja) → RM usa San Fernando.
+RM tiene fila propia en el Mantenedor desde oct-2026, con el precio de Rancagua (1533/1371); antes usaba San Fernando por la nota "Paine y Lampa se cotizan a precio San Fernando".
 
 ## Documentación adicional
 
