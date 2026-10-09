@@ -1,37 +1,49 @@
 {
-  "updated": "2026-10-09T03:36:10.030252",
+  "updated": "2026-10-09T11:09:06.876750",
   "weeks": [
     {
       "label": "08oct-14oct",
       "start": "2026-10-08",
       "end": "2026-10-14",
-      "ventas": 41050410,
-      "neto": 38942573,
-      "litros": 27390,
-      "litros_retail": 22390,
+      "ventas": 51397539,
+      "neto": 48701331,
+      "litros": 34260,
+      "litros_retail": 29260,
       "litros_volumen": 5000,
       "precio_neto": 1422,
       "precio_bruto": 1499,
-      "margin": 0.08993,
-      "margin_retail": 0.08985,
+      "margin": 0.08996,
+      "margin_retail": 0.0899,
       "margin_volumen": 0.0903,
-      "facturas": 19,
-      "nc": 0,
-      "clientes": 18,
-      "recaud": 36422199,
+      "facturas": 26,
+      "nc": 1,
+      "clientes": 24,
+      "recaud": 89463747,
       "cheques": 9254350,
-      "transf": 27167849,
+      "transf": 80209397,
       "factoring": 0,
       "compras_odoo": 0,
       "cheq_cartera_saldo": 0,
       "cheq_recibidos": 0,
-      "facturas_contado": 0,
-      "facturas_credito": 19,
+      "facturas_contado": 2,
+      "facturas_credito": 24,
       "margin_by_term": {
+        "1 Día": {
+          "margin": 0.10317,
+          "normalizado": 0.11284,
+          "count": 2,
+          "days": 1
+        },
+        "21 Días": {
+          "margin": 0.07231,
+          "normalizado": 0.07531,
+          "count": 1,
+          "days": 21
+        },
         "30 Días": {
-          "margin": 0.08885,
-          "normalizado": 0.08885,
-          "count": 13,
+          "margin": 0.08836,
+          "normalizado": 0.08836,
+          "count": 16,
           "days": 30
         },
         "45 Días": {
@@ -41,25 +53,25 @@
           "days": 45
         },
         "60 Días": {
-          "margin": 0.08974,
-          "normalizado": 0.07974,
-          "count": 4,
+          "margin": 0.09019,
+          "normalizado": 0.08019,
+          "count": 5,
           "days": 60
         }
       },
       "cotiz_canceladas": 1,
-      "visitas": 4,
+      "visitas": 11,
       "clientes_nuevos": 1,
       "ppto": 279386,
       "ppto_retail": 201226,
       "ppto_volumen": 78160,
       "parcial": true,
-      "margin_fifo": 0.15125,
-      "margin_fifo_retail": 0.15172,
+      "margin_fifo": 0.15208,
+      "margin_fifo_retail": 0.15259,
       "margin_fifo_volumen": 0.14912,
       "costo_fifo_l": 1272.1,
-      "margen_fifo_l": 226.7,
-      "margen_fifo_l_retail": 227.5,
+      "margen_fifo_l": 228.2,
+      "margen_fifo_l_retail": 229.1,
       "margen_fifo_l_volumen": 222.9,
       "fifo_cobertura": 1.0
     },
@@ -70,13 +82,13 @@
       "ventas": 201945980,
       "neto": 200647139,
       "litros": 136713,
-      "litros_retail": 110059,
-      "litros_volumen": 26654,
+      "litros_retail": 118433,
+      "litros_volumen": 18280,
       "precio_neto": 1468,
       "precio_bruto": 1474,
       "margin": 0.07458,
-      "margin_retail": 0.07854,
-      "margin_volumen": 0.06056,
+      "margin_retail": 0.07647,
+      "margin_volumen": 0.06489,
       "facturas": 120,
       "nc": 1,
       "clientes": 97,
@@ -141,12 +153,12 @@
       "ppto_volumen": 78160,
       "parcial": false,
       "margin_fifo": 0.13793,
-      "margin_fifo_retail": 0.14101,
-      "margin_fifo_volumen": 0.12498,
+      "margin_fifo_retail": 0.13914,
+      "margin_fifo_volumen": 0.13,
       "costo_fifo_l": 1272.1,
       "margen_fifo_l": 203.5,
-      "margen_fifo_l_retail": 208.8,
-      "margen_fifo_l_volumen": 181.7,
+      "margen_fifo_l_retail": 205.6,
+      "margen_fifo_l_volumen": 190.1,
       "fifo_cobertura": 1.0
     },
     {
@@ -156,13 +168,13 @@
       "ventas": 447399624,
       "neto": 457547146,
       "litros": 326890,
-      "litros_retail": 178494,
-      "litros_volumen": 148396,
+      "litros_retail": 211514,
+      "litros_volumen": 115376,
       "precio_neto": 1400,
       "precio_bruto": 1369,
       "margin": 0.07142,
-      "margin_retail": 0.07837,
-      "margin_volumen": 0.06283,
+      "margin_retail": 0.07506,
+      "margin_volumen": 0.06471,
       "facturas": 179,
       "nc": 2,
       "clientes": 126,
@@ -221,12 +233,12 @@
       "ppto_volumen": 78160,
       "parcial": false,
       "margin_fifo": 0.061,
-      "margin_fifo_retail": 0.06785,
-      "margin_fifo_volumen": 0.05263,
+      "margin_fifo_retail": 0.06517,
+      "margin_fifo_volumen": 0.05327,
       "costo_fifo_l": 1285.2,
       "margen_fifo_l": 83.5,
-      "margen_fifo_l_retail": 93.6,
-      "margen_fifo_l_volumen": 71.4,
+      "margen_fifo_l_retail": 89.6,
+      "margen_fifo_l_volumen": 72.3,
       "fifo_cobertura": 1.0
     },
     {
@@ -236,13 +248,13 @@
       "ventas": 194462595,
       "neto": 186696358,
       "litros": 140702,
-      "litros_retail": 82562,
-      "litros_volumen": 58140,
+      "litros_retail": 89472,
+      "litros_volumen": 51230,
       "precio_neto": 1327,
       "precio_bruto": 1382,
       "margin": 0.07929,
-      "margin_retail": 0.08825,
-      "margin_volumen": 0.06635,
+      "margin_retail": 0.08498,
+      "margin_volumen": 0.06914,
       "facturas": 102,
       "nc": 1,
       "clientes": 76,
@@ -307,12 +319,12 @@
       "ppto_volumen": 78160,
       "parcial": false,
       "margin_fifo": 0.07679,
-      "margin_fifo_retail": 0.0864,
-      "margin_fifo_volumen": 0.06279,
+      "margin_fifo_retail": 0.08342,
+      "margin_fifo_volumen": 0.06496,
       "costo_fifo_l": 1276.0,
       "margen_fifo_l": 106.1,
-      "margen_fifo_l_retail": 120.7,
-      "margen_fifo_l_volumen": 85.5,
+      "margen_fifo_l_retail": 116.1,
+      "margen_fifo_l_volumen": 88.6,
       "fifo_cobertura": 1.0
     },
     {
@@ -322,13 +334,13 @@
       "ventas": 313747825,
       "neto": 286657741,
       "litros": 229432,
-      "litros_retail": 139133,
-      "litros_volumen": 90299,
+      "litros_retail": 167312,
+      "litros_volumen": 62120,
       "precio_neto": 1249,
       "precio_bruto": 1370,
       "margin": 0.07034,
-      "margin_retail": 0.08165,
-      "margin_volumen": 0.05305,
+      "margin_retail": 0.0713,
+      "margin_volumen": 0.06789,
       "facturas": 168,
       "nc": 16,
       "clientes": 109,
@@ -393,12 +405,12 @@
       "ppto_volumen": 78160,
       "parcial": false,
       "margin_fifo": 0.11854,
-      "margin_fifo_retail": 0.13523,
-      "margin_fifo_volumen": 0.09188,
+      "margin_fifo_retail": 0.12197,
+      "margin_fifo_volumen": 0.10919,
       "costo_fifo_l": 1205.4,
       "margen_fifo_l": 162.1,
-      "margen_fifo_l_retail": 187.5,
-      "margen_fifo_l_volumen": 122.9,
+      "margen_fifo_l_retail": 167.2,
+      "margen_fifo_l_volumen": 148.3,
       "fifo_cobertura": 1.0
     },
     {
@@ -408,13 +420,13 @@
       "ventas": 403387771,
       "neto": 376023051,
       "litros": 313543,
-      "litros_retail": 174138,
-      "litros_volumen": 139405,
+      "litros_retail": 189496,
+      "litros_volumen": 124047,
       "precio_neto": 1199,
       "precio_bruto": 1278,
       "margin": 0.07958,
-      "margin_retail": 0.08954,
-      "margin_volumen": 0.0668,
+      "margin_retail": 0.08828,
+      "margin_volumen": 0.066,
       "facturas": 166,
       "nc": 1,
       "clientes": 128,
@@ -479,12 +491,12 @@
       "ppto_volumen": 78160,
       "parcial": false,
       "margin_fifo": 0.07977,
-      "margin_fifo_retail": 0.0905,
-      "margin_fifo_volumen": 0.06599,
+      "margin_fifo_retail": 0.08907,
+      "margin_fifo_volumen": 0.06518,
       "costo_fifo_l": 1183.9,
       "margen_fifo_l": 102.6,
-      "margen_fifo_l_retail": 117.8,
-      "margen_fifo_l_volumen": 83.7,
+      "margen_fifo_l_retail": 115.8,
+      "margen_fifo_l_volumen": 82.6,
       "fifo_cobertura": 1.0
     },
     {
@@ -494,13 +506,13 @@
       "ventas": 276956047,
       "neto": 258656995,
       "litros": 213706,
-      "litros_retail": 132888,
-      "litros_volumen": 80818,
+      "litros_retail": 146956,
+      "litros_volumen": 66750,
       "precio_neto": 1210,
       "precio_bruto": 1295,
       "margin": 0.0875,
-      "margin_retail": 0.09596,
-      "margin_volumen": 0.07281,
+      "margin_retail": 0.094,
+      "margin_volumen": 0.07249,
       "facturas": 143,
       "nc": 3,
       "clientes": 115,
@@ -571,12 +583,12 @@
       "ppto_volumen": 76064,
       "parcial": false,
       "margin_fifo": 0.08567,
-      "margin_fifo_retail": 0.09488,
-      "margin_fifo_volumen": 0.07012,
+      "margin_fifo_retail": 0.09295,
+      "margin_fifo_volumen": 0.06924,
       "costo_fifo_l": 1184.0,
       "margen_fifo_l": 110.9,
-      "margen_fifo_l_retail": 124.1,
-      "margen_fifo_l_volumen": 89.3,
+      "margen_fifo_l_retail": 121.3,
+      "margen_fifo_l_volumen": 88.2,
       "fifo_cobertura": 1.0
     },
     {
@@ -586,13 +598,13 @@
       "ventas": 261763495,
       "neto": 231287567,
       "litros": 205027,
-      "litros_retail": 118029,
-      "litros_volumen": 86998,
+      "litros_retail": 119549,
+      "litros_volumen": 85478,
       "precio_neto": 1128,
       "precio_bruto": 1277,
       "margin": 0.07237,
-      "margin_retail": 0.08027,
-      "margin_volumen": 0.06087,
+      "margin_retail": 0.08049,
+      "margin_volumen": 0.06018,
       "facturas": 120,
       "nc": 4,
       "clientes": 99,
@@ -657,12 +669,12 @@
       "ppto_volumen": 76064,
       "parcial": false,
       "margin_fifo": 0.12506,
-      "margin_fifo_retail": 0.13322,
-      "margin_fifo_volumen": 0.11375,
+      "margin_fifo_retail": 0.13317,
+      "margin_fifo_volumen": 0.11346,
       "costo_fifo_l": 1117.1,
       "margen_fifo_l": 159.7,
       "margen_fifo_l_retail": 171.6,
-      "margen_fifo_l_volumen": 143.4,
+      "margen_fifo_l_volumen": 143.0,
       "fifo_cobertura": 1.0
     },
     {
@@ -672,13 +684,13 @@
       "ventas": 297074881,
       "neto": 286219169,
       "litros": 250946,
-      "litros_retail": 134049,
-      "litros_volumen": 116897,
+      "litros_retail": 143346,
+      "litros_volumen": 107600,
       "precio_neto": 1141,
       "precio_bruto": 1184,
       "margin": 0.08424,
-      "margin_retail": 0.09472,
-      "margin_volumen": 0.07179,
+      "margin_retail": 0.09569,
+      "margin_volumen": 0.06831,
       "facturas": 135,
       "nc": 1,
       "clientes": 110,
@@ -749,12 +761,12 @@
       "ppto_volumen": 76064,
       "parcial": false,
       "margin_fifo": 0.08223,
-      "margin_fifo_retail": 0.09344,
-      "margin_fifo_volumen": 0.06902,
+      "margin_fifo_retail": 0.09419,
+      "margin_fifo_volumen": 0.06579,
       "costo_fifo_l": 1086.5,
       "margen_fifo_l": 97.3,
-      "margen_fifo_l_retail": 112.0,
-      "margen_fifo_l_volumen": 80.5,
+      "margen_fifo_l_retail": 113.0,
+      "margen_fifo_l_volumen": 76.5,
       "fifo_cobertura": 1.0
     },
     {
@@ -764,13 +776,13 @@
       "ventas": 287410723,
       "neto": 287410582,
       "litros": 243857,
-      "litros_retail": 102022,
-      "litros_volumen": 141835,
+      "litros_retail": 113027,
+      "litros_volumen": 130830,
       "precio_neto": 1179,
       "precio_bruto": 1179,
       "margin": 0.0799,
-      "margin_retail": 0.10001,
-      "margin_volumen": 0.0648,
+      "margin_retail": 0.10092,
+      "margin_volumen": 0.06089,
       "facturas": 130,
       "nc": 1,
       "clientes": 102,
@@ -835,12 +847,12 @@
       "ppto_volumen": 76064,
       "parcial": false,
       "margin_fifo": 0.07685,
-      "margin_fifo_retail": 0.09854,
-      "margin_fifo_volumen": 0.06059,
+      "margin_fifo_retail": 0.09884,
+      "margin_fifo_volumen": 0.05696,
       "costo_fifo_l": 1088.0,
       "margen_fifo_l": 90.6,
-      "margen_fifo_l_retail": 118.9,
-      "margen_fifo_l_volumen": 70.2,
+      "margen_fifo_l_retail": 119.4,
+      "margen_fifo_l_volumen": 65.7,
       "fifo_cobertura": 1.0
     },
     {
@@ -850,13 +862,13 @@
       "ventas": 208977869,
       "neto": 201775591,
       "litros": 177712,
-      "litros_retail": 79587,
-      "litros_volumen": 98125,
+      "litros_retail": 82626,
+      "litros_volumen": 95086,
       "precio_neto": 1135,
       "precio_bruto": 1176,
       "margin": 0.07606,
-      "margin_retail": 0.10082,
-      "margin_volumen": 0.05419,
+      "margin_retail": 0.10088,
+      "margin_volumen": 0.05266,
       "facturas": 94,
       "nc": 3,
       "clientes": 81,
@@ -927,12 +939,12 @@
       "ppto_volumen": 73092,
       "parcial": false,
       "margin_fifo": 0.08348,
-      "margin_fifo_retail": 0.10802,
-      "margin_fifo_volumen": 0.06252,
+      "margin_fifo_retail": 0.1079,
+      "margin_fifo_volumen": 0.0611,
       "costo_fifo_l": 1076.7,
       "margen_fifo_l": 98.1,
-      "margen_fifo_l_retail": 130.5,
-      "margen_fifo_l_volumen": 71.7,
+      "margen_fifo_l_retail": 130.4,
+      "margen_fifo_l_volumen": 70.0,
       "fifo_cobertura": 1.0
     },
     {
@@ -942,13 +954,13 @@
       "ventas": 263039379,
       "neto": 235034471,
       "litros": 231696,
-      "litros_retail": 103378,
-      "litros_volumen": 128318,
+      "litros_retail": 107146,
+      "litros_volumen": 124550,
       "precio_neto": 1014,
       "precio_bruto": 1136,
       "margin": 0.06668,
-      "margin_retail": 0.08959,
-      "margin_volumen": 0.04667,
+      "margin_retail": 0.09022,
+      "margin_volumen": 0.04482,
       "facturas": 114,
       "nc": 3,
       "clientes": 95,
@@ -1013,12 +1025,12 @@
       "ppto_volumen": 73092,
       "parcial": false,
       "margin_fifo": 0.06623,
-      "margin_fifo_retail": 0.08994,
-      "margin_fifo_volumen": 0.04622,
+      "margin_fifo_retail": 0.0904,
+      "margin_fifo_volumen": 0.0444,
       "costo_fifo_l": 1060.1,
       "margen_fifo_l": 75.2,
-      "margen_fifo_l_retail": 104.7,
-      "margen_fifo_l_volumen": 51.4,
+      "margen_fifo_l_retail": 105.3,
+      "margen_fifo_l_volumen": 49.3,
       "fifo_cobertura": 1.0
     },
     {
@@ -1028,13 +1040,13 @@
       "ventas": 145068201,
       "neto": 109359052,
       "litros": 126889,
-      "litros_retail": 49298,
-      "litros_volumen": 77591,
+      "litros_retail": 51539,
+      "litros_volumen": 75350,
       "precio_neto": 862,
       "precio_bruto": 1142,
       "margin": 0.07329,
-      "margin_retail": 0.10777,
-      "margin_volumen": 0.05151,
+      "margin_retail": 0.10782,
+      "margin_volumen": 0.04982,
       "facturas": 60,
       "nc": 1,
       "clientes": 53,
@@ -1099,12 +1111,12 @@
       "ppto_volumen": 73092,
       "parcial": false,
       "margin_fifo": 0.06884,
-      "margin_fifo_retail": 0.10476,
-      "margin_fifo_volumen": 0.04449,
+      "margin_fifo_retail": 0.1046,
+      "margin_fifo_volumen": 0.0427,
       "costo_fifo_l": 1064.6,
       "margen_fifo_l": 78.7,
-      "margen_fifo_l_retail": 124.5,
-      "margen_fifo_l_volumen": 49.6,
+      "margen_fifo_l_retail": 124.3,
+      "margen_fifo_l_volumen": 47.5,
       "fifo_cobertura": 1.0
     },
     {
@@ -1114,13 +1126,13 @@
       "ventas": 295533879,
       "neto": 217779909,
       "litros": 256651,
-      "litros_retail": 110913,
-      "litros_volumen": 145738,
+      "litros_retail": 118551,
+      "litros_volumen": 138100,
       "precio_neto": 849,
       "precio_bruto": 1150,
       "margin": 0.07846,
-      "margin_retail": 0.1079,
-      "margin_volumen": 0.05401,
+      "margin_retail": 0.10816,
+      "margin_volumen": 0.05058,
       "facturas": 126,
       "nc": 1,
       "clientes": 102,
@@ -1185,12 +1197,12 @@
       "ppto_volumen": 73092,
       "parcial": false,
       "margin_fifo": 0.04893,
-      "margin_fifo_retail": 0.08627,
-      "margin_fifo_volumen": 0.01879,
+      "margin_fifo_retail": 0.08752,
+      "margin_fifo_volumen": 0.01366,
       "costo_fifo_l": 1093.5,
       "margen_fifo_l": 56.3,
-      "margen_fifo_l_retail": 102.5,
-      "margen_fifo_l_volumen": 21.1,
+      "margen_fifo_l_retail": 104.0,
+      "margen_fifo_l_volumen": 15.3,
       "fifo_cobertura": 1.0
     },
     {
@@ -1200,13 +1212,13 @@
       "ventas": 301022934,
       "neto": 198815458,
       "litros": 230282,
-      "litros_retail": 86655,
-      "litros_volumen": 143627,
+      "litros_retail": 88990,
+      "litros_volumen": 141292,
       "precio_neto": 863,
       "precio_bruto": 1305,
       "margin": 0.07122,
-      "margin_retail": 0.09061,
-      "margin_volumen": 0.0587,
+      "margin_retail": 0.09076,
+      "margin_volumen": 0.05805,
       "facturas": 111,
       "nc": 2,
       "clientes": 86,
@@ -1271,12 +1283,12 @@
       "ppto_volumen": 73092,
       "parcial": false,
       "margin_fifo": 0.06617,
-      "margin_fifo_retail": 0.08916,
-      "margin_fifo_volumen": 0.05174,
+      "margin_fifo_retail": 0.08922,
+      "margin_fifo_volumen": 0.05106,
       "costo_fifo_l": 1218.7,
       "margen_fifo_l": 86.4,
       "margen_fifo_l_retail": 119.3,
-      "margen_fifo_l_volumen": 66.5,
+      "margen_fifo_l_volumen": 65.6,
       "fifo_cobertura": 1.0
     },
     {
@@ -1286,13 +1298,13 @@
       "ventas": 187453743,
       "neto": 133805119,
       "litros": 140754,
-      "litros_retail": 89708,
-      "litros_volumen": 51046,
+      "litros_retail": 90654,
+      "litros_volumen": 50100,
       "precio_neto": 951,
       "precio_bruto": 1332,
       "margin": 0.08861,
-      "margin_retail": 0.09981,
-      "margin_volumen": 0.06739,
+      "margin_retail": 0.09977,
+      "margin_volumen": 0.06681,
       "facturas": 100,
       "nc": 2,
       "clientes": 77,
@@ -1351,12 +1363,12 @@
       "ppto_volumen": 53618,
       "parcial": false,
       "margin_fifo": 0.08458,
-      "margin_fifo_retail": 0.09475,
-      "margin_fifo_volumen": 0.06614,
+      "margin_fifo_retail": 0.0947,
+      "margin_fifo_volumen": 0.06568,
       "costo_fifo_l": 1217.7,
       "margen_fifo_l": 112.5,
-      "margen_fifo_l_retail": 127.5,
-      "margen_fifo_l_volumen": 86.2,
+      "margen_fifo_l_retail": 127.4,
+      "margen_fifo_l_volumen": 85.6,
       "fifo_cobertura": 1.0
     }
   ],
@@ -1364,8 +1376,8 @@
     {
       "date": "09oct",
       "day": "Vie",
-      "litros": 0,
-      "neto": 0
+      "litros": 7870,
+      "neto": 11257957
     },
     {
       "date": "08oct",
@@ -1461,15 +1473,15 @@
   "banks": [
     {
       "name": "DE CHILE",
-      "balance": 23192746
-    },
-    {
-      "name": "ITAU",
-      "balance": 12668695
+      "balance": 75443666
     },
     {
       "name": "ESTADO",
-      "balance": 9867496
+      "balance": 8450463
+    },
+    {
+      "name": "ITAU",
+      "balance": 6479905
     },
     {
       "name": "BCI",
@@ -1488,28 +1500,20 @@
       "balance": -1935215
     }
   ],
-  "total_cash": 54026348,
+  "total_cash": 98671445,
   "receivables": {
-    "open_invoices": 332,
-    "total_due": 706739948,
-    "current": 553484782,
-    "overdue": 153255166,
-    "pct_overdue": 21.7,
+    "open_invoices": 302,
+    "total_due": 671610927,
+    "current": 560050510,
+    "overdue": 111560417,
+    "pct_overdue": 16.6,
     "aging": {
-      "0-30": 107385779,
+      "0-30": 65691030,
       "31-60": 7465001,
       "61-90": 8384102,
       "90+": 30020284
     },
     "top_debtors": [
-      {
-        "name": "SUGAL CHILE LIMITADA",
-        "amount": 32906984
-      },
-      {
-        "name": "AGRICOLA MANTOS VERDES LIMITADA",
-        "amount": 27362299
-      },
       {
         "name": "Servicios de construcción y maquinarias Talmaqq Ltda.",
         "amount": 26719100
@@ -1555,6 +1559,10 @@
         "amount": 13660000
       },
       {
+        "name": "AGRICOLA MANTOS VERDES LIMITADA",
+        "amount": 13580299
+      },
+      {
         "name": "AURORA AUSTRALIS SA",
         "amount": 13340000
       },
@@ -1567,12 +1575,12 @@
         "amount": 10896000
       },
       {
-        "name": "AGRICOLA MIGUEL TORRES SPA",
-        "amount": 9467202
+        "name": "AGRICOLA TRICAHUE LIMITADA",
+        "amount": 9712100
       },
       {
-        "name": "AGRICOLA TRICAHUE LIMITADA",
-        "amount": 8203101
+        "name": "AGRICOLA MIGUEL TORRES SPA",
+        "amount": 9467202
       },
       {
         "name": "SOCIEDAD DE TRANSPORTES DON CARLOS LIMITADA",
@@ -1581,6 +1589,10 @@
       {
         "name": "AGRICOLA AGROBOSQUES SAN ISIDRO S.A.",
         "amount": 8090702
+      },
+      {
+        "name": "AGRICOLA EL CABRINO LIMITADA",
+        "amount": 7965500
       }
     ]
   },
@@ -1588,8 +1600,8 @@
     "avla_fecha": "2026-09-24",
     "buckets": {
       "normal": {
-        "monto": 85746049,
-        "n": 22
+        "monto": 44051300,
+        "n": 18
       },
       "corte_dicom": {
         "monto": 22039730,
@@ -1824,19 +1836,22 @@
           "late": 1,
           "pct": 50.0,
           "late_clients": [
-            "SUGAL CHILE LIMITADA (prom: 2026-10-08, fact: sin factura)"
+            "SOCIEDAD AGRICOLA SANTA TERESA (prom: 2026-10-09, fact: sin factura)"
           ]
         },
         "Curico": {
-          "total": 3,
+          "total": 5,
           "on_time": 3,
-          "late": 0,
-          "pct": 100.0,
-          "late_clients": []
+          "late": 2,
+          "pct": 60.0,
+          "late_clients": [
+            "PATRICIO REYES SERRANO (prom: 2026-10-09, fact: sin factura)",
+            "AGRICOLA LAS PERDICES LTDA (prom: 2026-10-09, fact: sin factura)"
+          ]
         },
         "Rancagua": {
-          "total": 4,
-          "on_time": 4,
+          "total": 8,
+          "on_time": 8,
           "late": 0,
           "pct": 100.0,
           "late_clients": []
@@ -1849,18 +1864,22 @@
           "late_clients": []
         },
         "Talca": {
-          "total": 5,
-          "on_time": 5,
-          "late": 0,
-          "pct": 100.0,
-          "late_clients": []
+          "total": 8,
+          "on_time": 7,
+          "late": 1,
+          "pct": 87.5,
+          "late_clients": [
+            "SOCIEDAD AGRICOLA LIRCAY SPA. (prom: 2026-10-09, fact: sin factura)"
+          ]
         },
         "VI Costa": {
-          "total": 2,
+          "total": 3,
           "on_time": 2,
-          "late": 0,
-          "pct": 100.0,
-          "late_clients": []
+          "late": 1,
+          "pct": 66.67,
+          "late_clients": [
+            "AGRICOLA LOS BOLDOS LIMITADA (prom: 2026-10-09, fact: sin factura)"
+          ]
         }
       }
     },
@@ -2082,10 +2101,10 @@
           ]
         },
         "Talca": {
-          "total": 18,
-          "on_time": 13,
+          "total": 17,
+          "on_time": 12,
           "late": 5,
-          "pct": 72.22,
+          "pct": 70.59,
           "late_clients": [
             "AGRICOLA LOS ALPES LTDA (prom: 2026-09-23, fact: 2026-09-24)",
             "MAQUINARIAS SAN PEDRO SPA (prom: 2026-09-23, fact: 2026-09-24)",
@@ -2167,11 +2186,12 @@
           ]
         },
         "Talca": {
-          "total": 27,
+          "total": 28,
           "on_time": 24,
-          "late": 3,
-          "pct": 88.89,
+          "late": 4,
+          "pct": 85.71,
           "late_clients": [
+            "SOCIEDAD AGRICOLA LIRCAY SPA. (prom: 2026-09-16, fact: 2026-09-21)",
             "SOC. DE TRANSPORTES TRACMAVI LTDA. (prom: 2026-09-14, fact: 2026-09-15)",
             "SUGAL CHILE LIMITADA (prom: 2026-09-10, fact: 2026-09-24)",
             "SUGAL CHILE LIMITADA (prom: 2026-09-10, fact: 2026-09-24)"
@@ -2874,18 +2894,18 @@
     }
   ],
   "riesgo": {
-    "cubierto": 596348938,
-    "cubierto_count": 294,
-    "no_cubierto": 110391010,
-    "no_cubierto_count": 48,
-    "pct_monto": 15.62,
-    "pct_count": 14.04,
+    "cubierto": 556850787,
+    "cubierto_count": 262,
+    "no_cubierto": 114760140,
+    "no_cubierto_count": 50,
+    "pct_monto": 17.09,
+    "pct_count": 16.03,
     "avla_fecha_descarga": "2026-09-24",
-    "avla_ruts_matched": 147,
+    "avla_ruts_matched": 146,
     "avla_ruts_total": 828
   },
   "churn": {
-    "dormant_count": 66,
+    "dormant_count": 65,
     "lost_count": 201,
     "newly_lost_this_month": 10,
     "churn_pct": 3.2,
@@ -4283,10 +4303,10 @@
         "compliance_pct": 170.5,
         "categories": {
           "Petróleo": 13433352,
-          "Mantención y Reparación": 2310678,
+          "Mantención y Reparación": 1773200,
           "Gastos Traslados (TAG)": 2137492,
           "Seguros": 1029135,
-          "Gastos Vehículos": 1540308,
+          "Gastos Vehículos": 2077786,
           "Arriendo": 395000,
           "EPP": 92900,
           "Mantenciones Varias": 0
@@ -4296,14 +4316,14 @@
         "month": "2026-10",
         "label": "Oct 2026",
         "budget": 15623001,
-        "actual": 8931481,
-        "compliance_pct": 57.2,
+        "actual": 10725121,
+        "compliance_pct": 68.6,
         "categories": {
           "Petróleo": 5973357,
-          "Mantención y Reparación": 1066792,
-          "Gastos Traslados (TAG)": 1254560,
+          "Mantención y Reparación": 2063507,
+          "Gastos Traslados (TAG)": 1395947,
           "Seguros": 0,
-          "Gastos Vehículos": 236772,
+          "Gastos Vehículos": 892310,
           "Arriendo": 400000,
           "EPP": 0,
           "Mantenciones Varias": 0
@@ -4368,9 +4388,9 @@
         "dso": 17.7
       }
     ],
-    "cxc_hoy": 1414520603,
+    "cxc_hoy": 1379391582,
     "por_semana": {
-      "2026-10-14": 1414520603,
+      "2026-10-14": 1379391582,
       "2026-10-07": 1405009914,
       "2026-09-30": 1449370472,
       "2026-09-23": 1327446170,
