@@ -1,5 +1,5 @@
 {
- "generated_utc": "2026-10-09T21:51+00:00",
+ "generated_utc": "2026-10-10T01:38+00:00",
  "hoy": "2026-10-09",
  "desde": "2026-10-03",
  "rutas": {
@@ -56,7 +56,7 @@
     "especial": false,
     "parcial": true,
     "visitas": 1,
-    "pedido": 5000,
+    "pedido": 4450,
     "entregado": 4450,
     "facturado": 4450,
     "facturas": [
@@ -168,7 +168,7 @@
     "especial": false,
     "parcial": true,
     "visitas": 1,
-    "pedido": 1800,
+    "pedido": 1870,
     "entregado": 1870,
     "facturado": 1870,
     "facturas": [
@@ -1457,6 +1457,23 @@
   "fase2": {
    "compras": [
     {
+     "po": "P00915",
+     "proveedor": "ENAP REFINERIAS S.A.",
+     "cam": "PH",
+     "fecha": "2026-10-09",
+     "hora": "19:56",
+     "litros": 9943,
+     "correccion": null,
+     "litros_real": 9943,
+     "precio": 1371.47,
+     "recibida": false,
+     "devuelta": true,
+     "factura": "851903",
+     "factura_estado": "borrador_sin_vincular",
+     "factura_total": 15435672,
+     "factura_litros": 9940
+    },
+    {
      "po": "P00914",
      "proveedor": "ADQUIM SPA",
      "cam": "PY",
@@ -1525,76 +1542,12 @@
     }
    ],
    "oc_borrador": [],
-   "sin_recibir": 0
+   "sin_recibir": 1
   },
   "fase4": {
    "salidas": [],
-   "ventas": [
-    {
-     "so": "S37340",
-     "cliente": "LUIS ALBERTO IBARRA CARRILLO",
-     "especial": false,
-     "cam": "PY",
-     "cam_simpli": [
-      "PY"
-     ],
-     "cam_odoo": [
-      "PY"
-     ],
-     "picking": null,
-     "fecha_entrega": "2026-10-09",
-     "simpli": 1870,
-     "cantidad": 1800,
-     "entregado": 1870,
-     "facturado": 1870,
-     "problemas": [
-      "cantidad"
-     ],
-     "acciones": [
-      "Subir Cantidad de 1.800 a 1.870 L"
-     ]
-    },
-    {
-     "so": "S37360",
-     "cliente": "AGRICOLA LOS BOLDOS LIMITADA",
-     "especial": false,
-     "cam": "TJ",
-     "cam_simpli": [
-      "TJ"
-     ],
-     "cam_odoo": [
-      "TJ"
-     ],
-     "picking": null,
-     "fecha_entrega": "2026-10-09",
-     "simpli": 4450,
-     "cantidad": 5000,
-     "entregado": 4450,
-     "facturado": 4450,
-     "problemas": [
-      "cantidad"
-     ],
-     "acciones": [
-      "Bajar Cantidad de 5.000 a 4.450 L en la orden"
-     ]
-    }
-   ],
-   "a_facturar": [
-    {
-     "so": "S37340",
-     "cliente": "LUIS ALBERTO IBARRA CARRILLO",
-     "cam": "PY",
-     "fecha_entrega": "2026-10-09",
-     "especial": false
-    },
-    {
-     "so": "S37360",
-     "cliente": "AGRICOLA LOS BOLDOS LIMITADA",
-     "cam": "TJ",
-     "fecha_entrega": "2026-10-09",
-     "especial": false
-    }
-   ],
+   "ventas": [],
+   "a_facturar": [],
    "entregadas_hoy": 12,
    "bodega_ventana": 0,
    "revisadas_ventana": 86,
@@ -1611,16 +1564,16 @@
     },
     {
      "cam": "PH",
-     "odoo": 200,
+     "odoo": 10000,
      "ajuste": 0,
-     "esperado": 200,
+     "esperado": 10000,
      "ventas_simpli_hoy": 5800
     },
     {
      "cam": "PY",
-     "odoo": 13500,
+     "odoo": 14424,
      "ajuste": 0,
-     "esperado": 13500,
+     "esperado": 14424,
      "ventas_simpli_hoy": 3370
     },
     {
@@ -1632,16 +1585,16 @@
     },
     {
      "cam": "TJ",
-     "odoo": 7700,
+     "odoo": 7900,
      "ajuste": 0,
-     "esperado": 7700,
+     "esperado": 7900,
      "ventas_simpli_hoy": 5450
     },
     {
      "cam": "TY",
-     "odoo": 924,
+     "odoo": 0,
      "ajuste": 0,
-     "esperado": 924,
+     "esperado": 0,
      "ventas_simpli_hoy": 2000
     },
     {
