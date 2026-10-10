@@ -1,7 +1,7 @@
 {
- "generated_utc": "2026-10-10T01:38+00:00",
- "hoy": "2026-10-09",
- "desde": "2026-10-03",
+ "generated_utc": "2026-10-10T05:39+00:00",
+ "hoy": "2026-10-10",
+ "desde": "2026-10-04",
  "rutas": {
   "pendientes": [],
   "huerfanas": [],
@@ -1335,55 +1335,17 @@
      "FAC 54604"
     ],
     "estado": "ok"
-   },
-   {
-    "so": "S37171",
-    "fecha": "2026-10-03",
-    "cliente": "SUGAL CHILE LIMITADA",
-    "camion": "PHXC-44",
-    "especial": true,
-    "parcial": false,
-    "visitas": 1,
-    "pedido": 800,
-    "entregado": 800,
-    "facturado": 0,
-    "facturas": [],
-    "estado": "por_facturar"
-   },
-   {
-    "so": "S37149",
-    "fecha": "2026-10-03",
-    "cliente": "Sociedad Agricola Ñilhue 2030",
-    "camion": "PHXC-44",
-    "especial": false,
-    "parcial": false,
-    "visitas": 1,
-    "pedido": 1000,
-    "entregado": 1000,
-    "facturado": 1000,
-    "facturas": [
-     "FAC 54635"
-    ],
-    "estado": "ok"
-   },
-   {
-    "so": "S37043",
-    "fecha": "2026-10-03",
-    "cliente": "INVERSIONES LOS CINCO SPA",
-    "camion": "PHXC-44",
-    "especial": false,
-    "parcial": false,
-    "visitas": 1,
-    "pedido": 800,
-    "entregado": 800,
-    "facturado": 800,
-    "facturas": [
-     "FAC 54634"
-    ],
-    "estado": "ok"
    }
   ],
   "dias": [
+   {
+    "fecha": "2026-10-10",
+    "entregas": 0,
+    "entregado": 0,
+    "facturado": 0,
+    "por_facturar": 0,
+    "sin_factura": 0
+   },
    {
     "fecha": "2026-10-09",
     "entregas": 12,
@@ -1431,27 +1393,12 @@
     "facturado": 0,
     "por_facturar": 0,
     "sin_factura": 0
-   },
-   {
-    "fecha": "2026-10-03",
-    "entregas": 3,
-    "entregado": 2600,
-    "facturado": 1800,
-    "por_facturar": 800,
-    "sin_factura": 1
    }
   ],
-  "por_facturar_total": 4500,
-  "entregado_hoy": 22620,
-  "facturado_hoy": 23620,
-  "fuera_simpli": [
-   {
-    "factura": "FAC 54710",
-    "so": "S37063",
-    "cliente": "UNO DESARROLLOS CONSTRUCTIVOS SPA",
-    "litros": 1000
-   }
-  ]
+  "por_facturar_total": 3700,
+  "entregado_hoy": 0,
+  "facturado_hoy": 0,
+  "fuera_simpli": []
  },
  "cierre": {
   "fase2": {
@@ -1489,40 +1436,6 @@
      "factura_estado": "sin_factura",
      "factura_total": null,
      "factura_litros": null
-    },
-    {
-     "po": "P00913",
-     "proveedor": "ADQUIM SPA",
-     "cam": "VD",
-     "fecha": "2026-10-08",
-     "hora": "23:09",
-     "litros": 15000,
-     "correccion": null,
-     "litros_real": 15000,
-     "precio": 1270.9,
-     "recibida": true,
-     "devuelta": false,
-     "factura": null,
-     "factura_estado": "sin_factura",
-     "factura_total": null,
-     "factura_litros": null
-    },
-    {
-     "po": "P00912",
-     "proveedor": "ADQUIM SPA",
-     "cam": "SH",
-     "fecha": "2026-10-08",
-     "hora": "19:24",
-     "litros": 15000,
-     "correccion": null,
-     "litros_real": 15000,
-     "precio": 1362.92,
-     "recibida": true,
-     "devuelta": false,
-     "factura": null,
-     "factura_estado": "sin_factura",
-     "factura_total": null,
-     "factura_litros": null
     }
    ],
    "borradores_sueltos": [
@@ -1531,13 +1444,6 @@
      "proveedor": "ADQUIM SPA",
      "fecha": "2026-10-09",
      "total": 19926794,
-     "litros": null
-    },
-    {
-     "folio": "265094",
-     "proveedor": "ADQUIM SPA",
-     "fecha": "2026-10-08",
-     "total": 15443380,
      "litros": null
     }
    ],
@@ -1548,9 +1454,9 @@
    "salidas": [],
    "ventas": [],
    "a_facturar": [],
-   "entregadas_hoy": 12,
+   "entregadas_hoy": 0,
    "bodega_ventana": 0,
-   "revisadas_ventana": 86,
+   "revisadas_ventana": 83,
    "salidas_entregadas": 0
   },
   "fase5": {
@@ -1567,42 +1473,42 @@
      "odoo": 10000,
      "ajuste": 0,
      "esperado": 10000,
-     "ventas_simpli_hoy": 5800
+     "ventas_simpli_hoy": 0
     },
     {
      "cam": "PY",
      "odoo": 14424,
      "ajuste": 0,
      "esperado": 14424,
-     "ventas_simpli_hoy": 3370
+     "ventas_simpli_hoy": 0
     },
     {
      "cam": "SH",
      "odoo": 14000,
      "ajuste": 0,
      "esperado": 14000,
-     "ventas_simpli_hoy": 1000
+     "ventas_simpli_hoy": 0
     },
     {
      "cam": "TJ",
      "odoo": 7900,
      "ajuste": 0,
      "esperado": 7900,
-     "ventas_simpli_hoy": 5450
+     "ventas_simpli_hoy": 0
     },
     {
      "cam": "TY",
      "odoo": 0,
      "ajuste": 0,
      "esperado": 0,
-     "ventas_simpli_hoy": 2000
+     "ventas_simpli_hoy": 0
     },
     {
      "cam": "VD",
      "odoo": 10004,
      "ajuste": 0,
      "esperado": 10004,
-     "ventas_simpli_hoy": 5000
+     "ventas_simpli_hoy": 0
     }
    ]
   },
@@ -1822,7 +1728,7 @@
    "con_excepcion": 3,
    "validadas_manana": 0,
    "visitas_manana": 0,
-   "fecha": "2026-10-10"
+   "fecha": "2026-10-11"
   }
  }
 }
