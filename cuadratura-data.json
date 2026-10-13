@@ -1,7 +1,7 @@
 {
- "generated_utc": "2026-10-13T02:12+00:00",
- "hoy": "2026-10-12",
- "desde": "2026-10-06",
+ "generated_utc": "2026-10-13T06:40+00:00",
+ "hoy": "2026-10-13",
+ "desde": "2026-10-07",
  "rutas": {
   "pendientes": [
    {
@@ -12,7 +12,7 @@
     "litros": 1000,
     "programado": "07-10 10:21",
     "atrasado": true,
-    "estado": "ruteada_manana",
+    "estado": "ruteada",
     "visita_status": "pending"
    },
    {
@@ -23,7 +23,7 @@
     "litros": 1500,
     "programado": "09-10 12:42",
     "atrasado": true,
-    "estado": "ruteada_manana",
+    "estado": "ruteada",
     "visita_status": "pending"
    },
    {
@@ -34,7 +34,7 @@
     "litros": 900,
     "programado": "09-10 16:47",
     "atrasado": true,
-    "estado": "ruteada_manana",
+    "estado": "ruteada",
     "visita_status": "pending"
    },
    {
@@ -45,7 +45,7 @@
     "litros": 5000,
     "programado": "09-10 16:51",
     "atrasado": true,
-    "estado": "ruteada_manana",
+    "estado": "ruteada",
     "visita_status": "pending"
    },
    {
@@ -56,7 +56,7 @@
     "litros": 1800,
     "programado": "09-10 17:56",
     "atrasado": true,
-    "estado": "ruteada_manana",
+    "estado": "ruteada",
     "visita_status": "pending"
    },
    {
@@ -67,7 +67,7 @@
     "litros": 1300,
     "programado": "09-10 17:58",
     "atrasado": true,
-    "estado": "ruteada_manana",
+    "estado": "ruteada",
     "visita_status": "pending"
    },
    {
@@ -78,7 +78,7 @@
     "litros": 4000,
     "programado": "09-10 20:00",
     "atrasado": true,
-    "estado": "ruteada_manana",
+    "estado": "ruteada",
     "visita_status": "pending"
    },
    {
@@ -89,7 +89,7 @@
     "litros": 1000,
     "programado": "09-10 21:18",
     "atrasado": true,
-    "estado": "ruteada_manana",
+    "estado": "ruteada",
     "visita_status": "pending"
    },
    {
@@ -100,7 +100,7 @@
     "litros": 800,
     "programado": "10-10 19:12",
     "atrasado": true,
-    "estado": "ruteada_manana",
+    "estado": "ruteada",
     "visita_status": "pending"
    },
    {
@@ -110,8 +110,8 @@
     "camion": "PYHK-28",
     "litros": 800,
     "programado": "12-10 21:22",
-    "atrasado": false,
-    "estado": "ruteada_manana",
+    "atrasado": true,
+    "estado": "ruteada",
     "visita_status": "pending"
    },
    {
@@ -121,8 +121,8 @@
     "camion": "PYHK-28",
     "litros": 800,
     "programado": "12-10 21:23",
-    "atrasado": false,
-    "estado": "ruteada_manana",
+    "atrasado": true,
+    "estado": "ruteada",
     "visita_status": "pending"
    }
   ],
@@ -130,8 +130,8 @@
   "sin_ref": [],
   "resumen": {
    "total": 11,
-   "ruteadas": 0,
-   "ruteadas_manana": 11,
+   "ruteadas": 11,
+   "ruteadas_manana": 0,
    "sin_ruta": 0,
    "huerfanas": 0
   }
@@ -791,229 +791,17 @@
      "FAC 54679"
     ],
     "estado": "ok"
-   },
-   {
-    "so": "S37260",
-    "fecha": "2026-10-06",
-    "cliente": "TRANSPORTE SANTA ELENITA SPA",
-    "camion": "VDKT-95",
-    "especial": false,
-    "parcial": false,
-    "visitas": 1,
-    "pedido": 1000,
-    "entregado": 1000,
-    "facturado": 1000,
-    "facturas": [
-     "FAC 54673"
-    ],
-    "estado": "ok"
-   },
-   {
-    "so": "S37250",
-    "fecha": "2026-10-06",
-    "cliente": "COMPAÑIA PAPELERA DEL PACIFICO S.A",
-    "camion": "VDKT-95",
-    "especial": false,
-    "parcial": false,
-    "visitas": 1,
-    "pedido": 700,
-    "entregado": 700,
-    "facturado": 700,
-    "facturas": [
-     "FAC 54671"
-    ],
-    "estado": "ok"
-   },
-   {
-    "so": "S37244",
-    "fecha": "2026-10-06",
-    "cliente": "LUIS ALBERTO IBARRA CARRILLO",
-    "camion": "PYHK-28",
-    "especial": false,
-    "parcial": false,
-    "visitas": 1,
-    "pedido": 1630,
-    "entregado": 1630,
-    "facturado": 1630,
-    "facturas": [
-     "FAC 54674"
-    ],
-    "estado": "ok"
-   },
-   {
-    "so": "S37243",
-    "fecha": "2026-10-06",
-    "cliente": "AGRÍCOLA MARIAGRI SPA",
-    "camion": "TJVS-53",
-    "especial": false,
-    "parcial": false,
-    "visitas": 1,
-    "pedido": 1300,
-    "entregado": 1300,
-    "facturado": 1300,
-    "facturas": [
-     "FAC 54668"
-    ],
-    "estado": "ok"
-   },
-   {
-    "so": "S37235",
-    "fecha": "2026-10-06",
-    "cliente": "SUGAL CHILE LIMITADA",
-    "camion": "VDKT-95",
-    "especial": true,
-    "parcial": false,
-    "visitas": 1,
-    "pedido": 1000,
-    "entregado": 1000,
-    "facturado": 0,
-    "facturas": [],
-    "estado": "por_facturar"
-   },
-   {
-    "so": "S37234",
-    "fecha": "2026-10-06",
-    "cliente": "SUGAL CHILE LIMITADA",
-    "camion": "PYHK-28",
-    "especial": true,
-    "parcial": false,
-    "visitas": 1,
-    "pedido": 800,
-    "entregado": 800,
-    "facturado": 0,
-    "facturas": [],
-    "estado": "por_facturar"
-   },
-   {
-    "so": "S37233",
-    "fecha": "2026-10-06",
-    "cliente": "AGRICOLA LOS ALPES LTDA",
-    "camion": "PYHK-28",
-    "especial": false,
-    "parcial": false,
-    "visitas": 1,
-    "pedido": 800,
-    "entregado": 800,
-    "facturado": 800,
-    "facturas": [
-     "FAC 54670"
-    ],
-    "estado": "ok"
-   },
-   {
-    "so": "S37232",
-    "fecha": "2026-10-06",
-    "cliente": "AGRICOLA OMEGA TRES LIMITADA",
-    "camion": "VDKT-95",
-    "especial": false,
-    "parcial": true,
-    "visitas": 1,
-    "pedido": 940,
-    "entregado": 940,
-    "facturado": 940,
-    "facturas": [
-     "FAC 54663"
-    ],
-    "estado": "ok"
-   },
-   {
-    "so": "S37230",
-    "fecha": "2026-10-06",
-    "cliente": "CBARRIOS CONSTRUCTORA SPA",
-    "camion": "VDKT-95",
-    "especial": false,
-    "parcial": false,
-    "visitas": 1,
-    "pedido": 1500,
-    "entregado": 1500,
-    "facturado": 1500,
-    "facturas": [
-     "FAC 54669"
-    ],
-    "estado": "ok"
-   },
-   {
-    "so": "S37228",
-    "fecha": "2026-10-06",
-    "cliente": "CONSTRUCTORA LO BLANCO SPA",
-    "camion": "PYHK-28",
-    "especial": false,
-    "parcial": false,
-    "visitas": 1,
-    "pedido": 1000,
-    "entregado": 1000,
-    "facturado": 1000,
-    "facturas": [
-     "FAC 54667"
-    ],
-    "estado": "ok"
-   },
-   {
-    "so": "S37219",
-    "fecha": "2026-10-06",
-    "cliente": "AGRIZANO S A",
-    "camion": "TJVS-53",
-    "especial": false,
-    "parcial": false,
-    "visitas": 1,
-    "pedido": 1000,
-    "entregado": 1000,
-    "facturado": 1000,
-    "facturas": [
-     "FAC 54665"
-    ],
-    "estado": "ok"
-   },
-   {
-    "so": "S37215",
-    "fecha": "2026-10-06",
-    "cliente": "AGRIC Y GANAD LAS CASAS DE CALLEUQUE",
-    "camion": "TJVS-53",
-    "especial": false,
-    "parcial": false,
-    "visitas": 1,
-    "pedido": 800,
-    "entregado": 800,
-    "facturado": 800,
-    "facturas": [
-     "FAC 54672"
-    ],
-    "estado": "ok"
-   },
-   {
-    "so": "S37202",
-    "fecha": "2026-10-06",
-    "cliente": "EL ESTRIBILLO SPA",
-    "camion": "TJVS-53",
-    "especial": false,
-    "parcial": true,
-    "visitas": 1,
-    "pedido": 950,
-    "entregado": 950,
-    "facturado": 950,
-    "facturas": [
-     "FAC 54666"
-    ],
-    "estado": "ok"
-   },
-   {
-    "so": "S37194",
-    "fecha": "2026-10-06",
-    "cliente": "SOC. DE TRANSPORTES TRACMAVI LTDA.",
-    "camion": "PYHK-28",
-    "especial": false,
-    "parcial": true,
-    "visitas": 1,
-    "pedido": 1400,
-    "entregado": 1400,
-    "facturado": 1400,
-    "facturas": [
-     "FAC 54664"
-    ],
-    "estado": "ok"
    }
   ],
   "dias": [
+   {
+    "fecha": "2026-10-13",
+    "entregas": 0,
+    "entregado": 0,
+    "facturado": 0,
+    "por_facturar": 0,
+    "sin_factura": 0
+   },
    {
     "fecha": "2026-10-12",
     "entregas": 0,
@@ -1061,17 +849,9 @@
     "facturado": 8496,
     "por_facturar": 0,
     "sin_factura": 0
-   },
-   {
-    "fecha": "2026-10-06",
-    "entregas": 14,
-    "entregado": 14820,
-    "facturado": 13020,
-    "por_facturar": 1800,
-    "sin_factura": 2
    }
   ],
-  "por_facturar_total": 2700,
+  "por_facturar_total": 900,
   "entregado_hoy": 0,
   "facturado_hoy": 0,
   "fuera_simpli": []
@@ -1506,7 +1286,7 @@
    ],
    "entregadas_hoy": 0,
    "bodega_ventana": 0,
-   "revisadas_ventana": 66,
+   "revisadas_ventana": 52,
    "salidas_entregadas": 0
   },
   "fase5": {
@@ -1776,9 +1556,9 @@
     }
    ],
    "con_excepcion": 3,
-   "validadas_manana": 11,
-   "visitas_manana": 12,
-   "fecha": "2026-10-13"
+   "validadas_manana": 0,
+   "visitas_manana": 0,
+   "fecha": "2026-10-14"
   }
  }
 }
