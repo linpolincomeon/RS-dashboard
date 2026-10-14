@@ -1,41 +1,19 @@
 {
- "generated_utc": "2026-10-14T15:47+00:00",
+ "generated_utc": "2026-10-14T20:07+00:00",
  "hoy": "2026-10-14",
  "desde": "2026-10-08",
  "rutas": {
   "pendientes": [
    {
-    "picking": "VD/OUT/01794",
-    "so": "S37319",
-    "cliente": "AGREEN COMPANY SPA, Luis",
-    "camion": "VDKT-95",
-    "litros": 1600,
-    "programado": "08-10 09:31",
-    "atrasado": true,
-    "estado": "ruteada",
-    "visita_status": "pending"
-   },
-   {
-    "picking": "PHXC/OUT/01788",
-    "so": "S37421",
-    "cliente": "JOSE EDGARDO RAMON MEZA BANADOS, MEZA BANADOS JOSE - EL BOSQUE LA PUNTA-Nadia",
-    "camion": "PHXC-44",
-    "litros": 500,
-    "programado": "13-10 11:24",
-    "atrasado": true,
-    "estado": "ruteada",
-    "visita_status": "pending"
-   },
-   {
-    "picking": "TJVS/OUT/02015",
-    "so": "S37440",
-    "cliente": "AGRICOLA LA HACIENDA LTDA, AGRICOLA LA HACIENDA-LITU SAN RAFAEL",
+    "picking": "TJVS/OUT/02020",
+    "so": "S37295",
+    "cliente": "TRANSPORTES BIDIMAR SPA, TRANSPORTES BIDIMAR SPA",
     "camion": "TJVS-53",
-    "litros": 2500,
-    "programado": "13-10 15:49",
+    "litros": 1,
+    "programado": "07-10 15:28",
     "atrasado": true,
-    "estado": "ruteada",
-    "visita_status": "pending"
+    "estado": "sin_ruta",
+    "visita_status": null
    },
    {
     "picking": "PYHK/OUT/01472",
@@ -46,18 +24,7 @@
     "programado": "13-10 16:42",
     "atrasado": true,
     "estado": "ruteada",
-    "visita_status": "pending"
-   },
-   {
-    "picking": "PHXC/OUT/01786",
-    "so": "S37452",
-    "cliente": "AGRICOLA INMOBILIARIA E INVERSIONES SANTA JESUS LIMITADA, CARLOS SANCHEZ",
-    "camion": "PHXC-44",
-    "litros": 8400,
-    "programado": "13-10 18:43",
-    "atrasado": true,
-    "estado": "ruteada",
-    "visita_status": "pending"
+    "visita_status": "completed"
    },
    {
     "picking": "PHXC/OUT/01789",
@@ -66,28 +33,6 @@
     "camion": "PHXC-44",
     "litros": 1000,
     "programado": "14-10 08:47",
-    "atrasado": false,
-    "estado": "ruteada",
-    "visita_status": "pending"
-   },
-   {
-    "picking": "VD/OUT/01798",
-    "so": "S37455",
-    "cliente": "AGRICOLA CODENUT S A, AGRICOLA CODENUT-CHIMBARONGO",
-    "camion": "VDKT-95",
-    "litros": 1000,
-    "programado": "14-10 08:53",
-    "atrasado": false,
-    "estado": "ruteada",
-    "visita_status": "pending"
-   },
-   {
-    "picking": "VD/OUT/01797",
-    "so": "S37456",
-    "cliente": "Agrícola Naicura II Limitada, Sebastian",
-    "camion": "VDKT-95",
-    "litros": 500,
-    "programado": "14-10 08:53",
     "atrasado": false,
     "estado": "ruteada",
     "visita_status": "pending"
@@ -107,10 +52,10 @@
   "huerfanas": [],
   "sin_ref": [],
   "resumen": {
-   "total": 9,
-   "ruteadas": 9,
+   "total": 4,
+   "ruteadas": 3,
    "ruteadas_manana": 0,
-   "sin_ruta": 0,
+   "sin_ruta": 1,
    "huerfanas": 0
   }
  },
@@ -129,6 +74,54 @@
     "facturado": 925,
     "facturas": [
      "FAC 54747"
+    ],
+    "estado": "ok"
+   },
+   {
+    "so": "S37456",
+    "fecha": "2026-10-14",
+    "cliente": "Agrícola Naicura II Limitada",
+    "camion": "PHXC-44",
+    "especial": false,
+    "parcial": false,
+    "visitas": 1,
+    "pedido": 500,
+    "entregado": 500,
+    "facturado": 500,
+    "facturas": [
+     "FAC 54753"
+    ],
+    "estado": "ok"
+   },
+   {
+    "so": "S37455",
+    "fecha": "2026-10-14",
+    "cliente": "AGRICOLA CODENUT S A",
+    "camion": "TJVS-53",
+    "especial": false,
+    "parcial": false,
+    "visitas": 1,
+    "pedido": 1000,
+    "entregado": 1000,
+    "facturado": 1000,
+    "facturas": [
+     "FAC 54757"
+    ],
+    "estado": "ok"
+   },
+   {
+    "so": "S37452",
+    "fecha": "2026-10-14",
+    "cliente": "AGRICOLA INMOBILIARIA E INVERSIONES SANTA JESUS LIMITADA",
+    "camion": "PHXC-44",
+    "especial": false,
+    "parcial": false,
+    "visitas": 1,
+    "pedido": 8400,
+    "entregado": 8400,
+    "facturado": 8400,
+    "facturas": [
+     "FAC 54758"
     ],
     "estado": "ok"
    },
@@ -197,6 +190,20 @@
     "estado": "ok"
    },
    {
+    "so": "S37444",
+    "fecha": "2026-10-14",
+    "cliente": "AGRICOLA LAS PIEDRAS 2 SPA",
+    "camion": "PYHK-28",
+    "especial": false,
+    "parcial": false,
+    "visitas": 1,
+    "pedido": 500,
+    "entregado": 500,
+    "facturado": 0,
+    "facturas": [],
+    "estado": "por_facturar"
+   },
+   {
     "so": "S37443",
     "fecha": "2026-10-14",
     "cliente": "MAQUINARIAS SAN PEDRO SPA",
@@ -229,6 +236,22 @@
     "estado": "ok"
    },
    {
+    "so": "S37440",
+    "fecha": "2026-10-14",
+    "cliente": "AGRICOLA LA HACIENDA LTDA",
+    "camion": "PYHK-28",
+    "especial": false,
+    "parcial": false,
+    "visitas": 1,
+    "pedido": 2500,
+    "entregado": 2500,
+    "facturado": 2500,
+    "facturas": [
+     "FAC 54754"
+    ],
+    "estado": "ok"
+   },
+   {
     "so": "S37439",
     "fecha": "2026-10-14",
     "cliente": "AGROSERVICIOS JR SPA",
@@ -257,6 +280,22 @@
     "facturado": 600,
     "facturas": [
      "FAC 54741"
+    ],
+    "estado": "ok"
+   },
+   {
+    "so": "S37421",
+    "fecha": "2026-10-14",
+    "cliente": "JOSE EDGARDO RAMON MEZA BANADOS",
+    "camion": "VDKT-95",
+    "especial": false,
+    "parcial": false,
+    "visitas": 1,
+    "pedido": 500,
+    "entregado": 500,
+    "facturado": 500,
+    "facturas": [
+     "FAC 54755"
     ],
     "estado": "ok"
    },
@@ -321,6 +360,22 @@
     "facturado": 600,
     "facturas": [
      "FAC 54751"
+    ],
+    "estado": "ok"
+   },
+   {
+    "so": "S37319",
+    "fecha": "2026-10-14",
+    "cliente": "AGREEN COMPANY SPA",
+    "camion": "TJVS-53",
+    "especial": false,
+    "parcial": false,
+    "visitas": 1,
+    "pedido": 1600,
+    "entregado": 1600,
+    "facturado": 1600,
+    "facturas": [
+     "FAC 54756"
     ],
     "estado": "ok"
    },
@@ -1202,11 +1257,11 @@
   "dias": [
    {
     "fecha": "2026-10-14",
-    "entregas": 13,
-    "entregado": 24400,
-    "facturado": 24400,
-    "por_facturar": 0,
-    "sin_factura": 0
+    "entregas": 20,
+    "entregado": 39400,
+    "facturado": 38900,
+    "por_facturar": 500,
+    "sin_factura": 1
    },
    {
     "fecha": "2026-10-13",
@@ -1257,9 +1312,9 @@
     "sin_factura": 1
    }
   ],
-  "por_facturar_total": 2500,
-  "entregado_hoy": 24400,
-  "facturado_hoy": 24400,
+  "por_facturar_total": 3000,
+  "entregado_hoy": 39400,
+  "facturado_hoy": 38900,
   "fuera_simpli": []
  },
  "cierre": {
@@ -1298,30 +1353,12 @@
   "fase4": {
    "salidas": [
     {
-     "picking": "VD/OUT/01794",
-     "so": "S37319",
-     "cliente": "AGREEN COMPANY SPA, Luis",
-     "cam": "VD",
-     "fecha": "2026-10-08",
-     "litros": 1600,
-     "entregada_simpli": false
-    },
-    {
-     "picking": "PHXC/OUT/01788",
-     "so": "S37421",
-     "cliente": "JOSE EDGARDO RAMON MEZA BANADOS, MEZA BANADOS JOSE - EL BOSQUE LA PUNTA-Nadia",
-     "cam": "PH",
-     "fecha": "2026-10-13",
-     "litros": 500,
-     "entregada_simpli": false
-    },
-    {
-     "picking": "TJVS/OUT/02015",
-     "so": "S37440",
-     "cliente": "AGRICOLA LA HACIENDA LTDA, AGRICOLA LA HACIENDA-LITU SAN RAFAEL",
+     "picking": "TJVS/OUT/02020",
+     "so": "S37295",
+     "cliente": "TRANSPORTES BIDIMAR SPA, TRANSPORTES BIDIMAR SPA",
      "cam": "TJ",
-     "fecha": "2026-10-13",
-     "litros": 2500,
+     "fecha": "2026-10-07",
+     "litros": 1,
      "entregada_simpli": false
     },
     {
@@ -1331,16 +1368,7 @@
      "cam": "PY",
      "fecha": "2026-10-13",
      "litros": 500,
-     "entregada_simpli": false
-    },
-    {
-     "picking": "PHXC/OUT/01786",
-     "so": "S37452",
-     "cliente": "AGRICOLA INMOBILIARIA E INVERSIONES SANTA JESUS LIMITADA, CARLOS SANCHEZ",
-     "cam": "PH",
-     "fecha": "2026-10-13",
-     "litros": 8400,
-     "entregada_simpli": false
+     "entregada_simpli": true
     },
     {
      "picking": "PHXC/OUT/01789",
@@ -1349,24 +1377,6 @@
      "cam": "PH",
      "fecha": "2026-10-14",
      "litros": 1000,
-     "entregada_simpli": false
-    },
-    {
-     "picking": "VD/OUT/01798",
-     "so": "S37455",
-     "cliente": "AGRICOLA CODENUT S A, AGRICOLA CODENUT-CHIMBARONGO",
-     "cam": "VD",
-     "fecha": "2026-10-14",
-     "litros": 1000,
-     "entregada_simpli": false
-    },
-    {
-     "picking": "VD/OUT/01797",
-     "so": "S37456",
-     "cliente": "Agrícola Naicura II Limitada, Sebastian",
-     "cam": "VD",
-     "fecha": "2026-10-14",
-     "litros": 500,
      "entregada_simpli": false
     },
     {
@@ -1380,26 +1390,6 @@
     }
    ],
    "ventas": [
-    {
-     "so": "S37421",
-     "cliente": "JOSE EDGARDO RAMON MEZA BANADOS",
-     "especial": false,
-     "cam": "PH",
-     "cam_simpli": [],
-     "cam_odoo": [],
-     "picking": "PHXC/OUT/01788",
-     "fecha_entrega": "2026-10-14",
-     "simpli": null,
-     "cantidad": 500,
-     "entregado": 0,
-     "facturado": 0,
-     "problemas": [
-      "sin_entrega"
-     ],
-     "acciones": [
-      "Salida PHXC/OUT/01788 abierta pero SimpliRoute no la muestra entregada: si no salió, reprogramar; si salió, validar"
-     ]
-    },
     {
      "so": "S37439",
      "cliente": "AGROSERVICIOS JR SPA",
@@ -1422,26 +1412,6 @@
      ],
      "acciones": [
       "Bajar Cantidad de 2.000 a 1.975 L en la orden"
-     ]
-    },
-    {
-     "so": "S37452",
-     "cliente": "AGRICOLA INMOBILIARIA E INVERSIONES SANTA JESUS LIMITADA",
-     "especial": false,
-     "cam": "PH",
-     "cam_simpli": [],
-     "cam_odoo": [],
-     "picking": "PHXC/OUT/01786",
-     "fecha_entrega": "2026-10-14",
-     "simpli": null,
-     "cantidad": 8400,
-     "entregado": 0,
-     "facturado": 0,
-     "problemas": [
-      "sin_entrega"
-     ],
-     "acciones": [
-      "Salida PHXC/OUT/01786 abierta pero SimpliRoute no la muestra entregada: si no salió, reprogramar; si salió, validar"
      ]
     },
     {
@@ -1493,19 +1463,23 @@
      "cliente": "AGRICOLA LAS PIEDRAS 2 SPA",
      "especial": false,
      "cam": "PY",
-     "cam_simpli": [],
+     "cam_simpli": [
+      "PY"
+     ],
      "cam_odoo": [],
      "picking": "PYHK/OUT/01472",
      "fecha_entrega": "2026-10-14",
-     "simpli": null,
+     "simpli": 500,
      "cantidad": 500,
      "entregado": 0,
      "facturado": 0,
      "problemas": [
-      "sin_entrega"
+      "falta_validar",
+      "por_facturar"
      ],
      "acciones": [
-      "Salida PYHK/OUT/01472 abierta pero SimpliRoute no la muestra entregada: si no salió, reprogramar; si salió, validar"
+      "Validar PYHK/OUT/01472 por 500 L",
+      "Facturar 500 L"
      ]
     },
     {
@@ -1533,23 +1507,23 @@
      ]
     },
     {
-     "so": "S37440",
-     "cliente": "AGRICOLA LA HACIENDA LTDA",
+     "so": "S37295",
+     "cliente": "TRANSPORTES BIDIMAR SPA",
      "especial": false,
      "cam": "TJ",
      "cam_simpli": [],
      "cam_odoo": [],
-     "picking": "TJVS/OUT/02015",
-     "fecha_entrega": "2026-10-14",
+     "picking": "TJVS/OUT/02020",
+     "fecha_entrega": "2026-10-07",
      "simpli": null,
-     "cantidad": 2500,
+     "cantidad": 1,
      "entregado": 0,
      "facturado": 0,
      "problemas": [
       "sin_entrega"
      ],
      "acciones": [
-      "Salida TJVS/OUT/02015 abierta pero SimpliRoute no la muestra entregada: si no salió, reprogramar; si salió, validar"
+      "Salida TJVS/OUT/02020 abierta pero SimpliRoute no la muestra entregada: si no salió, reprogramar; si salió, validar"
      ]
     },
     {
@@ -1577,66 +1551,6 @@
      ]
     },
     {
-     "so": "S37319",
-     "cliente": "AGREEN COMPANY SPA",
-     "especial": false,
-     "cam": "VD",
-     "cam_simpli": [],
-     "cam_odoo": [],
-     "picking": "VD/OUT/01794",
-     "fecha_entrega": "2026-10-14",
-     "simpli": null,
-     "cantidad": 1600,
-     "entregado": 0,
-     "facturado": 0,
-     "problemas": [
-      "sin_entrega"
-     ],
-     "acciones": [
-      "Salida VD/OUT/01794 abierta pero SimpliRoute no la muestra entregada: si no salió, reprogramar; si salió, validar"
-     ]
-    },
-    {
-     "so": "S37455",
-     "cliente": "AGRICOLA CODENUT S A",
-     "especial": false,
-     "cam": "VD",
-     "cam_simpli": [],
-     "cam_odoo": [],
-     "picking": "VD/OUT/01798",
-     "fecha_entrega": "2026-10-14",
-     "simpli": null,
-     "cantidad": 1000,
-     "entregado": 0,
-     "facturado": 0,
-     "problemas": [
-      "sin_entrega"
-     ],
-     "acciones": [
-      "Salida VD/OUT/01798 abierta pero SimpliRoute no la muestra entregada: si no salió, reprogramar; si salió, validar"
-     ]
-    },
-    {
-     "so": "S37456",
-     "cliente": "Agrícola Naicura II Limitada",
-     "especial": false,
-     "cam": "VD",
-     "cam_simpli": [],
-     "cam_odoo": [],
-     "picking": "VD/OUT/01797",
-     "fecha_entrega": "2026-10-14",
-     "simpli": null,
-     "cantidad": 500,
-     "entregado": 0,
-     "facturado": 0,
-     "problemas": [
-      "sin_entrega"
-     ],
-     "acciones": [
-      "Salida VD/OUT/01797 abierta pero SimpliRoute no la muestra entregada: si no salió, reprogramar; si salió, validar"
-     ]
-    },
-    {
      "so": "S37458",
      "cliente": "SOCIEDAD AGRICOLA SANTA ROSA",
      "especial": false,
@@ -1659,30 +1573,16 @@
    ],
    "a_facturar": [
     {
-     "so": "S37319",
-     "cliente": "AGREEN COMPANY SPA",
-     "cam": "VD",
-     "fecha_entrega": "2026-10-14",
-     "especial": false
-    },
-    {
-     "so": "S37421",
-     "cliente": "JOSE EDGARDO RAMON MEZA BANADOS",
-     "cam": "PH",
-     "fecha_entrega": "2026-10-14",
+     "so": "S37295",
+     "cliente": "TRANSPORTES BIDIMAR SPA",
+     "cam": "TJ",
+     "fecha_entrega": "2026-10-07",
      "especial": false
     },
     {
      "so": "S37439",
      "cliente": "AGROSERVICIOS JR SPA",
      "cam": "PH",
-     "fecha_entrega": "2026-10-14",
-     "especial": false
-    },
-    {
-     "so": "S37440",
-     "cliente": "AGRICOLA LA HACIENDA LTDA",
-     "cam": "TJ",
      "fecha_entrega": "2026-10-14",
      "especial": false
     },
@@ -1708,30 +1608,9 @@
      "especial": false
     },
     {
-     "so": "S37452",
-     "cliente": "AGRICOLA INMOBILIARIA E INVERSIONES SANTA JESUS LIMITADA",
-     "cam": "PH",
-     "fecha_entrega": "2026-10-14",
-     "especial": false
-    },
-    {
      "so": "S37453",
      "cliente": "SAMUEL BUDINICH SPA",
      "cam": "PH",
-     "fecha_entrega": "2026-10-14",
-     "especial": false
-    },
-    {
-     "so": "S37455",
-     "cliente": "AGRICOLA CODENUT S A",
-     "cam": "VD",
-     "fecha_entrega": "2026-10-14",
-     "especial": false
-    },
-    {
-     "so": "S37456",
-     "cliente": "Agrícola Naicura II Limitada",
-     "cam": "VD",
      "fecha_entrega": "2026-10-14",
      "especial": false
     },
@@ -1750,10 +1629,10 @@
      "especial": false
     }
    ],
-   "entregadas_hoy": 13,
+   "entregadas_hoy": 20,
    "bodega_ventana": 0,
-   "revisadas_ventana": 77,
-   "salidas_entregadas": 0
+   "revisadas_ventana": 78,
+   "salidas_entregadas": 1
   },
   "fase5": {
    "saldos": [
@@ -1766,17 +1645,17 @@
     },
     {
      "cam": "PH",
-     "odoo": -2700,
+     "odoo": -11600,
      "ajuste": 0,
-     "esperado": -2700,
-     "ventas_simpli_hoy": 3500
+     "esperado": -11600,
+     "ventas_simpli_hoy": 12400
     },
     {
      "cam": "PY",
-     "odoo": 3924,
-     "ajuste": 0,
-     "esperado": 3924,
-     "ventas_simpli_hoy": 6100
+     "odoo": 1424,
+     "ajuste": -500,
+     "esperado": 924,
+     "ventas_simpli_hoy": 9100
     },
     {
      "cam": "SH",
@@ -1787,10 +1666,10 @@
     },
     {
      "cam": "TJ",
-     "odoo": 8800,
+     "odoo": 6200,
      "ajuste": 0,
-     "esperado": 8800,
-     "ventas_simpli_hoy": 6200
+     "esperado": 6200,
+     "ventas_simpli_hoy": 8800
     },
     {
      "cam": "TY",
@@ -1801,22 +1680,15 @@
     },
     {
      "cam": "VD",
-     "odoo": 2500,
+     "odoo": 2000,
      "ajuste": 0,
-     "esperado": 2500,
-     "ventas_simpli_hoy": 600
+     "esperado": 2000,
+     "ventas_simpli_hoy": 1100
     }
    ]
   },
   "fase6": {
    "por_aprobar": [
-    {
-     "so": "S30784",
-     "cliente": "EL PARRON SPA",
-     "cam": "TJ",
-     "fecha_entrega": "2026-05-12",
-     "excepcion": ""
-    },
     {
      "so": "S30777",
      "cliente": "EL PARRON SPA",
@@ -1825,10 +1697,10 @@
      "excepcion": "No tiene Línea de Crédito Aprobada"
     },
     {
-     "so": "S36783",
-     "cliente": "SUGAL CHILE LIMITADA",
-     "cam": "VD",
-     "fecha_entrega": "2026-09-25",
+     "so": "S30784",
+     "cliente": "EL PARRON SPA",
+     "cam": "TJ",
+     "fecha_entrega": "2026-05-12",
      "excepcion": ""
     },
     {
@@ -1853,6 +1725,13 @@
      "excepcion": ""
     },
     {
+     "so": "S36783",
+     "cliente": "SUGAL CHILE LIMITADA",
+     "cam": "VD",
+     "fecha_entrega": "2026-09-25",
+     "excepcion": ""
+    },
+    {
      "so": "S36858",
      "cliente": "SUGAL CHILE LIMITADA",
      "cam": "PH",
@@ -1860,14 +1739,7 @@
      "excepcion": ""
     },
     {
-     "so": "S36888",
-     "cliente": "SUGAL CHILE LIMITADA",
-     "cam": "PY",
-     "fecha_entrega": "2026-09-28",
-     "excepcion": ""
-    },
-    {
-     "so": "S36887",
+     "so": "S36883",
      "cliente": "SUGAL CHILE LIMITADA",
      "cam": "VD",
      "fecha_entrega": "2026-09-28",
@@ -1902,10 +1774,24 @@
      "excepcion": ""
     },
     {
-     "so": "S36883",
+     "so": "S36887",
      "cliente": "SUGAL CHILE LIMITADA",
      "cam": "VD",
      "fecha_entrega": "2026-09-28",
+     "excepcion": ""
+    },
+    {
+     "so": "S36888",
+     "cliente": "SUGAL CHILE LIMITADA",
+     "cam": "PY",
+     "fecha_entrega": "2026-09-28",
+     "excepcion": ""
+    },
+    {
+     "so": "S37021",
+     "cliente": "SERVICIOS AGRICOLAS Y COMERCIAL SANTA PAULA SPA",
+     "cam": "PY",
+     "fecha_entrega": "2026-09-29",
      "excepcion": ""
     },
     {
@@ -1930,13 +1816,6 @@
      "excepcion": ""
     },
     {
-     "so": "S37021",
-     "cliente": "SERVICIOS AGRICOLAS Y COMERCIAL SANTA PAULA SPA",
-     "cam": "PY",
-     "fecha_entrega": "2026-09-29",
-     "excepcion": ""
-    },
-    {
      "so": "S36870",
      "cliente": "TRANSPORTES EL POLILLA SPA",
      "cam": "PY",
@@ -1951,16 +1830,16 @@
      "excepcion": "No tiene Línea de Crédito Aprobada"
     },
     {
-     "so": "S37080",
+     "so": "S37079",
      "cliente": "SUGAL CHILE LIMITADA",
-     "cam": "VD",
+     "cam": "PY",
      "fecha_entrega": "2026-10-01",
      "excepcion": ""
     },
     {
-     "so": "S37079",
+     "so": "S37080",
      "cliente": "SUGAL CHILE LIMITADA",
-     "cam": "PY",
+     "cam": "VD",
      "fecha_entrega": "2026-10-01",
      "excepcion": ""
     },
@@ -1993,16 +1872,16 @@
      "excepcion": ""
     },
     {
-     "so": "S37235",
+     "so": "S37234",
      "cliente": "SUGAL CHILE LIMITADA",
-     "cam": "VD",
+     "cam": "PY",
      "fecha_entrega": "2026-10-06",
      "excepcion": ""
     },
     {
-     "so": "S37234",
+     "so": "S37235",
      "cliente": "SUGAL CHILE LIMITADA",
-     "cam": "PY",
+     "cam": "VD",
      "fecha_entrega": "2026-10-06",
      "excepcion": ""
     },
@@ -2021,10 +1900,10 @@
      "excepcion": ""
     },
     {
-     "so": "S37462",
-     "cliente": "INGENERIA Y CONSTRUCCIONES FEBLANCA SPA",
+     "so": "S37492",
+     "cliente": "MARGARITA MARIA ALARCON VERGARA",
      "cam": "PY",
-     "fecha_entrega": "2026-10-15",
+     "fecha_entrega": "2026-10-14",
      "excepcion": ""
     },
     {
@@ -2033,13 +1912,6 @@
      "cam": "VD",
      "fecha_entrega": "2026-10-15",
      "excepcion": "Limite de Credito Excedido"
-    },
-    {
-     "so": "S37461",
-     "cliente": "AGRICOLA LA CAMPANA SPA",
-     "cam": "TJ",
-     "fecha_entrega": "2026-10-15",
-     "excepcion": ""
     },
     {
      "so": "S37480",
@@ -2063,9 +1935,9 @@
      "excepcion": ""
     },
     {
-     "so": "S37466",
-     "cliente": "Soc. Agrícola Libertad SPA",
-     "cam": "VD",
+     "so": "S37493",
+     "cliente": "CORPORACION EDUCACIONAL DE LA SOCIEDAD NACIONAL DE AGRICULTURA",
+     "cam": "PY",
      "fecha_entrega": "2026-10-15",
      "excepcion": ""
     },
@@ -2089,9 +1961,65 @@
      "cam": "PY",
      "fecha_entrega": "2026-10-15",
      "excepcion": "No tiene Línea de Crédito Aprobada"
+    },
+    {
+     "so": "S37462",
+     "cliente": "INGENERIA Y CONSTRUCCIONES FEBLANCA SPA",
+     "cam": "PY",
+     "fecha_entrega": "2026-10-15",
+     "excepcion": ""
+    },
+    {
+     "so": "S37461",
+     "cliente": "AGRICOLA LA CAMPANA SPA",
+     "cam": "TJ",
+     "fecha_entrega": "2026-10-15",
+     "excepcion": ""
+    },
+    {
+     "so": "S37466",
+     "cliente": "Soc. Agrícola Libertad SPA",
+     "cam": "VD",
+     "fecha_entrega": "2026-10-15",
+     "excepcion": ""
+    },
+    {
+     "so": "S37489",
+     "cliente": "AGRICOLA LA PATAGUILLA LTDA",
+     "cam": "TJ",
+     "fecha_entrega": "2026-10-15",
+     "excepcion": "Limite de Credito Excedido"
+    },
+    {
+     "so": "S37499",
+     "cliente": "AGRICOLA MIGUEL TORRES SPA",
+     "cam": "PY",
+     "fecha_entrega": "2026-10-15",
+     "excepcion": ""
+    },
+    {
+     "so": "S37498",
+     "cliente": "CONSTRUCTORA, TRANSPORTES E INMOBILIARIA HECTOR ROMAN Y OTRO LIMITADA",
+     "cam": "PY",
+     "fecha_entrega": "2026-10-15",
+     "excepcion": ""
+    },
+    {
+     "so": "S37486",
+     "cliente": "LA FEÑA SPA",
+     "cam": "VD",
+     "fecha_entrega": "2026-10-15",
+     "excepcion": ""
+    },
+    {
+     "so": "S37485",
+     "cliente": "AGROMORANDE S A",
+     "cam": "PY",
+     "fecha_entrega": "2026-10-15",
+     "excepcion": ""
     }
    ],
-   "con_excepcion": 5,
+   "con_excepcion": 6,
    "validadas_manana": 0,
    "visitas_manana": 0,
    "fecha": "2026-10-15"
