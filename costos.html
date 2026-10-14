@@ -146,6 +146,13 @@
   <div id="planMantNota" class="note"></div>
 </div>
 
+<div class="card vw-mant" hidden id="cardHist">
+  <h2>🗂️ Historial de mantenciones por camión</h2>
+  <div class="note" style="margin:0 0 12px">Todo lo facturado a cada camión en Odoo con analítica de taller (mantención, neumáticos, revisión técnica, hermeticidad, extintores) desde dic-2025, agrupado por <b>día de taller</b>: una fila = una entrada con todos sus ítems. Fuera: seguros, permisos de circulación, GPS y peajes. Los ítems del plan detectados por glosa salen como etiqueta. Para que un trabajo aparezca, la factura debe venir con analítica del camión y glosa clara ("Del Giro" no dice nada).</div>
+  <div id="histCams" style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px"></div>
+  <div class="scroll" id="histMant"></div>
+</div>
+
 <div class="card vw-mant" hidden id="cardVenc">
   <h2>📅 Vencimientos — camiones, choferes y camionetas</h2>
   <div class="note" style="margin:0 0 12px">Fuente: hoja <a id="vencLink" href="#" target="_blank" rel="noopener">"Vencimientos" de Proyectos y Control</a> → <code>vencimientos.json</code> en el repo (<span id="vencStamp"></span>). <b class="bad">Rojo</b> = vencido · <b class="warn">naranjo</b> = dentro de 30 días · <b class="ok">verde</b> = dentro de 90 días. TCT/Aramco son n° de tarjeta, no fechas.</div>
@@ -192,7 +199,9 @@ async function load() {
   const D = await dataRes.json();
   const P = await presRes.json();
   const CH = chofRes.ok ? await chofRes.json() : null;   // solo aporta zona/cobertura por camión
-  if (planRes.ok) renderPlanMantencion(await planRes.json(), D);
+  const PLAN = planRes.ok ? await planRes.json() : null;
+  if (PLAN) renderPlanMantencion(PLAN, D);
+  HIST_D = D; HIST_PLAN = PLAN; renderHistMant(null);
   if (srRes.ok) {
     JORN_S = await srRes.json(); JORN_CH = CH;
     renderJornada(0);
@@ -473,6 +482,59 @@ function renderPlanMantencion(PLAN, D) {
   $('planMantNota').innerHTML = filas.length
     ? `<b class="bad">${vencidos} vencidos</b> de ${filas.length} ítems con historia. Detección por palabra clave en la glosa: trabajos facturados con glosa genérica ("Del Giro") no aparecen — anotar la fecha en <code>ultima_manual</code> del JSON.`
     : 'Sin datos del plan.';
+}
+
+// ── Historial de mantenciones por camión (pedido Pauline 14-oct-2026, para Operaciones) ──
+// Una fila = un día de taller por camión (todas las líneas de ese día agrupadas).
+let HIST_D = null, HIST_PLAN = null;
+function renderHistMant(camSel) {
+  const D = HIST_D, PLAN = HIST_PLAN; if (!D) return;
+  const norm = s => (s || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+  const CATS = new Set(['Mantención', 'Neumáticos', 'Revisión Técnica', 'Hermeticidad', 'Extintores']);
+  const RUIDO = /orvis|gps|permiso circulaci|\bsoap\b|seguro|peaje|\btag\b/i;
+  const fmtF = iso => iso ? iso.slice(8, 10) + '-' + iso.slice(5, 7) + '-' + iso.slice(2, 4) : '—';
+  const esc = v => String(v == null ? '' : v).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+
+  const ev = {};  // cam|fecha -> evento
+  for (const m of D.movimientos || []) {
+    if (!CATS.has(m.cat) || m.camion === 'CAMIONETAS' || !m.camion || m.monto <= 0) continue;
+    if (RUIDO.test(m.glosa || '')) continue;
+    const k = m.camion + '|' + m.d;
+    const e = (ev[k] = ev[k] || { cam: m.camion, d: m.d, monto: 0, glosas: [], cats: new Set(), tags: new Set() });
+    e.monto += m.monto;
+    e.glosas.push({ g: (m.glosa || '').replace(/^TOLEDO NUÑEZ MADELAINE CAMILA:\s*/i, '').trim(), monto: m.monto });
+    e.cats.add(m.cat);
+    const g = norm(m.glosa);
+    for (const it of (PLAN || {}).items || []) {
+      if (!it.keywords.some(kw => g.includes(kw))) continue;
+      if ((it.excluir || []).some(kw => g.includes(kw))) continue;
+      e.tags.add(it.nombre.split(' — ')[0].split(' (')[0]);
+    }
+    if (m.cat === 'Neumáticos') e.tags.add('Neumáticos');
+  }
+  const eventos = Object.values(ev).sort((a, b) => b.d.localeCompare(a.d));
+  const cams = [...new Set(eventos.map(e => e.cam))].sort();
+  if (!cams.length) { $('histMant').innerHTML = '<div class="note">Sin movimientos de taller en Odoo.</div>'; return; }
+  const cam = cams.includes(camSel) ? camSel : cams[0];
+  const btn = (c, on) => `<button onclick="renderHistMant('${c}')" style="font-size:12px;padding:4px 10px;border-radius:8px;cursor:pointer;border:1px solid ${on ? 'var(--accent)' : 'var(--border)'};color:${on ? 'var(--accent)' : 'inherit'};background:${on ? '#fdf0e7' : 'var(--card)'};font-weight:${on ? 700 : 400}">${c}</button>`;
+  $('histCams').innerHTML = cams.map(c => btn(c, c === cam)).join('');
+
+  const evs = eventos.filter(e => e.cam === cam);
+  const tot = evs.reduce((s, e) => s + e.monto, 0);
+  const d12 = new Date(Date.now() - 365 * 864e5).toISOString().slice(0, 10);
+  const tot12 = evs.filter(e => e.d >= d12).reduce((s, e) => s + e.monto, 0);
+  let h = `<div class="note" style="margin:0 0 10px"><b>${cam}</b>: ${evs.length} entradas al taller desde ${fmtF(evs[evs.length - 1].d)} · última ${fmtF(evs[0].d)} · total ${fmt(tot)} (últimos 12 meses ${fmt(tot12)})</div>`;
+  h += '<table><tr><th>Fecha</th><th>Qué se hizo</th><th>Ítems del plan</th><th class="num">Monto</th></tr>';
+  for (const e of evs) {
+    const gl = e.glosas.sort((a, b) => b.monto - a.monto);
+    const vis = gl.slice(0, 4).map(x => esc(x.g)).join(' · ');
+    const mas = gl.length > 4 ? ` <details style="display:inline"><summary style="display:inline;cursor:pointer;color:var(--accent)">+${gl.length - 4} más</summary><span style="color:var(--muted)">${gl.slice(4).map(x => esc(x.g)).join(' · ')}</span></details>` : '';
+    const tags = [...e.tags].map(t => `<span class="badge">${esc(t)}</span>`).join(' ');
+    const cat = [...e.cats].filter(c => c !== 'Mantención').map(c => `<span class="badge nobudget">${esc(c)}</span>`).join(' ');
+    h += `<tr><td><b>${fmtF(e.d)}</b></td><td style="white-space:normal;max-width:520px">${vis}${mas}</td><td style="white-space:normal">${[cat, tags].filter(Boolean).join(' ') || '<span style="color:var(--muted)">—</span>'}</td><td class="num"><b>${fmt(e.monto)}</b></td></tr>`;
+  }
+  h += '</table>';
+  $('histMant').innerHTML = h;
 }
 
 // ---- cuadratura Odoo <-> SimpliRoute (cron horario en jornada laboral) ----
