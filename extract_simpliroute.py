@@ -38,7 +38,7 @@ from collections import defaultdict
 from zoneinfo import ZoneInfo
 
 BASE = 'https://api.simpliroute.com/v1'
-VENTANA_DIAS = 45
+VENTANA_DIAS = 75   # 2 meses cerrados + el actual: el tab KPI muestra acumulado por mes (14-oct-2026)
 TZ = ZoneInfo('America/Santiago')
 
 # validación integrada (no escribir el JSON si el dato viene roto)

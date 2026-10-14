@@ -74,7 +74,7 @@
 
 <div class="tabs">
   <button class="tab active" data-tab="costos" onclick="switchTab('costos')">💰 Costos</button>
-  <button class="tab" data-tab="oper" onclick="switchTab('oper')">🚚 Operaciones</button>
+  <button class="tab" data-tab="oper" onclick="switchTab('oper')">📊 KPI</button>
   <button class="tab" data-tab="mant" onclick="switchTab('mant')">🔧 Mantención</button>
   <button class="tab" data-tab="cierre" onclick="switchTab('cierre')">✅ Cierre diario</button>
 </div>
@@ -121,42 +121,16 @@
 
 <div class="card vw-oper" hidden id="cardSla">
   <h2>⏱️ SLA de entrega — pedido → factura (Odoo)</h2>
-  <div class="note" style="margin:0 0 12px"><b>SLA Entrega 24h</b> = pedido facturado a más tardar el día siguiente de ponerse (si es preorder con fecha de entrega posterior, vale esa fecha como plazo; meta 95%). <b>Entrega → Factura</b> = días promedio desde la fecha de entrega ORIGINAL (snapshot inmune a ediciones) hasta la 1ª factura. Por semana comercial ENAP (jue–mié); se actualiza con el cron CRM (<span id="slaStamp"></span>).</div>
+  <div class="note" style="margin:0 0 12px"><b>SLA Entrega 24h</b> = pedido facturado a más tardar el día siguiente de ponerse (si es preorder con fecha de entrega posterior, vale esa fecha como plazo; meta 95%). <b>Entrega → Factura</b> = días promedio desde la fecha de entrega ORIGINAL (snapshot inmune a ediciones) hasta la 1ª factura. Por semana comercial ENAP (jue–mié) y acumulado por mes calendario con apertura por camión (camión = bodega del despacho validado en Odoo). <b>Fact. especial</b> = SUGAL/ARRIGONI, que facturan en bloque días después de entregar: salen "fuera de plazo" por construcción y se reportan aparte para comparar camiones. Se actualiza con el cron CRM (<span id="slaStamp"></span>).</div>
   <div id="slaSemanas" style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px"></div>
   <div class="kpi-grid" id="slaKpis" style="margin-bottom:12px"></div>
   <div id="slaDetalle"></div>
 </div>
 
-<div class="card vw-oper" hidden id="cardCuadRutas">
-  <h2>🔁 Cuadratura Odoo ↔ SimpliRoute — rutas de hoy</h2>
-  <div class="note" style="margin:0 0 12px">Todo lo <b>aprobado en Odoo</b> (despacho pendiente con fecha de hoy o atrasado) debe tener <b>ruta en SimpliRoute</b> — y toda visita en ruta debe corresponder a una orden aprobada. Se actualiza cada hora en jornada laboral (<span id="cuadStamp"></span>).</div>
-  <div class="kpi-grid" id="cuadKpisRutas" style="margin-bottom:12px"></div>
-  <div id="cuadRutasDetalle"></div>
-</div>
-
-<div class="card vw-oper" hidden id="cardCuadLitros">
-  <h2>🧾 Cuadratura de litros — entregado (SimpliRoute) vs facturado (Odoo)</h2>
-  <div class="note" style="margin:0 0 12px">Por sale.order: litros con checkout en SimpliRoute vs litros en facturas posted de Odoo (NC restadas). <b>Al cierre del día ambos deben cuadrar</b>; lo entregado sin factura queda "por facturar". Intradía es normal que "facturado hoy" supere a "entregado hoy": incluye entregas de ayer facturadas hoy (SLA 24h) — la comparación que vale es por orden y por día de entrega. 🏭 = facturación especial (SUGAL, ARRIGONI): la visita no cierra con litros reales, se usa el pedido de la SO como entregado y las diferencias contra factura son esperables.</div>
-  <div class="kpi-grid" id="cuadKpisLitros" style="margin-bottom:12px"></div>
-  <div id="cuadLitrosDetalle"></div>
-</div>
-
 <div class="card vw-oper" hidden>
-  <h2>🚚 Entregas reales por camión — SimpliRoute</h2>
-  <div class="note" style="margin:0 0 12px">Desde la API de SimpliRoute (se actualiza sola cada mañana). El <b>chofer es el que registran las visitas reales</b> — rotaciones incluidas, sin listas estáticas. Jornada = salida a ruta (<code>on_its_way</code>) → último checkout con GPS. Ventana: últimos 14 días (<span id="srRango"></span>).</div>
-  <div class="scroll"><table id="tablaSimpli"></table></div>
-  <div id="srNota" class="note"></div>
-</div>
-
-<div class="card vw-oper" hidden>
-  <h2>⚠️ Entregas fallidas recientes — con motivo</h2>
-  <div class="note" style="margin:0 0 12px">Visitas failed/partial de los últimos 14 días. Excluye los "failed" de facturación especial (SUGAL), que sí son entregas. Cada fila es plata dando vueltas: revisar motivo y reprogramar.</div>
-  <div class="scroll"><table id="tablaFallidas"></table></div>
-</div>
-
-<div class="card vw-oper" hidden>
-  <h2>👷 Productividad de choferes — anatomía de la jornada</h2>
-  <div class="note" style="margin:0 0 12px">Con <b>horas GPS reales de SimpliRoute</b> (se actualiza sola cada mañana; el chofer sale de las visitas reales). La jornada medible: <b>arranque</b> (salida a ruta "En camino" → 1ª entrega) y <b>activo</b> (1ª → última entrega). Lo que pasa después de la última entrega (regreso, cierre) no es visible en Simpli. Valores = mediana del día típico en la ventana <span id="chofRango"></span>.</div>
+  <h2>🚛 Productividad de camiones — anatomía de la jornada (SimpliRoute)</h2>
+  <div class="note" style="margin:0 0 12px">Con <b>horas GPS reales de SimpliRoute</b> (se actualiza sola cada mañana; el chofer sale de las visitas reales). La jornada medible: <b>arranque</b> (salida a ruta "En camino" → 1ª entrega) y <b>activo</b> (1ª → última entrega). Lo que pasa después de la última entrega (regreso, cierre) no es visible en Simpli. Por semana comercial ENAP (jue–mié) o acumulado por mes; valores = mediana del día típico del período <span id="chofRango"></span>.</div>
+  <div id="jornPeriodos" style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-bottom:12px"></div>
   <div class="scroll"><table id="tablaChoferes"></table></div>
   <div class="leyenda">
     <span><i class="act" style="background:var(--accent);opacity:.8"></i>Activo (entregando)</span>
@@ -220,15 +194,13 @@ async function load() {
   const CH = chofRes.ok ? await chofRes.json() : null;   // solo aporta zona/cobertura por camión
   if (planRes.ok) renderPlanMantencion(await planRes.json(), D);
   if (srRes.ok) {
-    const S = await srRes.json();
-    renderSimpli(S);
-    renderJornada(S, CH);
+    JORN_S = await srRes.json(); JORN_CH = CH;
+    renderJornada(0);
   }
   if (cuadRes.ok) {
     const C = await cuadRes.json();
-    renderCuadratura(C);
     if (C.cierre) renderCierre(C);
-  } else { $('cardCuadRutas').remove(); $('cardCuadLitros').remove(); }
+  }
   if (crmRes && crmRes.ok) {
     const CRM = await crmRes.json();
     if (CRM.operaciones && (CRM.operaciones.sla_semanas || []).length) { SLA_OP = CRM.operaciones; SLA_UPD = CRM.updated || CRM.generated_utc || ''; renderSla(0); }
@@ -666,112 +638,79 @@ function renderSla(idx) {
       `<td class="num" style="border-left:2px solid var(--border)">${L(totAll)}</td></tr></table></div>`;
     return m;
   };
-  let h = matriz('🚛 Litros diarios por camión', camiones, rows, r => r.camion);
+  // ── Acumulado por MES + apertura por CAMIÓN (pedido Pauline 14-oct-2026) ──
+  const pc = v => v >= 95 ? 'ok' : v >= 85 ? 'warn' : 'bad';
+  const cell = (ok, n, style) => n
+    ? `<td class="num"${style ? ` style="${style}"` : ''}><b class="${pc(Math.round(ok / n * 100))}">${Math.round(ok / n * 100)}%</b> <span style="color:var(--muted);font-size:11px">${ok}/${n}</span></td>`
+    : `<td class="num" style="color:var(--muted);${style || ''}">—</td>`;
+  const dias = v => v != null ? v.toLocaleString('es-CL', { maximumFractionDigits: 2 }) + ' d' : '—';
+  const meses = (OP.sla_meses || []).slice().reverse();  // cronológico: más antiguo a la izquierda
+  let h = '';
+  if (meses.length) {
+    h += h3('📅 SLA Entrega 24h — acumulado por mes') +
+      '<div class="scroll"><table><tr><th>Mes</th><th class="num">Pedidos</th><th class="num">SLA 24h</th><th class="num">sin fact. especial</th><th class="num">Fuera de plazo</th><th class="num">Entrega → Factura</th><th class="num">≤24h de la fecha</th></tr>';
+    meses.forEach(m => {
+      h += `<tr><td><b>${esc(m.label)}</b>${m.parcial ? ' <span class="badge">en curso</span>' : ''}</td>` +
+        `<td class="num">${m.pedidos_semana}${m.prom_en_curso ? ` <span style="color:var(--muted);font-size:11px">(${m.prom_en_curso} en reparto)</span>` : ''}</td>` +
+        cell(m.prom_ok, m.prom_total) + cell(m.prom_ok_ex, m.prom_total_ex) +
+        `<td class="num ${m.incumplidas_n ? 'bad' : 'ok'}"><b>${m.incumplidas_n}</b>${m.especial_inc ? ` <span style="color:var(--muted);font-size:11px">(${m.especial_inc} fact. especial)</span>` : ''}</td>` +
+        `<td class="num">${dias(m.ent_prom_dias)}</td>` +
+        `<td class="num ${m.ent_24h_pct != null ? pc(m.ent_24h_pct) : ''}">${m.ent_24h_pct != null ? m.ent_24h_pct + '%' : '—'}</td></tr>`;
+    });
+    h += '</table></div>';
+
+    // Por camión: peor arriba (acumulado 3 meses sin facturación especial)
+    const cams = [...new Set(meses.flatMap(m => (m.por_camion || []).map(c => c.camion)))];
+    const acc = {};
+    cams.forEach(c => {
+      acc[c] = { ok: 0, n: 0, inc: 0, ent: 0, entn: 0 };
+      meses.forEach(m => {
+        const x = (m.por_camion || []).find(y => y.camion === c); if (!x) return;
+        acc[c].ok += x.ok_ex || 0; acc[c].n += x.evaluados_ex || 0; acc[c].inc += (x.incumplidas || 0) - (x.especial_inc || 0);
+        if (x.ent_prom_dias != null) { acc[c].ent += x.ent_prom_dias * x.ent_n; acc[c].entn += x.ent_n; }
+      });
+    });
+    cams.sort((a, b) => (acc[a].n ? acc[a].ok / acc[a].n : 2) - (acc[b].n ? acc[b].ok / acc[b].n : 2));
+    const bl = 'border-left:2px solid var(--border)';
+    h += h3('🚛 SLA Entrega 24h por camión <span style="font-weight:400;color:var(--muted);font-size:12px">sin facturación especial · peor arriba</span>') +
+      '<div class="scroll"><table><tr><th>Camión</th>' + meses.map(m => `<th class="num">${esc(m.label.slice(0, 3))}${m.parcial ? ' ●' : ''}</th>`).join('') +
+      `<th class="num" style="${bl}">Acum. ${meses.length} meses</th><th class="num">Fuera de plazo</th><th class="num">Entrega → Factura</th></tr>`;
+    cams.forEach(c => {
+      const a = acc[c];
+      h += `<tr><td><b>${esc(c)}</b></td>` + meses.map(m => { const x = (m.por_camion || []).find(y => y.camion === c); return x ? cell(x.ok_ex, x.evaluados_ex) : '<td class="num" style="color:var(--muted)">—</td>'; }).join('') +
+        cell(a.ok, a.n, bl) + `<td class="num ${a.inc ? 'bad' : 'ok'}">${a.inc}</td><td class="num">${a.entn ? dias(a.ent / a.entn) : '—'}</td></tr>`;
+    });
+    const tot = meses.reduce((o, m) => ({ ok: o.ok + (m.prom_ok_ex || 0), n: o.n + (m.prom_total_ex || 0), inc: o.inc + (m.incumplidas_n || 0) - (m.especial_inc || 0) }), { ok: 0, n: 0, inc: 0 });
+    h += '<tr style="font-weight:700;border-top:2px solid var(--border)"><td>Total flota</td>' + meses.map(m => cell(m.prom_ok_ex, m.prom_total_ex)).join('') +
+      cell(tot.ok, tot.n, bl) + `<td class="num">${tot.inc}</td><td class="num"></td></tr></table></div>`;
+  }
+
+  // Por camión de la semana seleccionada
+  const pcw = sla.por_camion || [];
+  if (pcw.length) {
+    h += h3(`🚛 Por camión — ${esc(sla.label || 'semana')}`) +
+      '<div class="scroll"><table><tr><th>Camión</th><th class="num">Pedidos</th><th class="num">SLA 24h</th><th class="num">sin fact. especial</th><th class="num">Fuera de plazo</th><th class="num">Entrega → Factura</th></tr>' +
+      pcw.map(c => `<tr><td><b>${esc(c.camion)}</b></td><td class="num">${c.pedidos}${c.en_curso ? ` <span style="color:var(--muted);font-size:11px">(${c.en_curso} en reparto)</span>` : ''}</td>` +
+        cell(c.ok, c.evaluados) + cell(c.ok_ex, c.evaluados_ex) +
+        `<td class="num ${c.incumplidas ? 'bad' : 'ok'}">${c.incumplidas}${c.especial_inc ? ` <span style="color:var(--muted);font-size:11px">(${c.especial_inc} esp.)</span>` : ''}</td><td class="num">${dias(c.ent_prom_dias)}</td></tr>`).join('') +
+      '</table></div>';
+  }
+
+  h += matriz('🚛 Litros diarios por camión', camiones, rows, r => r.camion);
   h += matriz('🗺️ Litros diarios por zona', zonas, rowsZ, r => r.zona);
 
   h += h3(`⏰ Fuera de plazo — ${esc(sla.label || 'semana')} <span class="badge">${inc.length}</span>`) +
-    '<div class="scroll"><table><tr><th>Cliente</th><th>Orden</th><th>Pedido (hora Chile)</th><th>Plazo</th><th>Facturado el</th><th class="num">Días después</th></tr>';
-  if (!inc.length) h += '<tr><td colspan="6" style="color:var(--muted)">Todos los pedidos dentro de plazo 🎉</td></tr>';
+    '<div class="scroll"><table><tr><th>Cliente</th><th>Orden</th><th>Camión</th><th>Pedido (hora Chile)</th><th>Plazo</th><th>Facturado el</th><th class="num">Días después</th></tr>';
+  if (!inc.length) h += '<tr><td colspan="7" style="color:var(--muted)">Todos los pedidos dentro de plazo 🎉</td></tr>';
   inc.forEach(r => {
     const mv = r.movido ? ` <span class="badge nobudget" title="fecha de entrega cambiada en Odoo después del pedido">⚠ movido ${esc(r.movido)}</span>` : '';
-    h += `<tr><td><b>${esc(r.cliente)}</b></td><td>${esc(r.orden)}</td><td>${esc(r.pedido)}</td><td>${esc(r.limite || '—')}${mv}</td><td>${esc(r.facturado)}</td><td class="num ${r.dias > 2 ? 'bad' : 'warn'}"><b>+${r.dias}d</b></td></tr>`;
+    const sp = r.especial ? ' <span class="badge" title="factura en bloque días después de entregar (no es atraso de reparto)">fact. especial</span>' : '';
+    h += `<tr><td><b>${esc(r.cliente)}</b>${sp}</td><td>${esc(r.orden)}</td><td>${esc(r.camion || '—')}</td><td>${esc(r.pedido)}</td><td>${esc(r.limite || '—')}${mv}</td><td>${esc(r.facturado)}</td><td class="num ${r.dias > 2 ? 'bad' : 'warn'}"><b>+${r.dias}d</b></td></tr>`;
   });
   h += '</table></div>';
   $('slaDetalle').innerHTML = h;
 }
 
-function renderCuadratura(C) {
-  const L = v => CLP.format(Math.round(v));
-  const fF = f => `${f.slice(8, 10)}-${f.slice(5, 7)}`;
-  const kpi = (label, val, cls, sub) =>
-    `<div class="kpi"><div class="label">${label}</div><div class="value ${cls || ''}">${val}</div>${sub ? `<div class="sub">${sub}</div>` : ''}</div>`;
-  const h3 = t => `<h3 style="font-size:14px;margin:16px 0 8px">${t}</h3>`;
-
-  // frescura: en jornada laboral el dato no debiera tener más de ~2h
-  const gen = new Date(C.generated_utc);
-  const mins = Math.round((Date.now() - gen.getTime()) / 60000);
-  const hhmm = gen.toLocaleString('es-CL', { hour: '2-digit', minute: '2-digit', day: '2-digit', month: '2-digit', timeZone: 'America/Santiago' });
-  $('cuadStamp').innerHTML = `última corrida ${hhmm}` +
-    (mins > 150 ? ` — <b class="bad">hace ${Math.round(mins / 60)} h, dato viejo: revisar el cron</b>` : ` · hace ${mins} min`);
-
-  // ── rutas ──
-  const R = C.rutas, res = R.resumen;
-  const ruteadasTxt = res.ruteadas + (res.ruteadas_manana ? ` <span style="font-size:13px;color:var(--muted)">+${res.ruteadas_manana} p/mañana</span>` : '');
-  $('cuadKpisRutas').innerHTML =
-    kpi('Aprobadas pendientes', res.total, '', 'despachos Odoo por salir (hoy + atrasados)') +
-    kpi('Ruteadas en Simpli', ruteadasTxt, (res.ruteadas + res.ruteadas_manana) >= res.total ? 'ok' : '') +
-    kpi('Sin ruta', res.sin_ruta, res.sin_ruta ? 'bad' : 'ok', res.sin_ruta ? 'aprobadas sin asignar — asignar en SimpliRoute' : 'todo asignado ✓') +
-    kpi('En ruta sin aprobar', res.huerfanas, res.huerfanas ? 'bad' : 'ok', res.huerfanas ? 'visita cuya orden no está aprobada en Odoo' : '—');
-
-  let h = '';
-  const sinRuta = R.pendientes.filter(p => p.estado === 'sin_ruta');
-  if (sinRuta.length) {
-    h += h3('⚠ Aprobadas en Odoo sin ruta en SimpliRoute') +
-      '<div class="scroll"><table><tr><th>Orden</th><th>Despacho</th><th>Cliente</th><th>Camión</th><th class="num">Litros</th><th>Programado</th></tr>' +
-      sinRuta.map(p => `<tr><td><b>${p.so}</b></td><td>${p.picking}</td><td>${p.cliente}</td><td>${p.camion}</td><td class="num">${L(p.litros)}</td><td>${p.programado}${p.atrasado ? ' <b class="bad">atrasado</b>' : ''}</td></tr>`).join('') +
-      '</table></div>';
-  }
-  if (R.huerfanas.length) {
-    h += h3('⚠ En ruta en SimpliRoute sin orden aprobada en Odoo') +
-      '<div class="scroll"><table><tr><th>Orden</th><th>Cliente</th><th>Estado Odoo</th><th>Visita</th><th class="num">Litros</th></tr>' +
-      R.huerfanas.map(x => `<tr><td><b>${x.so}</b></td><td>${x.cliente}</td><td class="bad">${x.estado_odoo}</td><td>${x.status}</td><td class="num">${L(x.litros)}</td></tr>`).join('') +
-      '</table></div>';
-  }
-  if (R.sin_ref.length) {
-    h += `<div class="note">ℹ️ ${R.sin_ref.length} visita(s) de hoy <b>sin referencia a Odoo</b> (creadas a mano en la app, no cuadran solas): ` +
-      R.sin_ref.map(x => `${x.cliente} (${L(x.litros)} L, ${x.status})`).join(' · ') + '</div>';
-  }
-  if (!sinRuta.length && !R.huerfanas.length) {
-    h = '<div class="note ok" style="color:var(--ok)">✅ Todo lo aprobado en Odoo está asignado en SimpliRoute y toda visita en ruta tiene orden aprobada.</div>' + h;
-  }
-  $('cuadRutasDetalle').innerHTML = h;
-
-  // ── litros ──
-  const Li = C.litros;
-  $('cuadKpisLitros').innerHTML =
-    kpi('Entregado hoy (Simpli)', L(Li.entregado_hoy) + ' L', '', 'visitas con checkout hoy') +
-    kpi('Facturado hoy (Odoo)', L(Li.facturado_hoy) + ' L', '', 'diésel posted hoy — incluye entregas de ayer') +
-    kpi('Por facturar', L(Li.por_facturar_total) + ' L', Li.por_facturar_total > 0 ? 'warn' : 'ok', 'entregado sin factura posted (7 días)');
-
-  // días con problema según el detalle por orden
-  const probPorDia = {};
-  for (const r of Li.por_so) if (r.estado !== 'ok') probPorDia[r.fecha] = (probPorDia[r.fecha] || 0) + 1;
-
-  let lh = '<div class="scroll"><table><tr><th>Día entrega</th><th class="num">Entregas</th><th class="num">Entregado L</th><th class="num">Facturado L</th><th class="num">Por facturar L</th><th>Cuadratura</th></tr>';
-  for (const d of Li.dias) {
-    if (!d.entregas) continue;
-    const nProb = probPorDia[d.fecha] || 0;
-    const veredicto = !nProb ? '<span class="ok">✓ cuadra</span>'
-      : (d.fecha === C.hoy ? '<span class="warn">en curso</span>'
-        : `<span class="bad">revisar (${nProb})</span>`);
-    lh += `<tr><td>${fF(d.fecha)}${d.fecha === C.hoy ? ' <span class="badge">hoy</span>' : ''}</td><td class="num">${d.entregas}</td><td class="num">${L(d.entregado)}</td><td class="num">${L(d.facturado)}</td><td class="num${d.por_facturar ? ' warn' : ''}">${L(d.por_facturar)}</td><td>${veredicto}</td></tr>`;
-  }
-  lh += '</table></div>';
-
-  const prob = Li.por_so.filter(r => r.estado !== 'ok');
-  if (prob.length) {
-    lh += h3(`Órdenes que no cuadran (${prob.length})`) +
-      '<div class="scroll"><table><tr><th>Entrega</th><th>Orden</th><th>Cliente</th><th>Camión</th><th class="num">Entregado L</th><th class="num">Facturado L</th><th>Facturas</th><th>Estado</th></tr>' +
-      prob.map(r => {
-        const badge = r.especial ? ' <span class="badge" title="Facturación especial: la visita no cierra con litros reales, entregado = pedido de la SO">🏭</span>' : '';
-        const est = r.estado === 'por_facturar' ? '<b class="warn">por facturar</b>'
-          : `<b class="bad">diferencia ${L(r.facturado - r.entregado)} L</b>`;
-        return `<tr><td>${fF(r.fecha)}</td><td><b>${r.so}</b></td><td>${r.cliente}${badge}${r.parcial ? ' <span class="badge">parcial</span>' : ''}</td><td>${r.camion}</td><td class="num">${L(r.entregado)}</td><td class="num">${L(r.facturado)}</td><td>${(r.facturas || []).join(', ') || '—'}</td><td>${est}</td></tr>`;
-      }).join('') + '</table></div>';
-  } else {
-    lh += '<div class="note ok" style="color:var(--ok)">✅ Todas las entregas de la ventana están facturadas y los litros calzan.</div>';
-  }
-
-  if (Li.fuera_simpli.length) {
-    lh += h3(`Facturado hoy sin visita en SimpliRoute (${Li.fuera_simpli.length})`) +
-      '<div class="scroll"><table><tr><th>Factura</th><th>Orden</th><th>Cliente</th><th class="num">Litros</th></tr>' +
-      Li.fuera_simpli.map(x => `<tr><td>${x.factura}</td><td>${x.so}</td><td>${x.cliente}</td><td class="num">${L(x.litros)}</td></tr>`).join('') +
-      '</table></div><div class="note">Ventas diésel facturadas hoy cuya orden no pasó por SimpliRoute en la ventana — pueden ser legítimas (despacho fuera de ruta), pero explican descuadres del total del día.</div>';
-  }
-  $('cuadLitrosDetalle').innerHTML = lh;
-}
-
-// ---- cierre diario: checklist del instructivo (fases 2-6), solo lo que no cuadra ----
 function renderCierre(C) {
   const K = C.cierre, L = v => v == null ? '—' : CLP.format(Math.round(v));
   const fF = f => f ? `${f.slice(8, 10)}-${f.slice(5, 7)}` : '—';
@@ -876,60 +815,6 @@ function renderCierre(C) {
 }
 
 // ---- entregas reales por camión (SimpliRoute, se actualiza sola) ----
-function renderSimpli(S) {
-  const mm = h => { const [a, b] = h.split(':').map(Number); return a * 60 + b; };
-  const med = a => { if (!a.length) return null; const s = [...a].sort((x, y) => x - y); return s[Math.floor((s.length - 1) / 2)]; };
-  const corte = new Date(new Date(S.hasta + 'T12:00') - 13 * 864e5).toISOString().slice(0, 10);
-  const dias = (S.diario || []).filter(d => d.fecha >= corte && (d.completadas > 0 || d.fallidas > 0));
-  $('srRango').textContent = corte + ' → ' + S.hasta;
-
-  const cams = {};
-  for (const d of dias) {
-    const c = (cams[d.cam] = cams[d.cam] || { dias: [] });
-    c.dias.push(d);
-  }
-  const filas = Object.entries(cams).map(([cam, c]) => {
-    c.dias.sort((a, b) => b.fecha.localeCompare(a.fecha));
-    const jornadas = c.dias.filter(d => d.salida && d.ultimo_checkout)
-      .map(d => mm(d.ultimo_checkout) - mm(d.salida)).filter(x => x > 0);
-    return {
-      cam,
-      chofer: c.dias.find(d => d.chofer)?.chofer || '—',   // el de la visita más reciente
-      nDias: c.dias.length,
-      entregasDia: c.dias.reduce((s, d) => s + d.completadas, 0) / c.dias.length,
-      litrosDia: Math.round(c.dias.reduce((s, d) => s + d.litros_entregados, 0) / c.dias.length),
-      litrosTot: c.dias.reduce((s, d) => s + d.litros_entregados, 0),
-      fallidas: c.dias.reduce((s, d) => s + d.fallidas, 0),
-      salida: med(c.dias.filter(d => d.salida).map(d => mm(d.salida))),
-      fin: med(c.dias.filter(d => d.ultimo_checkout).map(d => mm(d.ultimo_checkout))),
-      jornada: med(jornadas),
-    };
-  }).sort((a, b) => b.litrosTot - a.litrosTot);
-
-  let h = '<table><tr><th>Camión</th><th>Chofer (visitas reales)</th><th>Días</th><th>Entregas/día</th><th>Litros/día</th><th>Litros total</th><th>Fallidas</th><th>Salida (med.)</th><th>Última entrega (med.)</th><th>Jornada (med.)</th></tr>';
-  for (const f of filas) {
-    h += `<tr><td><b>${f.cam}</b></td><td>${f.chofer}</td><td>${f.nDias}</td>
-      <td>${f.entregasDia.toFixed(1)}</td><td>${CLP.format(f.litrosDia)}</td><td><b>${CLP.format(f.litrosTot)}</b></td>
-      <td>${f.fallidas ? '<b class="bad">' + f.fallidas + '</b>' : '0'}</td>
-      <td>${f.salida != null ? hhmm(f.salida) : '—'}</td><td>${f.fin != null ? hhmm(f.fin) : '—'}</td>
-      <td>${f.jornada != null ? dur(f.jornada) : '—'}</td></tr>`;
-  }
-  h += '</table>';
-  $('tablaSimpli').innerHTML = h;
-  $('srNota').innerHTML = 'Fuente: <code>simpliroute-data.json</code> (API SimpliRoute, cron diario 06:13). "Fallidas" excluye la facturación especial (SUGAL), que cuenta como entregada. Con pocas semanas de datos las medianas aún son gruesas — se afinan solas.';
-
-  const uuidRe = /^[0-9a-f]{8}-[0-9a-f]{4}/i;
-  const fal = (S.fallidas || []).filter(x => x.fecha >= corte);
-  let g = '<table><tr><th>Fecha</th><th>Camión</th><th>Chofer</th><th>Cliente</th><th>Litros</th><th>Hora</th><th>Motivo</th></tr>';
-  if (!fal.length) g += '<tr><td colspan="7" style="color:var(--muted)">Sin fallidas en la ventana 🎉</td></tr>';
-  for (const x of fal) {
-    const motivo = x.motivo && !uuidRe.test(x.motivo) ? x.motivo : '<span style="color:var(--muted)">sin motivo anotado</span>';
-    g += `<tr><td>${x.fecha}</td><td><b>${x.cam || '—'}</b></td><td>${x.chofer || '—'}</td><td style="white-space:normal">${x.cliente}</td><td>${CLP.format(Math.round(x.litros || 0))}</td><td>${x.hora || '—'}</td><td style="white-space:normal">${motivo}</td></tr>`;
-  }
-  g += '</table>';
-  $('tablaFallidas').innerHTML = g;
-}
-
 function switchTab(t) {
   document.querySelectorAll('.vw-costos').forEach(e => e.hidden = t !== 'costos');
   document.querySelectorAll('.vw-oper').forEach(e => e.hidden = t !== 'oper');
@@ -946,7 +831,38 @@ function barra(c) {
 
 // Anatomía de la jornada con horas GPS de SimpliRoute (reemplazó a la planilla
 // el 29-sep-2026). CH (choferes-data.json) solo aporta zona/cobertura por camión.
-function renderJornada(S, CH) {
+// Desde el 14-oct-2026 (pedido Pauline, tab KPI): selector por semana ENAP y
+// acumulado por mes, igual que el SLA. JORN_S/JORN_CH se cargan en load().
+let JORN_S = null, JORN_CH = null;
+function jornPeriodos(S) {
+  const iso = d => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+  const lab = d => `${String(d.getDate()).padStart(2, '0')} ${MESES_L[d.getMonth()]}`;
+  const per = [];
+  // semanas ENAP (jue–mié) contadas desde hoy (hora Chile), como en el SLA
+  const hoy = new Date(new Date().toLocaleString('en-US', { timeZone: 'America/Santiago' }));
+  hoy.setHours(12, 0, 0, 0);
+  const thu0 = new Date(hoy); thu0.setDate(hoy.getDate() - ((hoy.getDay() - 4 + 7) % 7));
+  for (let i = 0; i < 4; i++) {
+    const thu = new Date(thu0); thu.setDate(thu0.getDate() - 7 * i);
+    const wed = new Date(thu); wed.setDate(thu.getDate() + 6);
+    per.push({ tipo: 'sem', label: `${lab(thu)} – ${lab(wed)}`, desde: iso(thu), hasta: iso(wed) });
+  }
+  // meses calendario cubiertos por la ventana del JSON (mes en curso + anteriores)
+  const m = new Date(hoy); m.setDate(1);
+  for (let i = 0; i < 3; i++) {
+    const ini = iso(m), fin = iso(new Date(m.getFullYear(), m.getMonth() + 1, 0));
+    if (fin < (S.desde || '')) break;
+    per.push({ tipo: 'mes', label: `${MESES_L[m.getMonth()]} ${m.getFullYear()}`, desde: ini, hasta: fin,
+      parcial: ini < (S.desde || '') ? 'datos desde ' + S.desde.slice(8, 10) + '-' + S.desde.slice(5, 7) : (fin > S.hasta ? 'en curso' : '') });
+    m.setMonth(m.getMonth() - 1);
+  }
+  return per;
+}
+function renderJornada(idx) {
+  const S = JORN_S, CH = JORN_CH; if (!S) return;
+  const per = jornPeriodos(S), P = per[idx] || per[0];
+  const btn = (p, i) => `<button onclick="renderJornada(${i})" style="font-size:12px;padding:4px 10px;border-radius:8px;cursor:pointer;border:1px solid ${i === idx ? 'var(--accent)' : 'var(--border)'};color:${i === idx ? 'var(--accent)' : 'inherit'};background:${i === idx ? '#fdf0e7' : 'var(--card)'};font-weight:${i === idx ? 700 : 400}">${p.label}${i === 0 ? ' ●' : ''}${p.parcial ? ` <span style="font-weight:400;color:var(--muted)">(${p.parcial})</span>` : ''}</button>`;
+  $('jornPeriodos').innerHTML = per.map((p, i) => (i > 0 && p.tipo === 'mes' && per[i - 1].tipo === 'sem' ? '<span style="color:var(--muted);margin:0 4px">mes:</span>' : '') + btn(p, i)).join('');
   const dd = iso => new Date(iso + 'T12:00').toLocaleDateString('es-CL', { day: 'numeric', month: 'short' });
   const mmh = h => { const [a, b] = h.split(':').map(Number); return a * 60 + b; };
   const med = a => { if (!a.length) return null; const s = [...a].sort((x, y) => x - y); return s[Math.floor((s.length - 1) / 2)]; };
@@ -956,10 +872,13 @@ function renderJornada(S, CH) {
   const pat = {};
   (S.vehiculos || []).forEach(v => { pat[v.cam] = v.patente; });
 
-  const dias = (S.diario || []).filter(d => d.completadas > 0);
-  if (!dias.length) return;
-  const desde = dias.reduce((m, d) => (d.fecha < m ? d.fecha : m), S.hasta);
-  $('chofRango').textContent = `${dd(desde)} – ${dd(S.hasta)} (operación SimpliRoute)`;
+  const dias = (S.diario || []).filter(d => d.completadas > 0 && d.fecha >= P.desde && d.fecha <= P.hasta);
+  $('chofRango').textContent = `${dd(P.desde)} – ${dd(P.hasta)} (datos SimpliRoute hasta ${dd(S.hasta)})`;
+  if (!dias.length) {
+    $('tablaChoferes').innerHTML = '<tr><td style="color:var(--muted)">Sin entregas registradas en SimpliRoute para este período</td></tr>';
+    $('chofNota').innerHTML = '';
+    return;
+  }
 
   const cams = {};
   for (const d of dias) (cams[d.cam] = cams[d.cam] || []).push(d);
@@ -1036,11 +955,12 @@ function renderJornada(S, CH) {
       <td class="num">${f.arranque != null ? dur(f.arranque) : '—'}</td>
       <td>${barra({ inicio: f.salida, primera_venta: f.p1, ultima_venta: f.ultima, fin: f.ultima })}</td>
       ${fin}
-      <td class="num ${f.lph >= mejor.lph * 0.75 ? 'ok' : 'bad'}">${CLP.format(f.lph)}</td></tr>`;
+      <td class="num ${!mejor || f.lph >= mejor.lph * 0.75 ? 'ok' : 'bad'}">${CLP.format(f.lph)}</td></tr>`;
   }
   $('tablaChoferes').innerHTML = r;
 
   // brecha: litros que se dejan de mover con las MISMAS horas de ruta ya pagadas
+  if (!mejor) { $('chofNota').innerHTML = 'Ningún camión con ≥3 días medibles (salida a ruta marcada) en el período — la brecha de productividad se calcula con períodos más largos.'; return; }
   const brecha = medibles.filter(f => f.cam !== mejor.cam)
     .map(f => ({ f, lts: (mejor.lph - f.lph) * f.horasTot }))
     .filter(x => x.lts > 0)
@@ -1050,7 +970,7 @@ function renderJornada(S, CH) {
 
   $('chofNota').innerHTML = `
     <b>Brecha de productividad:</b> al ritmo de ${CLP.format(mejor.lph)} litros/hora de ${mejor.chofer},
-    el resto habría movido <b>${CLP.format(Math.round(totalBrecha))} litros más</b> en la ventana
+    el resto habría movido <b>${CLP.format(Math.round(totalBrecha))} litros más</b> en el período
     (${brecha.map(x => `${x.f.chofer} ${CLP.format(Math.round(x.lts / 1000))}k`).join(' · ')})
     con las mismas horas de ruta ya pagadas. Ojo: parte de la brecha es distancia de la zona, no solo gestión.
     ${noConf.length ? `<br><b>Filas "sin horas"</b> (${noConf.map(f => f.chofer).join(', ')}): no marcan
@@ -1065,6 +985,7 @@ function renderJornada(S, CH) {
 }
 
 // link directo a un tab: costos.html#cierre (para el equipo de cierre)
+if (location.hash === '#kpi') switchTab('oper');
 if (['oper', 'mant', 'cierre'].includes(location.hash.slice(1))) switchTab(location.hash.slice(1));
 load().catch(e => {
   $('kpis').innerHTML = `<div class="kpi"><div class="label">Error</div><div class="value bad" style="font-size:15px">${e.message}</div></div>`;

@@ -34,7 +34,10 @@ ODOO_DB = os.environ.get("ODOO_DB", "PRODUCCION")
 ODOO_USER = os.environ.get("ODOO_USER", "p@tomenergy.cl")
 ODOO_KEY = os.environ.get("ODOO_KEY", "")
 
-DIESEL_PRODUCT_ID = 14  # Diésel B1
+DIESEL_PRODUCT_ID = 14
+# Clientes con facturación en bloque (misma tupla FALLA_ES_ENTREGA de extract_simpliroute.py
+# y extract_cuadratura.py — mantener sincronizadas). En el SLA se reportan aparte.
+SLA_FACT_ESPECIAL = ("SUGAL", "ARRIGONI")  # Diésel B1
 
 # Cohorte CHURN de julio-2026 definida por Pauline (12-ago): estos clientes van
 # SIEMPRE en "Recuperables" (con 📌) y en "Nuevos Perdidos del Mes" (etiqueta churn jul-26).
@@ -3288,6 +3291,152 @@ def extract_operaciones(models, uid):
     except (FileNotFoundError, ValueError):
         _snap = {}
     _today_s = fmt(today)
+    # SLA SIMPLE (definición final Pauline 31-jul): pedido entregado dentro de
+    # 24 HRS (con granularidad de fecha: facturado el mismo día o el siguiente).
+    # Preorder: si la entrega sugerida (shipping_date) es posterior, vale esa
+    # fecha como plazo. Cumplido = 1ª factura ≤ plazo. Meta 95%.
+    #
+    # Desde el 14-oct-2026 (pedido Pauline: acumulado por MES + apertura por CAMIÓN)
+    # se evalúa cada pedido UNA vez sobre un rango de 3 meses calendario y luego se
+    # agrega por semana ENAP (selector) y por mes. El pedido se bucketea por su
+    # fecha en hora Chile (antes la semana se cortaba en UTC).
+    _m0 = (m_start - timedelta(days=1)).replace(day=1)
+    _m0 = (_m0 - timedelta(days=1)).replace(day=1)          # 1° del mes de hace 2 meses
+    # Odoo guarda create_date en UTC. Chile: UTC-4 en invierno (abr-sep), UTC-3 en verano.
+    _cl_offset = 4 if 4 <= today.month <= 8 else 3
+    all_orders = sr(models, uid, "sale.order", [
+        ["state", "in", ["sale", "done"]],
+        ["create_date", ">=", fdt_s(_m0 - timedelta(days=1))],   # margen por el corrimiento UTC→Chile
+        ["create_date", "<=", fdt_e(today)],
+        ["create_uid", "!=", 1],
+    ], ["name", "partner_id", "create_date", "shipping_date", "warehouse_id"], limit=5000)
+    _names = [o["name"] for o in all_orders]
+    _inv_by = defaultdict(list)
+    for i in range(0, len(_names), 200):
+        for v in sr(models, uid, "account.move", [
+            ["invoice_origin", "in", _names[i:i+200]],
+            ["move_type", "=", "out_invoice"], ["state", "=", "posted"],
+        ], ["invoice_origin", "invoice_date"], limit=5000):
+            _inv_by[v["invoice_origin"]].append(v["invoice_date"])
+    # Camión REAL = bodega del despacho OUT validado (una re-planificación crea un
+    # picking nuevo en otro camión; warehouse_id de la SO es solo el planificado y
+    # queda de fallback). Si hubo backorder se toma el primer despacho validado.
+    _pick_cam = {}
+    for i in range(0, len(_names), 200):
+        for p in sr(models, uid, "stock.picking", [
+            ["origin", "in", _names[i:i+200]],
+            ["picking_type_code", "=", "outgoing"], ["state", "=", "done"],
+        ], ["origin", "picking_type_id", "date_done"], limit=5000, order="date_done asc"):
+            _pick_cam.setdefault(p["origin"], safe_name(p.get("picking_type_id")).split(":")[0].strip())
+
+    _cut45_d = today - timedelta(days=45)
+    evals = []
+    for o in all_orders:
+        created_cl = datetime.strptime(o["create_date"][:19], "%Y-%m-%d %H:%M:%S") - timedelta(hours=_cl_offset)
+        pedido_dia = created_cl.date()
+        if pedido_dia < _m0:
+            continue
+        limite = pedido_dia + timedelta(days=1)  # dentro de 24 hrs
+        # Plazo ORIGINAL desde el snapshot (lo que decía shipping_date la primera
+        # vez que el pipeline vio el pedido). El valor live solo sirve para
+        # detectar si alguien lo corrió después. El snapshot se poda a 45 días, así
+        # que los pedidos más viejos (solo meses cerrados) no se registran y se
+        # evalúan con el shipping_date live, sin detección de "movido".
+        _ship_live = (o.get("shipping_date") or "")[:10]
+        if o["name"] not in _snap and pedido_dia >= _cut45_d:
+            _snap[o["name"]] = {"visto": _today_s, "plazo": _ship_live}
+        _ship = (_snap[o["name"]].get("plazo") or "") if o["name"] in _snap else _ship_live
+        _movido = ""
+        if o["name"] in _snap and _ship_live != _ship:
+            _movido = (_ship or "—") + " → " + (_ship_live or "—")
+        _preorder = False
+        if _ship:
+            try:
+                _ship_d = datetime.strptime(_ship, "%Y-%m-%d").date()
+                if _ship_d > limite:
+                    limite = _ship_d
+                    _preorder = True
+            except ValueError:
+                pass
+        _cli = safe_name(o.get("partner_id"))
+        e = {"orden": o["name"], "cliente": _cli,
+             # Facturación ESPECIAL (SUGAL/ARRIGONI, misma tupla FALLA_ES_ENTREGA de
+             # SimpliRoute): facturan en bloque días después de la entrega → salen
+             # incumplidos por construcción. Se reportan aparte para no ensuciar la
+             # comparación entre camiones.
+             "especial": any(c in _cli.upper() for c in SLA_FACT_ESPECIAL),
+             "camion": _pick_cam.get(o["name"]) or safe_name(o.get("warehouse_id")) or "Sin camión",
+             "dia": pedido_dia, "pedido": created_cl.strftime("%Y-%m-%d %H:%M"),
+             "limite": limite, "preorder": _preorder, "movido": _movido,
+             "facturado": "—", "dias": 0, "ent_diff": None}
+        ds = sorted(_inv_by.get(o["name"], []))
+        if not ds:
+            if limite >= today:
+                e["estado"] = "en_curso"  # plazo aún abierto: no evaluar todavía
+            else:
+                e["estado"] = "incumplida"
+                e["dias"] = (today - limite).days
+            evals.append(e)
+            continue
+        first_inv = datetime.strptime(ds[0][:10], "%Y-%m-%d").date()
+        e["facturado"] = ds[0][:10]
+        # Entrega→Factura (pedido Pauline 11-sep): días entre la fecha de entrega
+        # ORIGINAL (snapshot, no la editada) y la 1ª factura. Facturado antes o el
+        # mismo día = 0 días de espera.
+        if _ship:
+            try:
+                e["ent_diff"] = (first_inv - datetime.strptime(_ship, "%Y-%m-%d").date()).days
+            except ValueError:
+                pass
+        if first_inv <= limite:
+            e["estado"] = "ok"
+        else:
+            e["estado"] = "incumplida"
+            e["dias"] = (first_inv - limite).days
+        evals.append(e)
+
+    def _agg_sla(evs, por_camion=True):
+        """KPIs SLA 24h + Entrega→Factura sobre un conjunto de pedidos evaluados.
+        Mismo contrato de campos que leía el dashboard (prom_*, ent_*, pedidos_semana)
+        + `por_camion` (apertura por camión real del despacho)."""
+        ev = [e for e in evs if e["estado"] != "en_curso"]
+        inc = sorted([e for e in evs if e["estado"] == "incumplida"], key=lambda x: -x["dias"])
+        ent = [e["ent_diff"] for e in ev if e["ent_diff"] is not None]
+        s = {
+            "prom_total": len(ev),
+            "prom_ok": sum(1 for e in ev if e["estado"] == "ok"),
+            "prom_preorders": sum(1 for e in evs if e["preorder"]),
+            "prom_en_curso": sum(1 for e in evs if e["estado"] == "en_curso"),
+            "prom_movidos": sum(1 for e in evs if e["movido"]),
+            "prom_incumplidas": [{"orden": e["orden"], "cliente": e["cliente"], "camion": e["camion"],
+                                  "pedido": e["pedido"], "limite": fmt(e["limite"]), "facturado": e["facturado"],
+                                  "dias": e["dias"], "movido": e["movido"], "especial": e["especial"]} for e in inc[:40]],
+            "incumplidas_n": len(inc),
+            "ent_n": len(ent),
+            "ent_prom_dias": round(sum(max(0, d) for d in ent) / len(ent), 2) if ent else None,
+            "ent_0d_pct": round(sum(1 for d in ent if d <= 0) / len(ent) * 100) if ent else None,
+            "ent_24h_pct": round(sum(1 for d in ent if d <= 1) / len(ent) * 100) if ent else None,
+            "pedidos_semana": len(evs),
+        }
+        s["prom_pct"] = round(s["prom_ok"] / s["prom_total"] * 100) if s["prom_total"] else 0
+        # Sin facturación especial (SUGAL/ARRIGONI): la cifra comparable entre camiones.
+        ev_x = [e for e in ev if not e["especial"]]
+        s["prom_total_ex"] = len(ev_x)
+        s["prom_ok_ex"] = sum(1 for e in ev_x if e["estado"] == "ok")
+        s["prom_pct_ex"] = round(s["prom_ok_ex"] / s["prom_total_ex"] * 100) if s["prom_total_ex"] else 0
+        s["especial_inc"] = sum(1 for e in inc if e["especial"])
+        if por_camion:
+            s["por_camion"] = []
+            for c in sorted({e["camion"] for e in evs}):
+                sc = _agg_sla([e for e in evs if e["camion"] == c], por_camion=False)
+                s["por_camion"].append({"camion": c, "pedidos": sc["pedidos_semana"], "evaluados": sc["prom_total"],
+                                        "ok": sc["prom_ok"], "pct": sc["prom_pct"], "incumplidas": sc["incumplidas_n"],
+                                        "evaluados_ex": sc["prom_total_ex"], "ok_ex": sc["prom_ok_ex"], "pct_ex": sc["prom_pct_ex"],
+                                        "especial_inc": sc["especial_inc"],
+                                        "en_curso": sc["prom_en_curso"], "ent_n": sc["ent_n"],
+                                        "ent_prom_dias": sc["ent_prom_dias"], "ent_24h_pct": sc["ent_24h_pct"]})
+        return s
+
     sla_semanas = []
     for offset in range(4):
         wk = get_enap_week(offset)
@@ -3297,101 +3446,25 @@ def extract_operaciones(models, uid):
         s["label"] = wk["label"]
         s["week_start"] = wk["start"]
         s["week_end"] = wk["end"]
-
-        # SLA SIMPLE (definición final Pauline 31-jul): pedido entregado dentro de
-        # 24 HRS (con granularidad de fecha: facturado el mismo día o el siguiente).
-        # Preorder: si la entrega sugerida (shipping_date) es posterior, vale esa
-        # fecha como plazo. Cumplido = 1ª factura ≤ plazo. Meta 95%.
-        wk_orders = sr(models, uid, "sale.order", [
-            ["state", "in", ["sale", "done"]],
-            ["create_date", ">=", fdt_s(ws_d)],
-            ["create_date", "<=", fdt_e(we_d)],
-            ["create_uid", "!=", 1],
-        ], ["name", "partner_id", "create_date", "shipping_date"], limit=2000)
-        _names = [o["name"] for o in wk_orders]
-        _inv_by = defaultdict(list)
-        for i in range(0, len(_names), 200):
-            for v in sr(models, uid, "account.move", [
-                ["invoice_origin", "in", _names[i:i+200]],
-                ["move_type", "=", "out_invoice"], ["state", "=", "posted"],
-            ], ["invoice_origin", "invoice_date"], limit=5000):
-                _inv_by[v["invoice_origin"]].append(v["invoice_date"])
-
-        # Odoo guarda create_date en UTC. Chile: UTC-4 en invierno (abr-sep), UTC-3 en verano.
-        _cl_offset = 4 if 4 <= today.month <= 8 else 3
-        prom_total = 0; prom_ok = 0; en_curso = 0; preorders = 0; movidos = 0
-        prom_incumplidas = []
-        # Entrega→Factura (pedido Pauline 11-sep): días entre la fecha de entrega
-        # ORIGINAL (snapshot, no la editada) y la 1ª factura. Facturado antes o el
-        # mismo día = 0 días de espera.
-        ent_n = 0; ent_sum = 0; ent_0d = 0; ent_1d = 0
-        for o in wk_orders:
-            created_cl = datetime.strptime(o["create_date"][:19], "%Y-%m-%d %H:%M:%S") - timedelta(hours=_cl_offset)
-            pedido_dia = created_cl.date()
-            limite = pedido_dia + timedelta(days=1)  # dentro de 24 hrs
-            # Plazo ORIGINAL desde el snapshot (lo que decía shipping_date la primera
-            # vez que el pipeline vio el pedido). El valor live solo sirve para
-            # detectar si alguien lo corrió después.
-            _ship_live = (o.get("shipping_date") or "")[:10]
-            if o["name"] not in _snap:
-                _snap[o["name"]] = {"visto": _today_s, "plazo": _ship_live}
-            _ship = _snap[o["name"]].get("plazo") or ""
-            _movido = ""
-            if _ship_live != _ship:
-                movidos += 1
-                _movido = (_ship or "—") + " → " + (_ship_live or "—")
-            if _ship:
-                try:
-                    _ship_d = datetime.strptime(_ship, "%Y-%m-%d").date()
-                    if _ship_d > limite:
-                        limite = _ship_d
-                        preorders += 1
-                except ValueError:
-                    pass
-            ds = sorted(_inv_by.get(o["name"], []))
-            if not ds:
-                if limite >= today:
-                    en_curso += 1  # plazo aún abierto: no evaluar todavía
-                    continue
-                prom_total += 1
-                prom_incumplidas.append({"orden": o["name"], "cliente": safe_name(o.get("partner_id")),
-                                         "pedido": created_cl.strftime("%Y-%m-%d %H:%M"),
-                                         "limite": fmt(limite), "facturado": "—",
-                                         "dias": (today - limite).days, "movido": _movido})
-                continue
-            prom_total += 1
-            first_inv = datetime.strptime(ds[0][:10], "%Y-%m-%d").date()
-            if _ship:
-                try:
-                    _ent_diff = (first_inv - datetime.strptime(_ship, "%Y-%m-%d").date()).days
-                    ent_n += 1
-                    ent_sum += max(0, _ent_diff)
-                    if _ent_diff <= 0: ent_0d += 1
-                    if _ent_diff <= 1: ent_1d += 1
-                except ValueError:
-                    pass
-            if first_inv <= limite:
-                prom_ok += 1
-            else:
-                prom_incumplidas.append({"orden": o["name"], "cliente": safe_name(o.get("partner_id")),
-                                         "pedido": created_cl.strftime("%Y-%m-%d %H:%M"),
-                                         "limite": fmt(limite), "facturado": ds[0][:10],
-                                         "dias": (first_inv - limite).days, "movido": _movido})
-        prom_incumplidas.sort(key=lambda x: -x["dias"])
-        s["prom_total"] = prom_total
-        s["prom_ok"] = prom_ok
-        s["prom_pct"] = round(prom_ok / prom_total * 100) if prom_total else 0
-        s["prom_preorders"] = preorders
-        s["prom_en_curso"] = en_curso
-        s["prom_movidos"] = movidos
-        s["prom_incumplidas"] = prom_incumplidas[:40]
-        s["ent_n"] = ent_n
-        s["ent_prom_dias"] = round(ent_sum / ent_n, 2) if ent_n else None
-        s["ent_0d_pct"] = round(ent_0d / ent_n * 100) if ent_n else None
-        s["ent_24h_pct"] = round(ent_1d / ent_n * 100) if ent_n else None
-        s["pedidos_semana"] = len(wk_orders)
-        print(f"  SLA 24h {wk['label']}: {prom_ok}/{prom_total} a tiempo ({s['prom_pct']}%) | incumplidas: {len(prom_incumplidas)} | preorders: {preorders} | movidos: {movidos} | en curso: {en_curso}")
+        s.update(_agg_sla([e for e in evals if ws_d <= e["dia"] <= we_d]))
+        print(f"  SLA 24h {wk['label']}: {s['prom_ok']}/{s['prom_total']} a tiempo ({s['prom_pct']}%) | incumplidas: {s['incumplidas_n']} | preorders: {s['prom_preorders']} | movidos: {s['prom_movidos']} | en curso: {s['prom_en_curso']}")
         sla_semanas.append(s)
+
+    # Acumulado por MES calendario (mes en curso + 2 cerrados), con apertura por camión.
+    _MESES = ["", "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio",
+              "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"]
+    sla_meses = []
+    _mm = m_start
+    for _ in range(3):
+        _me = (_mm + timedelta(days=32)).replace(day=1) - timedelta(days=1)
+        s = _agg_sla([e for e in evals if _mm <= e["dia"] <= _me])
+        s["mes"] = _mm.strftime("%Y-%m")
+        s["label"] = f"{_MESES[_mm.month]} {_mm.year}"
+        s["parcial"] = _mm == m_start
+        print(f"  SLA 24h {s['label']}{' (parcial)' if s['parcial'] else ''}: {s['prom_ok']}/{s['prom_total']} ({s['prom_pct']}%) | sin fact. especial {s['prom_pct_ex']}% | "
+              + " · ".join(f"{c['camion']} {c['pct_ex']}% ({c['ok_ex']}/{c['evaluados_ex']})" for c in s["por_camion"]))
+        sla_meses.append(s)
+        _mm = (_mm - timedelta(days=1)).replace(day=1)
 
     # Persistir snapshot (podado a 45 días — cubre las 4 semanas ENAP con holgura).
     # El workflow lo commitea junto a crm-data.json.
@@ -3456,6 +3529,7 @@ def extract_operaciones(models, uid):
     return {
         "sla": sla_actual,
         "sla_semanas": sla_semanas,
+        "sla_meses": sla_meses,
         "camiones_diario": rows,
         "camiones": camiones,
         "zonas_diario": rows_z,
