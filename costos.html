@@ -745,6 +745,25 @@ function renderSla(idx) {
     const tot = meses.reduce((o, m) => ({ ok: o.ok + (m.prom_ok_ex || 0), n: o.n + (m.prom_total_ex || 0), inc: o.inc + (m.incumplidas_n || 0) - (m.especial_inc || 0) }), { ok: 0, n: 0, inc: 0 });
     h += '<tr style="font-weight:700;border-top:2px solid var(--border)"><td>Total flota</td>' + meses.map(m => cell(m.prom_ok_ex, m.prom_total_ex)).join('') +
       cell(tot.ok, tot.n, bl) + `<td class="num">${tot.inc}</td><td class="num"></td></tr></table></div>`;
+
+    // Retraso por camión acumulado mes: cuántos pedidos salieron fuera de plazo y
+    // cuántos días después del plazo (promedio y peor), sin facturación especial.
+    const rc = (x) => {
+      const n = (x.incumplidas != null ? x.incumplidas : (x.incumplidas_n || 0)) - (x.especial_inc || 0);
+      if (!n) return '<td class="num ok">0</td>';
+      return `<td class="num"><b class="bad">${n}</b>${x.atraso_prom != null ? `<div style="color:var(--muted);font-size:11px">+${x.atraso_prom.toLocaleString('es-CL')} d prom · máx +${x.atraso_max} d</div>` : ''}</td>`;
+    };
+    const camsR = cams.slice().sort((a, b) => acc[b].inc - acc[a].inc);
+    h += h3('⏰ Retraso por camión — pedidos fuera de plazo por mes <span style="font-weight:400;color:var(--muted);font-size:12px">sin facturación especial · días después del plazo comprometido</span>') +
+      '<div class="scroll"><table><tr><th>Camión</th>' + meses.map(m => `<th class="num">${esc(m.label.slice(0, 3))}${m.parcial ? ' ●' : ''}</th>`).join('') +
+      `<th class="num" style="${bl}">Acum. ${meses.length} meses</th><th class="num">% de sus pedidos</th></tr>`;
+    camsR.forEach(c => {
+      const a = acc[c];
+      h += `<tr><td><b>${esc(c)}</b></td>` + meses.map(m => { const x = (m.por_camion || []).find(y => y.camion === c); return x ? rc(x) : '<td class="num" style="color:var(--muted)">—</td>'; }).join('') +
+        `<td class="num ${a.inc ? 'bad' : 'ok'}" style="${bl}"><b>${a.inc}</b></td><td class="num">${a.n ? Math.round(a.inc / a.n * 100) + '%' : '—'}</td></tr>`;
+    });
+    h += '<tr style="font-weight:700;border-top:2px solid var(--border)"><td>Total flota</td>' + meses.map(m => rc(m)).join('') +
+      `<td class="num" style="${bl}">${tot.inc}</td><td class="num">${tot.n ? Math.round(tot.inc / tot.n * 100) + '%' : '—'}</td></tr></table></div>`;
   }
 
   // Por camión de la semana seleccionada

@@ -3425,6 +3425,10 @@ def extract_operaciones(models, uid):
         s["prom_ok_ex"] = sum(1 for e in ev_x if e["estado"] == "ok")
         s["prom_pct_ex"] = round(s["prom_ok_ex"] / s["prom_total_ex"] * 100) if s["prom_total_ex"] else 0
         s["especial_inc"] = sum(1 for e in inc if e["especial"])
+        # Retraso promedio (días después del plazo) de las incumplidas sin fact. especial
+        _inc_x = [e["dias"] for e in inc if not e["especial"]]
+        s["atraso_prom"] = round(sum(_inc_x) / len(_inc_x), 1) if _inc_x else None
+        s["atraso_max"] = max(_inc_x) if _inc_x else None
         if por_camion:
             s["por_camion"] = []
             for c in sorted({e["camion"] for e in evs}):
@@ -3432,7 +3436,7 @@ def extract_operaciones(models, uid):
                 s["por_camion"].append({"camion": c, "pedidos": sc["pedidos_semana"], "evaluados": sc["prom_total"],
                                         "ok": sc["prom_ok"], "pct": sc["prom_pct"], "incumplidas": sc["incumplidas_n"],
                                         "evaluados_ex": sc["prom_total_ex"], "ok_ex": sc["prom_ok_ex"], "pct_ex": sc["prom_pct_ex"],
-                                        "especial_inc": sc["especial_inc"],
+                                        "especial_inc": sc["especial_inc"], "atraso_prom": sc["atraso_prom"], "atraso_max": sc["atraso_max"],
                                         "en_curso": sc["prom_en_curso"], "ent_n": sc["ent_n"],
                                         "ent_prom_dias": sc["ent_prom_dias"], "ent_24h_pct": sc["ent_24h_pct"]})
         return s
