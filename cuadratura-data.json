@@ -1,7 +1,7 @@
 {
- "generated_utc": "2026-10-14T01:46+00:00",
- "hoy": "2026-10-13",
- "desde": "2026-10-07",
+ "generated_utc": "2026-10-14T04:42+00:00",
+ "hoy": "2026-10-14",
+ "desde": "2026-10-08",
  "rutas": {
   "pendientes": [
    {
@@ -12,7 +12,7 @@
     "litros": 1600,
     "programado": "08-10 09:31",
     "atrasado": true,
-    "estado": "ruteada_manana",
+    "estado": "ruteada",
     "visita_status": "pending"
    },
    {
@@ -22,9 +22,9 @@
     "camion": "VDKT-95",
     "litros": 600,
     "programado": "13-10 07:21",
-    "atrasado": false,
+    "atrasado": true,
     "estado": "ruteada",
-    "visita_status": "failed"
+    "visita_status": "pending"
    },
    {
     "picking": "TJVS/OUT/02016",
@@ -33,8 +33,8 @@
     "camion": "TJVS-53",
     "litros": 1000,
     "programado": "13-10 09:36",
-    "atrasado": false,
-    "estado": "ruteada_manana",
+    "atrasado": true,
+    "estado": "ruteada",
     "visita_status": "pending"
    },
    {
@@ -44,8 +44,8 @@
     "camion": "PYHK-28",
     "litros": 5000,
     "programado": "13-10 09:39",
-    "atrasado": false,
-    "estado": "ruteada_manana",
+    "atrasado": true,
+    "estado": "ruteada",
     "visita_status": "pending"
    },
    {
@@ -55,8 +55,8 @@
     "camion": "PYHK-28",
     "litros": 3000,
     "programado": "13-10 10:54",
-    "atrasado": false,
-    "estado": "ruteada_manana",
+    "atrasado": true,
+    "estado": "ruteada",
     "visita_status": "pending"
    },
    {
@@ -66,8 +66,8 @@
     "camion": "PHXC-44",
     "litros": 500,
     "programado": "13-10 11:24",
-    "atrasado": false,
-    "estado": "ruteada_manana",
+    "atrasado": true,
+    "estado": "ruteada",
     "visita_status": "pending"
    },
    {
@@ -77,8 +77,8 @@
     "camion": "PHXC-44",
     "litros": 600,
     "programado": "13-10 15:01",
-    "atrasado": false,
-    "estado": "ruteada_manana",
+    "atrasado": true,
+    "estado": "ruteada",
     "visita_status": "pending"
    },
    {
@@ -88,8 +88,8 @@
     "camion": "VDKT-95",
     "litros": 2000,
     "programado": "13-10 15:45",
-    "atrasado": false,
-    "estado": "ruteada_manana",
+    "atrasado": true,
+    "estado": "ruteada",
     "visita_status": "pending"
    },
    {
@@ -99,8 +99,8 @@
     "camion": "TJVS-53",
     "litros": 2500,
     "programado": "13-10 15:49",
-    "atrasado": false,
-    "estado": "ruteada_manana",
+    "atrasado": true,
+    "estado": "ruteada",
     "visita_status": "pending"
    },
    {
@@ -110,8 +110,8 @@
     "camion": "TJVS-53",
     "litros": 5000,
     "programado": "13-10 15:52",
-    "atrasado": false,
-    "estado": "ruteada_manana",
+    "atrasado": true,
+    "estado": "ruteada",
     "visita_status": "pending"
    },
    {
@@ -121,8 +121,8 @@
     "camion": "PYHK-28",
     "litros": 2000,
     "programado": "13-10 16:37",
-    "atrasado": false,
-    "estado": "ruteada_manana",
+    "atrasado": true,
+    "estado": "ruteada",
     "visita_status": "pending"
    },
    {
@@ -132,8 +132,8 @@
     "camion": "PYHK-28",
     "litros": 1500,
     "programado": "13-10 17:17",
-    "atrasado": false,
-    "estado": "ruteada_manana",
+    "atrasado": true,
+    "estado": "ruteada",
     "visita_status": "pending"
    },
    {
@@ -143,8 +143,8 @@
     "camion": "PYHK-28",
     "litros": 1000,
     "programado": "13-10 17:20",
-    "atrasado": false,
-    "estado": "ruteada_manana",
+    "atrasado": true,
+    "estado": "ruteada",
     "visita_status": "pending"
    },
    {
@@ -154,8 +154,8 @@
     "camion": "PYHK-28",
     "litros": 800,
     "programado": "13-10 18:23",
-    "atrasado": false,
-    "estado": "ruteada_manana",
+    "atrasado": true,
+    "estado": "ruteada",
     "visita_status": "pending"
    },
    {
@@ -165,8 +165,8 @@
     "camion": "TJVS-53",
     "litros": 1000,
     "programado": "13-10 18:34",
-    "atrasado": false,
-    "estado": "ruteada_manana",
+    "atrasado": true,
+    "estado": "ruteada",
     "visita_status": "pending"
    },
    {
@@ -176,34 +176,19 @@
     "camion": "PHXC-44",
     "litros": 8400,
     "programado": "13-10 18:43",
-    "atrasado": false,
-    "estado": "ruteada_manana",
+    "atrasado": true,
+    "estado": "ruteada",
     "visita_status": "pending"
    }
   ],
-  "huerfanas": [
-   {
-    "so": "S37385",
-    "cliente": "SUGAL CHILE LIMITADA",
-    "estado_odoo": "draft",
-    "status": "failed",
-    "litros": 800
-   },
-   {
-    "so": "S37386",
-    "cliente": "SUGAL CHILE LIMITADA",
-    "estado_odoo": "draft",
-    "status": "failed",
-    "litros": 800
-   }
-  ],
+  "huerfanas": [],
   "sin_ref": [],
   "resumen": {
    "total": 16,
-   "ruteadas": 1,
-   "ruteadas_manana": 15,
+   "ruteadas": 16,
+   "ruteadas_manana": 0,
    "sin_ruta": 0,
-   "huerfanas": 2
+   "huerfanas": 0
   }
  },
  "litros": {
@@ -1081,169 +1066,17 @@
      "FAC 54688"
     ],
     "estado": "ok"
-   },
-   {
-    "so": "S37270",
-    "fecha": "2026-10-07",
-    "cliente": "SOCIEDAD AGRIC LAS VITORIAS LTDA",
-    "camion": "TJVS-53",
-    "especial": false,
-    "parcial": true,
-    "visitas": 1,
-    "pedido": 800,
-    "entregado": 800,
-    "facturado": 800,
-    "facturas": [
-     "FAC 54682"
-    ],
-    "estado": "ok"
-   },
-   {
-    "so": "S37269",
-    "fecha": "2026-10-07",
-    "cliente": "SOCIEDAD AGRICOLA SAN JUAN LIMITADA",
-    "camion": "VDKT-95",
-    "especial": false,
-    "parcial": true,
-    "visitas": 1,
-    "pedido": 246,
-    "entregado": 246,
-    "facturado": 246,
-    "facturas": [
-     "FAC 54684"
-    ],
-    "estado": "ok"
-   },
-   {
-    "so": "S37268",
-    "fecha": "2026-10-07",
-    "cliente": "VICTOR MANUEL GONZALEZ NEIRA",
-    "camion": "VDKT-95",
-    "especial": false,
-    "parcial": false,
-    "visitas": 1,
-    "pedido": 250,
-    "entregado": 250,
-    "facturado": 250,
-    "facturas": [
-     "FAC 54685"
-    ],
-    "estado": "ok"
-   },
-   {
-    "so": "S37263",
-    "fecha": "2026-10-07",
-    "cliente": "SOC. AGRICOLA TRIANDES LTDA.",
-    "camion": "PYHK-28",
-    "especial": false,
-    "parcial": false,
-    "visitas": 1,
-    "pedido": 2000,
-    "entregado": 2000,
-    "facturado": 2000,
-    "facturas": [
-     "FAC 54676"
-    ],
-    "estado": "ok"
-   },
-   {
-    "so": "S37262",
-    "fecha": "2026-10-07",
-    "cliente": "AGRICOLA TRABUN LTDA.",
-    "camion": "VDKT-95",
-    "especial": false,
-    "parcial": false,
-    "visitas": 1,
-    "pedido": 500,
-    "entregado": 500,
-    "facturado": 500,
-    "facturas": [
-     "FAC 54677"
-    ],
-    "estado": "ok"
-   },
-   {
-    "so": "S37261",
-    "fecha": "2026-10-07",
-    "cliente": "HECTOR JAVIER ALVARADO VELIZ",
-    "camion": "TJVS-53",
-    "especial": false,
-    "parcial": true,
-    "visitas": 1,
-    "pedido": 700,
-    "entregado": 700,
-    "facturado": 700,
-    "facturas": [
-     "FAC 54680"
-    ],
-    "estado": "ok"
-   },
-   {
-    "so": "S37258",
-    "fecha": "2026-10-07",
-    "cliente": "INGENERIA Y CONSTRUCCIONES FEBLANCA SPA",
-    "camion": "SHGP-60",
-    "especial": false,
-    "parcial": false,
-    "visitas": 1,
-    "pedido": 1500,
-    "entregado": 1500,
-    "facturado": 1500,
-    "facturas": [
-     "FAC 54678"
-    ],
-    "estado": "ok"
-   },
-   {
-    "so": "S37245",
-    "fecha": "2026-10-07",
-    "cliente": "AGRICOLA LA PATAGUILLA LTDA",
-    "camion": "VDKT-95",
-    "especial": false,
-    "parcial": false,
-    "visitas": 1,
-    "pedido": 1000,
-    "entregado": 1000,
-    "facturado": 1000,
-    "facturas": [
-     "FAC 54675"
-    ],
-    "estado": "ok"
-   },
-   {
-    "so": "S37237",
-    "fecha": "2026-10-07",
-    "cliente": "GUSTAVO ORLANDO VIELMA VIELMA",
-    "camion": "SHGP-60",
-    "especial": false,
-    "parcial": false,
-    "visitas": 1,
-    "pedido": 500,
-    "entregado": 500,
-    "facturado": 500,
-    "facturas": [
-     "FAC 54681"
-    ],
-    "estado": "ok"
-   },
-   {
-    "so": "S37173",
-    "fecha": "2026-10-07",
-    "cliente": "FRANCISCO GONZALEZ PIZARRO",
-    "camion": "TJVS-53",
-    "especial": false,
-    "parcial": false,
-    "visitas": 1,
-    "pedido": 1000,
-    "entregado": 1000,
-    "facturado": 1000,
-    "facturas": [
-     "FAC 54679"
-    ],
-    "estado": "ok"
    }
   ],
   "dias": [
+   {
+    "fecha": "2026-10-14",
+    "entregas": 0,
+    "entregado": 0,
+    "facturado": 0,
+    "por_facturar": 0,
+    "sin_factura": 0
+   },
    {
     "fecha": "2026-10-13",
     "entregas": 24,
@@ -1291,19 +1124,11 @@
     "facturado": 26390,
     "por_facturar": 900,
     "sin_factura": 1
-   },
-   {
-    "fecha": "2026-10-07",
-    "entregas": 10,
-    "entregado": 8496,
-    "facturado": 8496,
-    "por_facturar": 0,
-    "sin_factura": 0
    }
   ],
   "por_facturar_total": 2500,
-  "entregado_hoy": 42480,
-  "facturado_hoy": 40880,
+  "entregado_hoy": 0,
+  "facturado_hoy": 0,
   "fuera_simpli": []
  },
  "cierre": {
@@ -1914,9 +1739,9 @@
      "especial": false
     }
    ],
-   "entregadas_hoy": 24,
+   "entregadas_hoy": 0,
    "bodega_ventana": 0,
-   "revisadas_ventana": 81,
+   "revisadas_ventana": 71,
    "salidas_entregadas": 0
   },
   "fase5": {
@@ -1933,28 +1758,28 @@
      "odoo": 800,
      "ajuste": 0,
      "esperado": 800,
-     "ventas_simpli_hoy": 6100
+     "ventas_simpli_hoy": 0
     },
     {
      "cam": "PY",
      "odoo": 10024,
      "ajuste": 0,
      "esperado": 10024,
-     "ventas_simpli_hoy": 4400
+     "ventas_simpli_hoy": 0
     },
     {
      "cam": "SH",
      "odoo": 0,
      "ajuste": 0,
      "esperado": 0,
-     "ventas_simpli_hoy": 14080
+     "ventas_simpli_hoy": 0
     },
     {
      "cam": "TJ",
      "odoo": 15000,
      "ajuste": 0,
      "esperado": 15000,
-     "ventas_simpli_hoy": 11000
+     "ventas_simpli_hoy": 0
     },
     {
      "cam": "TY",
@@ -1968,7 +1793,7 @@
      "odoo": 3100,
      "ajuste": 0,
      "esperado": 3100,
-     "ventas_simpli_hoy": 6900
+     "ventas_simpli_hoy": 0
     }
    ]
   },
@@ -2186,9 +2011,9 @@
     }
    ],
    "con_excepcion": 3,
-   "validadas_manana": 16,
-   "visitas_manana": 16,
-   "fecha": "2026-10-14"
+   "validadas_manana": 0,
+   "visitas_manana": 0,
+   "fecha": "2026-10-15"
   }
  }
 }
