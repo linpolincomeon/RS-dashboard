@@ -1,20 +1,9 @@
 {
- "generated_utc": "2026-10-15T19:21+00:00",
+ "generated_utc": "2026-10-15T22:38+00:00",
  "hoy": "2026-10-15",
  "desde": "2026-10-09",
  "rutas": {
   "pendientes": [
-   {
-    "picking": "PYHK/OUT/01482",
-    "so": "S37464",
-    "cliente": "JOSE LUIS ROJAS TOLEDO, JOSE LUIS ROJAS TOLEDO, SAN RAFAEL",
-    "camion": "PYHK-28",
-    "litros": 2000,
-    "programado": "14-10 11:03",
-    "atrasado": true,
-    "estado": "ruteada",
-    "visita_status": "pending"
-   },
    {
     "picking": "PYHK/OUT/01485",
     "so": "S37467",
@@ -25,49 +14,24 @@
     "atrasado": true,
     "estado": "ruteada",
     "visita_status": "completed"
-   },
-   {
-    "picking": "PYHK/OUT/01480",
-    "so": "S37485",
-    "cliente": "AGROMORANDE S A, PENCAHUE-Analia",
-    "camion": "PYHK-28",
-    "litros": 1000,
-    "programado": "14-10 12:54",
-    "atrasado": true,
-    "estado": "ruteada",
-    "visita_status": "pending"
-   },
-   {
-    "picking": "PHXC/OUT/01795",
-    "so": "S37507",
-    "cliente": "SUGAL CHILE LIMITADA, LAS PALMERAS CAMPOS PROPIOS",
-    "camion": "PHXC-44",
-    "litros": 500,
-    "programado": "14-10 17:50",
-    "atrasado": true,
-    "estado": "ruteada",
-    "visita_status": "pending"
-   },
-   {
-    "picking": "PHXC/OUT/01794",
-    "so": "S37509",
-    "cliente": "SUGAL CHILE LIMITADA, LAS PALMERAS CAMPOS PROPIOS",
-    "camion": "PHXC-44",
-    "litros": 500,
-    "programado": "14-10 18:19",
-    "atrasado": true,
-    "estado": "ruteada",
-    "visita_status": "pending"
    }
   ],
-  "huerfanas": [],
+  "huerfanas": [
+   {
+    "so": "S37464",
+    "cliente": "JOSE LUIS ROJAS TOLEDO",
+    "estado_odoo": "cancel",
+    "status": "failed",
+    "litros": 2000
+   }
+  ],
   "sin_ref": [],
   "resumen": {
-   "total": 5,
-   "ruteadas": 5,
+   "total": 1,
+   "ruteadas": 1,
    "ruteadas_manana": 0,
    "sin_ruta": 0,
-   "huerfanas": 0
+   "huerfanas": 1
   }
  },
  "litros": {
@@ -165,6 +129,38 @@
     "facturado": 1000,
     "facturas": [
      "FAC 54784"
+    ],
+    "estado": "ok"
+   },
+   {
+    "so": "S37509",
+    "fecha": "2026-10-15",
+    "cliente": "SUGAL CHILE LIMITADA",
+    "camion": "VDKT-95",
+    "especial": true,
+    "parcial": false,
+    "visitas": 1,
+    "pedido": 510,
+    "entregado": 500,
+    "facturado": 510,
+    "facturas": [
+     "FAC 54802"
+    ],
+    "estado": "diferencia"
+   },
+   {
+    "so": "S37507",
+    "fecha": "2026-10-15",
+    "cliente": "SUGAL CHILE LIMITADA",
+    "camion": "VDKT-95",
+    "especial": true,
+    "parcial": false,
+    "visitas": 1,
+    "pedido": 500,
+    "entregado": 500,
+    "facturado": 500,
+    "facturas": [
+     "FAC 54803"
     ],
     "estado": "ok"
    },
@@ -325,6 +321,22 @@
     "facturado": 1500,
     "facturas": [
      "FAC 54781"
+    ],
+    "estado": "ok"
+   },
+   {
+    "so": "S37485",
+    "fecha": "2026-10-15",
+    "cliente": "AGROMORANDE S A",
+    "camion": "PHXC-44",
+    "especial": false,
+    "parcial": false,
+    "visitas": 1,
+    "pedido": 1000,
+    "entregado": 1000,
+    "facturado": 1000,
+    "facturas": [
+     "FAC 54801"
     ],
     "estado": "ok"
    },
@@ -1384,9 +1396,9 @@
   "dias": [
    {
     "fecha": "2026-10-15",
-    "entregas": 26,
-    "entregado": 37180,
-    "facturado": 35180,
+    "entregas": 29,
+    "entregado": 39180,
+    "facturado": 37190,
     "por_facturar": 2000,
     "sin_factura": 1
    },
@@ -1440,8 +1452,8 @@
    }
   ],
   "por_facturar_total": 3600,
-  "entregado_hoy": 37180,
-  "facturado_hoy": 36180,
+  "entregado_hoy": 39180,
+  "facturado_hoy": 38190,
   "fuera_simpli": [
    {
     "factura": "FAC 54776",
@@ -1454,6 +1466,40 @@
  "cierre": {
   "fase2": {
    "compras": [
+    {
+     "po": "P00921",
+     "proveedor": "ADQUIM SPA",
+     "cam": "PY",
+     "fecha": "2026-10-15",
+     "hora": "18:44",
+     "litros": 15000,
+     "correccion": null,
+     "litros_real": 15000,
+     "precio": 1305.13,
+     "recibida": true,
+     "devuelta": false,
+     "factura": null,
+     "factura_estado": "sin_factura",
+     "factura_total": null,
+     "factura_litros": null
+    },
+    {
+     "po": "P00920",
+     "proveedor": "ENAP REFINERIAS S.A.",
+     "cam": "PH",
+     "fecha": "2026-10-15",
+     "hora": "18:42",
+     "litros": 10040,
+     "correccion": null,
+     "litros_real": 10040,
+     "precio": 1312.35,
+     "recibida": true,
+     "devuelta": false,
+     "factura": "852619",
+     "factura_estado": "borrador_sin_vincular",
+     "factura_total": 15679385,
+     "factura_litros": 10040
+    },
     {
      "po": "P00919",
      "proveedor": "ADQUIM SPA",
@@ -1508,13 +1554,6 @@
    ],
    "borradores_sueltos": [
     {
-     "folio": "852619",
-     "proveedor": "ENAP REFINERIAS S.A.",
-     "fecha": "2026-10-15",
-     "total": 15679385,
-     "litros": 10040
-    },
-    {
      "folio": "265473",
      "proveedor": "ADQUIM SPA",
      "fecha": "2026-10-15",
@@ -1528,15 +1567,6 @@
   "fase4": {
    "salidas": [
     {
-     "picking": "PYHK/OUT/01482",
-     "so": "S37464",
-     "cliente": "JOSE LUIS ROJAS TOLEDO, JOSE LUIS ROJAS TOLEDO, SAN RAFAEL",
-     "cam": "PY",
-     "fecha": "2026-10-14",
-     "litros": 2000,
-     "entregada_simpli": false
-    },
-    {
      "picking": "PYHK/OUT/01485",
      "so": "S37467",
      "cliente": "SOC AGRICOLA GRANJA SAN RAFAEL LIMITADA, OFICINA CENTRAL-Zulema",
@@ -1544,94 +1574,29 @@
      "fecha": "2026-10-14",
      "litros": 2000,
      "entregada_simpli": true
-    },
-    {
-     "picking": "PYHK/OUT/01480",
-     "so": "S37485",
-     "cliente": "AGROMORANDE S A, PENCAHUE-Analia",
-     "cam": "PY",
-     "fecha": "2026-10-14",
-     "litros": 1000,
-     "entregada_simpli": false
-    },
-    {
-     "picking": "PHXC/OUT/01795",
-     "so": "S37507",
-     "cliente": "SUGAL CHILE LIMITADA, LAS PALMERAS CAMPOS PROPIOS",
-     "cam": "PH",
-     "fecha": "2026-10-14",
-     "litros": 500,
-     "entregada_simpli": false
-    },
-    {
-     "picking": "PHXC/OUT/01794",
-     "so": "S37509",
-     "cliente": "SUGAL CHILE LIMITADA, LAS PALMERAS CAMPOS PROPIOS",
-     "cam": "PH",
-     "fecha": "2026-10-14",
-     "litros": 500,
-     "entregada_simpli": false
     }
    ],
    "ventas": [
     {
-     "so": "S37507",
-     "cliente": "SUGAL CHILE LIMITADA",
-     "especial": true,
-     "cam": "PH",
-     "cam_simpli": [],
-     "cam_odoo": [],
-     "picking": "PHXC/OUT/01795",
-     "fecha_entrega": "2026-10-15",
-     "simpli": null,
-     "cantidad": 500,
-     "entregado": 0,
-     "facturado": 0,
-     "problemas": [
-      "sin_entrega"
-     ],
-     "acciones": [
-      "Salida PHXC/OUT/01795 abierta pero SimpliRoute no la muestra entregada: si no salió, reprogramar; si salió, validar"
-     ]
-    },
-    {
-     "so": "S37509",
-     "cliente": "SUGAL CHILE LIMITADA",
-     "especial": true,
-     "cam": "PH",
-     "cam_simpli": [],
-     "cam_odoo": [],
-     "picking": "PHXC/OUT/01794",
-     "fecha_entrega": "2026-10-15",
-     "simpli": null,
-     "cantidad": 500,
-     "entregado": 0,
-     "facturado": 0,
-     "problemas": [
-      "sin_entrega"
-     ],
-     "acciones": [
-      "Salida PHXC/OUT/01794 abierta pero SimpliRoute no la muestra entregada: si no salió, reprogramar; si salió, validar"
-     ]
-    },
-    {
-     "so": "S37464",
-     "cliente": "JOSE LUIS ROJAS TOLEDO",
+     "so": "S37469",
+     "cliente": "SOCIEDAD AGRIC LAS VITORIAS LTDA",
      "especial": false,
-     "cam": "PY",
+     "cam": "?",
      "cam_simpli": [],
-     "cam_odoo": [],
-     "picking": "PYHK/OUT/01482",
+     "cam_odoo": [
+      "TJ"
+     ],
+     "picking": null,
      "fecha_entrega": "2026-10-15",
-     "simpli": null,
-     "cantidad": 2000,
-     "entregado": 0,
-     "facturado": 0,
+     "simpli": 500,
+     "cantidad": 500,
+     "entregado": 500,
+     "facturado": 500,
      "problemas": [
-      "sin_entrega"
+      "visita_sin_camion"
      ],
      "acciones": [
-      "Salida PYHK/OUT/01482 abierta pero SimpliRoute no la muestra entregada: si no salió, reprogramar; si salió, validar"
+      "La visita en SimpliRoute no tiene camión asignado: confirmar qué camión entregó"
      ]
     },
     {
@@ -1659,26 +1624,6 @@
      ]
     },
     {
-     "so": "S37485",
-     "cliente": "AGROMORANDE S A",
-     "especial": false,
-     "cam": "PY",
-     "cam_simpli": [],
-     "cam_odoo": [],
-     "picking": "PYHK/OUT/01480",
-     "fecha_entrega": "2026-10-15",
-     "simpli": null,
-     "cantidad": 1000,
-     "entregado": 0,
-     "facturado": 0,
-     "problemas": [
-      "sin_entrega"
-     ],
-     "acciones": [
-      "Salida PYHK/OUT/01480 abierta pero SimpliRoute no la muestra entregada: si no salió, reprogramar; si salió, validar"
-     ]
-    },
-    {
      "so": "S37480",
      "cliente": "ARIDOS LO VALDIVIA LIMITADA",
      "especial": false,
@@ -1701,12 +1646,37 @@
      "acciones": [
       "Bajar Cantidad de 2.000 a 1.530 L en la orden"
      ]
+    },
+    {
+     "so": "S37509",
+     "cliente": "SUGAL CHILE LIMITADA",
+     "especial": true,
+     "cam": "VD",
+     "cam_simpli": [
+      "VD"
+     ],
+     "cam_odoo": [
+      "PH",
+      "VD"
+     ],
+     "picking": null,
+     "fecha_entrega": "2026-10-15",
+     "simpli": 510,
+     "cantidad": 510,
+     "entregado": 510,
+     "facturado": 510,
+     "problemas": [
+      "bodega"
+     ],
+     "acciones": [
+      "Odoo descontó 500 L de PH pero lo entregó VD: traspaso PH→VD por 500 L"
+     ]
     }
    ],
    "a_facturar": [],
-   "entregadas_hoy": 26,
-   "bodega_ventana": 0,
-   "revisadas_ventana": 86,
+   "entregadas_hoy": 29,
+   "bodega_ventana": 1,
+   "revisadas_ventana": 85,
    "salidas_entregadas": 1
   },
   "fase5": {
@@ -1720,16 +1690,16 @@
     },
     {
      "cam": "PH",
-     "odoo": -7400,
-     "ajuste": 0,
-     "esperado": -7400,
-     "ventas_simpli_hoy": 9000
+     "odoo": 1100,
+     "ajuste": 500,
+     "esperado": 1600,
+     "ventas_simpli_hoy": 10000
     },
     {
      "cam": "PY",
-     "odoo": -11000,
+     "odoo": 4000,
      "ajuste": -2000,
-     "esperado": -13000,
+     "esperado": 2000,
      "ventas_simpli_hoy": 13000
     },
     {
@@ -1744,7 +1714,7 @@
      "odoo": -1580,
      "ajuste": 0,
      "esperado": -1580,
-     "ventas_simpli_hoy": 6580
+     "ventas_simpli_hoy": 6080
     },
     {
      "cam": "TY",
@@ -1755,10 +1725,10 @@
     },
     {
      "cam": "VD",
-     "odoo": 9900,
-     "ajuste": 0,
-     "esperado": 9900,
-     "ventas_simpli_hoy": 5100
+     "odoo": 9390,
+     "ajuste": -500,
+     "esperado": 8890,
+     "ventas_simpli_hoy": 6100
     }
    ]
   },
@@ -1842,13 +1812,6 @@
      "excepcion": ""
     },
     {
-     "so": "S37534",
-     "cliente": "MANUEL ANTONIO MAGNA OLIVARES",
-     "cam": "VD",
-     "fecha_entrega": "2026-10-15",
-     "excepcion": ""
-    },
-    {
      "so": "S37508",
      "cliente": "Agricola la Compañia",
      "cam": "PH",
@@ -1861,6 +1824,13 @@
      "cam": "PY",
      "fecha_entrega": "2026-10-15",
      "excepcion": ""
+    },
+    {
+     "so": "S37527",
+     "cliente": "VCA maquinarias Spa.",
+     "cam": "TJ",
+     "fecha_entrega": "2026-10-16",
+     "excepcion": "No tiene Línea de Crédito Aprobada"
     },
     {
      "so": "S37523",
@@ -1954,9 +1924,58 @@
      "excepcion": ""
     },
     {
+     "so": "S37562",
+     "cliente": "SOCIEDAD AGRICOLA EL CARRETON SPA",
+     "cam": "PY",
+     "fecha_entrega": "2026-10-16",
+     "excepcion": ""
+    },
+    {
      "so": "S37564",
      "cliente": "AGRICOLA LOS ALPES LTDA",
      "cam": "PY",
+     "fecha_entrega": "2026-10-16",
+     "excepcion": ""
+    },
+    {
+     "so": "S37568",
+     "cliente": "AGRICOLA EL CABRINO LIMITADA",
+     "cam": "PH",
+     "fecha_entrega": "2026-10-16",
+     "excepcion": ""
+    },
+    {
+     "so": "S37566",
+     "cliente": "SUGAL CHILE LIMITADA",
+     "cam": "VD",
+     "fecha_entrega": "2026-10-16",
+     "excepcion": ""
+    },
+    {
+     "so": "S37575",
+     "cliente": "PATRICIO VISCAY ALBORNOZ",
+     "cam": "PY",
+     "fecha_entrega": "2026-10-16",
+     "excepcion": ""
+    },
+    {
+     "so": "S37576",
+     "cliente": "CARLOS SOTO CORREA",
+     "cam": "PH",
+     "fecha_entrega": "2026-10-16",
+     "excepcion": ""
+    },
+    {
+     "so": "S37577",
+     "cliente": "SUGAL CHILE LIMITADA",
+     "cam": "PY",
+     "fecha_entrega": "2026-10-16",
+     "excepcion": ""
+    },
+    {
+     "so": "S37534",
+     "cliente": "MANUEL ANTONIO MAGNA OLIVARES",
+     "cam": "VD",
      "fecha_entrega": "2026-10-16",
      "excepcion": ""
     },
@@ -1980,13 +1999,6 @@
      "cam": "TJ",
      "fecha_entrega": "2026-10-16",
      "excepcion": ""
-    },
-    {
-     "so": "S37527",
-     "cliente": "VCA maquinarias Spa.",
-     "cam": "TJ",
-     "fecha_entrega": "2026-10-16",
-     "excepcion": "No tiene Línea de Crédito Aprobada"
     }
    ],
    "con_excepcion": 3,
