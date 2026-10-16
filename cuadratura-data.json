@@ -1,19 +1,19 @@
 {
- "generated_utc": "2026-10-15T22:38+00:00",
+ "generated_utc": "2026-10-16T01:09+00:00",
  "hoy": "2026-10-15",
  "desde": "2026-10-09",
  "rutas": {
   "pendientes": [
    {
-    "picking": "PYHK/OUT/01485",
-    "so": "S37467",
-    "cliente": "SOC AGRICOLA GRANJA SAN RAFAEL LIMITADA, OFICINA CENTRAL-Zulema",
-    "camion": "PYHK-28",
-    "litros": 2000,
-    "programado": "14-10 11:06",
-    "atrasado": true,
-    "estado": "ruteada",
-    "visita_status": "completed"
+    "picking": "PHXC/OUT/01807",
+    "so": "S37576",
+    "cliente": "CARLOS SOTO CORREA, Picarquin-Fabio",
+    "camion": "PHXC-44",
+    "litros": 1000,
+    "programado": "15-10 17:26",
+    "atrasado": false,
+    "estado": "ruteada_manana",
+    "visita_status": "pending"
    }
   ],
   "huerfanas": [
@@ -28,8 +28,8 @@
   "sin_ref": [],
   "resumen": {
    "total": 1,
-   "ruteadas": 1,
-   "ruteadas_manana": 0,
+   "ruteadas": 0,
+   "ruteadas_manana": 1,
    "sin_ruta": 0,
    "huerfanas": 1
   }
@@ -430,9 +430,11 @@
     "visitas": 1,
     "pedido": 2000,
     "entregado": 2000,
-    "facturado": 0,
-    "facturas": [],
-    "estado": "por_facturar"
+    "facturado": 2000,
+    "facturas": [
+     "FAC 54804"
+    ],
+    "estado": "ok"
    },
    {
     "so": "S37466",
@@ -1398,9 +1400,9 @@
     "fecha": "2026-10-15",
     "entregas": 29,
     "entregado": 39180,
-    "facturado": 37190,
-    "por_facturar": 2000,
-    "sin_factura": 1
+    "facturado": 39190,
+    "por_facturar": 0,
+    "sin_factura": 0
    },
    {
     "fecha": "2026-10-14",
@@ -1451,9 +1453,9 @@
     "sin_factura": 0
    }
   ],
-  "por_facturar_total": 3600,
+  "por_facturar_total": 1600,
   "entregado_hoy": 39180,
-  "facturado_hoy": 38190,
+  "facturado_hoy": 40190,
   "fuera_simpli": [
    {
     "factura": "FAC 54776",
@@ -1567,13 +1569,13 @@
   "fase4": {
    "salidas": [
     {
-     "picking": "PYHK/OUT/01485",
-     "so": "S37467",
-     "cliente": "SOC AGRICOLA GRANJA SAN RAFAEL LIMITADA, OFICINA CENTRAL-Zulema",
-     "cam": "PY",
-     "fecha": "2026-10-14",
-     "litros": 2000,
-     "entregada_simpli": true
+     "picking": "PHXC/OUT/01807",
+     "so": "S37576",
+     "cliente": "CARLOS SOTO CORREA, Picarquin-Fabio",
+     "cam": "PH",
+     "fecha": "2026-10-15",
+     "litros": 1000,
+     "entregada_simpli": false
     }
    ],
    "ventas": [
@@ -1600,27 +1602,23 @@
      ]
     },
     {
-     "so": "S37467",
-     "cliente": "SOC AGRICOLA GRANJA SAN RAFAEL LIMITADA",
+     "so": "S37576",
+     "cliente": "CARLOS SOTO CORREA",
      "especial": false,
-     "cam": "PY",
-     "cam_simpli": [
-      "PY"
-     ],
+     "cam": "PH",
+     "cam_simpli": [],
      "cam_odoo": [],
-     "picking": "PYHK/OUT/01485",
-     "fecha_entrega": "2026-10-15",
-     "simpli": 2000,
-     "cantidad": 2000,
+     "picking": "PHXC/OUT/01807",
+     "fecha_entrega": "2026-10-16",
+     "simpli": null,
+     "cantidad": 1000,
      "entregado": 0,
      "facturado": 0,
      "problemas": [
-      "falta_validar",
-      "por_facturar"
+      "sin_entrega"
      ],
      "acciones": [
-      "Validar PYHK/OUT/01485 por 2.000 L",
-      "Facturar 2.000 L"
+      "Salida PHXC/OUT/01807 abierta pero SimpliRoute no la muestra entregada: si no salió, reprogramar; si salió, validar"
      ]
     },
     {
@@ -1646,38 +1644,13 @@
      "acciones": [
       "Bajar Cantidad de 2.000 a 1.530 L en la orden"
      ]
-    },
-    {
-     "so": "S37509",
-     "cliente": "SUGAL CHILE LIMITADA",
-     "especial": true,
-     "cam": "VD",
-     "cam_simpli": [
-      "VD"
-     ],
-     "cam_odoo": [
-      "PH",
-      "VD"
-     ],
-     "picking": null,
-     "fecha_entrega": "2026-10-15",
-     "simpli": 510,
-     "cantidad": 510,
-     "entregado": 510,
-     "facturado": 510,
-     "problemas": [
-      "bodega"
-     ],
-     "acciones": [
-      "Odoo descontó 500 L de PH pero lo entregó VD: traspaso PH→VD por 500 L"
-     ]
     }
    ],
    "a_facturar": [],
    "entregadas_hoy": 29,
-   "bodega_ventana": 1,
-   "revisadas_ventana": 85,
-   "salidas_entregadas": 1
+   "bodega_ventana": 0,
+   "revisadas_ventana": 86,
+   "salidas_entregadas": 0
   },
   "fase5": {
    "saldos": [
@@ -1690,43 +1663,43 @@
     },
     {
      "cam": "PH",
-     "odoo": 1100,
-     "ajuste": 500,
-     "esperado": 1600,
+     "odoo": 0,
+     "ajuste": 0,
+     "esperado": 0,
      "ventas_simpli_hoy": 10000
     },
     {
      "cam": "PY",
-     "odoo": 4000,
-     "ajuste": -2000,
+     "odoo": 2000,
+     "ajuste": 0,
      "esperado": 2000,
      "ventas_simpli_hoy": 13000
     },
     {
      "cam": "SH",
-     "odoo": 500,
+     "odoo": 4424,
      "ajuste": 0,
-     "esperado": 500,
+     "esperado": 4424,
      "ventas_simpli_hoy": 0
     },
     {
      "cam": "TJ",
-     "odoo": -1580,
+     "odoo": 20,
      "ajuste": 0,
-     "esperado": -1580,
+     "esperado": 20,
      "ventas_simpli_hoy": 6080
     },
     {
      "cam": "TY",
-     "odoo": 3924,
+     "odoo": 0,
      "ajuste": 0,
-     "esperado": 3924,
+     "esperado": 0,
      "ventas_simpli_hoy": 3500
     },
     {
      "cam": "VD",
-     "odoo": 9390,
-     "ajuste": -500,
+     "odoo": 8890,
+     "ajuste": 0,
      "esperado": 8890,
      "ventas_simpli_hoy": 6100
     }
@@ -1819,10 +1792,10 @@
      "excepcion": "No tiene Línea de Crédito Aprobada"
     },
     {
-     "so": "S37540",
-     "cliente": "DIOGENES GERMAN CONCHA CONCHA",
-     "cam": "PY",
-     "fecha_entrega": "2026-10-15",
+     "so": "S37519",
+     "cliente": "AGRICOLA DON CARLOS SPA",
+     "cam": "TJ",
+     "fecha_entrega": "2026-10-16",
      "excepcion": ""
     },
     {
@@ -1878,6 +1851,13 @@
      "so": "S37533",
      "cliente": "SOCIEDAD AGRICOLA SANTA ROSA",
      "cam": "VD",
+     "fecha_entrega": "2026-10-16",
+     "excepcion": ""
+    },
+    {
+     "so": "S37540",
+     "cliente": "DIOGENES GERMAN CONCHA CONCHA",
+     "cam": "PY",
      "fecha_entrega": "2026-10-16",
      "excepcion": ""
     },
@@ -1959,13 +1939,6 @@
      "excepcion": ""
     },
     {
-     "so": "S37576",
-     "cliente": "CARLOS SOTO CORREA",
-     "cam": "PH",
-     "fecha_entrega": "2026-10-16",
-     "excepcion": ""
-    },
-    {
      "so": "S37577",
      "cliente": "SUGAL CHILE LIMITADA",
      "cam": "PY",
@@ -1976,6 +1949,13 @@
      "so": "S37534",
      "cliente": "MANUEL ANTONIO MAGNA OLIVARES",
      "cam": "VD",
+     "fecha_entrega": "2026-10-16",
+     "excepcion": ""
+    },
+    {
+     "so": "S37579",
+     "cliente": "LUIS ALBERTO IBARRA CARRILLO",
+     "cam": "PY",
      "fecha_entrega": "2026-10-16",
      "excepcion": ""
     },
@@ -1992,18 +1972,11 @@
      "cam": "VD",
      "fecha_entrega": "2026-10-16",
      "excepcion": ""
-    },
-    {
-     "so": "S37519",
-     "cliente": "AGRICOLA DON CARLOS SPA",
-     "cam": "TJ",
-     "fecha_entrega": "2026-10-16",
-     "excepcion": ""
     }
    ],
    "con_excepcion": 3,
    "validadas_manana": 0,
-   "visitas_manana": 0,
+   "visitas_manana": 1,
    "fecha": "2026-10-16"
   }
  }
