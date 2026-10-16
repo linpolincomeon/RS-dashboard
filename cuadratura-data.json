@@ -1,5 +1,5 @@
 {
- "generated_utc": "2026-10-16T18:57+00:00",
+ "generated_utc": "2026-10-16T21:59+00:00",
  "hoy": "2026-10-16",
  "desde": "2026-10-10",
  "rutas": {
@@ -14,50 +14,6 @@
     "atrasado": true,
     "estado": "sin_ruta",
     "visita_status": null
-   },
-   {
-    "picking": "PHXC/OUT/01811",
-    "so": "S37532",
-    "cliente": "Transporte La Punta M SC SpA, Manuel Santibañez",
-    "camion": "PHXC-44",
-    "litros": 600,
-    "programado": "15-10 11:38",
-    "atrasado": true,
-    "estado": "ruteada",
-    "visita_status": "pending"
-   },
-   {
-    "picking": "PYHK/OUT/01494",
-    "so": "S37564",
-    "cliente": "AGRICOLA LOS ALPES LTDA, AGRICOLA LOS ALPES - AURORA - SAN CLEMENTE",
-    "camion": "PYHK-28",
-    "litros": 800,
-    "programado": "15-10 15:59",
-    "atrasado": true,
-    "estado": "ruteada",
-    "visita_status": "pending"
-   },
-   {
-    "picking": "PYHK/OUT/01493",
-    "so": "S37575",
-    "cliente": "PATRICIO VISCAY ALBORNOZ, Cristopher",
-    "camion": "PYHK-28",
-    "litros": 1500,
-    "programado": "15-10 17:26",
-    "atrasado": true,
-    "estado": "ruteada",
-    "visita_status": "pending"
-   },
-   {
-    "picking": "TJVS/OUT/02042",
-    "so": "S37587",
-    "cliente": "COMERCIALIZADORA EL CLONQUI LIMITADA, GRACIELA LETE",
-    "camion": "TJVS-53",
-    "litros": 1000,
-    "programado": "16-10 10:39",
-    "atrasado": false,
-    "estado": "ruteada",
-    "visita_status": "pending"
    }
   ],
   "huerfanas": [
@@ -73,13 +29,13 @@
    {
     "cliente": "VCA maquinarias Spa.",
     "ref": "",
-    "status": "pending",
+    "status": "completed",
     "litros": 5000
    }
   ],
   "resumen": {
-   "total": 5,
-   "ruteadas": 4,
+   "total": 1,
+   "ruteadas": 0,
    "ruteadas_manana": 0,
    "sin_ruta": 1,
    "huerfanas": 1
@@ -100,6 +56,22 @@
     "facturado": 2000,
     "facturas": [
      "FAC 54823"
+    ],
+    "estado": "ok"
+   },
+   {
+    "so": "S37587",
+    "fecha": "2026-10-16",
+    "cliente": "COMERCIALIZADORA EL CLONQUI LIMITADA",
+    "camion": "HHPT-71",
+    "especial": false,
+    "parcial": false,
+    "visitas": 1,
+    "pedido": 1000,
+    "entregado": 1000,
+    "facturado": 1000,
+    "facturas": [
+     "FAC 54834"
     ],
     "estado": "ok"
    },
@@ -127,7 +99,7 @@
     "especial": false,
     "parcial": true,
     "visitas": 1,
-    "pedido": 5000,
+    "pedido": 4590,
     "entregado": 4590,
     "facturado": 4590,
     "facturas": [
@@ -212,6 +184,22 @@
     "estado": "ok"
    },
    {
+    "so": "S37575",
+    "fecha": "2026-10-16",
+    "cliente": "PATRICIO VISCAY ALBORNOZ",
+    "camion": "PYHK-28",
+    "especial": false,
+    "parcial": true,
+    "visitas": 1,
+    "pedido": 1500,
+    "entregado": 1800,
+    "facturado": 1800,
+    "facturas": [
+     "FAC 54833"
+    ],
+    "estado": "ok"
+   },
+   {
     "so": "S37568",
     "fecha": "2026-10-16",
     "cliente": "AGRICOLA EL CABRINO LIMITADA",
@@ -240,6 +228,22 @@
     "facturado": 0,
     "facturas": [],
     "estado": "por_facturar"
+   },
+   {
+    "so": "S37564",
+    "fecha": "2026-10-16",
+    "cliente": "AGRICOLA LOS ALPES LTDA",
+    "camion": "PYHK-28",
+    "especial": false,
+    "parcial": false,
+    "visitas": 1,
+    "pedido": 800,
+    "entregado": 800,
+    "facturado": 800,
+    "facturas": [
+     "FAC 54831"
+    ],
+    "estado": "ok"
    },
    {
     "so": "S37563",
@@ -414,6 +418,22 @@
     "facturado": 720,
     "facturas": [
      "FAC 54814"
+    ],
+    "estado": "ok"
+   },
+   {
+    "so": "S37532",
+    "fecha": "2026-10-16",
+    "cliente": "Transporte La Punta M SC SpA",
+    "camion": "VDKT-95",
+    "especial": false,
+    "parcial": false,
+    "visitas": 1,
+    "pedido": 600,
+    "entregado": 600,
+    "facturado": 600,
+    "facturas": [
+     "FAC 54832"
     ],
     "estado": "ok"
    },
@@ -1683,9 +1703,9 @@
   "dias": [
    {
     "fecha": "2026-10-16",
-    "entregas": 27,
-    "entregado": 39919,
-    "facturado": 37719,
+    "entregas": 31,
+    "entregado": 44119,
+    "facturado": 41919,
     "por_facturar": 2200,
     "sin_factura": 3
    },
@@ -1739,8 +1759,8 @@
    }
   ],
   "por_facturar_total": 3800,
-  "entregado_hoy": 39919,
-  "facturado_hoy": 38219,
+  "entregado_hoy": 44119,
+  "facturado_hoy": 42419,
   "fuera_simpli": [
    {
     "factura": "FAC 54819",
@@ -1845,42 +1865,6 @@
      "fecha": "2026-10-14",
      "litros": 5000,
      "entregada_simpli": false
-    },
-    {
-     "picking": "PHXC/OUT/01811",
-     "so": "S37532",
-     "cliente": "Transporte La Punta M SC SpA, Manuel Santibañez",
-     "cam": "PH",
-     "fecha": "2026-10-15",
-     "litros": 600,
-     "entregada_simpli": false
-    },
-    {
-     "picking": "PYHK/OUT/01494",
-     "so": "S37564",
-     "cliente": "AGRICOLA LOS ALPES LTDA, AGRICOLA LOS ALPES - AURORA - SAN CLEMENTE",
-     "cam": "PY",
-     "fecha": "2026-10-15",
-     "litros": 800,
-     "entregada_simpli": false
-    },
-    {
-     "picking": "PYHK/OUT/01493",
-     "so": "S37575",
-     "cliente": "PATRICIO VISCAY ALBORNOZ, Cristopher",
-     "cam": "PY",
-     "fecha": "2026-10-15",
-     "litros": 1500,
-     "entregada_simpli": false
-    },
-    {
-     "picking": "TJVS/OUT/02042",
-     "so": "S37587",
-     "cliente": "COMERCIALIZADORA EL CLONQUI LIMITADA, GRACIELA LETE",
-     "cam": "TJ",
-     "fecha": "2026-10-16",
-     "litros": 1000,
-     "entregada_simpli": false
     }
    ],
    "ventas": [
@@ -1909,63 +1893,27 @@
      ]
     },
     {
-     "so": "S37532",
-     "cliente": "Transporte La Punta M SC SpA",
-     "especial": false,
-     "cam": "PH",
-     "cam_simpli": [],
-     "cam_odoo": [],
-     "picking": "PHXC/OUT/01811",
-     "fecha_entrega": "2026-10-16",
-     "simpli": null,
-     "cantidad": 600,
-     "entregado": 0,
-     "facturado": 0,
-     "problemas": [
-      "sin_entrega"
-     ],
-     "acciones": [
-      "Salida PHXC/OUT/01811 abierta pero SimpliRoute no la muestra entregada: si no salió, reprogramar; si salió, validar"
-     ]
-    },
-    {
-     "so": "S37564",
-     "cliente": "AGRICOLA LOS ALPES LTDA",
-     "especial": false,
-     "cam": "PY",
-     "cam_simpli": [],
-     "cam_odoo": [],
-     "picking": "PYHK/OUT/01494",
-     "fecha_entrega": "2026-10-16",
-     "simpli": null,
-     "cantidad": 800,
-     "entregado": 0,
-     "facturado": 0,
-     "problemas": [
-      "sin_entrega"
-     ],
-     "acciones": [
-      "Salida PYHK/OUT/01494 abierta pero SimpliRoute no la muestra entregada: si no salió, reprogramar; si salió, validar"
-     ]
-    },
-    {
      "so": "S37575",
      "cliente": "PATRICIO VISCAY ALBORNOZ",
      "especial": false,
      "cam": "PY",
-     "cam_simpli": [],
-     "cam_odoo": [],
-     "picking": "PYHK/OUT/01493",
+     "cam_simpli": [
+      "PY"
+     ],
+     "cam_odoo": [
+      "PY"
+     ],
+     "picking": null,
      "fecha_entrega": "2026-10-16",
-     "simpli": null,
+     "simpli": 1800,
      "cantidad": 1500,
-     "entregado": 0,
-     "facturado": 0,
+     "entregado": 1800,
+     "facturado": 1800,
      "problemas": [
-      "sin_entrega"
+      "cantidad"
      ],
      "acciones": [
-      "Salida PYHK/OUT/01493 abierta pero SimpliRoute no la muestra entregada: si no salió, reprogramar; si salió, validar"
+      "Subir Cantidad de 1.500 a 1.800 L"
      ]
     },
     {
@@ -2061,26 +2009,6 @@
      ]
     },
     {
-     "so": "S37587",
-     "cliente": "COMERCIALIZADORA EL CLONQUI LIMITADA",
-     "especial": false,
-     "cam": "TJ",
-     "cam_simpli": [],
-     "cam_odoo": [],
-     "picking": "TJVS/OUT/02042",
-     "fecha_entrega": "2026-10-16",
-     "simpli": null,
-     "cantidad": 1000,
-     "entregado": 0,
-     "facturado": 0,
-     "problemas": [
-      "sin_entrega"
-     ],
-     "acciones": [
-      "Salida TJVS/OUT/02042 abierta pero SimpliRoute no la muestra entregada: si no salió, reprogramar; si salió, validar"
-     ]
-    },
-    {
      "so": "S37577",
      "cliente": "SUGAL CHILE LIMITADA",
      "especial": true,
@@ -2127,30 +2055,6 @@
      "acciones": [
       "Bajar Cantidad de 1.000 a 900 L en la orden"
      ]
-    },
-    {
-     "so": "S37584",
-     "cliente": "ALEX PRADO FRUTAS Y TRANSPORTES SPA",
-     "especial": false,
-     "cam": "VD",
-     "cam_simpli": [
-      "VD"
-     ],
-     "cam_odoo": [
-      "VD"
-     ],
-     "picking": null,
-     "fecha_entrega": "2026-10-16",
-     "simpli": 4590,
-     "cantidad": 5000,
-     "entregado": 4590,
-     "facturado": 4590,
-     "problemas": [
-      "cantidad"
-     ],
-     "acciones": [
-      "Bajar Cantidad de 5.000 a 4.590 L en la orden"
-     ]
     }
    ],
    "a_facturar": [
@@ -2162,7 +2066,7 @@
      "especial": true
     }
    ],
-   "entregadas_hoy": 27,
+   "entregadas_hoy": 31,
    "bodega_ventana": 1,
    "revisadas_ventana": 105,
    "salidas_entregadas": 0
@@ -2171,10 +2075,10 @@
    "saldos": [
     {
      "cam": "HH",
-     "odoo": -4900,
+     "odoo": -5900,
      "ajuste": 0,
-     "esperado": -4900,
-     "ventas_simpli_hoy": 4900
+     "esperado": -5900,
+     "ventas_simpli_hoy": 5900
     },
     {
      "cam": "PH",
@@ -2185,10 +2089,10 @@
     },
     {
      "cam": "PY",
-     "odoo": -2500,
+     "odoo": -5100,
      "ajuste": 2000,
-     "esperado": -500,
-     "ventas_simpli_hoy": 2500
+     "esperado": -3100,
+     "ventas_simpli_hoy": 5100
     },
     {
      "cam": "SH",
@@ -2213,10 +2117,10 @@
     },
     {
      "cam": "VD",
-     "odoo": -4985,
+     "odoo": -5585,
      "ajuste": 0,
-     "esperado": -4985,
-     "ventas_simpli_hoy": 13875
+     "esperado": -5585,
+     "ventas_simpli_hoy": 14475
     }
    ]
   },
@@ -2298,16 +2202,9 @@
      "cam": "TY",
      "fecha_entrega": "2026-10-08",
      "excepcion": ""
-    },
-    {
-     "so": "S37508",
-     "cliente": "Agricola la Compañia",
-     "cam": "PH",
-     "fecha_entrega": "2026-10-15",
-     "excepcion": "No tiene Línea de Crédito Aprobada"
     }
    ],
-   "con_excepcion": 2,
+   "con_excepcion": 1,
    "validadas_manana": 0,
    "visitas_manana": 0,
    "fecha": "2026-10-17"
