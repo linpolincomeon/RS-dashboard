@@ -1,5 +1,5 @@
 {
- "generated_utc": "2026-10-17T04:12+00:00",
+ "generated_utc": "2026-10-17T14:08+00:00",
  "hoy": "2026-10-17",
  "desde": "2026-10-11",
  "rutas": {
@@ -16,17 +16,6 @@
     "visita_status": null
    },
    {
-    "picking": "TJVS/OUT/02044",
-    "so": "S37612",
-    "cliente": "SUGAL CHILE LIMITADA, SAGRADA FAMILIA",
-    "camion": "TJVS-53",
-    "litros": 700,
-    "programado": "16-10 18:58",
-    "atrasado": true,
-    "estado": "ruteada",
-    "visita_status": "pending"
-   },
-   {
     "picking": "TJVS/OUT/02043",
     "so": "S37613",
     "cliente": "SUGAL CHILE LIMITADA, MONTE ALTO",
@@ -36,46 +25,13 @@
     "atrasado": true,
     "estado": "ruteada",
     "visita_status": "pending"
-   },
-   {
-    "picking": "PHXC/OUT/01820",
-    "so": "S37614",
-    "cliente": "SUGAL CHILE LIMITADA, SANTA ELENA 2 CAMPOS PROPIOS",
-    "camion": "PHXC-44",
-    "litros": 500,
-    "programado": "16-10 19:09",
-    "atrasado": true,
-    "estado": "ruteada",
-    "visita_status": "pending"
-   },
-   {
-    "picking": "PYHK/OUT/01502",
-    "so": "S37615",
-    "cliente": "SUGAL CHILE LIMITADA, LOPEZ PARCELA 54 CAMPOS PROPIOS",
-    "camion": "PYHK-28",
-    "litros": 1000,
-    "programado": "16-10 19:11",
-    "atrasado": true,
-    "estado": "ruteada",
-    "visita_status": "pending"
-   },
-   {
-    "picking": "PYHK/OUT/01501",
-    "so": "S37616",
-    "cliente": "SUGAL CHILE LIMITADA, LOPEZ PARCELA 53 CAMPOS PROPIOS",
-    "camion": "PYHK-28",
-    "litros": 600,
-    "programado": "16-10 19:14",
-    "atrasado": true,
-    "estado": "ruteada",
-    "visita_status": "pending"
    }
   ],
   "huerfanas": [],
   "sin_ref": [],
   "resumen": {
-   "total": 6,
-   "ruteadas": 5,
+   "total": 2,
+   "ruteadas": 1,
    "ruteadas_manana": 0,
    "sin_ruta": 1,
    "huerfanas": 0
@@ -83,6 +39,71 @@
  },
  "litros": {
   "por_so": [
+   {
+    "so": "S37616",
+    "fecha": "2026-10-17",
+    "cliente": "SUGAL CHILE LIMITADA",
+    "camion": "TYDG-23",
+    "especial": true,
+    "parcial": false,
+    "visitas": 1,
+    "pedido": 530,
+    "entregado": 600,
+    "facturado": 530,
+    "facturas": [
+     "FAC 54838"
+    ],
+    "estado": "diferencia"
+   },
+   {
+    "so": "S37615",
+    "fecha": "2026-10-17",
+    "cliente": "SUGAL CHILE LIMITADA",
+    "camion": "PYHK-28",
+    "especial": true,
+    "parcial": false,
+    "visitas": 1,
+    "pedido": 1000,
+    "entregado": 1000,
+    "facturado": 1000,
+    "facturas": [
+     "FAC 54839"
+    ],
+    "estado": "ok"
+   },
+   {
+    "so": "S37614",
+    "fecha": "2026-10-17",
+    "cliente": "SUGAL CHILE LIMITADA",
+    "camion": "PHXC-44",
+    "especial": true,
+    "parcial": false,
+    "visitas": 1,
+    "pedido": 500,
+    "entregado": 500,
+    "facturado": 500,
+    "facturas": [
+     "FAC 54837"
+    ],
+    "estado": "ok"
+   },
+   {
+    "so": "S37612",
+    "fecha": "2026-10-17",
+    "cliente": "SUGAL CHILE LIMITADA",
+    "camion": "HHPT-71",
+    "especial": false,
+    "parcial": false,
+    "visitas": 1,
+    "pedido": 900,
+    "entregado": 900,
+    "facturado": 0,
+    "facturas": [
+     "FAC 54836",
+     "N/C 3062"
+    ],
+    "estado": "diferencia"
+   },
    {
     "so": "S37588",
     "fecha": "2026-10-16",
@@ -1743,9 +1764,9 @@
   "dias": [
    {
     "fecha": "2026-10-17",
-    "entregas": 0,
-    "entregado": 0,
-    "facturado": 0,
+    "entregas": 4,
+    "entregado": 3000,
+    "facturado": 2030,
     "por_facturar": 0,
     "sin_factura": 0
    },
@@ -1799,8 +1820,8 @@
    }
   ],
   "por_facturar_total": 3800,
-  "entregado_hoy": 0,
-  "facturado_hoy": 5000,
+  "entregado_hoy": 3000,
+  "facturado_hoy": 7930,
   "fuera_simpli": [
    {
     "factura": "FAC 54835",
@@ -1954,15 +1975,6 @@
      "entregada_simpli": true
     },
     {
-     "picking": "TJVS/OUT/02044",
-     "so": "S37612",
-     "cliente": "SUGAL CHILE LIMITADA, SAGRADA FAMILIA",
-     "cam": "TJ",
-     "fecha": "2026-10-16",
-     "litros": 700,
-     "entregada_simpli": false
-    },
-    {
      "picking": "TJVS/OUT/02043",
      "so": "S37613",
      "cliente": "SUGAL CHILE LIMITADA, MONTE ALTO",
@@ -1970,114 +1982,31 @@
      "fecha": "2026-10-16",
      "litros": 800,
      "entregada_simpli": false
-    },
-    {
-     "picking": "PHXC/OUT/01820",
-     "so": "S37614",
-     "cliente": "SUGAL CHILE LIMITADA, SANTA ELENA 2 CAMPOS PROPIOS",
-     "cam": "PH",
-     "fecha": "2026-10-16",
-     "litros": 500,
-     "entregada_simpli": false
-    },
-    {
-     "picking": "PYHK/OUT/01502",
-     "so": "S37615",
-     "cliente": "SUGAL CHILE LIMITADA, LOPEZ PARCELA 54 CAMPOS PROPIOS",
-     "cam": "PY",
-     "fecha": "2026-10-16",
-     "litros": 1000,
-     "entregada_simpli": false
-    },
-    {
-     "picking": "PYHK/OUT/01501",
-     "so": "S37616",
-     "cliente": "SUGAL CHILE LIMITADA, LOPEZ PARCELA 53 CAMPOS PROPIOS",
-     "cam": "PY",
-     "fecha": "2026-10-16",
-     "litros": 600,
-     "entregada_simpli": false
     }
    ],
    "ventas": [
     {
-     "so": "S37614",
-     "cliente": "SUGAL CHILE LIMITADA",
-     "especial": true,
-     "cam": "PH",
-     "cam_simpli": [],
-     "cam_odoo": [],
-     "picking": "PHXC/OUT/01820",
-     "fecha_entrega": "2026-10-17",
-     "simpli": null,
-     "cantidad": 500,
-     "entregado": 0,
-     "facturado": 0,
-     "problemas": [
-      "sin_entrega"
-     ],
-     "acciones": [
-      "Salida PHXC/OUT/01820 abierta pero SimpliRoute no la muestra entregada: si no salió, reprogramar; si salió, validar"
-     ]
-    },
-    {
-     "so": "S37615",
-     "cliente": "SUGAL CHILE LIMITADA",
-     "especial": true,
-     "cam": "PY",
-     "cam_simpli": [],
-     "cam_odoo": [],
-     "picking": "PYHK/OUT/01502",
-     "fecha_entrega": "2026-10-17",
-     "simpli": null,
-     "cantidad": 1000,
-     "entregado": 0,
-     "facturado": 0,
-     "problemas": [
-      "sin_entrega"
-     ],
-     "acciones": [
-      "Salida PYHK/OUT/01502 abierta pero SimpliRoute no la muestra entregada: si no salió, reprogramar; si salió, validar"
-     ]
-    },
-    {
-     "so": "S37616",
-     "cliente": "SUGAL CHILE LIMITADA",
-     "especial": true,
-     "cam": "PY",
-     "cam_simpli": [],
-     "cam_odoo": [],
-     "picking": "PYHK/OUT/01501",
-     "fecha_entrega": "2026-10-17",
-     "simpli": null,
-     "cantidad": 600,
-     "entregado": 0,
-     "facturado": 0,
-     "problemas": [
-      "sin_entrega"
-     ],
-     "acciones": [
-      "Salida PYHK/OUT/01501 abierta pero SimpliRoute no la muestra entregada: si no salió, reprogramar; si salió, validar"
-     ]
-    },
-    {
      "so": "S37612",
      "cliente": "SUGAL CHILE LIMITADA",
      "especial": true,
-     "cam": "TJ",
-     "cam_simpli": [],
-     "cam_odoo": [],
-     "picking": "TJVS/OUT/02044",
+     "cam": "HH",
+     "cam_simpli": [
+      "HH"
+     ],
+     "cam_odoo": [
+      "HH"
+     ],
+     "picking": null,
      "fecha_entrega": "2026-10-17",
-     "simpli": null,
-     "cantidad": 700,
-     "entregado": 0,
+     "simpli": 900,
+     "cantidad": 900,
+     "entregado": 900,
      "facturado": 0,
      "problemas": [
-      "sin_entrega"
+      "por_facturar"
      ],
      "acciones": [
-      "Salida TJVS/OUT/02044 abierta pero SimpliRoute no la muestra entregada: si no salió, reprogramar; si salió, validar"
+      "Facturar 900 L (Sugal: revisar en Ventas)"
      ]
     },
     {
@@ -2139,9 +2068,16 @@
      "cam": "VD",
      "fecha_entrega": "2026-10-16",
      "especial": false
+    },
+    {
+     "so": "S37612",
+     "cliente": "SUGAL CHILE LIMITADA",
+     "cam": "HH",
+     "fecha_entrega": "2026-10-17",
+     "especial": true
     }
    ],
-   "entregadas_hoy": 0,
+   "entregadas_hoy": 4,
    "bodega_ventana": 0,
    "revisadas_ventana": 109,
    "salidas_entregadas": 1
@@ -2150,17 +2086,17 @@
    "saldos": [
     {
      "cam": "HH",
-     "odoo": 9000,
+     "odoo": 8100,
      "ajuste": 0,
-     "esperado": 9000,
-     "ventas_simpli_hoy": 0
+     "esperado": 8100,
+     "ventas_simpli_hoy": 900
     },
     {
      "cam": "PH",
-     "odoo": 4100,
+     "odoo": 3600,
      "ajuste": 0,
-     "esperado": 4100,
-     "ventas_simpli_hoy": 0
+     "esperado": 3600,
+     "ventas_simpli_hoy": 500
     },
     {
      "cam": "PY",
@@ -2185,10 +2121,10 @@
     },
     {
      "cam": "TY",
-     "odoo": 9050,
+     "odoo": 7520,
      "ajuste": 0,
-     "esperado": 9050,
-     "ventas_simpli_hoy": 0
+     "esperado": 7520,
+     "ventas_simpli_hoy": 1600
     },
     {
      "cam": "VD",
