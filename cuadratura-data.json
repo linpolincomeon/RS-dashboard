@@ -1,32 +1,84 @@
 {
- "generated_utc": "2026-10-17T00:16+00:00",
- "hoy": "2026-10-16",
- "desde": "2026-10-10",
+ "generated_utc": "2026-10-17T04:12+00:00",
+ "hoy": "2026-10-17",
+ "desde": "2026-10-11",
  "rutas": {
-  "pendientes": [],
-  "huerfanas": [
+  "pendientes": [
    {
-    "so": "S37566",
-    "cliente": "SUGAL CHILE LIMITADA",
-    "estado_odoo": "no existe",
-    "status": "failed",
-    "litros": 500
+    "picking": "VD/OUT/01846",
+    "so": "S37585",
+    "cliente": "CUERPO DE BOMBEROS CODEGUA, CODEGUA",
+    "camion": "VDKT-95",
+    "litros": 3385,
+    "programado": "16-10 10:17",
+    "atrasado": true,
+    "estado": "sin_ruta",
+    "visita_status": null
+   },
+   {
+    "picking": "TJVS/OUT/02044",
+    "so": "S37612",
+    "cliente": "SUGAL CHILE LIMITADA, SAGRADA FAMILIA",
+    "camion": "TJVS-53",
+    "litros": 700,
+    "programado": "16-10 18:58",
+    "atrasado": true,
+    "estado": "ruteada",
+    "visita_status": "pending"
+   },
+   {
+    "picking": "TJVS/OUT/02043",
+    "so": "S37613",
+    "cliente": "SUGAL CHILE LIMITADA, MONTE ALTO",
+    "camion": "TJVS-53",
+    "litros": 800,
+    "programado": "16-10 19:02",
+    "atrasado": true,
+    "estado": "ruteada",
+    "visita_status": "pending"
+   },
+   {
+    "picking": "PHXC/OUT/01820",
+    "so": "S37614",
+    "cliente": "SUGAL CHILE LIMITADA, SANTA ELENA 2 CAMPOS PROPIOS",
+    "camion": "PHXC-44",
+    "litros": 500,
+    "programado": "16-10 19:09",
+    "atrasado": true,
+    "estado": "ruteada",
+    "visita_status": "pending"
+   },
+   {
+    "picking": "PYHK/OUT/01502",
+    "so": "S37615",
+    "cliente": "SUGAL CHILE LIMITADA, LOPEZ PARCELA 54 CAMPOS PROPIOS",
+    "camion": "PYHK-28",
+    "litros": 1000,
+    "programado": "16-10 19:11",
+    "atrasado": true,
+    "estado": "ruteada",
+    "visita_status": "pending"
+   },
+   {
+    "picking": "PYHK/OUT/01501",
+    "so": "S37616",
+    "cliente": "SUGAL CHILE LIMITADA, LOPEZ PARCELA 53 CAMPOS PROPIOS",
+    "camion": "PYHK-28",
+    "litros": 600,
+    "programado": "16-10 19:14",
+    "atrasado": true,
+    "estado": "ruteada",
+    "visita_status": "pending"
    }
   ],
-  "sin_ref": [
-   {
-    "cliente": "VCA maquinarias Spa.",
-    "ref": "",
-    "status": "completed",
-    "litros": 5000
-   }
-  ],
+  "huerfanas": [],
+  "sin_ref": [],
   "resumen": {
-   "total": 0,
-   "ruteadas": 0,
+   "total": 6,
+   "ruteadas": 5,
    "ruteadas_manana": 0,
-   "sin_ruta": 0,
-   "huerfanas": 1
+   "sin_ruta": 1,
+   "huerfanas": 0
   }
  },
  "litros": {
@@ -1690,6 +1742,14 @@
   ],
   "dias": [
    {
+    "fecha": "2026-10-17",
+    "entregas": 0,
+    "entregado": 0,
+    "facturado": 0,
+    "por_facturar": 0,
+    "sin_factura": 0
+   },
+   {
     "fecha": "2026-10-16",
     "entregas": 31,
     "entregado": 44119,
@@ -1736,25 +1796,17 @@
     "facturado": 0,
     "por_facturar": 0,
     "sin_factura": 0
-   },
-   {
-    "fecha": "2026-10-10",
-    "entregas": 0,
-    "entregado": 0,
-    "facturado": 0,
-    "por_facturar": 0,
-    "sin_factura": 0
    }
   ],
   "por_facturar_total": 3800,
-  "entregado_hoy": 44119,
-  "facturado_hoy": 42419,
+  "entregado_hoy": 0,
+  "facturado_hoy": 5000,
   "fuera_simpli": [
    {
-    "factura": "FAC 54819",
-    "so": "S37593",
-    "cliente": "SUGAL CHILE LIMITADA",
-    "litros": 500
+    "factura": "FAC 54835",
+    "so": "S37527",
+    "cliente": "VCA maquinarias Spa.",
+    "litros": 5000
    }
   ]
  },
@@ -1862,40 +1914,6 @@
      "factura_estado": "borrador_sin_vincular",
      "factura_total": 15648151,
      "factura_litros": 10020
-    },
-    {
-     "po": "P00921",
-     "proveedor": "ADQUIM SPA",
-     "cam": "PY",
-     "fecha": "2026-10-15",
-     "hora": "18:44",
-     "litros": 15000,
-     "correccion": null,
-     "litros_real": 15000,
-     "precio": 1305.13,
-     "recibida": true,
-     "devuelta": false,
-     "factura": "265473",
-     "factura_estado": "posted",
-     "factura_total": 20427056,
-     "factura_litros": 15000
-    },
-    {
-     "po": "P00920",
-     "proveedor": "ENAP REFINERIAS S.A.",
-     "cam": "PH",
-     "fecha": "2026-10-15",
-     "hora": "18:42",
-     "litros": 10040,
-     "correccion": null,
-     "litros_real": 10040,
-     "precio": 1312.35,
-     "recibida": true,
-     "devuelta": false,
-     "factura": "852619",
-     "factura_estado": "posted",
-     "factura_total": 13758721,
-     "factura_litros": 10040
     }
    ],
    "borradores_sueltos": [
@@ -1925,30 +1943,185 @@
    "sin_recibir": 1
   },
   "fase4": {
-   "salidas": [],
+   "salidas": [
+    {
+     "picking": "VD/OUT/01846",
+     "so": "S37585",
+     "cliente": "CUERPO DE BOMBEROS CODEGUA, CODEGUA",
+     "cam": "VD",
+     "fecha": "2026-10-16",
+     "litros": 3385,
+     "entregada_simpli": true
+    },
+    {
+     "picking": "TJVS/OUT/02044",
+     "so": "S37612",
+     "cliente": "SUGAL CHILE LIMITADA, SAGRADA FAMILIA",
+     "cam": "TJ",
+     "fecha": "2026-10-16",
+     "litros": 700,
+     "entregada_simpli": false
+    },
+    {
+     "picking": "TJVS/OUT/02043",
+     "so": "S37613",
+     "cliente": "SUGAL CHILE LIMITADA, MONTE ALTO",
+     "cam": "TJ",
+     "fecha": "2026-10-16",
+     "litros": 800,
+     "entregada_simpli": false
+    },
+    {
+     "picking": "PHXC/OUT/01820",
+     "so": "S37614",
+     "cliente": "SUGAL CHILE LIMITADA, SANTA ELENA 2 CAMPOS PROPIOS",
+     "cam": "PH",
+     "fecha": "2026-10-16",
+     "litros": 500,
+     "entregada_simpli": false
+    },
+    {
+     "picking": "PYHK/OUT/01502",
+     "so": "S37615",
+     "cliente": "SUGAL CHILE LIMITADA, LOPEZ PARCELA 54 CAMPOS PROPIOS",
+     "cam": "PY",
+     "fecha": "2026-10-16",
+     "litros": 1000,
+     "entregada_simpli": false
+    },
+    {
+     "picking": "PYHK/OUT/01501",
+     "so": "S37616",
+     "cliente": "SUGAL CHILE LIMITADA, LOPEZ PARCELA 53 CAMPOS PROPIOS",
+     "cam": "PY",
+     "fecha": "2026-10-16",
+     "litros": 600,
+     "entregada_simpli": false
+    }
+   ],
    "ventas": [
     {
-     "so": "S37577",
+     "so": "S37614",
      "cliente": "SUGAL CHILE LIMITADA",
      "especial": true,
-     "cam": "TY",
-     "cam_simpli": [
-      "TY"
-     ],
-     "cam_odoo": [
-      "TY"
-     ],
-     "picking": null,
-     "fecha_entrega": "2026-10-16",
-     "simpli": 950,
-     "cantidad": 950,
-     "entregado": 950,
+     "cam": "PH",
+     "cam_simpli": [],
+     "cam_odoo": [],
+     "picking": "PHXC/OUT/01820",
+     "fecha_entrega": "2026-10-17",
+     "simpli": null,
+     "cantidad": 500,
+     "entregado": 0,
      "facturado": 0,
      "problemas": [
-      "por_facturar"
+      "sin_entrega"
      ],
      "acciones": [
-      "Facturar 950 L (Sugal: revisar en Ventas)"
+      "Salida PHXC/OUT/01820 abierta pero SimpliRoute no la muestra entregada: si no salió, reprogramar; si salió, validar"
+     ]
+    },
+    {
+     "so": "S37615",
+     "cliente": "SUGAL CHILE LIMITADA",
+     "especial": true,
+     "cam": "PY",
+     "cam_simpli": [],
+     "cam_odoo": [],
+     "picking": "PYHK/OUT/01502",
+     "fecha_entrega": "2026-10-17",
+     "simpli": null,
+     "cantidad": 1000,
+     "entregado": 0,
+     "facturado": 0,
+     "problemas": [
+      "sin_entrega"
+     ],
+     "acciones": [
+      "Salida PYHK/OUT/01502 abierta pero SimpliRoute no la muestra entregada: si no salió, reprogramar; si salió, validar"
+     ]
+    },
+    {
+     "so": "S37616",
+     "cliente": "SUGAL CHILE LIMITADA",
+     "especial": true,
+     "cam": "PY",
+     "cam_simpli": [],
+     "cam_odoo": [],
+     "picking": "PYHK/OUT/01501",
+     "fecha_entrega": "2026-10-17",
+     "simpli": null,
+     "cantidad": 600,
+     "entregado": 0,
+     "facturado": 0,
+     "problemas": [
+      "sin_entrega"
+     ],
+     "acciones": [
+      "Salida PYHK/OUT/01501 abierta pero SimpliRoute no la muestra entregada: si no salió, reprogramar; si salió, validar"
+     ]
+    },
+    {
+     "so": "S37612",
+     "cliente": "SUGAL CHILE LIMITADA",
+     "especial": true,
+     "cam": "TJ",
+     "cam_simpli": [],
+     "cam_odoo": [],
+     "picking": "TJVS/OUT/02044",
+     "fecha_entrega": "2026-10-17",
+     "simpli": null,
+     "cantidad": 700,
+     "entregado": 0,
+     "facturado": 0,
+     "problemas": [
+      "sin_entrega"
+     ],
+     "acciones": [
+      "Salida TJVS/OUT/02044 abierta pero SimpliRoute no la muestra entregada: si no salió, reprogramar; si salió, validar"
+     ]
+    },
+    {
+     "so": "S37613",
+     "cliente": "SUGAL CHILE LIMITADA",
+     "especial": true,
+     "cam": "TJ",
+     "cam_simpli": [],
+     "cam_odoo": [],
+     "picking": "TJVS/OUT/02043",
+     "fecha_entrega": "2026-10-17",
+     "simpli": null,
+     "cantidad": 800,
+     "entregado": 0,
+     "facturado": 0,
+     "problemas": [
+      "sin_entrega"
+     ],
+     "acciones": [
+      "Salida TJVS/OUT/02043 abierta pero SimpliRoute no la muestra entregada: si no salió, reprogramar; si salió, validar"
+     ]
+    },
+    {
+     "so": "S37585",
+     "cliente": "CUERPO DE BOMBEROS CODEGUA",
+     "especial": false,
+     "cam": "VD",
+     "cam_simpli": [
+      "VD"
+     ],
+     "cam_odoo": [
+      "VD"
+     ],
+     "picking": "VD/OUT/01846",
+     "fecha_entrega": "2026-10-16",
+     "simpli": 3385,
+     "cantidad": 3385,
+     "entregado": 1800,
+     "facturado": 3385,
+     "problemas": [
+      "falta_validar"
+     ],
+     "acciones": [
+      "Validar VD/OUT/01846 por 1.585 L"
      ]
     }
    ],
@@ -1959,12 +2132,19 @@
      "cam": "TY",
      "fecha_entrega": "2026-10-16",
      "especial": true
+    },
+    {
+     "so": "S37585",
+     "cliente": "CUERPO DE BOMBEROS CODEGUA",
+     "cam": "VD",
+     "fecha_entrega": "2026-10-16",
+     "especial": false
     }
    ],
-   "entregadas_hoy": 31,
+   "entregadas_hoy": 0,
    "bodega_ventana": 0,
-   "revisadas_ventana": 104,
-   "salidas_entregadas": 0
+   "revisadas_ventana": 109,
+   "salidas_entregadas": 1
   },
   "fase5": {
    "saldos": [
@@ -1973,49 +2153,49 @@
      "odoo": 9000,
      "ajuste": 0,
      "esperado": 9000,
-     "ventas_simpli_hoy": 5900
+     "ventas_simpli_hoy": 0
     },
     {
      "cam": "PH",
      "odoo": 4100,
      "ajuste": 0,
      "esperado": 4100,
-     "ventas_simpli_hoy": 2900
+     "ventas_simpli_hoy": 0
     },
     {
      "cam": "PY",
      "odoo": 9900,
      "ajuste": 0,
      "esperado": 9900,
-     "ventas_simpli_hoy": 5100
+     "ventas_simpli_hoy": 0
     },
     {
      "cam": "SH",
      "odoo": 15000,
      "ajuste": 0,
      "esperado": 15000,
-     "ventas_simpli_hoy": 6424
+     "ventas_simpli_hoy": 0
     },
     {
      "cam": "TJ",
      "odoo": 10400,
      "ajuste": 0,
      "esperado": 10400,
-     "ventas_simpli_hoy": 3620
+     "ventas_simpli_hoy": 0
     },
     {
      "cam": "TY",
      "odoo": 9050,
      "ajuste": 0,
      "esperado": 9050,
-     "ventas_simpli_hoy": 5700
+     "ventas_simpli_hoy": 0
     },
     {
      "cam": "VD",
-     "odoo": -1585,
-     "ajuste": 0,
+     "odoo": 0,
+     "ajuste": -1585,
      "esperado": -1585,
-     "ventas_simpli_hoy": 14475
+     "ventas_simpli_hoy": 0
     }
    ]
   },
@@ -2097,47 +2277,12 @@
      "cam": "TY",
      "fecha_entrega": "2026-10-08",
      "excepcion": ""
-    },
-    {
-     "so": "S37614",
-     "cliente": "SUGAL CHILE LIMITADA",
-     "cam": "PH",
-     "fecha_entrega": "2026-10-17",
-     "excepcion": ""
-    },
-    {
-     "so": "S37615",
-     "cliente": "SUGAL CHILE LIMITADA",
-     "cam": "PY",
-     "fecha_entrega": "2026-10-17",
-     "excepcion": ""
-    },
-    {
-     "so": "S37616",
-     "cliente": "SUGAL CHILE LIMITADA",
-     "cam": "PY",
-     "fecha_entrega": "2026-10-17",
-     "excepcion": ""
-    },
-    {
-     "so": "S37612",
-     "cliente": "SUGAL CHILE LIMITADA",
-     "cam": "TJ",
-     "fecha_entrega": "2026-10-17",
-     "excepcion": ""
-    },
-    {
-     "so": "S37613",
-     "cliente": "SUGAL CHILE LIMITADA",
-     "cam": "TJ",
-     "fecha_entrega": "2026-10-17",
-     "excepcion": ""
     }
    ],
    "con_excepcion": 1,
    "validadas_manana": 0,
    "visitas_manana": 0,
-   "fecha": "2026-10-17"
+   "fecha": "2026-10-18"
   }
  }
 }
