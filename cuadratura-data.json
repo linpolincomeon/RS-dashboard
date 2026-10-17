@@ -1,21 +1,9 @@
 {
- "generated_utc": "2026-10-16T21:59+00:00",
+ "generated_utc": "2026-10-17T00:16+00:00",
  "hoy": "2026-10-16",
  "desde": "2026-10-10",
  "rutas": {
-  "pendientes": [
-   {
-    "picking": "TJVS/OUT/02032",
-    "so": "S37527",
-    "cliente": "VCA maquinarias Spa., Jose Manuel Pezoa F",
-    "camion": "TJVS-53",
-    "litros": 5000,
-    "programado": "14-10 15:11",
-    "atrasado": true,
-    "estado": "sin_ruta",
-    "visita_status": null
-   }
-  ],
+  "pendientes": [],
   "huerfanas": [
    {
     "so": "S37566",
@@ -34,10 +22,10 @@
    }
   ],
   "resumen": {
-   "total": 1,
+   "total": 0,
    "ruteadas": 0,
    "ruteadas_manana": 0,
-   "sin_ruta": 1,
+   "sin_ruta": 0,
    "huerfanas": 1
   }
  },
@@ -141,7 +129,7 @@
     "so": "S37579",
     "fecha": "2026-10-16",
     "cliente": "LUIS ALBERTO IBARRA CARRILLO",
-    "camion": "PYHK-28",
+    "camion": "SHGP-60",
     "especial": false,
     "parcial": false,
     "visitas": 1,
@@ -175,7 +163,7 @@
     "especial": false,
     "parcial": true,
     "visitas": 1,
-    "pedido": 1000,
+    "pedido": 900,
     "entregado": 900,
     "facturado": 900,
     "facturas": [
@@ -191,7 +179,7 @@
     "especial": false,
     "parcial": true,
     "visitas": 1,
-    "pedido": 1500,
+    "pedido": 1800,
     "entregado": 1800,
     "facturado": 1800,
     "facturas": [
@@ -317,7 +305,7 @@
     "especial": false,
     "parcial": false,
     "visitas": 1,
-    "pedido": 1000,
+    "pedido": 1424,
     "entregado": 1424,
     "facturado": 1424,
     "facturas": [
@@ -413,7 +401,7 @@
     "especial": false,
     "parcial": true,
     "visitas": 1,
-    "pedido": 800,
+    "pedido": 720,
     "entregado": 720,
     "facturado": 720,
     "facturas": [
@@ -445,7 +433,7 @@
     "especial": false,
     "parcial": false,
     "visitas": 1,
-    "pedido": 2500,
+    "pedido": 2900,
     "entregado": 2900,
     "facturado": 2900,
     "facturas": [
@@ -1774,6 +1762,108 @@
   "fase2": {
    "compras": [
     {
+     "po": "P00927",
+     "proveedor": "ADQUIM SPA",
+     "cam": "SH",
+     "fecha": "2026-10-16",
+     "hora": "19:31",
+     "litros": 15000,
+     "correccion": null,
+     "litros_real": 15000,
+     "precio": 1305.13,
+     "recibida": true,
+     "devuelta": false,
+     "factura": null,
+     "factura_estado": "sin_factura",
+     "factura_total": null,
+     "factura_litros": null
+    },
+    {
+     "po": "P00926",
+     "proveedor": "ENAP REFINERIAS S.A.",
+     "cam": "HH",
+     "fecha": "2026-10-16",
+     "hora": "19:29",
+     "litros": 14959,
+     "correccion": null,
+     "litros_real": 14959,
+     "precio": 1312.35,
+     "recibida": true,
+     "devuelta": false,
+     "factura": "852945",
+     "factura_estado": "borrador_sin_vincular",
+     "factura_total": 23362908,
+     "factura_litros": 14960
+    },
+    {
+     "po": "P00925",
+     "proveedor": "ADQUIM SPA",
+     "cam": "PY",
+     "fecha": "2026-10-16",
+     "hora": "19:28",
+     "litros": 15000,
+     "correccion": null,
+     "litros_real": 15000,
+     "precio": 1305.13,
+     "recibida": true,
+     "devuelta": false,
+     "factura": null,
+     "factura_estado": "sin_factura",
+     "factura_total": null,
+     "factura_litros": null
+    },
+    {
+     "po": "P00924",
+     "proveedor": "ADQUIM SPA",
+     "cam": "TY",
+     "fecha": "2026-10-16",
+     "hora": "19:28",
+     "litros": 15000,
+     "correccion": null,
+     "litros_real": 15000,
+     "precio": 1305.13,
+     "recibida": true,
+     "devuelta": false,
+     "factura": null,
+     "factura_estado": "sin_factura",
+     "factura_total": null,
+     "factura_litros": null
+    },
+    {
+     "po": "P00923",
+     "proveedor": "ENAP REFINERIAS S.A.",
+     "cam": "TJ",
+     "fecha": "2026-10-16",
+     "hora": "19:26",
+     "litros": 15032,
+     "correccion": null,
+     "litros_real": 15032,
+     "precio": 1312.35,
+     "recibida": true,
+     "devuelta": false,
+     "factura": "852836",
+     "factura_estado": "borrador_sin_vincular",
+     "factura_total": 23472226,
+     "factura_litros": 15030
+    },
+    {
+     "po": "P00922",
+     "proveedor": "ENAP REFINERIAS S.A.",
+     "cam": "PH",
+     "fecha": "2026-10-16",
+     "hora": "19:24",
+     "litros": 10020,
+     "correccion": null,
+     "litros_real": 10020,
+     "precio": 1312.35,
+     "recibida": false,
+     "devuelta": false,
+     "factura": "852834",
+     "factura_estado": "borrador_sin_vincular",
+     "factura_total": 15648151,
+     "factura_litros": 10020
+    },
+    {
      "po": "P00921",
      "proveedor": "ADQUIM SPA",
      "cam": "PY",
@@ -1810,13 +1900,6 @@
    ],
    "borradores_sueltos": [
     {
-     "folio": "852945",
-     "proveedor": "ENAP REFINERIAS S.A.",
-     "fecha": "2026-10-16",
-     "total": 23362908,
-     "litros": 14960
-    },
-    {
      "folio": "266063",
      "proveedor": "ADQUIM SPA",
      "fecha": "2026-10-16",
@@ -1831,20 +1914,6 @@
      "litros": null
     },
     {
-     "folio": "852834",
-     "proveedor": "ENAP REFINERIAS S.A.",
-     "fecha": "2026-10-16",
-     "total": 15648151,
-     "litros": 10020
-    },
-    {
-     "folio": "852836",
-     "proveedor": "ENAP REFINERIAS S.A.",
-     "fecha": "2026-10-16",
-     "total": 23472226,
-     "litros": 15030
-    },
-    {
      "folio": "265571",
      "proveedor": "ADQUIM SPA",
      "fecha": "2026-10-16",
@@ -1853,161 +1922,11 @@
     }
    ],
    "oc_borrador": [],
-   "sin_recibir": 0
+   "sin_recibir": 1
   },
   "fase4": {
-   "salidas": [
-    {
-     "picking": "TJVS/OUT/02032",
-     "so": "S37527",
-     "cliente": "VCA maquinarias Spa., Jose Manuel Pezoa F",
-     "cam": "TJ",
-     "fecha": "2026-10-14",
-     "litros": 5000,
-     "entregada_simpli": false
-    }
-   ],
+   "salidas": [],
    "ventas": [
-    {
-     "so": "S37531",
-     "cliente": "FRUAL QUILVO SPA",
-     "especial": false,
-     "cam": "HH",
-     "cam_simpli": [
-      "HH"
-     ],
-     "cam_odoo": [
-      "HH"
-     ],
-     "picking": null,
-     "fecha_entrega": "2026-10-16",
-     "simpli": 2900,
-     "cantidad": 2500,
-     "entregado": 2900,
-     "facturado": 2900,
-     "problemas": [
-      "cantidad"
-     ],
-     "acciones": [
-      "Subir Cantidad de 2.500 a 2.900 L"
-     ]
-    },
-    {
-     "so": "S37575",
-     "cliente": "PATRICIO VISCAY ALBORNOZ",
-     "especial": false,
-     "cam": "PY",
-     "cam_simpli": [
-      "PY"
-     ],
-     "cam_odoo": [
-      "PY"
-     ],
-     "picking": null,
-     "fecha_entrega": "2026-10-16",
-     "simpli": 1800,
-     "cantidad": 1500,
-     "entregado": 1800,
-     "facturado": 1800,
-     "problemas": [
-      "cantidad"
-     ],
-     "acciones": [
-      "Subir Cantidad de 1.500 a 1.800 L"
-     ]
-    },
-    {
-     "so": "S37558",
-     "cliente": "INGENERIA Y CONSTRUCCIONES FEBLANCA SPA",
-     "especial": false,
-     "cam": "SH",
-     "cam_simpli": [
-      "SH"
-     ],
-     "cam_odoo": [
-      "SH"
-     ],
-     "picking": null,
-     "fecha_entrega": "2026-10-16",
-     "simpli": 1424,
-     "cantidad": 1000,
-     "entregado": 1424,
-     "facturado": 1424,
-     "problemas": [
-      "cantidad"
-     ],
-     "acciones": [
-      "Subir Cantidad de 1.000 a 1.424 L"
-     ]
-    },
-    {
-     "so": "S37579",
-     "cliente": "LUIS ALBERTO IBARRA CARRILLO",
-     "especial": false,
-     "cam": "SH",
-     "cam_simpli": [
-      "SH"
-     ],
-     "cam_odoo": [
-      "PY"
-     ],
-     "picking": null,
-     "fecha_entrega": "2026-10-16",
-     "simpli": 2000,
-     "cantidad": 2000,
-     "entregado": 2000,
-     "facturado": 2000,
-     "problemas": [
-      "bodega"
-     ],
-     "acciones": [
-      "Odoo descontó 2.000 L de PY pero lo entregó SH: traspaso PY→SH por 2.000 L"
-     ]
-    },
-    {
-     "so": "S37527",
-     "cliente": "VCA maquinarias Spa.",
-     "especial": false,
-     "cam": "TJ",
-     "cam_simpli": [],
-     "cam_odoo": [],
-     "picking": "TJVS/OUT/02032",
-     "fecha_entrega": "2026-10-16",
-     "simpli": null,
-     "cantidad": 5000,
-     "entregado": 0,
-     "facturado": 0,
-     "problemas": [
-      "sin_entrega"
-     ],
-     "acciones": [
-      "Salida TJVS/OUT/02032 abierta pero SimpliRoute no la muestra entregada: si no salió, reprogramar; si salió, validar"
-     ]
-    },
-    {
-     "so": "S37533",
-     "cliente": "SOCIEDAD AGRICOLA SANTA ROSA",
-     "especial": false,
-     "cam": "TJ",
-     "cam_simpli": [
-      "TJ"
-     ],
-     "cam_odoo": [
-      "TJ"
-     ],
-     "picking": null,
-     "fecha_entrega": "2026-10-16",
-     "simpli": 720,
-     "cantidad": 800,
-     "entregado": 720,
-     "facturado": 720,
-     "problemas": [
-      "cantidad"
-     ],
-     "acciones": [
-      "Bajar Cantidad de 800 a 720 L en la orden"
-     ]
-    },
     {
      "so": "S37577",
      "cliente": "SUGAL CHILE LIMITADA",
@@ -2031,30 +1950,6 @@
      "acciones": [
       "Facturar 950 L (Sugal: revisar en Ventas)"
      ]
-    },
-    {
-     "so": "S37576",
-     "cliente": "CARLOS SOTO CORREA",
-     "especial": false,
-     "cam": "VD",
-     "cam_simpli": [
-      "VD"
-     ],
-     "cam_odoo": [
-      "VD"
-     ],
-     "picking": null,
-     "fecha_entrega": "2026-10-16",
-     "simpli": 900,
-     "cantidad": 1000,
-     "entregado": 900,
-     "facturado": 900,
-     "problemas": [
-      "cantidad"
-     ],
-     "acciones": [
-      "Bajar Cantidad de 1.000 a 900 L en la orden"
-     ]
     }
    ],
    "a_facturar": [
@@ -2067,59 +1962,59 @@
     }
    ],
    "entregadas_hoy": 31,
-   "bodega_ventana": 1,
-   "revisadas_ventana": 105,
+   "bodega_ventana": 0,
+   "revisadas_ventana": 104,
    "salidas_entregadas": 0
   },
   "fase5": {
    "saldos": [
     {
      "cam": "HH",
-     "odoo": -5900,
+     "odoo": 9000,
      "ajuste": 0,
-     "esperado": -5900,
+     "esperado": 9000,
      "ventas_simpli_hoy": 5900
     },
     {
      "cam": "PH",
-     "odoo": -2900,
+     "odoo": 4100,
      "ajuste": 0,
-     "esperado": -2900,
+     "esperado": 4100,
      "ventas_simpli_hoy": 2900
     },
     {
      "cam": "PY",
-     "odoo": -5100,
-     "ajuste": 2000,
-     "esperado": -3100,
+     "odoo": 9900,
+     "ajuste": 0,
+     "esperado": 9900,
      "ventas_simpli_hoy": 5100
     },
     {
      "cam": "SH",
-     "odoo": 0,
-     "ajuste": -2000,
-     "esperado": -2000,
+     "odoo": 15000,
+     "ajuste": 0,
+     "esperado": 15000,
      "ventas_simpli_hoy": 6424
     },
     {
      "cam": "TJ",
-     "odoo": -3600,
+     "odoo": 10400,
      "ajuste": 0,
-     "esperado": -3600,
+     "esperado": 10400,
      "ventas_simpli_hoy": 3620
     },
     {
      "cam": "TY",
-     "odoo": -5950,
+     "odoo": 9050,
      "ajuste": 0,
-     "esperado": -5950,
+     "esperado": 9050,
      "ventas_simpli_hoy": 5700
     },
     {
      "cam": "VD",
-     "odoo": -5585,
+     "odoo": -1585,
      "ajuste": 0,
-     "esperado": -5585,
+     "esperado": -1585,
      "ventas_simpli_hoy": 14475
     }
    ]
@@ -2201,6 +2096,41 @@
      "cliente": "SUGAL CHILE LIMITADA",
      "cam": "TY",
      "fecha_entrega": "2026-10-08",
+     "excepcion": ""
+    },
+    {
+     "so": "S37614",
+     "cliente": "SUGAL CHILE LIMITADA",
+     "cam": "PH",
+     "fecha_entrega": "2026-10-17",
+     "excepcion": ""
+    },
+    {
+     "so": "S37615",
+     "cliente": "SUGAL CHILE LIMITADA",
+     "cam": "PY",
+     "fecha_entrega": "2026-10-17",
+     "excepcion": ""
+    },
+    {
+     "so": "S37616",
+     "cliente": "SUGAL CHILE LIMITADA",
+     "cam": "PY",
+     "fecha_entrega": "2026-10-17",
+     "excepcion": ""
+    },
+    {
+     "so": "S37612",
+     "cliente": "SUGAL CHILE LIMITADA",
+     "cam": "TJ",
+     "fecha_entrega": "2026-10-17",
+     "excepcion": ""
+    },
+    {
+     "so": "S37613",
+     "cliente": "SUGAL CHILE LIMITADA",
+     "cam": "TJ",
+     "fecha_entrega": "2026-10-17",
      "excepcion": ""
     }
    ],
